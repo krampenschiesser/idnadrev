@@ -1,0 +1,32 @@
+subprojects {
+    apply plugin: "java"
+
+    sourceSets {
+        main {
+            resources {
+                srcDir 'src/main/java'
+            }
+        }
+        test {
+            resources {
+                srcDir 'src/test/java'
+            }
+        }
+    }
+
+
+    dependencies {
+        testCompile "junit:junit:$junit"
+        compile "org.apache.logging.log4j:log4j-core:$log4j"
+        compile "org.apache.logging.log4j:log4j-api:$log4j"
+        compile "com.google.guava:guava:$guava"
+        compile "org.apache.bval:bval-jsr303:$bval"
+    }
+}
+
+project("app") {
+    dependencies {
+        compile project(":libs:i18n")
+    }
+}
+

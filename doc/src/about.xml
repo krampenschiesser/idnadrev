@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<chapter>
+    <title>General information</title>
+    <section>
+        <title>About beagle</title>
+        <para>
+            Project beagle is a task, information and life management system aimed for personal use.
+            There will be a
+            <emphasis>PC(java)</emphasis>
+            and a feature reduced
+            <emphasis>mobile(android)</emphasis>
+            version.
+            The PC version will also act as a server for the mobile version.
+            As for task management it follows common principles similar to GTD.
+            So the user can
+            <emphasis>collect any information, documents, media whatever...</emphasis>
+            This stuff can be processed/reviewed in order to create
+            <emphasis>tasks/projects</emphasis>
+            or<emphasis>knowledge</emphasis>.
+            A knowledge item can be linked to tasks but can also exist standalone.
+            <emphasis>Tags</emphasis>
+            and
+            <emphasis>Categories</emphasis>
+            help you to find your relevant knowledge items.
+            The
+            <emphasis>emotion tracking</emphasis>
+            system(if activated) will help you to identify what kind of task(work, leisure, sports etc.)
+            makes you feel good or bad and help/suggest the next best task for your current mood.
+            The
+            <emphasis>food planner</emphasis>
+            will help you to keep track of your daily calorie consumption and nutrition.
+            It will provide you with a shopping list and your own recipes.
+            The
+            <emphasis>money tracker</emphasis>
+            will help you to keep track of the amount of money you spend as well as help you with
+            saving up money for bigger projects.
+            A
+            <emphasis>vocabulary trainer</emphasis>
+            will help you to learn your favourite languages or just to train
+            your brain in remembering things.
+            For each feature there will be
+            <emphasis>predefined reports</emphasis>
+            helping you to analyse yourself.
+        </para>
+    </section>
+
+    <section>
+        <title>Information/Thought</title>
+        <para>
+            You can collect anything you want which might be a future task, project, or a knowledge item.
+
+            After collecting those information you can process them and transfer them into tasks or knowledge items.
+
+            You can of course always create knowledge items or tasks immediately.
+        </para>
+    </section>
+    <section>
+        <title>Task</title>
+        <para>
+            A task is the central item of beagle. It can be a child of another task which makes its parent to a project.
+            It can be recurring, scheduled, delegated, the typical stuff.
+            They can be grouped by location and topic.
+            There is a time tracking method that gives you feedback on the time estimated and spend.
+            This time tracking can also be adjusted to give you a custom break timetable.
+        </para>
+    </section>
+
+    <section>
+        <title>Knowledge</title>
+        <para>
+            A knowledge item is quite widespread.
+            It basically exists of text combined with files.
+            You can mark a knowledge item with tags and categories for easier finding.
+        </para>
+    </section>
+
+    <section>
+        <title>Tags and Categories</title>
+        <para>
+            You can define tree-formed categories and give tags to your knowledge items
+            for easier finding via browsing and searching.
+        </para>
+    </section>
+
+    <section>
+        <title>Vocabulary trainer</title>
+        <para>
+
+        </para>
+    </section>
+
+    <section>
+        <title>Emotion tracking</title>
+        <para>
+
+        </para>
+    </section>
+
+    <section>
+        <title>Food planner</title>
+        <para>
+
+        </para>
+    </section>
+
+    <section>
+        <title>Money tracker</title>
+        <para>
+
+        </para>
+    </section>
+</chapter>

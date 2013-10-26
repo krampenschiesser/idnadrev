@@ -1,0 +1,12 @@
+allprojects {
+    repositories {
+        mavenCentral()
+        maven {
+            url = "http://repository.jboss.org/nexus/content/groups/public"
+        }
+        maven {
+            url = "https://repository.sonatype.org/content/repositories/central/"
+        }
+    }
+    version = "$version"
+}

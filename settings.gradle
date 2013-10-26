@@ -1,0 +1,4 @@
+include "doc"
+include "libs:validation", "libs:cdi-scope", "libs:persistence", "libs:eventsystem", "libs:entity", "libs:i18n", "libs:scheduler"
+include "pc:app"
+include "android:storage", "android:app"

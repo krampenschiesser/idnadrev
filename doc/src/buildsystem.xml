@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V5.0//EN"
+        "http://docbook.org/xml/5.0/dtd/docbook.dtd">
+
+<chapter>
+    <title>Build system</title>
+    <para>
+        I use
+        <link xlink:href="http://www.gradle.org">Gradle</link>
+        as a build system.
+        This includes building android and docbook, as well as the JavaFX application.
+        Please refer to the gradle documentation for further information on how to use gradle.
+        Basic hint:
+        <screen>
+            ~/beagle:$ gradle tasks #overview
+            ~/beagle:$ gradle build #test and build
+            ~/beagle:$ gradle reference #documentation
+        </screen>
+
+    </para>
+    <section>
+        <title>Structure</title>
+        <para>
+            This is a multi project build configuration. As for the folder structure see<link
+                linkend="projectStructure">Project Structure</link>.
+            Dependency and project version number are stored in<emphasis>gradle.properties</emphasis>,
+            Besides the root build.gradle there are 4 separate gradle files:
+            <orderedlist>
+                <listitem>
+                    <para><emphasis>android/build.gradle</emphasis>: contains android specific build.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para><emphasis>doc/build.gradle</emphasis>: contains the docbook specific stuff to generate the
+                        reference documentation
+                    </para>
+                </listitem>
+                <listitem>
+                    <para><emphasis>libs/build.gradle</emphasis>: configuration for the different libs. Main goal is to
+                        keep the dependency trees as small as possible
+                        to enable reuse of those libraries.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para><emphasis>pc/build.grale</emphasis>: contains dependencies and libraries to get the runnable
+                        JavaFX app.
+                    </para>
+                </listitem>
+            </orderedlist>
+        </para>
+    </section>
+</chapter>

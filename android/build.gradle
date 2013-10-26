@@ -1,0 +1,60 @@
+buildscript {
+
+    dependencies {
+        classpath "com.android.tools.build:gradle:$android"
+    }
+
+    repositories {
+        mavenCentral()
+        maven {
+            url = "http://repository.jboss.org/nexus/content/groups/public"
+        }
+        maven {
+            url = "https://repository.sonatype.org/content/repositories/central/"
+        }
+    }
+}
+
+project("storage") {
+    apply plugin: "android-library"
+
+
+    android {
+        compileSdkVersion 18
+        buildToolsVersion "$android_tools_version"
+
+        sourceSets {
+            main {
+                res.srcDirs = ['res', '(library-res-path)']
+            }
+        }
+    }
+
+    dependencies {
+        compile "com.j256.ormlite:ormlite-core:$ormlite"
+        compile "com.j256.ormlite:ormlite-android:$ormlite"
+    }
+}
+
+
+project("app") {
+    apply plugin: "android"
+
+
+    android {
+        compileSdkVersion 18
+        buildToolsVersion "$android_tools_version"
+
+
+        sourceSets {
+            main {
+                res.srcDirs = ['res', '(library-res-path)']
+            }
+        }
+    }
+
+    dependencies {
+    }
+}
+
+

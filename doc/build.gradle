@@ -1,0 +1,15 @@
+buildscript {
+    repositories {
+        maven { url 'http://repo.springsource.org/plugins-release' }
+    }
+    dependencies {
+        classpath "org.springframework.build.gradle:docbook-reference-plugin:$docbook"
+    }
+}
+
+apply plugin: 'docbook-reference'
+
+reference {
+    sourceDir = file('src')
+    pdfFilename = 'beagle.pdf'
+}

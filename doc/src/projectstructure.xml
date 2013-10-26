@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V5.0//EN"
+        "http://docbook.org/xml/5.0/dtd/docbook.dtd">
+
+<chapter xml:id="projectStructure">
+    <title>Project structure</title>
+    <para>The project is generally splitted into 4 parts
+        <orderedlist>
+            <listitem>
+                <para>
+                    <emphasis>android</emphasis>: contains the sources of the android application.
+                </para>
+                <itemizedlist>
+                    <listitem>
+                        <para><emphasis>app</emphasis>: main application with main class
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para><emphasis>storage</emphasis>: DataAccess layer working with
+                            <link xlink:href="http://ormlite.com/">ormlite</link>
+                        </para>
+                    </listitem>
+                </itemizedlist>
+            </listitem>
+
+
+            <listitem>
+                <para><emphasis>pc</emphasis>: contains the sources of the
+                    <link xlink:href="http://download.java.net/jdk8/jfxdocs/index.html">JavaFX8</link>
+                    application
+                </para>
+                <itemizedlist>
+                    <listitem>
+                        <para><emphasis>app</emphasis>: main class and
+                            <link xlink:href="http://download.java.net/jdk8/jfxdocs/index.html">JavaFX8</link>
+                            application
+                        </para>
+                    </listitem>
+                </itemizedlist>
+            </listitem>
+
+            <listitem>
+                <para><emphasis>lib</emphasis>: Contains various small libraries that build parts
+                    of the application and might be shared by android and pc app.
+                </para>
+                <itemizedlist>
+                    <listitem>
+                        <para><emphasis>entity</emphasis>: Because I want to use all the entities in the Android app
+                            and the PC app I separated them into a library
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para><emphasis>i18n</emphasis>: Contains some classes for internationalization, basically
+                            an UTF8 resource bundle
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para><emphasis>persistence</emphasis>: JPA storage via
+                            <link xlink:href="http://hibernate.org/">hibernate</link>
+                            and helper classes
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para><emphasis>eventsystem</emphasis>: Access to the eventsystem libraries and application
+                            communicate with. Based on
+                            <link xlink:href="http://code.google.com/p/guava-libraries/">guava</link>
+                            EventBus
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para><emphasis>cdi-scope</emphasis>: Contains a custom
+                            <link xlink:href="http://cdi-spec.org/">cdi</link>
+                            scope which can store and destroy bulks/sessions of objects
+                        </para>
+                    </listitem>
+                </itemizedlist>
+            </listitem>
+            <listitem>
+                <para><emphasis>doc</emphasis>: contains this beagle reference documentation
+                </para>
+            </listitem>
+        </orderedlist>
+    </para>
+</chapter>
