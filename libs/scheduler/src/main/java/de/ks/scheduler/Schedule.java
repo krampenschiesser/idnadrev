@@ -9,13 +9,12 @@ import de.ks.persistence.converter.LocalDateConverter;
 import de.ks.persistence.converter.LocalTimeConverter;
 import de.ks.persistence.entity.AbstractPersistentObject;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
+import java.time.temporal.ChronoUnit;
 
 /**
  *
@@ -33,6 +32,7 @@ public class Schedule extends AbstractPersistentObject<Schedule> {
   @Convert(converter = LocalTimeConverter.class)
   protected LocalTime scheduledTime;//if null, only date relevant
 
+  @Enumerated(value = EnumType.STRING)
   protected RepetitionType repetition = null;
 
   public Schedule() {
@@ -72,6 +72,15 @@ public class Schedule extends AbstractPersistentObject<Schedule> {
     return false;
   }
 
+  public boolean isScheduledNow() {
+    return isScheduledNow(LocalTime.now());
+  }
+
+  protected boolean isScheduledNow(LocalTime now) {
+    now = now.truncatedTo(ChronoUnit.MINUTES);
+    return now.equals(scheduledTime);
+  }
+
   public LocalDateTime getScheduledDateTime() {
     if (scheduledTime != null) {
       return LocalDateTime.of(scheduledDate, scheduledTime);
@@ -95,7 +104,8 @@ public class Schedule extends AbstractPersistentObject<Schedule> {
   }
 
   public Schedule setScheduledTime(LocalTime scheduledTime) {
-    this.scheduledTime = scheduledTime;
+    this.scheduledTime = scheduledTime.truncatedTo(ChronoUnit.MINUTES);
+    ;
     return this;
   }
 
@@ -106,5 +116,22 @@ public class Schedule extends AbstractPersistentObject<Schedule> {
   public Schedule setRepetition(RepetitionType repetition) {
     this.repetition = repetition;
     return this;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Schedule)) return false;
+
+    Schedule schedule = (Schedule) o;
+
+    if (id != schedule.id) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    return (int) (id ^ (id >>> 32));
   }
 }

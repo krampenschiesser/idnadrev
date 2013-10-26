@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -23,6 +24,7 @@ public class ScheduleTest {
   @Before
   public void setUp() throws Exception {
     schedule = new Schedule(LocalDate.of(2013, 10, 3));
+    schedule.setScheduledTime(LocalTime.of(12, 30, 32));
   }
 
   @Test
@@ -45,5 +47,13 @@ public class ScheduleTest {
     schedule.setRepetition(Schedule.RepetitionType.YEARLY);
     assertTrue(schedule.isScheduledToday(LocalDate.of(2014, 10, 3)));
     assertFalse(schedule.isScheduledToday(LocalDate.of(2014, 11, 3)));
+  }
+
+  @Test
+  public void testScheduledNow() throws Exception {
+    assertTrue(schedule.isScheduledNow(LocalTime.of(12, 30, 45)));
+    assertFalse(schedule.isScheduledNow(LocalTime.of(12, 31, 32)));
+    assertFalse(schedule.isScheduledNow(LocalTime.of(12, 29, 32)));
+
   }
 }

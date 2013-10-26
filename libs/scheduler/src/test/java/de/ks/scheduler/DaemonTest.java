@@ -4,26 +4,40 @@ package de.ks.scheduler;/*
  * All rights reserved by now, license may come later.
  */
 
+import com.google.common.eventbus.Subscribe;
+import de.ks.beagle.entity.Task;
+import de.ks.eventsystem.EventSystem;
+import de.ks.scheduler.event.ScheduleTriggeredEvent;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.time.Instant;
-import java.time.LocalTime;
+import java.time.LocalDate;
 
 public class DaemonTest {
   private Daemon daemon;
+  private Task task;
 
   @Before
   public void setUp() throws Exception {
     daemon = new Daemon();
+    EventSystem.bus.register(this);
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    EventSystem.bus.unregister(this);
   }
 
   @Test
   public void testScheduling() throws Exception {
-    Crontab crontab = new Crontab("3 12 * * *");
-    daemon.addCrontab(crontab);
-    Instant now = Instant.now();
-    LocalTime offsetTime = LocalTime.now().withHour(12).withMinute(3).withSecond(0);
-    daemon.mockTime(offsetTime.adjustInto(LocalTime.now()));
+    Task localTask = new Task("test");
+    Schedule schedule = new Schedule(LocalDate.now());
+    daemon.addSchedule(schedule, localTask);
+  }
+
+  @Subscribe
+  public void onTaskScheduled(ScheduleTriggeredEvent event) {
+    task = event.getTask();
   }
 }
