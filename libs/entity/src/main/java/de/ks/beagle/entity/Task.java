@@ -55,7 +55,7 @@ public class Task extends NamedPersistentObject<Task> {
   @Convert(converter = LocalTimeConverter.class)
   protected LocalTime scheduledTime;//if null, only date relevant
 
-  @Embedded
+  @ManyToOne(targetEntity = Task.class)
   protected Schedule schedule;
 
   @OneToMany(cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH}, orphanRemoval = false, mappedBy = "task")
