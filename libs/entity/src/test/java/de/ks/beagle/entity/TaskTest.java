@@ -6,6 +6,7 @@ package de.ks.beagle.entity;
  */
 
 import de.ks.persistence.PersistentWork;
+import de.ks.persistence.entity.AbstractPersistentObject;
 import org.junit.Before;
 import org.junit.Test;
 
