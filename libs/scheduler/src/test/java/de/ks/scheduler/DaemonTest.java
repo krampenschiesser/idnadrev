@@ -5,7 +5,6 @@ package de.ks.scheduler;/*
  */
 
 import com.google.common.eventbus.Subscribe;
-import de.ks.beagle.entity.Task;
 import de.ks.eventsystem.EventSystem;
 import de.ks.scheduler.event.ScheduleTriggeredEvent;
 import org.junit.After;
@@ -13,10 +12,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import static org.junit.Assert.assertEquals;
 
 public class DaemonTest {
   private Daemon daemon;
-  private Task task;
+  private Object userData;
 
   @Before
   public void setUp() throws Exception {
@@ -31,13 +33,15 @@ public class DaemonTest {
 
   @Test
   public void testScheduling() throws Exception {
-    Task localTask = new Task("test");
     Schedule schedule = new Schedule(LocalDate.now());
-    daemon.addSchedule(schedule, localTask);
+    daemon.addSchedule(schedule, "buh");
+    daemon.mockTime(LocalDateTime.now());
+    daemon.trigger();
+    assertEquals("buh", userData);
   }
 
   @Subscribe
   public void onTaskScheduled(ScheduleTriggeredEvent event) {
-    task = event.getTask();
+    userData = event.getUserData();
   }
 }
