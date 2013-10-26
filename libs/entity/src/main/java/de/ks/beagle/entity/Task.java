@@ -3,6 +3,7 @@ package de.ks.beagle.entity;
 import de.ks.persistence.converter.LocalDateConverter;
 import de.ks.persistence.converter.LocalDateTimeConverter;
 import de.ks.persistence.converter.LocalTimeConverter;
+import de.ks.persistence.converter.PeriodConverter;
 import de.ks.persistence.entity.NamedPersistentObject;
 import de.ks.scheduler.Schedule;
 
@@ -39,6 +40,8 @@ public class Task extends NamedPersistentObject<Task> {
   protected LocalDateTime finishTime;
 
 
+  @Column(columnDefinition = "VARCHAR(250)")
+  @Convert(converter = PeriodConverter.class)
   protected Period estimatedTime;
 
   @Column(columnDefinition = "VARCHAR(250)")
@@ -47,13 +50,6 @@ public class Task extends NamedPersistentObject<Task> {
   @Column(columnDefinition = "VARCHAR(250)")
   @Convert(converter = LocalTimeConverter.class)
   protected LocalTime dueTime;//if null, only date relevant
-
-  @Column(columnDefinition = "VARCHAR(250)")
-  @Convert(converter = LocalDateConverter.class)
-  protected LocalDate scheduledDate;//should be done at this date (and time)
-  @Column(columnDefinition = "VARCHAR(250)")
-  @Convert(converter = LocalTimeConverter.class)
-  protected LocalTime scheduledTime;//if null, only date relevant
 
   @ManyToOne(targetEntity = Task.class)
   protected Schedule schedule;
