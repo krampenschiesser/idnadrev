@@ -1,4 +1,7 @@
 include "doc"
+//general stuff
 include "libs:validation", "libs:cdi-scope", "libs:persistence", "libs:eventsystem", "libs:entity", "libs:i18n", "libs:scheduler"
+//javaFX stuff
+include "libs:images", "libs:menu", "libs:application"
 include "pc:app"
 include "android:storage", "android:app"

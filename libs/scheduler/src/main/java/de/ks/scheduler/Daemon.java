@@ -60,7 +60,7 @@ public class Daemon {
 
 
   /**
-   * Registers a crontab directly. Now further start or schedule needed.
+   * Registers a schedule directly. Now further start or schedule needed.
    *
    * @param schedule
    * @return
