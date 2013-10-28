@@ -107,7 +107,13 @@
                 </para>
             </listitem>
             <listitem>
-                <para>Create cron/calendar for scheduled or reoccurring tasks and reminders</para>
+                <para>Create scheduler and daemon for fixed and reoccurring tasks
+                    <inlinemediaobject>
+                        <imageobject>
+                            <imagedata fileref="images/done.png"/>
+                        </imageobject>
+                    </inlinemediaobject>
+                </para>
             </listitem>
         </itemizedlist>
     </section>
