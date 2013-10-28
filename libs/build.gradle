@@ -47,7 +47,14 @@ project(":libs:cdi-scope") {
         compile "javax.enterprise:cdi-api:1.1"
         testCompile "org.apache.deltaspike.cdictrl:deltaspike-cdictrl-weld:$deltaspike"
         testRuntime "org.jboss.weld.se:weld-se:$weld"
+    }
+}
 
+project(":libs:menu") {
+    dependencies {
+        compile "javax.enterprise:cdi-api:1.1"
+        testCompile "org.apache.deltaspike.cdictrl:deltaspike-cdictrl-weld:$deltaspike"
+        testRuntime "org.jboss.weld.se:weld-se:$weld"
     }
 }
 
@@ -76,5 +83,12 @@ project(":libs:validation") {
         compile project(":libs:i18n")
 
         testRuntime "org.apache.bval:bval-jsr303:$bval"
+    }
+}
+
+project(":libs:menu") {
+    dependencies {
+        compile project(":libs:i18n")
+        compile project(":libs:images")
     }
 }
