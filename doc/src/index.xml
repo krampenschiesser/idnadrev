@@ -2,13 +2,14 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V5.0//EN"
         "http://docbook.org/xml/5.0/dtd/docbook.dtd">
 <book xmlns:xi="http://www.w3.org/2001/XInclude">
-    <title>Beagle documentation</title>
+    <title>Beagle documentation Version $version</title>
 
     <info>
-        <title>Main documentation for project beagle</title>
+        <title>Main documentation for project beagle Version $version</title>
         <author>
             <personname>Christian Löhnert</personname>
         </author>
+
     </info>
 
     <xi:include href="about.xml"/>
