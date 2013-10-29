@@ -33,7 +33,6 @@ public class LocalizedTest {
     helloWorld = Localized.get("/hello");
     assertEquals("Hallo Welt!", helloWorld);
 
-
     Localized.changeLocale(Locale.ENGLISH);
     helloWorld = Localized.get("/hello");
     assertEquals("Hello world!", helloWorld);
