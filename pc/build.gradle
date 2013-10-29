@@ -26,9 +26,4 @@ subprojects {
     }
 }
 
-project("app") {
-    dependencies {
-        compile project(":pc:libs")
-    }
-}
 

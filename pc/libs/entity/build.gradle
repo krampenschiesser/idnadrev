@@ -1,8 +1,0 @@
-dependencies {
-    compile project(":pc:libs:scheduler")
-    compile project(":pc:libs:persistence")
-
-    compile "$jpa2api"
-
-    testRuntime "org.apache.bval:bval-jsr303:$bval"
-}

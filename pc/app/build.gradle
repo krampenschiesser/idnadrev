@@ -1,0 +1,9 @@
+dependencies {
+    compile project(":pc:libs:application")
+    compile project(":pc:libs:menu")
+    compile project(":pc:libs:scheduler")
+
+    compile "$jpa2api"
+
+    runtime "org.apache.bval:bval-jsr303:$bval"
+}
