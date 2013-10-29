@@ -29,28 +29,13 @@ import static org.junit.Assert.*;
  */
 @RunWith(JFXCDIRunner.class)
 public class MenuBarPresenterTest {
-  private static Thread thread;
-  //  private CdiContainer cdiContainer;
   private MenuBarPresenter presenter;
 
-//  @BeforeClass
-//  public static void beforeClass() {
-//    JFXTestApp.startApp();
-//  }
 
   @Before
   public void setUp() throws Exception {
-//    cdiContainer = CdiContainerLoader.getCdiContainer();
-//    cdiContainer.boot(null);
-//    cdiContainer.boot();
-
     presenter = CDI.current().select(MenuBarPresenter.class).get();
   }
-
-//  @After
-//  public void tearDown() throws Exception {
-//    cdiContainer.shutdown();
-//  }
 
   @Test
   public void testGetMenu() throws Exception {
@@ -59,12 +44,14 @@ public class MenuBarPresenterTest {
 
     Menu fileMenu = menu.getMenus().sorted().get(0);
     assertEquals(Localized.get(Open.MENUPATH), fileMenu.getText());
+    assertFalse(fileMenu.getText().contains("/"));
 
     Menu optionsMenu = menu.getMenus().sorted().get(1);
     assertEquals(Localized.get(About.MENUPATH), optionsMenu.getText());
 
     assertEquals(2, fileMenu.getItems().size());
     assertEquals(Localized.get(Open.ITEMPATH), fileMenu.getItems().get(0).getText());
+    assertFalse(fileMenu.getItems().get(0).getText().contains("/"));
     assertEquals(Localized.get(Save.ITEMPATH), fileMenu.getItems().get(1).getText());
 
     assertEquals(2, optionsMenu.getItems().size());

@@ -13,5 +13,5 @@ import de.ks.menu.MenuItem;
 @MenuItem(Save.MENUPATH)
 public class Save {
   public static final String MENUPATH = "/main/file";
-  public static final String ITEMPATH = MENUPATH + "/" + Save.class.getSimpleName();
+  public static final String ITEMPATH = MENUPATH + "/" + Save.class.getSimpleName().toLowerCase();
 }
