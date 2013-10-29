@@ -1,0 +1,8 @@
+dependencies {
+    //compile project(":pc:libs:validation")
+    compile project(":pc:libs:persistence")
+    compile project(":pc:libs:eventsystem")
+    compile "$jpa2api"
+
+    testRuntime "org.apache.bval:bval-jsr303:$bval"
+}

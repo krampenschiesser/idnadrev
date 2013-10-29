@@ -1,6 +1,6 @@
 dependencies {
-    compile project(":libs:scheduler")
-    compile project(":libs:persistence")
+    compile project(":pc:libs:scheduler")
+    compile project(":pc:libs:persistence")
 
     compile "$jpa2api"
 

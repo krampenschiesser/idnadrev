@@ -1,6 +1,6 @@
 dependencies {
-    compile project(":libs:i18n")
-    compile project(":libs:images")
+    compile project(":pc:libs:i18n")
+    compile project(":pc:libs:images")
 
     compile "javax.enterprise:cdi-api:1.1"
     testCompile "org.apache.deltaspike.cdictrl:deltaspike-cdictrl-weld:$deltaspike"

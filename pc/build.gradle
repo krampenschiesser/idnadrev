@@ -14,7 +14,6 @@ subprojects {
         }
     }
 
-
     dependencies {
         testCompile "junit:junit:$junit"
         testCompile "org.mockito:mockito-core:$mockito"
@@ -27,7 +26,7 @@ subprojects {
 
 project("app") {
     dependencies {
-        compile project(":libs:i18n")
+        compile project(":pc:libs:i18n")
     }
 }
 
