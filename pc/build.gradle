@@ -17,10 +17,11 @@ subprojects {
 
     dependencies {
         testCompile "junit:junit:$junit"
+        testCompile "org.mockito:mockito-core:$mockito"
         compile "org.apache.logging.log4j:log4j-core:$log4j"
         compile "org.apache.logging.log4j:log4j-api:$log4j"
         compile "com.google.guava:guava:$guava"
-        compile "org.apache.bval:bval-jsr303:$bval"
+        compile "javax.validation:validation-api:$javaxValidation"
     }
 }
 
