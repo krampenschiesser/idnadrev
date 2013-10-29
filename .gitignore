@@ -1,0 +1,13 @@
+*.iml
+.gradle/
+.idea/
+*.setting
+out/
+**/build/
+**/db/
+/db/
+**/**/build/
+**/**/db
+**/**/**/build
+**/**/**/db
+/index.html
