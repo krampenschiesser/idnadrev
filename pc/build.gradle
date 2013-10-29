@@ -6,11 +6,13 @@ subprojects {
             resources {
                 srcDir 'src/main/java'
             }
+            output.resourcesDir = "build/classes/main"
         }
         test {
             resources {
                 srcDir 'src/test/java'
             }
+            output.resourcesDir = "build/classes/test"
         }
     }
 
@@ -26,7 +28,7 @@ subprojects {
 
 project("app") {
     dependencies {
-        compile project(":pc:libs:i18n")
+        compile project(":pc:libs")
     }
 }
 

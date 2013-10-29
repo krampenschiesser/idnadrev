@@ -55,6 +55,7 @@ public abstract class PersistentWork {
     this.value = value;
   }
 
+  @SuppressWarnings("unchecked")
   public <T> T get() {
     return (T) value;
   }
