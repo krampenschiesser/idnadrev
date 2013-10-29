@@ -14,7 +14,7 @@
         Basic hint:
         <screen>
             ~/beagle:$ gradle tasks #overview
-            ~/beagle:$ gradle build #test and build
+            ~/beagle:$ gradle build #compile test and build
             ~/beagle:$ gradle reference #documentation
         </screen>
 
@@ -37,14 +37,14 @@
                     </para>
                 </listitem>
                 <listitem>
-                    <para><emphasis>libs/build.gradle</emphasis>: configuration for the different libs. Main goal is to
-                        keep the dependency trees as small as possible
-                        to enable reuse of those libraries.
+                    <para><emphasis>pc/build.grale</emphasis>: contains dependencies and libraries to get the runnable
+                        JavaFX app.
                     </para>
                 </listitem>
                 <listitem>
-                    <para><emphasis>pc/build.grale</emphasis>: contains dependencies and libraries to get the runnable
-                        JavaFX app.
+                    <para><emphasis>pc/libs/*/build.gradle</emphasis>: configuration for each different library.
+                        Main goal is to keep the dependency trees as small as possible
+                        to enable reuse of those libraries.
                     </para>
                 </listitem>
             </orderedlist>

@@ -37,45 +37,65 @@
                             application
                         </para>
                     </listitem>
+                    <listitem>
+                        <para><emphasis>libs</emphasis>: Contains various small libraries that build parts
+                            of the application and might be shared in future projects of mine.
+                        </para>
+                        <itemizedlist>
+                            <listitem>
+                                <para><emphasis>application</emphasis>: Contains launcher and window descriptors for
+                                    fast creation of
+                                    JavaFX applications.
+                                </para>
+                            </listitem>
+                            <listitem>
+                                <para><emphasis>cdi-scope</emphasis>: Contains a custom
+                                    <link xlink:href="http://cdi-spec.org/">cdi</link>
+                                    scope which can store and destroy bulks/sessions of objects
+                                </para>
+                            </listitem>
+                            <listitem>
+                                <para><emphasis>eventsystem</emphasis>: Access to the eventsystem libraries the
+                                    application
+                                    communicates with. Based on
+                                    <link xlink:href="http://code.google.com/p/guava-libraries/">guava</link>
+                                    EventBus
+                                </para>
+                            </listitem>
+                            <listitem>
+                                <para><emphasis>i18n</emphasis>: Contains some classes for internationalization,
+                                    basically
+                                    an UTF8 resource bundle.
+                                </para>
+                            </listitem>
+                            <listitem>
+                                <para><emphasis>images</emphasis>: Contains a basic image cache based on SoftReferences
+                                    which also supports lazy loading.
+                                </para>
+                            </listitem>
+                            <listitem>
+                                <para><emphasis>menu</emphasis>: Contains a CDI extension for discovering menu items.
+                                    (@MenuItem(menuPath) Annotated classes)
+                                    Also supports building of different kinds of menus.
+                                </para>
+                            </listitem>
+                            <listitem>
+                                <para><emphasis>persistence</emphasis>: JPA storage via
+                                    <link xlink:href="http://hibernate.org/">hibernate</link>
+                                    and helper classes for basic transaction management
+                                </para>
+                            </listitem>
+                            <listitem>
+                                <para><emphasis>scheduler</emphasis>: Contains an Entity Schedule used to schedule
+                                    specific events.
+                                    A Daemon is used to trigger events based on those schedules
+                                </para>
+                            </listitem>
+                        </itemizedlist>
+                    </listitem>
                 </itemizedlist>
             </listitem>
 
-            <listitem>
-                <para><emphasis>lib</emphasis>: Contains various small libraries that build parts
-                    of the application and might be shared by android and pc app.
-                </para>
-                <itemizedlist>
-                    <listitem>
-                        <para><emphasis>entity</emphasis>: Because I want to use all the entities in the Android app
-                            and the PC app I separated them into a library
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para><emphasis>i18n</emphasis>: Contains some classes for internationalization, basically
-                            an UTF8 resource bundle
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para><emphasis>persistence</emphasis>: JPA storage via
-                            <link xlink:href="http://hibernate.org/">hibernate</link>
-                            and helper classes
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para><emphasis>eventsystem</emphasis>: Access to the eventsystem libraries and application
-                            communicate with. Based on
-                            <link xlink:href="http://code.google.com/p/guava-libraries/">guava</link>
-                            EventBus
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para><emphasis>cdi-scope</emphasis>: Contains a custom
-                            <link xlink:href="http://cdi-spec.org/">cdi</link>
-                            scope which can store and destroy bulks/sessions of objects
-                        </para>
-                    </listitem>
-                </itemizedlist>
-            </listitem>
             <listitem>
                 <para><emphasis>doc</emphasis>: contains this beagle reference documentation
                 </para>
