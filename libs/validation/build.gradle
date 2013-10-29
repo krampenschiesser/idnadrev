@@ -1,0 +1,5 @@
+dependencies {
+    compile project(":libs:i18n")
+
+    testRuntime "org.apache.bval:bval-jsr303:$bval"
+}

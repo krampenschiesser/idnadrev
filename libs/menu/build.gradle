@@ -1,0 +1,4 @@
+dependencies {
+    compile project(":libs:i18n")
+    compile project(":libs:images")
+}
