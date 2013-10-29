@@ -15,15 +15,16 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MenuItem {
-  @Nonbinding
+  public static final String SEPERATOR = "/";
+
   /**
    * The name of the menu
    */
-          String value();
+  @Nonbinding String value();
 
-  @Nonbinding
+
   /**
    * An optional path to an item image.
    */
-          String image() default "";
+  @Nonbinding String image() default "";
 }

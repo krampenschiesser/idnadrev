@@ -5,13 +5,11 @@ package de.ks.menu;
  * All rights reserved by now, license may come later.
  */
 
+import de.ks.JFXCDIRunner;
 import de.ks.menu.mainmenu.Open;
 import de.ks.menu.mainmenu.Save;
-import org.apache.deltaspike.cdise.api.CdiContainer;
-import org.apache.deltaspike.cdise.api.CdiContainerLoader;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.CDI;
@@ -24,27 +22,14 @@ import static org.junit.Assert.assertFalse;
 /**
  *
  */
+@RunWith(JFXCDIRunner.class)
 public class MenuItemDiscovererTest {
-  private CdiContainer cdiContainer;
-
-  @Before
-  public void setUp() throws Exception {
-    cdiContainer = CdiContainerLoader.getCdiContainer();
-    cdiContainer.boot(null);
-    cdiContainer.boot();
-  }
-
-  @After
-  public void tearDown() throws Exception {
-    cdiContainer.shutdown();
-  }
-
   @Test
   public void testDiscoverItems() throws Exception {
     MenuExtension extension = CDI.current().select(MenuExtension.class).get();
-    assertEquals(3, extension.getMenuEntries().size());
+    assertEquals(4, extension.getMenuEntries().size());
 
-    assertEquals(3, extension.getMenuEntries("/main").size());
+    assertEquals(4, extension.getMenuEntries("/main").size());
     assertEquals(2, extension.getMenuEntries("/main/file").size());
   }
 
@@ -57,7 +42,7 @@ public class MenuItemDiscovererTest {
     select.forEach((Object item) -> {
       classes.add(item.getClass());
     });
-    assertEquals(3, classes.size());
+    assertEquals(4, classes.size());
   }
 
   @Test
@@ -69,7 +54,7 @@ public class MenuItemDiscovererTest {
     select.forEach(new MenuFilter("/main", mainMenu));
 
     assertEquals(2, fileMenu.size());
-    assertEquals(3, mainMenu.size());
+    assertEquals(4, mainMenu.size());
     assertEquals(Open.class, fileMenu.get(0).getClass());
     assertEquals(Save.class, fileMenu.get(1).getClass());
   }
