@@ -17,4 +17,5 @@ public abstract class MainWindow {
   public abstract Parent getRoot();
 
   public abstract String getApplicationTitle();
+
 }

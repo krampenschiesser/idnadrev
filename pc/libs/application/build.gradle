@@ -2,6 +2,7 @@ dependencies {
     compile project(":pc:libs:i18n")
     compile project(":pc:libs:images")
     compile project(":pc:libs:persistence")
+    compile project(":pc:libs:menu")
 
     compile "org.apache.deltaspike.cdictrl:deltaspike-cdictrl-api:$deltaspike"
     compile "javax.enterprise:cdi-api:1.1"
