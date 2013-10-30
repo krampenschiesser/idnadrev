@@ -51,8 +51,8 @@ public class MenuBarPresenter extends AbstractPresenter<MenuBar> {
     if (item.getImagePath() != null && !item.getImagePath().isEmpty()) {
       Images.later(item.getImagePath(), (Image img) -> menuItem.setGraphic(new ImageView(img)));
     }
-    menuItem.setText(Localized.get(item.getMenuItemPath().toLowerCase()));
-    menuItem.setOnAction(createDefaultActionHandler(item.getTarget()));
+    menuItem.setText(Localized.get(item.getMenuItemPath()));
+    menuItem.setOnAction(createDefaultActionHandler(item));
     return menuItem;
   }
 

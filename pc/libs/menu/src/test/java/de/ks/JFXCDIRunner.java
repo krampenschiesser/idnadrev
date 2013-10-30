@@ -16,15 +16,19 @@ import org.junit.runners.model.InitializationError;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
  */
 public class JFXCDIRunner extends BlockJUnit4ClassRunner {
   public static class JFXTestApp extends Application {
+    public static Stage stage;
+
     @Override
     public void start(Stage stage) throws Exception {
       barrier.countDown();
+      JFXTestApp.stage = stage;
     }
   }
 
@@ -51,11 +55,16 @@ public class JFXCDIRunner extends BlockJUnit4ClassRunner {
       });
     }
     executor.execute(() -> {
-      cdiContainer.boot();
-      barrier.countDown();
+      try {
+        cdiContainer.boot();
+      } finally {
+        barrier.countDown();
+      }
     });
     try {
-      barrier.await();
+      if (!barrier.await(5, TimeUnit.SECONDS)) {
+        stopApp();
+      }
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
     }
