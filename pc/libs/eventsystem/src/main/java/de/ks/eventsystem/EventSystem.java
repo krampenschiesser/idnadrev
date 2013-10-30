@@ -11,6 +11,8 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.enterprise.inject.Produces;
+
 public class EventSystem {
   private static final Logger log = LogManager.getLogger(EventSystem.class);
 
@@ -24,5 +26,11 @@ public class EventSystem {
   @Subscribe
   public void onDeadEvent(DeadEvent dead) {
     log.warn("No handler for event \"{}\" found. Contents: {}", dead.getEvent().getClass().getSimpleName(), dead.getEvent());
+  }
+
+
+  @Produces
+  public EventBus getEventBus() {
+    return bus;
   }
 }
