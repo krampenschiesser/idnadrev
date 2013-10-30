@@ -86,6 +86,12 @@
                                 </para>
                             </listitem>
                             <listitem>
+                                <para><emphasis>reflection</emphasis>: Reflection utilities, I sadly can't use
+                                    "org.reflections:reflections:0.9.9-RC1"
+                                    because it destroys hibernate.
+                                </para>
+                            </listitem>
+                            <listitem>
                                 <para><emphasis>scheduler</emphasis>: Contains an Entity Schedule used to schedule
                                     specific events.
                                     A Daemon is used to trigger events based on those schedules
