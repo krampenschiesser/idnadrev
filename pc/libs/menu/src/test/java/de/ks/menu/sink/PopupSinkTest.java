@@ -49,10 +49,9 @@ public class PopupSinkTest {
 
   @Test
   public void testOpenPopupForParent() throws Exception {
-    EventSystem.bus.post(//
+    EventSystem.bus.postAndWait(//
             new MenuItemClickedEvent(//
                     new MenuItemDescriptor(About.MENUPATH, About.class)));
-    Thread.sleep(1000 * 10);
     assertNotNull(stage.getScene());
     Parent root = stage.getScene().getRoot();
     assertNotNull(root);

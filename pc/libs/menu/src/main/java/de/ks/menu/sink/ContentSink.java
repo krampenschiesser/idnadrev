@@ -8,5 +8,5 @@ package de.ks.menu.sink;
 /**
  *
  */
-public class NodeSink {
+public class ContentSink {
 }
