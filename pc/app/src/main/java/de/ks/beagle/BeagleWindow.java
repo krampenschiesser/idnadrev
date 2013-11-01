@@ -25,13 +25,13 @@ public class BeagleWindow extends MainWindow {
   @Inject
   MenuBarPresenter menuBarPresenter;
   @Inject
-  PopupSink sink;
+  PopupSink popupSink;
 
   private BorderPane borderPane;
 
   @PostConstruct
   public void initialize() {
-    sink.setMenuPath("/main");
+    popupSink.setMenuPath("/main");
   }
 
   @Override
@@ -46,21 +46,4 @@ public class BeagleWindow extends MainWindow {
   public String getApplicationTitle() {
     return "Beagle Version 0.3";
   }
-
-
-//  @Subscribe
-//  public void onMenuItemClicked(MenuItemClickedEvent event) {
-//    log.debug("Received event {}",event);
-//    Instance<?> select = CDI.current().select(event.getTarget(),new MenuItemLiteral());
-//    if (select.isUnsatisfied()) {
-//      log.error("No bean satisfying {}", event.getTarget().getName());
-//    } else if (select.isAmbiguous()) {
-//      log.error("Ambigous bean {}", event.getTarget().getName());
-//    } else {
-//      Object object = select.get();
-//      if (object instanceof Node) {
-//        borderPane.setCenter((Node) object);
-//      }
-//    }
-//  }
 }
