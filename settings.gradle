@@ -1,6 +1,6 @@
 include "doc"
 
-include "pc:libs:reflection"
+include "pc:libs:util", "pc:libs:reflection"
 
 //PC stuff
 include "pc:libs:validation", "pc:libs:cdi-scope", "pc:libs:persistence", "pc:libs:eventsystem", "pc:libs:entity", "pc:libs:i18n", "pc:libs:scheduler"
