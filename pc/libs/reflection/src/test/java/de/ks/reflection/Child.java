@@ -24,4 +24,9 @@ public class Child extends Parent {
   protected void protectedChildMethod() {
 
   }
+
+  @Override
+  protected String overriden() {
+    return "child";
+  }
 }

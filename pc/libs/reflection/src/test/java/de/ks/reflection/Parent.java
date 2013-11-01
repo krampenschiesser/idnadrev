@@ -24,4 +24,8 @@ public class Parent {
   protected void protectedParentMethod() {
 
   }
+
+  protected String overriden() {
+    return "parent";
+  }
 }

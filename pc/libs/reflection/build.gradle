@@ -1,4 +1,5 @@
 dependencies {
+    compile project(":pc:libs:util")
     compile "cglib:cglib:$cglib"
     runtime "org.ow2.asm:asm:$asm"
     runtime "org.ow2.asm:asm-util:$asm"
