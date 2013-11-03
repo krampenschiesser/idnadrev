@@ -19,7 +19,7 @@ public class Category extends NamedPersistentObject<Category> {
   @ManyToOne
   protected Category parent;
 
-  @OneToMany(mappedBy = "pane")
+  @OneToMany(mappedBy = "parent")
   protected Set<Category> children = new HashSet<>();
 
   public Category() {
