@@ -60,7 +60,7 @@ public class Task extends NamedPersistentObject<Task> {
   @ManyToOne
   protected Task parent;
 
-  @OneToMany(mappedBy = "parent", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+  @OneToMany(mappedBy = "pane", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
   protected Set<Task> children = new HashSet<>();
 
   protected String delegationReason;

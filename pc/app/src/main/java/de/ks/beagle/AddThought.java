@@ -6,10 +6,15 @@ package de.ks.beagle;
  */
 
 import de.ks.menu.MenuItem;
+import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
 
 /**
  *
  */
-@MenuItem("/main/thought/add")
-public class AddThought {
+@MenuItem("/main/thought")
+public class AddThought extends VBox {
+  public AddThought() {
+    getChildren().addAll(new Label("Yeah!"));
+  }
 }
