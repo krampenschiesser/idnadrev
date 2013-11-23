@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?scenebuilder-preview-i18n-resource ../i18n/Translation_en.properties?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<StackPane id="StackPane" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+           minWidth="-Infinity" prefHeight="300.0" prefWidth="350.0" xmlns:fx="http://javafx.com/fxml/1"
+           xmlns="http://javafx.com/javafx/2.2">
+    <children>
+        <GridPane alignment="CENTER" prefHeight="150.0" prefWidth="150.0" StackPane.alignment="CENTER">
+            <children>
+                <Label text="%/about/developer" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <Label text="Christian Löhnert" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                <Label text="%/about/version" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                <Label text="0.3" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                <Label text="Beagle" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                    <font>
+                        <Font name="System Bold" size="13.0"/>
+                    </font>
+                </Label>
+            </children>
+            <columnConstraints>
+                <ColumnConstraints halignment="LEFT" hgrow="NEVER" minWidth="10.0" prefWidth="150.0"/>
+                <ColumnConstraints halignment="LEFT" hgrow="NEVER" minWidth="10.0" prefWidth="150.0"/>
+            </columnConstraints>
+            <padding>
+                <Insets/>
+            </padding>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
+            </rowConstraints>
+        </GridPane>
+    </children>
+</StackPane>

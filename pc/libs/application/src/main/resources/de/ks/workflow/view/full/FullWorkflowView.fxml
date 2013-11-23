@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?scenebuilder-preview-i18n-resource ../../../../../../../../../../app/src/main/resources/de/ks/i18n/Translation_en.properties?>
+
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
+<BorderPane id="BorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="-1.0" prefWidth="-1.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2"
+            fx:controller="de.ks.workflow.view.full.FullWorkflowView">
+    <bottom>
+        <fx:include fx:id="stepButton" source="../step/HorizontalNextPreviousView.fxml" maxWidth="-Infinity"
+                    prefWidth="-1.0" BorderPane.alignment="BOTTOM_RIGHT"/>
+    </bottom>
+    <center>
+        <StackPane fx:id="content" prefHeight="400.0" prefWidth="500.0"/>
+    </center>
+    <left>
+        <fx:include fx:id="stepView" source="../navigator/ListBasedStepView.fxml" maxHeight="1.7976931348623157E308"
+                    maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="225.0"
+                    BorderPane.alignment="TOP_LEFT"/>
+    </left>
+</BorderPane>
