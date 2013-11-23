@@ -14,12 +14,7 @@ import javafx.scene.web.HTMLEditor;
 @Detailed
 @EditorFor(String.class)
 public class HtmlTextEditor extends AbstractEditor {
-  protected HTMLEditor editor;
-
-  @Override
-  protected void initializeInJFXThread() {
-    editor = new HTMLEditor();
-  }
+  protected HTMLEditor editor = new HTMLEditor();
 
   @Override
   public Node getNode() {

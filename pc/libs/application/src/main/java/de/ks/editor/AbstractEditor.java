@@ -5,7 +5,6 @@ package de.ks.editor;/*
  */
 
 import de.ks.application.Grid2DEditorProvider;
-import de.ks.executor.ExecutorService;
 import de.ks.i18n.Localized;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -18,16 +17,6 @@ public abstract class AbstractEditor implements Grid2DEditorProvider<Label, Node
   private static final Logger log = LogManager.getLogger(AbstractEditor.class);
   protected Label descriptor = new Label();
   protected Field field;
-
-  public AbstractEditor() {
-    ExecutorService.instance.invokeInJavaFXThread(() -> {
-      initializeInJFXThread();
-    });
-  }
-
-  protected void initializeInJFXThread() {
-    //
-  }
 
   public void forField(Field field) {
     this.field = field;

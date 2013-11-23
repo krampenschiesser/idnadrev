@@ -37,7 +37,7 @@ public class DefaultLoader<V extends Node, C> {
       throw new IllegalArgumentException("FXML file not found, is null!");
     }
     loader = new FXMLLoader(fxmlFile, Localized.getBundle(), new JavaFXBuilderFactory(), new ControllerFactory());
-    future = ExecutorService.instance.submit((Callable<V>) () -> loader.load());
+    future = ExecutorService.instance.executeInJavaFXThread((Callable<V>) () -> loader.load());
   }
 
 
