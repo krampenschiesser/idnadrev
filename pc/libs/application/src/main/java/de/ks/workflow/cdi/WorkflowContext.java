@@ -162,7 +162,8 @@ public class WorkflowContext implements Context {
     try {
       log.debug("Propagating workflow {}", workflowClass.getSimpleName());
       workflowStack.get().add(workflowClass);
-      workflows.get(workflowClass).getCount().incrementAndGet();
+      WorkflowHolder workflowHolder = workflows.get(workflowClass);
+      workflowHolder.getCount().incrementAndGet();
     } finally {
       lock.writeLock().unlock();
     }

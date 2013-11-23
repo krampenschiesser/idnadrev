@@ -49,4 +49,13 @@ public class WorkflowPropagator implements ThreadCallBoundValue {
       }
     }
   }
+
+  public WorkflowPropagator clone() {
+    try {
+      WorkflowPropagator clone = (WorkflowPropagator) super.clone();
+      return clone;
+    } catch (CloneNotSupportedException e) {
+      throw new InternalError("Could not clone " + getClass().getName());
+    }
+  }
 }
