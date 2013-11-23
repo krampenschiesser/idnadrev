@@ -24,6 +24,10 @@ import java.util.concurrent.TimeUnit;
  *
  */
 public class JFXCDIRunner extends BlockJUnit4ClassRunner {
+  public static Stage getStage() {
+    return JFXTestApp.stage;
+  }
+
   public static class JFXTestApp extends Application {
     public static Stage stage;
 
