@@ -135,6 +135,20 @@ public class ExecutorService implements ScheduledExecutorService {
     pool.execute(command);
   }
 
+  public void invokeInJavaFXThread(Runnable command) {
+    final Runnable runner = wrap(command);
+    FutureTask futureTask = new FutureTask(() -> {
+      runner.run();
+      return null;
+    });
+    Platform.runLater(futureTask);
+    try {
+      futureTask.get();
+    } catch (InterruptedException | ExecutionException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   public void executeInJavaFXThread(Runnable command) {
     command = wrap(command);
     Platform.runLater(command);
