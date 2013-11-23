@@ -1,0 +1,5 @@
+dependencies {
+    testCompile "org.apache.deltaspike.cdictrl:deltaspike-cdictrl-weld:$deltaspike"
+    testRuntime "org.jboss.weld.se:weld-se:$weld"
+
+}

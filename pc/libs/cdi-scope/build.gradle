@@ -1,5 +1,0 @@
-dependencies {
-    compile "javax.enterprise:cdi-api:1.1"
-    testCompile "org.apache.deltaspike.cdictrl:deltaspike-cdictrl-weld:$deltaspike"
-    testRuntime "org.jboss.weld.se:weld-se:$weld"
-}

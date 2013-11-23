@@ -1,0 +1,98 @@
+package de.ks.workflow.cdi;
+
+/*
+ * Created by Christian Loehnert
+ * Krampenschiesser@freenet.de
+ * All rights reserved by now, license may come later.
+ */
+
+import de.ks.JFXCDIRunner;
+import de.ks.executor.ExecutorService;
+import org.junit.After;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import javax.enterprise.inject.spi.CDI;
+import javax.inject.Inject;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
+
+import static org.junit.Assert.*;
+
+@RunWith(JFXCDIRunner.class)
+public class ScopeTest {
+  @Inject
+  WorkflowScopedBean1 bean1;
+  @Inject
+  WorkflowScopedBean1 bean2;
+  @Inject
+  WorkflowContext context;
+
+  @After
+  public void tearDown() throws Exception {
+    WorkflowContext.stopAll();
+  }
+
+  @Test
+  public void testWorkflowContextActive() throws Exception {
+    WorkflowContext context = (WorkflowContext) CDI.current().getBeanManager().getContext(WorkflowScoped.class);
+    assertTrue(context.isActive());
+
+    context.startWorkflow(TestWorkflow1.class);
+    bean1.getName();
+
+    context.startWorkflow(TestWorkflow2.class);
+    bean2.getName();
+    assertEquals(2, context.workflows.size());
+
+    context.stopWorkflow(TestWorkflow1.class.getName());
+    assertEquals(1, context.workflows.size());
+    assertNull(context.workflows.get(TestWorkflow1.class.getName()));
+    assertFalse(context.workflows.get(TestWorkflow2.class.getName()).getObjectStore().isEmpty());
+
+    context.stopAllWorkflows();
+    assertEquals(0, context.workflows.size());
+  }
+
+  @Test
+  public void testScopePropagation() throws Exception {
+    WorkflowContext.start("test");
+
+    bean1.setValue("Hello Sauerland!");
+
+    ExecutorService.instance.invokeAndWait(() -> {
+      WorkflowScopedBean1 bean = CDI.current().select(WorkflowScopedBean1.class).get();
+      assertNotNull(bean.getValue());
+      assertEquals("Hello Sauerland!", bean.getValue());
+    });
+    assertEquals("Hello Sauerland!", bean1.getValue());
+  }
+
+  @Test
+  public void testScopeCleanup() throws Exception {
+    CyclicBarrier barrier = new CyclicBarrier(2);
+    WorkflowContext.start("test");
+
+    bean1.setValue("Hello Sauerland!");
+
+    ExecutorService.instance.execute(() -> {
+      WorkflowScopedBean1 bean = CDI.current().select(WorkflowScopedBean1.class).get();
+      assertNotNull(bean.getValue());
+      assertEquals("Hello Sauerland!", bean.getValue());
+      try {
+        barrier.await();
+      } catch (InterruptedException | BrokenBarrierException e) {
+        //brz
+      }
+    });
+    assertEquals(1, context.workflows.size());
+    assertEquals("Hello Sauerland!", bean1.getValue());
+    WorkflowContext.stop("test");
+
+    assertEquals("Workflow got removed although one thread still holds it", 1, context.workflows.size());
+    barrier.await();
+    Thread.sleep(500);
+
+    assertEquals(0, context.workflows.size());
+  }
+}

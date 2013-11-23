@@ -5,39 +5,39 @@ package de.ks.beagle;
  * All rights reserved by now, license may come later.
  */
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
+import de.ks.NodeProvider;
+import de.ks.i18n.Localized;
 import de.ks.menu.MenuItem;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.layout.StackPane;
-import javafx.scene.web.WebView;
+import javafx.util.Callback;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
+import javax.enterprise.inject.spi.CDI;
 import java.io.IOException;
-import java.net.URL;
-import java.util.List;
 
 /**
  *
  */
 @MenuItem("/main/help")
-public class About extends StackPane {
+public class About implements NodeProvider<StackPane>{
   private static final Logger log = LogManager.getLogger(About.class);
 
-  public About() {
-    WebView webView = new WebView();
-    URL resource = getClass().getResource("about.html");
+  @Override
+  public StackPane get() {
     try {
-      StringBuilder builder = new StringBuilder();
-      List<String> lines = Files.readLines(new File(resource.getFile()), Charsets.UTF_8);
-      for (String line : lines) {
-        builder.append(line);
-      }
-      webView.getEngine().loadContent(builder.toString());
+      StackPane load = FXMLLoader.load(getClass().getResource("about.fxml"), Localized.getBundle(), new JavaFXBuilderFactory(),new Callback<Class<?>, Object>() {
+        @Override
+        public Object call(Class<?> clazz) {
+          return CDI.current().select(clazz).get();
+        }
+      });
+      return load;
     } catch (IOException e) {
-      log.error("Could not load about.html", e);
+      log.error("Could not load about.fxml", e);
+      return null;
     }
-    getChildren().add(webView);
   }
 }
