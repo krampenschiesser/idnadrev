@@ -39,6 +39,7 @@ public class EditStep extends InteractiveStep<GridPane> {
   Instance<AbstractEditor> editorProvider;
 
   private GridPane editGrid;
+  private Map<String, AbstractEditor> registeredEditors = new HashMap<>();
 
   @PostConstruct
   public void initialize() {
@@ -55,10 +56,12 @@ public class EditStep extends InteractiveStep<GridPane> {
     int row = 1;
     for (Map.Entry<Field, AbstractEditor> entry : editors.entrySet()) {
       AbstractEditor editor = entry.getValue();
-      editor.forField(entry.getKey());
+      Field field = entry.getKey();
+      editor.forField(field);
 
       editGrid.add(editor.getDescriptor(), row, 0);
       editGrid.add(editor.getNode(), row, 1);
+      registeredEditors.put(field.getName(), editor);
       row++;
     }
   }
@@ -119,5 +122,9 @@ public class EditStep extends InteractiveStep<GridPane> {
   @Override
   public GridPane getNode() {
     return editGrid;
+  }
+
+  public Map<String, AbstractEditor> getRegisteredEditors() {
+    return registeredEditors;
   }
 }
