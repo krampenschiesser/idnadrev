@@ -5,33 +5,33 @@ package de.ks.workflow.validation.event;
  * All rights reserved by now, license may come later.
  */
 
-import de.ks.reflection.PropertyPath;
+import java.lang.reflect.Field;
 
 /**
  *
  */
 public class ValidationRequiredEvent {
-  private final PropertyPath<?> path;
   private final Object value;
+  private final Field field;
 
-  public ValidationRequiredEvent(PropertyPath<?> path, Object value) {
-    this.path = path;
+  public ValidationRequiredEvent(Field field, Object value) {
+    this.field = field;
     this.value = value;
-  }
-
-  public PropertyPath<?> getPath() {
-    return path;
   }
 
   public Object getValue() {
     return value;
   }
 
+  public Field getField() {
+    return field;
+  }
+
   @Override
   public String toString() {
     return "ValidationRequiredEvent{" +
-            "path=" + path +
-            ", value=" + value +
+            "value=" + value +
+            ", field=" + field +
             '}';
   }
 }

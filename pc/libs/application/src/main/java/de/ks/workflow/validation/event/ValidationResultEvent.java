@@ -14,8 +14,9 @@ public class ValidationResultEvent {
   private boolean successful;
   private Field field;
 
-  public ValidationResultEvent(boolean successful) {
+  public ValidationResultEvent(boolean successful, Field field) {
     this.successful = successful;
+    this.field = field;
   }
 
   public boolean isSuccessful() {

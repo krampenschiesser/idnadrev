@@ -9,7 +9,7 @@ import com.google.common.eventbus.Subscribe;
 import de.ks.eventsystem.bus.EventBus;
 import de.ks.eventsystem.bus.HandlingThread;
 import de.ks.eventsystem.bus.Threading;
-import de.ks.workflow.Workflow;
+import de.ks.workflow.WorkflowState;
 import de.ks.workflow.validation.event.ValidationRequiredEvent;
 import de.ks.workflow.validation.event.ValidationResultEvent;
 
@@ -17,14 +17,15 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+import java.lang.reflect.Field;
 import java.util.Set;
 
 /**
  *
  */
 public class WorkflowModelValidator {
-//  @Inject
-  Workflow workflow;
+  @Inject
+  WorkflowState workflowState;
   @Inject
   EventBus eventBus;
   @Inject
@@ -38,10 +39,14 @@ public class WorkflowModelValidator {
   @Subscribe
   @Threading(HandlingThread.Async)
   public void validate(ValidationRequiredEvent event) {
-    Object model = workflow.getModel();
+    Field field = event.getField();
+
+    Object model = workflowState.getModel();
     Class<Object> clazz = (Class<Object>) model.getClass();
-    Set<ConstraintViolation<Object>> violations = validator.validateValue(clazz, event.getPath().getPropertyPath(), event.getValue());
-    ValidationResultEvent result = new ValidationResultEvent(violations.isEmpty());
+
+    Set<ConstraintViolation<Object>> violations = validator.validateValue(clazz, field.getName(), event.getValue());
+
+    ValidationResultEvent result = new ValidationResultEvent(violations.isEmpty(), field);
     eventBus.post(result);
   }
 }

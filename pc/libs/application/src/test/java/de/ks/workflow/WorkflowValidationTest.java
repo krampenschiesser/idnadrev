@@ -62,12 +62,12 @@ public class WorkflowValidationTest {
   public void testModelValidation() throws Exception {
     WorkflowContext.start(TestWorkflow.class);
 
-    eventBus.postAndWait(new ValidationRequiredEvent(path, null));
+    eventBus.postAndWait(new ValidationRequiredEvent(null, null));
     Thread.sleep(500);
     assertNotNull(result);
     assertFalse(result.isSuccessful());
 
-    eventBus.postAndWait(new ValidationRequiredEvent(path, "hello"));
+    eventBus.postAndWait(new ValidationRequiredEvent(null, "hello"));
     assertNotNull(result);
     assertTrue(result.isSuccessful());
   }

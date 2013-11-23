@@ -7,6 +7,7 @@ package de.ks.workflow.step;
 
 import com.google.common.eventbus.Subscribe;
 import de.ks.JFXCDIRunner;
+import de.ks.editor.AbstractEditor;
 import de.ks.editor.EditorFor;
 import de.ks.editor.StringEditor;
 import de.ks.eventsystem.EventSystem;
@@ -29,6 +30,7 @@ import org.junit.runner.RunWith;
 
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -92,25 +94,21 @@ public class EditStepTest {
   @Test
   public void testValidation() throws Exception {
     EventSystem.bus.register(this);
+    EventSystem.setWaitForEvents(true);
+
     StackPane content = view.getContent();
+    EditStep editStep = navigator.getCurrentStep().getStep();
 
-    assertEquals(1, content.getChildren().size());
-    GridPane gridPane = (GridPane) content.getChildren().get(0);
-    ObservableList<Node> children = gridPane.getChildren();
-    assertEquals(5, children.size());
-    assertHtmlEditor(children.get(2));
-    assertTextField(children.get(4));
-
-    HTMLEditor descriptionEditor = (HTMLEditor) children.get(2);
-    TextField nameEditor = (TextField) children.get(4);
-
+    Map<String, AbstractEditor> registeredEditors = editStep.getRegisteredEditors();
+    StringEditor nameEditor = (StringEditor) registeredEditors.get("name");
+    assertNotNull(nameEditor);
 
     expectNoValidationError();
-    nameEditor.requestFocus();
-    expectValidationError("name");
-    descriptionEditor.requestFocus();
+    nameEditor.onFocusChange(false, true);
     expectValidationError("name");
 
+    nameEditor.onFocusChange(true, false);
+    expectValidationError("name");
   }
 
   private void expectValidationError(String name) {
@@ -118,6 +116,7 @@ public class EditStepTest {
     assertFalse(lastValidation.isSuccessful());
 
     assertEquals(name, lastValidation.getValidatedField().getName());
+    lastValidation = null;
   }
 
   private void expectNoValidationError() {
