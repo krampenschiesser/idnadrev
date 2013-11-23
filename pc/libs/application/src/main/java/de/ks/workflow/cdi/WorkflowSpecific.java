@@ -5,6 +5,8 @@ package de.ks.workflow.cdi;
  * All rights reserved by now, license may come later.
  */
 
+import de.ks.workflow.Workflow;
+
 import javax.inject.Qualifier;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -16,5 +18,5 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 @Qualifier
 public @interface WorkflowSpecific {
-  String value();
+  Class<? extends Workflow> value();
 }

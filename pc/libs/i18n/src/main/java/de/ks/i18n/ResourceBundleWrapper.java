@@ -21,6 +21,7 @@ import java.util.Set;
  * Also uses the UTF8Control
  */
 class ResourceBundleWrapper extends ResourceBundle {
+
   private static final Logger log = LogManager.getLogger(ResourceBundleWrapper.class);
   private final ResourceBundle bundle;
   private final String path;

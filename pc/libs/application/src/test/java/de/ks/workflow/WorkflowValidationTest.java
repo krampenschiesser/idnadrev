@@ -36,7 +36,7 @@ public class WorkflowValidationTest {
   SimpleWorkflowModel model;
   @Inject
   EventBus eventBus;
-//  @Inject
+  //  @Inject
   Workflow state;
 
   @Before
@@ -53,14 +53,14 @@ public class WorkflowValidationTest {
 
   @Test
   public void testModelInitialization() throws Exception {
-    WorkflowContext.start("test");
+    WorkflowContext.start(TestWorkflow.class);
     Object model = state.getModel();
     assertNotNull(model);
   }
 
   @Test
   public void testModelValidation() throws Exception {
-    WorkflowContext.start("test");
+    WorkflowContext.start(TestWorkflow.class);
 
     eventBus.postAndWait(new ValidationRequiredEvent(path, null));
     Thread.sleep(500);

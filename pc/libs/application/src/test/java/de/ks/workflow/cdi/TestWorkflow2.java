@@ -6,16 +6,22 @@ package de.ks.workflow.cdi;
  */
 
 import de.ks.workflow.Workflow;
+import javafx.scene.Node;
 
 /**
  *
  */
-public class TestWorkflow2 extends Workflow {
+public class TestWorkflow2 extends Workflow<Object, Node, Object> {
   public static final String ID = TestWorkflow2.class.getName();
 
   @Override
   public Object getModel() {
     return new Object();
+  }
+
+  @Override
+  public Class<Object> getModelClass() {
+    return Object.class;
   }
 
   @Override

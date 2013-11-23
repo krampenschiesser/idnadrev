@@ -254,6 +254,16 @@ public class PropertyPath<T> {
     return methodPath.get(methodPath.size() - 1).getName();
   }
 
+  public String toLocalizationPath() {
+    StringBuilder builder = new StringBuilder("/");
+    builder.append(root.getSimpleName()).append("/");
+    for (String fieldName : fieldPath) {
+      builder.append(fieldName).append("/");
+    }
+    String path = builder.toString();
+    return path.substring(0, path.length() - 1);
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;

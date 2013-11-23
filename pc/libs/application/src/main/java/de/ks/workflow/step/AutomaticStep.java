@@ -5,10 +5,12 @@ package de.ks.workflow.step;
  * All rights reserved by now, license may come later.
  */
 
-import java.util.concurrent.Callable;
+import javafx.concurrent.Task;
 
 /**
  *
  */
-public abstract class AutomaticStep extends WorkflowStep implements Callable<String> {
+public abstract class AutomaticStep extends WorkflowStep {
+  public abstract Task<String> getTask();
+
 }

@@ -108,4 +108,14 @@
             </listitem>
         </orderedlist>
     </para>
+    <section>
+        <title>Beagle internal dependency graph</title>
+        <para>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="images/dependencygraph.jpg"/>
+                </imageobject>
+            </mediaobject>
+        </para>
+    </section>
 </chapter>

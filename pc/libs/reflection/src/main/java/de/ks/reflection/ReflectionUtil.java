@@ -64,6 +64,7 @@ public class ReflectionUtil {
     ArrayList<Field> fields = new ArrayList<>(100);
 
     List<Class<?>> hierarchy = getClassHierarchy(clazz);
+    Collections.reverse(hierarchy);
     for (Class<?> current : hierarchy) {
       List<Field> declaredFields = Arrays.asList(current.getDeclaredFields());
       Collections.sort(declaredFields, getFieldComparator());

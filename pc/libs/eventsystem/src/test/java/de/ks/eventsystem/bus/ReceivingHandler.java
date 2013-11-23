@@ -7,6 +7,7 @@ package de.ks.eventsystem.bus;
 
 import com.google.common.eventbus.Subscribe;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -16,6 +17,11 @@ public class ReceivingHandler {
   private Child child;
   private Parent parent;
   private AtomicInteger sum = new AtomicInteger();
+  private final CountDownLatch latch;
+
+  public ReceivingHandler(int count) {
+    latch = new CountDownLatch(count);
+  }
 
   @Subscribe
   public void onParent(Parent parent) {
@@ -32,6 +38,7 @@ public class ReceivingHandler {
   public void onInt(int i) {
     try {
       Thread.sleep(sum.addAndGet(i));
+      latch.countDown();
     } catch (InterruptedException e) {
       //
     }
@@ -47,5 +54,9 @@ public class ReceivingHandler {
 
   public Parent getParent() {
     return parent;
+  }
+
+  public CountDownLatch getLatch() {
+    return latch;
   }
 }

@@ -5,16 +5,15 @@ package de.ks.application;
  * All rights reserved by now, license may come later.
  */
 
+import de.ks.NodeProvider;
 import javafx.scene.Parent;
 
 /**
  *
  */
-public abstract class MainWindow {
+public abstract class MainWindow implements NodeProvider<Parent> {
   private Parent root;
   private String applicationTitle;
-
-  public abstract Parent getRoot();
 
   public abstract String getApplicationTitle();
 

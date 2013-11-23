@@ -5,17 +5,19 @@ package de.ks.workflow.cdi;
  * All rights reserved by now, license may come later.
  */
 
+import de.ks.workflow.Workflow;
+
 import javax.enterprise.util.AnnotationLiteral;
 
 public class WorkflowSpecificLiteral extends AnnotationLiteral<WorkflowSpecific> implements WorkflowSpecific {
-  private final String value;
+  private final Class<? extends Workflow> value;
 
-  public WorkflowSpecificLiteral(String value) {
+  public WorkflowSpecificLiteral(Class<? extends Workflow> value) {
     this.value = value;
   }
 
   @Override
-  public String value() {
+  public Class<? extends Workflow> value() {
     return value;
   }
 }

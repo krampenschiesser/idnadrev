@@ -5,20 +5,20 @@ package de.ks.executor;
  * All rights reserved by now, license may come later.
  */
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
  */
 public class ThreadPropagations {
-  private Map<Thread,Object> propagations = new HashMap<>();
+  private HashSet<ThreadCallBoundValue> propagations = new HashSet<>();
 
-  public void register(Object value) {
-    propagations.put(Thread.currentThread(),value);
+  public void register(ThreadCallBoundValue value) {
+    propagations.add(value);
   }
 
-  public Map<Thread,?> getPropagations() {
+  public Set<ThreadCallBoundValue> getPropagations() {
     return propagations;
   }
 }

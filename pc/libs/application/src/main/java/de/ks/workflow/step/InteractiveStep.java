@@ -5,8 +5,11 @@ package de.ks.workflow.step;
  * All rights reserved by now, license may come later.
  */
 
+import de.ks.NodeProvider;
+import javafx.scene.Node;
+
 /**
- *
+ * @param <N> node implementation
  */
-public class InteractiveStep {
+public abstract class InteractiveStep<N extends Node> extends WorkflowStep implements NodeProvider<N> {
 }

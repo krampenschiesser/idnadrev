@@ -45,7 +45,7 @@ public class ScopeTest {
     bean2.getName();
     assertEquals(2, context.workflows.size());
 
-    context.stopWorkflow(TestWorkflow1.class.getName());
+    context.stopWorkflow(TestWorkflow1.class);
     assertEquals(1, context.workflows.size());
     assertNull(context.workflows.get(TestWorkflow1.class.getName()));
     assertFalse(context.workflows.get(TestWorkflow2.class.getName()).getObjectStore().isEmpty());
@@ -56,7 +56,7 @@ public class ScopeTest {
 
   @Test
   public void testScopePropagation() throws Exception {
-    WorkflowContext.start("test");
+    WorkflowContext.start(TestWorkflow2.class);
 
     bean1.setValue("Hello Sauerland!");
 
@@ -71,7 +71,7 @@ public class ScopeTest {
   @Test
   public void testScopeCleanup() throws Exception {
     CyclicBarrier barrier = new CyclicBarrier(2);
-    WorkflowContext.start("test");
+    WorkflowContext.start(TestWorkflow2.class);
 
     bean1.setValue("Hello Sauerland!");
 
@@ -87,7 +87,7 @@ public class ScopeTest {
     });
     assertEquals(1, context.workflows.size());
     assertEquals("Hello Sauerland!", bean1.getValue());
-    WorkflowContext.stop("test");
+    WorkflowContext.stop(TestWorkflow2.class);
 
     assertEquals("Workflow got removed although one thread still holds it", 1, context.workflows.size());
     barrier.await();

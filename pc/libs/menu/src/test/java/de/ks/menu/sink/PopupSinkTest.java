@@ -7,6 +7,7 @@ package de.ks.menu.sink;
 
 import de.ks.JFXCDIRunner;
 import de.ks.eventsystem.EventSystem;
+import de.ks.i18n.Localized;
 import de.ks.menu.MenuItemDescriptor;
 import de.ks.menu.event.MenuItemClickedEvent;
 import de.ks.menu.mainmenu.About;
@@ -59,5 +60,7 @@ public class PopupSinkTest {
     assertEquals(1, root.getChildrenUnmodifiable().size());
     Label label = (Label) root.getChildrenUnmodifiable().get(0);
     assertEquals("hello world", label.getText());
+
+    assertEquals(Localized.get(About.ITEMPATH), stage.getTitle());
   }
 }

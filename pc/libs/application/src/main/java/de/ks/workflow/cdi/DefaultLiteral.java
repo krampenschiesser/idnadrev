@@ -5,8 +5,11 @@ package de.ks.workflow.cdi;
  * All rights reserved by now, license may come later.
  */
 
+import javax.enterprise.inject.Default;
+import javax.enterprise.util.AnnotationLiteral;
+
 /**
  *
  */
-public class DefaultLiteral {
+public class DefaultLiteral extends AnnotationLiteral<Default> implements Default {
 }

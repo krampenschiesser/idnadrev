@@ -6,9 +6,11 @@ package de.ks.application;
  */
 
 import de.ks.i18n.Localized;
+import de.ks.imagecache.Images;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -30,7 +32,12 @@ public class App extends Application {
     } else {
       MainWindow mainWindow = select.get();
       stage.setTitle(mainWindow.getApplicationTitle());
-      stage.setScene(new Scene(mainWindow.getRoot()));
+      stage.setScene(new Scene(mainWindow.getNode()));
+
+      Image icon = Images.get("appicon.png");
+      if (icon != null) {
+        stage.getIcons().add(icon);
+      }
     }
     stage.setOnCloseRequest((WindowEvent e) -> {
       Launcher.instance.stop();

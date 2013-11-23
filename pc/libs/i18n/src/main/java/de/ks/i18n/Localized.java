@@ -9,6 +9,7 @@ package de.ks.i18n;
 import de.ks.eventsystem.EventSystem;
 import de.ks.i18n.event.LanguageChangedEvent;
 
+import java.lang.reflect.Field;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -73,5 +74,11 @@ public class Localized {
       string = string.replace("{" + i + "}", arg.toString());
     }
     return string;
+  }
+
+  public static String get(Field field) {
+    String key = field.getDeclaringClass().getName().replace(".", "/");
+    key += "/" + field.getName();
+    return get(key);
   }
 }

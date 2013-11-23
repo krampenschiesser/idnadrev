@@ -5,10 +5,15 @@ package de.ks.workflow.step;
  * All rights reserved by now, license may come later.
  */
 
-import de.ks.workflow.WorkflowStep;
+import javafx.concurrent.Task;
 
 /**
  *
  */
-public class PersistStep implements WorkflowStep {
+public class PersistStep extends AutomaticStep {
+
+  @Override
+  public Task<String> getTask() {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  }
 }

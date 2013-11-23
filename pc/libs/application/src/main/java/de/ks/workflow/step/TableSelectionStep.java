@@ -5,10 +5,14 @@ package de.ks.workflow.step;
  * All rights reserved by now, license may come later.
  */
 
-import de.ks.workflow.WorkflowStep;
+import javafx.scene.layout.GridPane;
 
 /**
  *
  */
-public class TableSelectionStep implements WorkflowStep {
+public class TableSelectionStep extends InteractiveStep<GridPane> {
+  @Override
+  public GridPane getNode() {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  }
 }

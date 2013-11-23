@@ -5,6 +5,7 @@ package de.ks.workflow.cdi;
  * All rights reserved by now, license may come later.
  */
 
+import de.ks.workflow.Workflow;
 import de.ks.workflow.validation.WorkflowModelValidator;
 
 import javax.enterprise.inject.spi.CDI;
@@ -13,13 +14,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class WorkflowHolder {
-  private final String name;
+  protected final Class<? extends Workflow> workflowClass;
   protected Map<Class<?>, StoredBean> objectStore = new ConcurrentHashMap<>();
   protected AtomicInteger count = new AtomicInteger(0);
   protected final WorkflowModelValidator validator;
+  protected Workflow workflow;
 
-  public WorkflowHolder(String name) {
-    this.name = name;
+  public WorkflowHolder(Class<? extends Workflow> workflow) {
+    this.workflowClass = workflow;
     count.incrementAndGet();
     validator = CDI.current().select(WorkflowModelValidator.class).get();
   }
@@ -40,7 +42,15 @@ public class WorkflowHolder {
     return count;
   }
 
-  public String getName() {
-    return name;
+  public Class<? extends Workflow> getWorkflowClass() {
+    return workflowClass;
+  }
+
+  public Workflow getWorkflow() {
+    return workflow;
+  }
+
+  public void setWorkflow(Workflow workflow) {
+    this.workflow = workflow;
   }
 }

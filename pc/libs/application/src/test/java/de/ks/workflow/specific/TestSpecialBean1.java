@@ -5,9 +5,10 @@ package de.ks.workflow.specific;
  * All rights reserved by now, license may come later.
  */
 
+import de.ks.workflow.cdi.TestWorkflow1;
 import de.ks.workflow.cdi.WorkflowSpecific;
 
-@WorkflowSpecific(InjectionTest.WORKFLOW_HELLO)
+@WorkflowSpecific(TestWorkflow1.class)
 public class TestSpecialBean1 extends TestBean {
   @Override
   public String get() {

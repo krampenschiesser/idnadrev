@@ -5,8 +5,7 @@ package de.ks.editor;
  * All rights reserved by now, license may come later.
  */
 
-/**
- *
- */
-public class DetailedLiteral {
+import javax.enterprise.util.AnnotationLiteral;
+
+public class DetailedLiteral extends AnnotationLiteral<Detailed> implements Detailed {
 }

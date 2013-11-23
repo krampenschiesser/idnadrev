@@ -40,7 +40,7 @@ public class BeagleWindow extends MainWindow {
   }
 
   @Override
-  public Parent getRoot() {
+  public Parent getNode() {
     borderPane = new BorderPane();
     borderPane.setPrefSize(640, 480);
     borderPane.setTop(menuBarPresenter.getMenu("/main"));

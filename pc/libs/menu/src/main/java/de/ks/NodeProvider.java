@@ -4,5 +4,8 @@ package de.ks;/*
  * All rights reserved by now, license may come later.
  */
 
-public interface NodeProvider {
+import javafx.scene.Node;
+
+public interface NodeProvider<T extends Node> {
+  T getNode();
 }

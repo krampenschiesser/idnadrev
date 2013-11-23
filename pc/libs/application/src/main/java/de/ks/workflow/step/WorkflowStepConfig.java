@@ -6,8 +6,8 @@ package de.ks.workflow.step;
  */
 
 import de.ks.workflow.WorkflowConfig;
-import de.ks.workflow.WorkflowStep;
 
+import javax.enterprise.inject.spi.CDI;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +20,7 @@ public class WorkflowStepConfig {
   private final Class<? extends WorkflowStep> implementationClass;
   private final String incomingKey;
   private final Map<String, WorkflowStepConfig> outputs = new HashMap<>();
-
+  private WorkflowStep step;
 
   public WorkflowStepConfig(WorkflowConfig config, Class<? extends WorkflowStep> step, String incomingKey) {
     this.config = config;
@@ -57,7 +57,7 @@ public class WorkflowStepConfig {
   }
 
   public WorkflowStepConfig branch(String outputValue, Class<? extends WorkflowStep> step) {
-    return branch(outputValue, new WorkflowStepConfig(config, step,outputValue));
+    return branch(outputValue, new WorkflowStepConfig(config, step, outputValue));
   }
 
 
@@ -75,5 +75,12 @@ public class WorkflowStepConfig {
 
   public String getIncomingKey() {
     return incomingKey;
+  }
+
+  public <T extends WorkflowStep> T getStep() {
+    if (step == null) {
+      step = CDI.current().select(implementationClass).get();
+    }
+    return (T) step;
   }
 }

@@ -6,6 +6,8 @@ package de.ks.workflow.specific;
  */
 
 import de.ks.JFXCDIRunner;
+import de.ks.workflow.cdi.TestWorkflow1;
+import de.ks.workflow.cdi.TestWorkflow2;
 import de.ks.workflow.cdi.WorkflowSpecificLiteral;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,8 +20,6 @@ import static org.junit.Assert.assertFalse;
 
 @RunWith(JFXCDIRunner.class)
 public class InjectionTest {
-  public static final String WORKFLOW_HELLO = "hello";
-  public static final String WORKFLOW_SAUERLAND = "sauerland";
 
   @Inject
   @Any
@@ -29,7 +29,7 @@ public class InjectionTest {
   public void testInheritanceSpecialization() {
     assertFalse(provider.select(TestBean.class, new DefaultLiteral()).isUnsatisfied());
 
-    assertFalse(provider.select(TestBean.class, new WorkflowSpecificLiteral(WORKFLOW_HELLO)).isUnsatisfied());
-    assertFalse(provider.select(TestBean.class, new WorkflowSpecificLiteral(WORKFLOW_SAUERLAND)).isUnsatisfied());
+    assertFalse(provider.select(TestBean.class, new WorkflowSpecificLiteral(TestWorkflow1.class)).isUnsatisfied());
+    assertFalse(provider.select(TestBean.class, new WorkflowSpecificLiteral(TestWorkflow2.class)).isUnsatisfied());
   }
 }

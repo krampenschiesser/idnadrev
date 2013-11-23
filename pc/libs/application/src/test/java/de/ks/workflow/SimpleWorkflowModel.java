@@ -5,6 +5,8 @@ package de.ks.workflow;
  * All rights reserved by now, license may come later.
  */
 
+import de.ks.editor.Detailed;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -13,10 +15,11 @@ import javax.validation.constraints.Size;
  */
 public class SimpleWorkflowModel {
   @NotNull
-  @Size(min=1)
+  @Size(min = 1)
   protected String name;
   @NotNull
-  @Size(min=1)
+  @Size(min = 1)
+  @Detailed
   protected String description;
 
   public SimpleWorkflowModel(String name, String description) {

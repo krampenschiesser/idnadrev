@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
-import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
@@ -49,18 +49,17 @@ public class EventBusTest {
 
   @Test
   public void testPostAsyncInteger() throws Exception {
-    ReceivingHandler handler = new ReceivingHandler();
+    int COUNT = 40;
+    ReceivingHandler handler = new ReceivingHandler(COUNT);
     eventBus.register(handler);
 
     int sum = 0;
-    for (int i = 0; i < 40; i++) {
+    for (int i = 0; i < COUNT; i++) {
       eventBus.post(i);
       sum += i;
     }
     assertFalse(sum == handler.getSum());
-    while (ForkJoinPool.commonPool().getQueuedSubmissionCount() > 0) {
-      Thread.sleep(10);
-    }
+    handler.getLatch().await(15, TimeUnit.SECONDS);
     assertEquals(sum, handler.getSum());
   }
 
@@ -69,7 +68,7 @@ public class EventBusTest {
     Parent parent = new Parent();
     Child child = new Child();
 
-    ReceivingHandler handler = new ReceivingHandler();
+    ReceivingHandler handler = new ReceivingHandler(0);
     eventBus.register(handler);
 
     eventBus.post(parent);

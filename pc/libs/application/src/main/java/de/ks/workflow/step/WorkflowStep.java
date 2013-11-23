@@ -5,8 +5,6 @@ package de.ks.workflow.step;
  * All rights reserved by now, license may come later.
  */
 
-import de.ks.workflow.step.DefaultOutput;
-
 /**
  *
  */

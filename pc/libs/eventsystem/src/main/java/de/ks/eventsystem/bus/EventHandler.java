@@ -5,6 +5,7 @@ package de.ks.eventsystem.bus;
  * All rights reserved by now, license may come later.
  */
 
+import de.ks.executor.ExecutorService;
 import de.ks.reflection.ReflectionUtil;
 import javafx.application.Platform;
 import org.apache.logging.log4j.LogManager;
@@ -13,7 +14,6 @@ import org.apache.logging.log4j.Logger;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
@@ -73,7 +73,7 @@ class EventHandler {
   }
 
   protected void executeAsync(Object event, Object targetInstance, boolean wait) {
-    Future<?> future = ForkJoinPool.commonPool().submit((Runnable) () -> ReflectionUtil.invokeMethod(method, targetInstance, event));
+    Future<?> future = ExecutorService.instance.submit((Runnable) () -> ReflectionUtil.invokeMethod(method, targetInstance, event));
     if (wait) {
       try {
         future.get();
@@ -89,7 +89,7 @@ class EventHandler {
       retval = ReflectionUtil.invokeMethod(method, targetInstance, event);
     } else {
       FutureTask<Class<Void>> task = new FutureTask<>(() -> ReflectionUtil.invokeMethod(method, targetInstance, event), Void.class);
-      Platform.runLater(task);
+      ExecutorService.instance.executeInJavaFXThread(task);
       if (wait) {
         try {
           task.get();

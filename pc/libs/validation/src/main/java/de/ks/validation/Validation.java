@@ -5,6 +5,7 @@ package de.ks.validation;
  * All rights reserved by now, license may come later.
  */
 
+import javax.enterprise.inject.Produces;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
@@ -15,5 +16,10 @@ public class Validation {
   public static Validator getValidator() {
     ValidatorFactory validatorFactory = javax.validation.Validation.buildDefaultValidatorFactory();
     return validatorFactory.usingContext().messageInterpolator(new LocalizedInterpolator()).getValidator();
+  }
+
+  @Produces
+  public Validator produceValidator() {
+    return getValidator();
   }
 }

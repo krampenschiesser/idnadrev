@@ -31,24 +31,21 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class WorkflowContext implements Context {
   private static final Logger log = LogManager.getLogger(WorkflowContext.class);
-  protected final ConcurrentHashMap<String, WorkflowHolder> workflows = new ConcurrentHashMap<>();
-  protected final ThreadLocal<LinkedList<String>> workflowStack = ThreadLocal.withInitial(LinkedList::new);
+  protected final ConcurrentHashMap<Class<? extends Workflow>, WorkflowHolder> workflows = new ConcurrentHashMap<>();
+  protected final ThreadLocal<LinkedList<Class<? extends Workflow>>> workflowStack = ThreadLocal.withInitial(LinkedList::new);
 
   private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
 
   private final BeanManager beanManager;
-
-  public static void start(String name) {
-  }
 
   public static void start(Class<? extends Workflow> workflowClass) {
     WorkflowContext context = (WorkflowContext) CDI.current().getBeanManager().getContext(WorkflowScoped.class);
     context.startWorkflow(workflowClass);
   }
 
-  public static void stop(String name) {
+  public static void stop(Class<? extends Workflow> workflowClass) {
     WorkflowContext context = (WorkflowContext) CDI.current().getBeanManager().getContext(WorkflowScoped.class);
-    context.stopWorkflow(name);
+    context.stopWorkflow(workflowClass);
   }
 
   public static void stopAll() {
@@ -70,7 +67,7 @@ public class WorkflowContext implements Context {
     if (contextual instanceof Bean) {
       Bean bean = (Bean) contextual;
 
-      Pair<String, Class<?>> key = getKey(bean);
+      Pair<Class<?>, Class<?>> key = getKey(bean);
       lock.readLock().lock();
       try {
         StoredBean storedBean = workflows.get(key.getLeft()).getStoredBean(key.getRight());
@@ -88,7 +85,7 @@ public class WorkflowContext implements Context {
   public <T> T get(Contextual<T> contextual, CreationalContext<T> creationalContext) {
     if (contextual instanceof Bean) {
       Bean bean = (Bean) contextual;
-      Pair<String, Class<?>> key = getKey(bean);
+      Pair<Class<?>, Class<?>> key = getKey(bean);
 
       lock.writeLock().lock();
       try {
@@ -108,7 +105,7 @@ public class WorkflowContext implements Context {
     return true;
   }
 
-  protected Pair<String, Class<?>> getKey(Bean<?> bean) {
+  protected Pair<Class<?>, Class<?>> getKey(Bean<?> bean) {
     Class<?> beanClass = bean.getBeanClass();
     Annotation annotation = beanClass.getAnnotation(WorkflowScoped.class);
 
@@ -116,19 +113,19 @@ public class WorkflowContext implements Context {
       if (workflowStack.get().isEmpty()) {
         throw new IllegalStateException("No workflow currently active!");
       }
-      String currentWorkflowId = this.workflowStack.get().getLast();
-      Pair<String, Class<?>> pair = (Pair<String, Class<?>>) Pair.of(currentWorkflowId, beanClass);
+      Class<?> currentWorkflow = this.workflowStack.get().getLast();
+      Pair<Class<?>, Class<?>> pair = (Pair<Class<?>, Class<?>>) Pair.of(currentWorkflow, beanClass);
       return pair;
     } else {
       throw new IllegalStateException("Unable to retrieve " + WorkflowScoped.class.getName());
     }
   }
 
-  protected void cleanupSingleWorkflow(String name) {
+  protected void cleanupSingleWorkflow(Class<? extends Workflow> workflowClass) {
     boolean locked = lock.writeLock().tryLock();
     try {
-      log.debug("Cleanup workflow {}", name);
-      WorkflowHolder workflow = workflows.remove(name);
+      log.debug("Cleanup workflow {}", workflowClass.getSimpleName());
+      WorkflowHolder workflow = workflows.remove(workflowClass);
       Set<Map.Entry<Class<?>, StoredBean>> entries = workflow.objectStore.entrySet();
 
       for (Iterator<Map.Entry<Class<?>, StoredBean>> iterator = entries.iterator(); iterator.hasNext(); ) {
@@ -143,40 +140,42 @@ public class WorkflowContext implements Context {
     }
   }
 
-  public void startWorkflow(Class<? extends Workflow>  workflowClass) {
-    String name = workflowClass.getName();
+  public void startWorkflow(Class<? extends Workflow> workflowClass) {
     lock.writeLock().lock();
     try {
-      log.debug("Starting workflow {}", name);
-      LinkedList<String> workflowNames = workflowStack.get();
-      workflowNames.add(name);
-      WorkflowHolder workflow = new WorkflowHolder(name);
-      this.workflows.put(name, workflow);
-      CDI.current().select(workflowClass).get().getModel();//initialize workflow
+      log.debug("Starting workflow {}", workflowClass.getSimpleName());
+      LinkedList<Class<? extends Workflow>> workflows = workflowStack.get();
+      workflows.add(workflowClass);
+      WorkflowHolder workflow = new WorkflowHolder(workflowClass);
+      this.workflows.put(workflowClass, workflow);
+
+      Workflow workflowInstance = CDI.current().select(workflowClass).get();
+      workflowInstance.getModel();//initialize workflow
+      workflow.setWorkflow(workflowInstance);
     } finally {
       lock.writeLock().unlock();
     }
   }
 
-  public void propagateWorkflow(String name) {
+  public void propagateWorkflow(Class<? extends Workflow> workflowClass) {
     lock.writeLock().lock();
     try {
-      log.debug("Propagating workflow {}", name);
-      workflowStack.get().add(name);
-      workflows.get(name).getCount().incrementAndGet();
+      log.debug("Propagating workflow {}", workflowClass.getSimpleName());
+      workflowStack.get().add(workflowClass);
+      workflows.get(workflowClass).getCount().incrementAndGet();
     } finally {
       lock.writeLock().unlock();
     }
   }
 
-  public void stopWorkflow(String name) {
+  public void stopWorkflow(Class<? extends Workflow> workflowClass) {
     lock.writeLock().lock();
     try {
-      log.debug("Stopping workflow {}", name);
-      workflowStack.get().remove(name);
-      int count = workflows.get(name).getCount().decrementAndGet();
+      log.debug("Stopping workflow {}", workflowClass.getSimpleName());
+      workflowStack.get().remove(workflowClass);
+      int count = workflows.get(workflowClass).getCount().decrementAndGet();
       if (count == 0) {
-        cleanupSingleWorkflow(name);
+        cleanupSingleWorkflow(workflowClass);
       }
     } finally {
       lock.writeLock().unlock();
@@ -186,8 +185,8 @@ public class WorkflowContext implements Context {
   public void stopAllWorkflows() {
     lock.writeLock().lock();
     try {
-      LinkedList<String> workflows = workflowStack.get();
-      for (String workflow : workflows) {
+      LinkedList<Class<? extends Workflow>> workflows = workflowStack.get();
+      for (Class<? extends Workflow> workflow : workflows) {
         cleanupSingleWorkflow(workflow);
       }
       this.workflows.clear();
@@ -195,5 +194,14 @@ public class WorkflowContext implements Context {
     } finally {
       lock.writeLock().unlock();
     }
+  }
+
+  public Workflow getWorkflow() {
+    if (this.workflowStack.get().isEmpty()) {
+      throw new RuntimeException("No workflow active in current thread!");
+    }
+    Class<? extends Workflow> currentWorkflow = this.workflowStack.get().getLast();
+    WorkflowHolder holder = workflows.get(currentWorkflow);
+    return holder.getWorkflow();
   }
 }

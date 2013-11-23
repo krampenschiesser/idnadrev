@@ -6,6 +6,7 @@ package de.ks.workflow.cdi;
  */
 
 import de.ks.executor.ThreadCallBoundValue;
+import de.ks.workflow.Workflow;
 
 import java.util.LinkedList;
 
@@ -14,8 +15,8 @@ import java.util.LinkedList;
  */
 public class WorkflowPropagator implements ThreadCallBoundValue {
   protected final WorkflowContext context;
-  private String propagatedWorkflowId;
-  private String previousWorkflowId = null;
+  private Class<? extends Workflow> propagatedWorkflowId;
+  private Class<? extends Workflow> previousWorkflowId = null;
 
   public WorkflowPropagator(WorkflowContext context) {
     this.context = context;
@@ -23,23 +24,29 @@ public class WorkflowPropagator implements ThreadCallBoundValue {
 
   @Override
   public void initializeInCallerThread() {
-    LinkedList<String> workflowIds = context.workflowStack.get();
-    propagatedWorkflowId = workflowIds.getLast();
+    LinkedList<Class<? extends Workflow>> workflowIds = context.workflowStack.get();
+    if (!workflowIds.isEmpty()) {
+      propagatedWorkflowId = workflowIds.getLast();
+    }
   }
 
   @Override
   public void doBeforeCallInTargetThread() {
-    if (!context.workflowStack.get().isEmpty()) {
-      previousWorkflowId = context.workflowStack.get().getLast();
+    if (propagatedWorkflowId != null) {
+      if (!context.workflowStack.get().isEmpty()) {
+        previousWorkflowId = context.workflowStack.get().getLast();
+      }
+      context.propagateWorkflow(propagatedWorkflowId);
     }
-    context.propagateWorkflow(propagatedWorkflowId);
   }
 
   @Override
   public void doAfterCallInTargetThread() {
-    context.stopWorkflow(propagatedWorkflowId);
-    if (previousWorkflowId != null) {
-      context.propagateWorkflow(previousWorkflowId);
+    if (propagatedWorkflowId != null) {
+      context.stopWorkflow(propagatedWorkflowId);
+      if (previousWorkflowId != null) {
+        context.propagateWorkflow(previousWorkflowId);
+      }
     }
   }
 }

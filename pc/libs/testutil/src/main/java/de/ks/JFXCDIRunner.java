@@ -6,6 +6,7 @@ package de.ks;
  */
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 import org.apache.deltaspike.cdise.api.CdiContainer;
 import org.apache.deltaspike.cdise.api.CdiContainerLoader;
@@ -13,6 +14,7 @@ import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.InitializationError;
 
+import javax.enterprise.inject.spi.CDI;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -33,8 +35,8 @@ public class JFXCDIRunner extends BlockJUnit4ClassRunner {
   }
 
   private static final ExecutorService executor = Executors.newCachedThreadPool();
-  private static CountDownLatch barrier = new CountDownLatch(2);
-  private final CdiContainer cdiContainer = CdiContainerLoader.getCdiContainer();
+  private static final CountDownLatch barrier = new CountDownLatch(2);
+  private static final CdiContainer cdiContainer = CdiContainerLoader.getCdiContainer();
 
   public JFXCDIRunner(Class<?> klass) throws InitializationError {
     super(klass);
@@ -42,13 +44,19 @@ public class JFXCDIRunner extends BlockJUnit4ClassRunner {
 
   @Override
   public void run(RunNotifier notifier) {
-    startApp();
+    if (barrier.getCount() > 0) {
+      startApp();
+    }
     super.run(notifier);
-    stopApp();
+//    stopApp();
   }
 
+  @Override
+  protected Object createTest() throws Exception {
+    return CDI.current().select(getTestClass().getJavaClass()).get();
+  }
 
-  public void startApp() {
+  public static void startApp() {
     if (barrier.getCount() == 2) {
       executor.execute(() -> {
         Application.launch(JFXTestApp.class);
@@ -62,7 +70,7 @@ public class JFXCDIRunner extends BlockJUnit4ClassRunner {
       }
     });
     try {
-      if (!barrier.await(5, TimeUnit.SECONDS)) {
+      if (!barrier.await(5, TimeUnit.MINUTES)) {
         stopApp();
       }
     } catch (InterruptedException e) {
@@ -70,10 +78,8 @@ public class JFXCDIRunner extends BlockJUnit4ClassRunner {
     }
   }
 
-  public void stopApp() {
-//    Platform.exit();
+  public static void stopApp() {
+    Platform.exit();
     cdiContainer.shutdown();
-    barrier = new CountDownLatch(1);
   }
-
 }

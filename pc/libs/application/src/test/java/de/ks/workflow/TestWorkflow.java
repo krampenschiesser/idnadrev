@@ -7,19 +7,29 @@ package de.ks.workflow;
 
 import de.ks.workflow.cdi.WorkflowScoped;
 import de.ks.workflow.cdi.WorkflowSpecificLiteral;
-import de.ks.workflow.step.*;
+import de.ks.workflow.step.EditStep;
+import de.ks.workflow.step.PersistStep;
+import de.ks.workflow.step.TableSelectionStep;
+import de.ks.workflow.step.WorkflowStepConfig;
+import de.ks.workflow.view.full.FullWorkflowView;
+import javafx.scene.layout.BorderPane;
 
 @WorkflowScoped
-public class TestWorkflow extends Workflow<SimpleWorkflowModel> {
+public class TestWorkflow extends Workflow<SimpleWorkflowModel, BorderPane, FullWorkflowView> {
   private SimpleWorkflowModel model = new SimpleWorkflowModel();
 
   public static WorkflowSpecificLiteral getLiteral() {
-    return new WorkflowSpecificLiteral(TestWorkflow.class.getName());
+    return new WorkflowSpecificLiteral(TestWorkflow.class);
   }
 
   @Override
   public SimpleWorkflowModel getModel() {
     return model;
+  }
+
+  @Override
+  public Class<SimpleWorkflowModel> getModelClass() {
+    return SimpleWorkflowModel.class;
   }
 
   @Override
@@ -29,9 +39,10 @@ public class TestWorkflow extends Workflow<SimpleWorkflowModel> {
     persistStep.error(root);
 
     WorkflowStepConfig selection = persistStep.next(TableSelectionStep.class);
-    WorkflowStepConfig background = selection.next(BackgroundStep.class);
+    WorkflowStepConfig background = selection.next(PersistStep.class);
 
     background.branch("first", EditStep.class).next(PersistStep.class).restartWithNext();
     background.branch("second", EditStep.class).next(PersistStep.class).restartWithNext();
   }
+
 }

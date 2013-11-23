@@ -10,6 +10,7 @@ import de.ks.eventsystem.bus.EventBus;
 import de.ks.eventsystem.bus.HandlingThread;
 import de.ks.eventsystem.bus.Threading;
 import de.ks.menu.MenuItem;
+import de.ks.menu.MenuItemDescriptor;
 import de.ks.menu.event.MenuItemClickedEvent;
 
 import javax.annotation.PostConstruct;
@@ -65,12 +66,12 @@ public abstract class AbstractSink<T extends AbstractSink> {
       Instance<?> select = menuItem.select(event.getTarget());
       Object menuItem = select.get();
 
-      showMenuItem(menuItem);
+      showMenuItem(menuItem, event.getItem());
       return true;
     } else {
       return false;
     }
   }
 
-  protected abstract void showMenuItem(Object menuItem);
+  protected abstract void showMenuItem(Object menuItem, MenuItemDescriptor item);
 }

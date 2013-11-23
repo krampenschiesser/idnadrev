@@ -10,19 +10,20 @@ import de.ks.workflow.step.WorkflowStepConfig;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
+import javax.enterprise.inject.Specializes;
 import javax.inject.Inject;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  *
  */
 @WorkflowScoped
-public class WorkflowNavigator {
+@Specializes
+public class WorkflowNavigator extends WorkflowConfig {
   @Inject
-  WorkflowConfig cfg;
+  protected WorkflowConfig cfg;
 
-  protected List<WorkflowStepConfig> history = new LinkedList<>();
+  protected LinkedList<WorkflowStepConfig> history = new LinkedList<>();
   protected ObjectProperty<WorkflowStepConfig> currentStep = new SimpleObjectProperty<>();
 
   public void start() {
@@ -30,12 +31,38 @@ public class WorkflowNavigator {
   }
 
   public void next(String name) {
-    WorkflowStepConfig next = currentStep.get().getOutput(name);
-    currentStep.set(next);
+    WorkflowStepConfig old = getCurrentStep();
+    WorkflowStepConfig next = old.getOutput(name);
+    setCurrentStep(next);
+    history.add(old);
+  }
+
+
+  public void next() {
+    WorkflowStepConfig stepConfig = getCurrentStep();
+    String output = stepConfig.getStep().getOutputValue();
+    next(output);
+  }
+
+  public void previous() {
+    WorkflowStepConfig last = history.removeLast();
+    setCurrentStep(last);
+  }
+
+  public void cancel() {
+    //öähhh?
   }
 
   public ObjectProperty<WorkflowStepConfig> currentStepProperty() {
     return currentStep;
   }
 
+  public WorkflowStepConfig getCurrentStep() {
+    return currentStep.get();
+  }
+
+  public WorkflowNavigator setCurrentStep(WorkflowStepConfig step) {
+    currentStep.set(step);
+    return this;
+  }
 }

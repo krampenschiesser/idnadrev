@@ -5,7 +5,9 @@ package de.ks.menu.sink;
  * All rights reserved by now, license may come later.
  */
 
+import de.ks.NodeProvider;
 import de.ks.eventsystem.bus.EventBus;
+import de.ks.menu.MenuItemDescriptor;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import org.apache.logging.log4j.LogManager;
@@ -27,10 +29,13 @@ public class ContentSink extends AbstractSink<ContentSink> {
   }
 
   @Override
-  protected void showMenuItem(Object menuItem) {
+  protected void showMenuItem(Object menuItem, MenuItemDescriptor item) {
     pane.getChildren().clear();
     if (menuItem instanceof Node) {
       pane.getChildren().add((Node) menuItem);
+    } else if (menuItem instanceof NodeProvider) {
+      NodeProvider nodeProvider = (NodeProvider) menuItem;
+      pane.getChildren().add(nodeProvider.getNode());
     } else {
       log.error("Could not handle MenuItemClickedEvent because {} is not a {}", menuItem.getClass(), Node.class.getName());
     }
