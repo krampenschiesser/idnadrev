@@ -19,6 +19,10 @@ public class ThreadPropagations {
   }
 
   public Set<ThreadCallBoundValue> getPropagations() {
-    return propagations;
+    HashSet<ThreadCallBoundValue> retval = new HashSet<>();
+    for (ThreadCallBoundValue propagation : propagations) {
+      retval.add(propagation.clone());
+    }
+    return retval;
   }
 }

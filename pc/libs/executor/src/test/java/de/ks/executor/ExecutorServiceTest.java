@@ -44,6 +44,16 @@ public class ExecutorServiceTest {
         log.debug("reset");
         threadLocal.set(null);
       }
+
+      @Override
+      public ThreadCallBoundValue clone() {
+        try {
+          ThreadCallBoundValue clone = (ThreadCallBoundValue) super.clone();
+          return clone;
+        } catch (CloneNotSupportedException e) {
+          throw new InternalError("could not clone");
+        }
+      }
     };
     ExecutorService.instance.getPropagations().register(threadCallBoundValue);
 

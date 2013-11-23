@@ -13,10 +13,12 @@ package de.ks.executor;
  * set it in the target thread, and unset it after execution.
  * (big example:CDI-Scope transmition.
  */
-public interface ThreadCallBoundValue {
+public interface ThreadCallBoundValue extends Cloneable{
   void initializeInCallerThread();
 
   void doBeforeCallInTargetThread();
 
   void doAfterCallInTargetThread();
+
+  ThreadCallBoundValue clone();
 }
