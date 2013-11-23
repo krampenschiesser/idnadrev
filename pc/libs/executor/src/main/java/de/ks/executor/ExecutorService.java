@@ -141,7 +141,7 @@ public class ExecutorService implements ScheduledExecutorService {
       runner.run();
       return null;
     });
-    Platform.runLater(futureTask);
+    executeInJavaFXThreadInternal(futureTask);
     try {
       futureTask.get();
     } catch (InterruptedException | ExecutionException e) {
@@ -151,7 +151,22 @@ public class ExecutorService implements ScheduledExecutorService {
 
   public void executeInJavaFXThread(Runnable command) {
     command = wrap(command);
-    Platform.runLater(command);
+    executeInJavaFXThreadInternal(command);
+  }
+
+  public <V> Future<V> executeInJavaFXThread(Callable<V> command) {
+    final Callable<V> runner = wrap(command);
+    FutureTask<V> futureTask = new FutureTask<>(runner);
+    executeInJavaFXThread(futureTask);
+    return futureTask;
+  }
+
+  protected void executeInJavaFXThreadInternal(Runnable runnable) {
+    if (Platform.isFxApplicationThread()) {
+      runnable.run();
+    } else {
+      Platform.runLater(runnable);
+    }
   }
 
   public void invokeAndWait(Runnable runnable) {
