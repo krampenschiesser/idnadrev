@@ -18,6 +18,10 @@ public class EventSystem {
 
   public static final EventBus bus;
 
+  public static void setWaitForEvents(boolean wait) {
+    EventBus.alwaysWait = wait;
+  }
+
   static {
     bus = new EventBus();
     bus.register(new EventSystem());

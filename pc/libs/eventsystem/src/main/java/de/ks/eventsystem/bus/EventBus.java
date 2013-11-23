@@ -25,13 +25,14 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 @Vetoed
 public class EventBus {
+  public static boolean alwaysWait = false;
   private static final Logger log = LogManager.getLogger(EventBus.class);
   protected final ArrayListMultimap<Class<?>, EventHandler> handlers = ArrayListMultimap.create();
   protected final HandlerComparator handlerComparator = new HandlerComparator();
   protected final ReadWriteLock lock = new ReentrantReadWriteLock(true);
 
   public EventBus register(Object handler) {
-    List<Method> methods = ReflectionUtil.getAllMethods(handler.getClass(),//
+    @SuppressWarnings("unchecked") List<Method> methods = ReflectionUtil.getAllMethods(handler.getClass(),//
             (Method m) -> m.isAnnotationPresent(Subscribe.class),          //
             (Method m) -> m.getParameters().length == 1                    //
     );
@@ -52,7 +53,7 @@ public class EventBus {
 
 
   public EventBus unregister(Object handler) {
-    List<Method> methods = ReflectionUtil.getAllMethods(handler.getClass(),//
+    @SuppressWarnings("unchecked") List<Method> methods = ReflectionUtil.getAllMethods(handler.getClass(),//
             (Method m) -> m.isAnnotationPresent(Subscribe.class),          //
             (Method m) -> m.getParameters().length == 1                    //
     );
@@ -87,12 +88,12 @@ public class EventBus {
   }
 
   public EventBus post(Object event) {
-    post(event, EventTarget.Default, false);
+    post(event, EventTarget.Default, alwaysWait);
     return this;
   }
 
   public EventBus post(Object event, EventTarget target) {
-    post(event, target, false);
+    post(event, target, alwaysWait);
     return this;
   }
 
