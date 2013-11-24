@@ -27,6 +27,9 @@ public class WorkflowNavigator extends WorkflowConfig {
   protected ObjectProperty<WorkflowStepConfig> currentStep = new SimpleObjectProperty<>();
 
   public void start() {
+    if (cfg.getStepList().isEmpty()) {
+      throw new RuntimeException("No registered steps");
+    }
     currentStep.set(cfg.getStepList().get(0));
   }
 
@@ -50,7 +53,7 @@ public class WorkflowNavigator extends WorkflowConfig {
   }
 
   public void cancel() {
-    //öähhh?
+    //
   }
 
   public ObjectProperty<WorkflowStepConfig> currentStepProperty() {
@@ -58,6 +61,9 @@ public class WorkflowNavigator extends WorkflowConfig {
   }
 
   public WorkflowStepConfig getCurrentStep() {
+    if (currentStep.get() == null) {
+      start();
+    }
     return currentStep.get();
   }
 

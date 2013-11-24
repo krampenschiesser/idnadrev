@@ -9,6 +9,8 @@ import de.ks.application.fxml.DefaultLoader;
 import de.ks.workflow.cdi.WorkflowScoped;
 import de.ks.workflow.view.full.FullWorkflowView;
 import javafx.scene.Node;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Vetoed;
@@ -20,10 +22,11 @@ import javax.inject.Inject;
 @WorkflowScoped
 @Vetoed
 public abstract class Workflow<M, V extends Node, C> implements NodeProvider<V> {
+  private static final Logger log = LogManager.getLogger(Workflow.class);
   @Inject
-  WorkflowConfig cfg;
+  protected WorkflowConfig cfg;
   @Inject
-  WorkflowNavigator navigator;
+  protected WorkflowNavigator navigator;
 
   private DefaultLoader<V, C> loader;
 
@@ -31,6 +34,10 @@ public abstract class Workflow<M, V extends Node, C> implements NodeProvider<V> 
   @PostConstruct
   public void initialize() {
     configureSteps();
+    if (cfg.getRoot() == null) {
+      throw new RuntimeException("Could not initialize steps for workfllw " + getName());
+    }
+    log.debug("Configured {} steps for workflow {}", cfg.getStepList().size(), getName());
     loader = new DefaultLoader<>(getViewDefinition());
   }
 
@@ -59,5 +66,9 @@ public abstract class Workflow<M, V extends Node, C> implements NodeProvider<V> 
 
   public WorkflowNavigator getNavigator() {
     return navigator;
+  }
+
+  public void waitForInitialization() {
+    loader.getView();
   }
 }

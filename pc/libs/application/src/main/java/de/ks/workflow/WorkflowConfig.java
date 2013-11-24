@@ -36,6 +36,9 @@ public class WorkflowConfig {
     for (WorkflowStepConfig cfg = root; cfg.hasOutput(DefaultOutput.NEXT.name()); cfg = cfg.getOutput(DefaultOutput.NEXT.name())) {
       retval.add(cfg);
     }
+    if (retval.isEmpty()) {
+      retval.add(root);
+    }
 
     return retval;
   }

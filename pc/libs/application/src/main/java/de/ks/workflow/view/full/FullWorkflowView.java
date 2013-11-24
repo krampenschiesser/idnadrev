@@ -42,6 +42,7 @@ public class FullWorkflowView implements Initializable {
     navigator.currentStepProperty().addListener((observable, old, current) -> {
       layoutNextStep(current.getStep());
     });
+
     layoutNextStep(navigator.getCurrentStep().getStep());
   }
 
