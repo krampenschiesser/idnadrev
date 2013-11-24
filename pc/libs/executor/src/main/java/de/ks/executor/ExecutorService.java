@@ -137,6 +137,7 @@ public class ExecutorService implements ScheduledExecutorService {
 
   public void invokeInJavaFXThread(Runnable command) {
     final Runnable runner = wrap(command);
+
     FutureTask futureTask = new FutureTask(() -> {
       runner.run();
       return null;
@@ -157,7 +158,7 @@ public class ExecutorService implements ScheduledExecutorService {
   public <V> Future<V> executeInJavaFXThread(Callable<V> command) {
     final Callable<V> runner = wrap(command);
     FutureTask<V> futureTask = new FutureTask<>(runner);
-    executeInJavaFXThread(futureTask);
+    executeInJavaFXThreadInternal(futureTask);
     return futureTask;
   }
 
@@ -200,6 +201,9 @@ public class ExecutorService implements ScheduledExecutorService {
         }
         try {
           return delegate.call();
+        } catch (Throwable t) {
+          log.error("Could not execute async action: ", t);
+          throw t;
         } finally {
           for (ThreadCallBoundValue threadCallBoundValue : threadCallBoundValues) {
             threadCallBoundValue.doAfterCallInTargetThread();
