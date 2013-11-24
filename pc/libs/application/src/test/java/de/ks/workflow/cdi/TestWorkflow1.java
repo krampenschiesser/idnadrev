@@ -6,6 +6,7 @@ package de.ks.workflow.cdi;
  */
 
 import de.ks.workflow.Workflow;
+import de.ks.workflow.step.EditStep;
 import javafx.scene.Node;
 
 /**
@@ -26,5 +27,6 @@ public class TestWorkflow1 extends Workflow<Object, Node, Object> {
 
   @Override
   protected void configureSteps() {
+    cfg.startWith(EditStep.class);
   }
 }

@@ -38,17 +38,21 @@ public class ScopeTest {
     WorkflowContext context = (WorkflowContext) CDI.current().getBeanManager().getContext(WorkflowScoped.class);
     assertTrue(context.isActive());
 
-    context.startWorkflow(TestWorkflow1.class);
+    context.startWorkflow(TestWorkflow1.class).getCount();
+
+    context.getWorkflow().waitForInitialization();
     bean1.getName();
 
     context.startWorkflow(TestWorkflow2.class);
     bean2.getName();
     assertEquals(2, context.workflows.size());
 
+    context.getWorkflow().waitForInitialization();
+
     context.stopWorkflow(TestWorkflow1.class);
     assertEquals(1, context.workflows.size());
-    assertNull(context.workflows.get(TestWorkflow1.class.getName()));
-    assertFalse(context.workflows.get(TestWorkflow2.class.getName()).getObjectStore().isEmpty());
+    assertNull(context.workflows.get(TestWorkflow1.class));
+    assertFalse(context.workflows.get(TestWorkflow2.class).getObjectStore().isEmpty());
 
     context.stopAllWorkflows();
     assertEquals(0, context.workflows.size());
@@ -70,7 +74,7 @@ public class ScopeTest {
 
   @Test
   public void testScopeCleanup() throws Exception {
-    CyclicBarrier barrier = new CyclicBarrier(2);
+    final CyclicBarrier barrier = new CyclicBarrier(2);
     WorkflowContext.start(TestWorkflow2.class);
 
     bean1.setValue("Hello Sauerland!");
