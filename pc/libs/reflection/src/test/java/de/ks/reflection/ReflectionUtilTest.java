@@ -52,12 +52,12 @@ public class ReflectionUtilTest {
     List<Field> fields = ReflectionUtil.getAllFields(Child.class);
     assertEquals(6, fields.size());
 
-    assertEquals("privateChildField", fields.get(0).getName());
-    assertEquals("protectedChildField", fields.get(1).getName());
-    assertEquals("publicChildField", fields.get(2).getName());
-    assertEquals("privateParentField", fields.get(3).getName());
-    assertEquals("protectedParentField", fields.get(4).getName());
-    assertEquals("publicParentField", fields.get(5).getName());
+    assertEquals("privateParentField", fields.get(0).getName());
+    assertEquals("protectedParentField", fields.get(1).getName());
+    assertEquals("publicParentField", fields.get(2).getName());
+    assertEquals("privateChildField", fields.get(3).getName());
+    assertEquals("protectedChildField", fields.get(4).getName());
+    assertEquals("publicChildField", fields.get(5).getName());
   }
 
   @Test
