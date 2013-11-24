@@ -58,9 +58,6 @@ public class WorkflowNavigatorTest {
     MultipleSelectionModel selectionModel = stepViewController.getStepList().getSelectionModel();
     ObservableList selectedItems = selectionModel.getSelectedItems();
 
-    assertEquals(0, selectedItems.size());
-
-    navigator.start();
     assertEquals(1, selectedItems.size());
     assertEquals(0, selectionModel.getSelectedIndex());
 
