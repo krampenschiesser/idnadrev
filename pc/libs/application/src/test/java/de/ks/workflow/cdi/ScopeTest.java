@@ -54,7 +54,7 @@ public class ScopeTest {
     assertNull(context.workflows.get(TestWorkflow1.class));
     assertFalse(context.workflows.get(TestWorkflow2.class).getObjectStore().isEmpty());
 
-    context.stopAllWorkflows();
+    context.cleanupAllWorkflows();
     assertEquals(0, context.workflows.size());
   }
 

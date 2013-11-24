@@ -14,6 +14,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class WorkflowHolder {
+  private static final AtomicInteger sequence = new AtomicInteger(0);
+  protected final String id = String.format("%05d", sequence.incrementAndGet());
   protected final Class<? extends Workflow> workflowClass;
   protected final Map<Class<?>, StoredBean> objectStore = new ConcurrentHashMap<>();
   protected final AtomicInteger count = new AtomicInteger(0);
@@ -52,5 +54,9 @@ public class WorkflowHolder {
 
   public void setWorkflow(Workflow workflow) {
     this.workflow = workflow;
+  }
+
+  public String getId() {
+    return id;
   }
 }

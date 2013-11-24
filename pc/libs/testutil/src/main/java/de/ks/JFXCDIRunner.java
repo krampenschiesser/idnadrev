@@ -10,6 +10,10 @@ import javafx.application.Platform;
 import javafx.stage.Stage;
 import org.apache.deltaspike.cdise.api.CdiContainer;
 import org.apache.deltaspike.cdise.api.CdiContainerLoader;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.junit.runner.Description;
+import org.junit.runner.notification.RunListener;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.InitializationError;
@@ -24,6 +28,8 @@ import java.util.concurrent.TimeUnit;
  *
  */
 public class JFXCDIRunner extends BlockJUnit4ClassRunner {
+  private static final Logger log = LogManager.getLogger(JFXCDIRunner.class);
+
   public static Stage getStage() {
     return JFXTestApp.stage;
   }
@@ -51,6 +57,13 @@ public class JFXCDIRunner extends BlockJUnit4ClassRunner {
     if (barrier.getCount() > 0) {
       startApp();
     }
+    notifier.addListener(new RunListener() {
+      @Override
+      public void testStarted(Description description) throws Exception {
+        super.testStarted(description);
+        log.info("@Test:{}.{}", description.getClassName(), description.getMethodName());
+      }
+    });
     super.run(notifier);
 //    stopApp();
   }
