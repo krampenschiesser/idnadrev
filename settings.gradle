@@ -10,4 +10,4 @@ include "pc:libs:images", "pc:libs:menu", "pc:libs:application"
 include "pc:app"
 
 //android stuff
-include "android:storage", "android:app"
+//include "android:storage", "android:app"

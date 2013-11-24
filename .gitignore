@@ -11,3 +11,4 @@ out/
 **/**/**/build
 **/**/**/db
 /index.html
+/.nb-gradle/profiles/private/
