@@ -7,6 +7,8 @@ package de.ks.workflow.cdi;
 
 import de.ks.executor.ThreadCallBoundValue;
 import de.ks.workflow.Workflow;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.LinkedList;
 
@@ -14,9 +16,9 @@ import java.util.LinkedList;
  *
  */
 public class WorkflowPropagator implements ThreadCallBoundValue {
+  private static final Logger log = LogManager.getLogger(WorkflowPropagator.class);
   protected final WorkflowContext context;
   private Class<? extends Workflow> propagatedWorkflowId;
-  private Class<? extends Workflow> previousWorkflowId = null;
 
   public WorkflowPropagator(WorkflowContext context) {
     this.context = context;
@@ -33,9 +35,6 @@ public class WorkflowPropagator implements ThreadCallBoundValue {
   @Override
   public void doBeforeCallInTargetThread() {
     if (propagatedWorkflowId != null) {
-      if (!context.workflowStack.get().isEmpty()) {
-        previousWorkflowId = context.workflowStack.get().getLast();
-      }
       context.propagateWorkflow(propagatedWorkflowId);
     }
   }
@@ -44,9 +43,6 @@ public class WorkflowPropagator implements ThreadCallBoundValue {
   public void doAfterCallInTargetThread() {
     if (propagatedWorkflowId != null) {
       context.stopWorkflow(propagatedWorkflowId);
-      if (previousWorkflowId != null) {
-        context.propagateWorkflow(previousWorkflowId);
-      }
     }
   }
 

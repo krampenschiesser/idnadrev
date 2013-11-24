@@ -140,7 +140,7 @@ public class WorkflowContext implements Context {
     }
   }
 
-  public void startWorkflow(Class<? extends Workflow> workflowClass) {
+  public WorkflowHolder startWorkflow(Class<? extends Workflow> workflowClass) {
     lock.writeLock().lock();
     try {
       log.debug("Starting workflow {}", workflowClass.getSimpleName());
@@ -152,6 +152,7 @@ public class WorkflowContext implements Context {
       Workflow workflowInstance = CDI.current().select(workflowClass).get();
       workflowInstance.getModel();//initialize workflow
       workflow.setWorkflow(workflowInstance);
+      return workflow;
     } finally {
       lock.writeLock().unlock();
     }

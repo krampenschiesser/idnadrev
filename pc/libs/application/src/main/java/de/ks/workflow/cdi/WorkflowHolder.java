@@ -15,8 +15,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class WorkflowHolder {
   protected final Class<? extends Workflow> workflowClass;
-  protected Map<Class<?>, StoredBean> objectStore = new ConcurrentHashMap<>();
-  protected AtomicInteger count = new AtomicInteger(0);
+  protected final Map<Class<?>, StoredBean> objectStore = new ConcurrentHashMap<>();
+  protected final AtomicInteger count = new AtomicInteger(0);
   protected final WorkflowModelValidator validator;
   protected Workflow workflow;
 
