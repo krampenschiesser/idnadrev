@@ -31,6 +31,7 @@ public class WorkflowPropagator implements ThreadCallBoundValue {
     if (!workflowIds.isEmpty()) {
       propagatedWorkflowId = workflowIds.getLast();
       propagatedWorkflowSequence = context.getHolder().getId();
+      context.registerPlannedPropagation(propagatedWorkflowId);
     }
   }
 
@@ -40,7 +41,7 @@ public class WorkflowPropagator implements ThreadCallBoundValue {
       log.debug("Propagating workflow {}->{}", propagatedWorkflowSequence, propagatedWorkflowId.getSimpleName());
       context.propagateWorkflow(propagatedWorkflowId);
     } else {
-      log.debug("Nothing to propagate {}->{}", propagatedWorkflowSequence, propagatedWorkflowId.getSimpleName());
+      log.debug("Nothing to propagate {}->{}", propagatedWorkflowSequence, propagatedWorkflowId != null ? propagatedWorkflowId.getSimpleName() : null);
     }
   }
 
@@ -50,7 +51,7 @@ public class WorkflowPropagator implements ThreadCallBoundValue {
       log.debug("Stopping workflow {}->{}", propagatedWorkflowSequence, propagatedWorkflowId.getSimpleName());
       context.stopWorkflow(propagatedWorkflowId);
     } else {
-      log.debug("Nothing to stop {}->{}", propagatedWorkflowSequence, propagatedWorkflowId.getSimpleName());
+      log.debug("Nothing to stop {}->{}", propagatedWorkflowSequence, propagatedWorkflowId != null ? propagatedWorkflowId.getSimpleName() : null);
     }
   }
 

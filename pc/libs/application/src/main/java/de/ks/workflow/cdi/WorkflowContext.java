@@ -122,7 +122,7 @@ public class WorkflowContext implements Context {
   }
 
   protected void cleanupSingleWorkflow(Class<? extends Workflow> workflowClass) {
-    boolean locked = lock.writeLock().tryLock();
+    lock.writeLock().lock();
     try {
       WorkflowHolder workflow = workflows.remove(workflowClass);
       log.debug("Cleanup workflow {}->{}", workflow.getId(), workflowClass.getSimpleName());
@@ -134,9 +134,7 @@ public class WorkflowContext implements Context {
         iterator.remove();
       }
     } finally {
-      if (locked) {
-        lock.writeLock().unlock();
-      }
+      lock.writeLock().unlock();
     }
   }
 
@@ -158,12 +156,22 @@ public class WorkflowContext implements Context {
     }
   }
 
+  public void registerPlannedPropagation(Class<? extends Workflow> workflowClass) {
+    lock.writeLock().lock();
+    try {
+      WorkflowHolder workflowHolder = workflows.get(workflowClass);
+      workflowHolder.getCount().incrementAndGet();
+      log.debug("Registered planned propagation for workflow {}->{}", workflowHolder.getId(), workflowClass.getSimpleName());
+    } finally {
+      lock.writeLock().unlock();
+    }
+  }
+
   public void propagateWorkflow(Class<? extends Workflow> workflowClass) {
     lock.writeLock().lock();
     try {
       workflowStack.get().add(workflowClass);
       WorkflowHolder workflowHolder = workflows.get(workflowClass);
-      workflowHolder.getCount().incrementAndGet();
       log.debug("Propagated workflow {}->{}", workflowHolder.getId(), workflowClass.getSimpleName());
     } finally {
       lock.writeLock().unlock();
@@ -186,13 +194,23 @@ public class WorkflowContext implements Context {
   }
 
   public void cleanupAllWorkflows() {
+    log.debug("Cleanup all workflows.");
+    for (Class<? extends Workflow> workflow : workflowStack.get()) {
+      WorkflowHolder workflowHolder = workflows.get(workflow);
+      if (workflowHolder.getCount().get() > 1) {
+        log.warn("There are still {} other threads holding a reference to this workflow, cleanup not allowed", workflowHolder.getCount().get() - 1);
+      }
+      while (workflowHolder.getCount().get() > 1) {
+        try {
+          Thread.sleep(100);
+        } catch (InterruptedException e) {
+          log.error(e);
+        }
+      }
+      cleanupSingleWorkflow(workflow);
+    }
     lock.writeLock().lock();
     try {
-      log.debug("Cleanup all workflows.");
-      LinkedList<Class<? extends Workflow>> workflows = workflowStack.get();
-      for (Class<? extends Workflow> workflow : workflows) {
-        cleanupSingleWorkflow(workflow);
-      }
       this.workflows.clear();
       workflowStack.get().clear();
     } finally {
