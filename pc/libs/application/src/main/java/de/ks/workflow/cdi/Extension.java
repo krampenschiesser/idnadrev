@@ -18,7 +18,7 @@ public class Extension implements javax.enterprise.inject.spi.Extension {
   private static final Logger log = LogManager.getLogger(Extension.class);
 
   public void registerContext(@Observes AfterBeanDiscovery event, BeanManager mgr) {
-    log.debug("Registering {0}", WorkflowContext.class.getName());
+    log.debug("Registering {}", WorkflowContext.class.getName());
     WorkflowContext context = new WorkflowContext(mgr);
     event.addContext(context);
 
