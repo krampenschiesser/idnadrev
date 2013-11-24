@@ -5,7 +5,9 @@ package de.ks.workflow.validation.event;
  * All rights reserved by now, license may come later.
  */
 
+import javax.validation.ConstraintViolation;
 import java.lang.reflect.Field;
+import java.util.Set;
 
 /**
  *
@@ -13,10 +15,12 @@ import java.lang.reflect.Field;
 public class ValidationResultEvent {
   private boolean successful;
   private Field field;
+  private final Set<ConstraintViolation<Object>> violations;
 
-  public ValidationResultEvent(boolean successful, Field field) {
+  public ValidationResultEvent(boolean successful, Field field, Set<ConstraintViolation<Object>> violations) {
     this.successful = successful;
     this.field = field;
+    this.violations = violations;
   }
 
   public boolean isSuccessful() {
@@ -25,5 +29,9 @@ public class ValidationResultEvent {
 
   public Field getValidatedField() {
     return field;
+  }
+
+  public Set<ConstraintViolation<Object>> getViolations() {
+    return violations;
   }
 }

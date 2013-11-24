@@ -46,7 +46,7 @@ public class WorkflowModelValidator {
 
     Set<ConstraintViolation<Object>> violations = validator.validateValue(clazz, field.getName(), event.getValue());
 
-    ValidationResultEvent result = new ValidationResultEvent(violations.isEmpty(), field);
+    ValidationResultEvent result = new ValidationResultEvent(violations.isEmpty(), field, violations);
     eventBus.post(result);
   }
 }
