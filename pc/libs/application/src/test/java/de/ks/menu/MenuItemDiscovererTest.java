@@ -11,13 +11,12 @@ import de.ks.menu.mainmenu.Save;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.CDI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
 /**
  *
@@ -35,11 +34,11 @@ public class MenuItemDiscovererTest {
 
   @Test
   public void testInstanceIteration() throws Exception {
-    Instance<Object> select = CDI.current().select(new MenuItemLiteral());
-    assertFalse("nothing found for menuLiteral", select.isUnsatisfied());
+    MenuExtension extension = CDI.current().select(MenuExtension.class).get();
+    Collection<Class<?>> items = extension.getMenuClasses();
 
     List<Class<?>> classes = new ArrayList<>();
-    select.forEach((Object item) -> {
+    items.forEach((Object item) -> {
       classes.add(item.getClass());
     });
     assertEquals(4, classes.size());
@@ -47,15 +46,17 @@ public class MenuItemDiscovererTest {
 
   @Test
   public void testMenuFilter() throws Exception {
-    List<Object> fileMenu = new ArrayList<>();
-    List<Object> mainMenu = new ArrayList<>();
-    Instance<Object> select = CDI.current().select(new MenuItemLiteral());
-    select.forEach(new MenuFilter("/main/file", fileMenu));
-    select.forEach(new MenuFilter("/main", mainMenu));
+    List<Class<?>> fileMenu = new ArrayList<>();
+    List<Class<?>> mainMenu = new ArrayList<>();
+
+    MenuExtension extension = CDI.current().select(MenuExtension.class).get();
+    Collection<Class<?>> items = extension.getMenuClasses();
+    items.forEach(new MenuFilter("/main/file", fileMenu));
+    items.forEach(new MenuFilter("/main", mainMenu));
 
     assertEquals(2, fileMenu.size());
     assertEquals(4, mainMenu.size());
-    assertEquals(Open.class, fileMenu.get(0).getClass());
-    assertEquals(Save.class, fileMenu.get(1).getClass());
+    assertEquals(Open.class, fileMenu.get(0));
+    assertEquals(Save.class, fileMenu.get(1));
   }
 }

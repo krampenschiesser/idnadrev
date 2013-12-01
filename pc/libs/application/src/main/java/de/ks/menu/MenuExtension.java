@@ -43,4 +43,8 @@ public class MenuExtension implements Extension {
             .sorted()//
             .collect(Collectors.toList());
   }
+
+  public List<Class<?>> getMenuClasses() {
+    return getMenuEntries().values().stream().map(item -> item.getTarget()).collect(Collectors.toList());
+  }
 }

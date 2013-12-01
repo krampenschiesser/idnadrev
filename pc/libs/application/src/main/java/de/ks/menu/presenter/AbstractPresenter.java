@@ -9,6 +9,8 @@ import de.ks.eventsystem.EventSystem;
 import de.ks.menu.MenuExtension;
 import de.ks.menu.MenuItemDescriptor;
 import de.ks.menu.event.MenuItemClickedEvent;
+import de.ks.workflow.Workflow;
+import de.ks.workflow.cdi.WorkflowContext;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import org.apache.logging.log4j.LogManager;
@@ -30,6 +32,9 @@ public abstract class AbstractPresenter<T> {
     return new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent actionEvent) {
+        if (Workflow.class.isAssignableFrom(item.getTarget())) {
+          WorkflowContext.start((Class<? extends Workflow>) item.getTarget());
+        }
         log.debug("Sending event for item {}", item.getTarget().getSimpleName());
         EventSystem.bus.post(new MenuItemClickedEvent(item));
       }
