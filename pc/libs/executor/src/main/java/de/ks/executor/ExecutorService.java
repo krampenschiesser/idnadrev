@@ -9,6 +9,7 @@ import javafx.application.Platform;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.enterprise.inject.Vetoed;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -22,6 +23,7 @@ import java.util.concurrent.*;
  * It will wrap each task that is submitted to the thread pool in order to execute all registered
  * {@link ThreadCallBoundValue}.
  */
+@Vetoed
 public class ExecutorService implements ScheduledExecutorService {
   private static final Logger log = LogManager.getLogger(ExecutorService.class);
   public static final ExecutorService instance = new ExecutorService();
@@ -160,6 +162,18 @@ public class ExecutorService implements ScheduledExecutorService {
     FutureTask<V> futureTask = new FutureTask<>(runner);
     executeInJavaFXThreadInternal(futureTask);
     return futureTask;
+  }
+
+  public <V> V loadInJavaFXThread(Callable<V> command) {
+    final Callable<V> runner = wrap(command);
+    FutureTask<V> futureTask = new FutureTask<>(runner);
+    executeInJavaFXThreadInternal(futureTask);
+    try {
+      return futureTask.get();
+    } catch (InterruptedException | ExecutionException e) {
+      log.error("Could not invoke " + command, e);
+      throw new RuntimeException(e);
+    }
   }
 
   protected void executeInJavaFXThreadInternal(Runnable runnable) {
