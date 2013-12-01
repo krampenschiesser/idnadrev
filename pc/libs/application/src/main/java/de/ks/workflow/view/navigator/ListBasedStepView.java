@@ -5,6 +5,7 @@ package de.ks.workflow.view.navigator;
  * All rights reserved by now, license may come later.
  */
 
+import de.ks.i18n.Localized;
 import de.ks.workflow.WorkflowConfig;
 import de.ks.workflow.WorkflowNavigator;
 import de.ks.workflow.step.WorkflowStepConfig;
@@ -33,11 +34,11 @@ public class ListBasedStepView implements Initializable {
 
     List<WorkflowStepConfig> stepList1 = cfg.getStepList();
     for (WorkflowStepConfig workflowStepConfig : stepList1) {
-      items.add(workflowStepConfig.getStep().getTitle());
+      items.add(Localized.get(workflowStepConfig.getStep().getTitle()));
     }
     stepState.currentStepProperty().addListener((o, old, current) -> {
       if (current != null) {
-        stepList.getSelectionModel().select(current.getStep().getTitle());
+        stepList.getSelectionModel().select(Localized.get(current.getStep().getTitle()));
       }
     });
   }

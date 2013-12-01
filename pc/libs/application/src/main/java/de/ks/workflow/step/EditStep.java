@@ -16,7 +16,10 @@ import de.ks.reflection.ReflectionUtil;
 import de.ks.workflow.WorkflowState;
 import de.ks.workflow.cdi.DefaultLiteral;
 import de.ks.workflow.cdi.WorkflowSpecificLiteral;
+import javafx.geometry.VPos;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 
 import javax.annotation.PostConstruct;
@@ -56,6 +59,12 @@ public class EditStep extends InteractiveStep<GridPane> {
   protected void populateEditGrid(GridPane editGrid, LinkedHashMap<Field, AbstractEditor> editors) {
     int row = 1;
     for (Map.Entry<Field, AbstractEditor> entry : editors.entrySet()) {
+      RowConstraints rowConstraints = new RowConstraints();
+      rowConstraints.setValignment(VPos.TOP);
+      rowConstraints.setVgrow(Priority.NEVER);
+      rowConstraints.setMinHeight(25F);
+      editGrid.getRowConstraints().add(rowConstraints);
+
       AbstractEditor editor = entry.getValue();
       Field field = entry.getKey();
       editor.forField(field);

@@ -23,8 +23,8 @@
              <AppenderRef ref="console"/>
              <AppenderRef ref="file"/>
          </logger>  -->
-        <logger name="de.ks.i18n" level="off">
-            <!--<appender-ref ref="Console"/>-->
-        </logger>
+        <!--<logger name="de.ks.i18n" level="off">-->
+        <!--&lt;!&ndash;<appender-ref ref="Console"/>&ndash;&gt;-->
+        <!--</logger>-->
     </Loggers>
 </Configuration>

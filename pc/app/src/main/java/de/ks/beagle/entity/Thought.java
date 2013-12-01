@@ -1,5 +1,6 @@
 package de.ks.beagle.entity;
 
+import de.ks.editor.Detailed;
 import de.ks.persistence.entity.NamedPersistentObject;
 
 import javax.persistence.Column;
@@ -15,6 +16,7 @@ public class Thought extends NamedPersistentObject<Thought> {
   private static final long serialVersionUID = 1L;
 
   @Column(length = 4096)
+  @Detailed
   protected String description;
 
   public Thought() {
