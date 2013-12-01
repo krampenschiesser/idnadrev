@@ -5,14 +5,18 @@ package de.ks.workflow;
  * All rights reserved by now, license may come later.
  */
 
+import de.ks.executor.ExecutorService;
 import de.ks.workflow.cdi.WorkflowScoped;
+import de.ks.workflow.step.AutomaticStep;
 import de.ks.workflow.step.WorkflowStepConfig;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.concurrent.Task;
 
 import javax.enterprise.inject.Specializes;
 import javax.inject.Inject;
 import java.util.LinkedList;
+import java.util.concurrent.Future;
 
 /**
  *
@@ -22,6 +26,8 @@ import java.util.LinkedList;
 public class WorkflowNavigator extends WorkflowConfig {
   @Inject
   protected WorkflowConfig cfg;
+  @Inject
+  protected ExecutorService executor;
 
   protected LinkedList<WorkflowStepConfig> history = new LinkedList<>();
   protected ObjectProperty<WorkflowStepConfig> currentStep = new SimpleObjectProperty<>();
@@ -38,6 +44,13 @@ public class WorkflowNavigator extends WorkflowConfig {
     WorkflowStepConfig next = old.getOutput(name);
     setCurrentStep(next);
     history.add(old);
+
+    if (next.getStep() instanceof AutomaticStep) {
+      Task<String> task = ((AutomaticStep) next.getStep()).getTask();
+      task.setOnSucceeded((event) -> next());
+
+      Future<?> future = executor.submit(task);
+    }
   }
 
 

@@ -13,6 +13,6 @@ import javafx.scene.layout.GridPane;
 public class TableSelectionStep extends InteractiveStep<GridPane> {
   @Override
   public GridPane getNode() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return new GridPane();
   }
 }

@@ -6,14 +6,17 @@ package de.ks.workflow;
  */
 
 import de.ks.editor.Detailed;
+import de.ks.persistence.entity.AbstractPersistentObject;
 import de.ks.validation.contraints.NotEmpty;
 
+import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
 
 /**
  *
  */
-public class SimpleWorkflowModel {
+@Entity
+public class SimpleWorkflowModel extends AbstractPersistentObject<SimpleWorkflowModel> {
   @NotNull
   @NotEmpty
   protected String name;

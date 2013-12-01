@@ -11,11 +11,11 @@ import de.ks.editor.Detailed;
 import de.ks.editor.DetailedLiteral;
 import de.ks.editor.EditorForLiteral;
 import de.ks.i18n.Localized;
+import de.ks.persistence.entity.AbstractPersistentObject;
 import de.ks.reflection.ReflectionUtil;
 import de.ks.workflow.WorkflowState;
 import de.ks.workflow.cdi.DefaultLiteral;
 import de.ks.workflow.cdi.WorkflowSpecificLiteral;
-import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 
@@ -26,6 +26,7 @@ import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 /**
@@ -38,29 +39,29 @@ public class EditStep extends InteractiveStep<GridPane> {
   @Any
   Instance<AbstractEditor> editorProvider;
 
-  private GridPane editGrid;
+  private EditStepGrid controller;
   private Map<String, AbstractEditor> registeredEditors = new HashMap<>();
 
   @PostConstruct
   public void initialize() {
-    DefaultLoader<StackPane, Object> loader = new DefaultLoader<>(EditStep.class.getResource("EditStepGrid.fxml"));
+    DefaultLoader<StackPane, EditStepGrid> loader = new DefaultLoader<>(EditStep.class.getResource("EditStepGrid.fxml"));
     Class<?> modelClass = workflowState.getModelClass();
     List<Field> fields = getFieldsToConfigure(modelClass);
     LinkedHashMap<Field, AbstractEditor> editors = getEditors(fields);
-    editGrid = (GridPane) loader.getView().lookup("#editGrid");
-    populateEditGrid(editGrid, editors);
+    controller = loader.getController();
+    controller.getInstruction().setText(Localized.get(getTitle()));
+    populateEditGrid(controller.getEditGrid(), editors);
   }
 
   protected void populateEditGrid(GridPane editGrid, LinkedHashMap<Field, AbstractEditor> editors) {
-    editGrid.add(new Label(Localized.get(getTitle())), 0, 0);
     int row = 1;
     for (Map.Entry<Field, AbstractEditor> entry : editors.entrySet()) {
       AbstractEditor editor = entry.getValue();
       Field field = entry.getKey();
       editor.forField(field);
 
-      editGrid.add(editor.getDescriptor(), row, 0);
-      editGrid.add(editor.getNode(), row, 1);
+      editGrid.add(editor.getDescriptor(), 0, row);
+      editGrid.add(editor.getNode(), 1, row);
       registeredEditors.put(field.getName(), editor);
       row++;
     }
@@ -97,7 +98,7 @@ public class EditStep extends InteractiveStep<GridPane> {
       return editor;
     }
 
-    throw new IllegalStateException("Could not find any @Default editor for type " + type);
+    throw new IllegalStateException("Could not find any @Default editor for type " + type + " of field " + field);
   }
 
   protected AbstractEditor getEditorByQualifiers(List<AnnotationLiteral<?>> qualifiers) {
@@ -110,7 +111,8 @@ public class EditStep extends InteractiveStep<GridPane> {
   }
 
   protected List<Field> getFieldsToConfigure(Class<?> modelClass) {
-    List<Field> allFields = ReflectionUtil.getAllFields(modelClass);
+    List<Field> allFields = ReflectionUtil.getAllFields(modelClass, //
+            (f) -> !AbstractPersistentObject.class.equals(f.getDeclaringClass()), (f) -> !Modifier.isStatic(f.getModifiers()));
     allFields.removeAll(getIgnoredFields());
     return allFields;
   }
@@ -121,10 +123,14 @@ public class EditStep extends InteractiveStep<GridPane> {
 
   @Override
   public GridPane getNode() {
-    return editGrid;
+    return controller.getEditGrid();
   }
 
   public Map<String, AbstractEditor> getRegisteredEditors() {
     return registeredEditors;
+  }
+
+  public EditStepGrid getController() {
+    return controller;
   }
 }

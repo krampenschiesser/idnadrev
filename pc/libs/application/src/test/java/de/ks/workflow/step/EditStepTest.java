@@ -19,6 +19,7 @@ import de.ks.workflow.view.full.FullWorkflowView;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -71,12 +72,13 @@ public class EditStepTest {
     assertEquals(1, content.getChildren().size());
     GridPane gridPane = (GridPane) content.getChildren().get(0);
     ObservableList<Node> children = gridPane.getChildren();
-    assertEquals(5, children.size());
+    assertEquals(6, children.size());
     assertLabel(children.get(0));
-    assertLabel(children.get(1));
-    assertHtmlEditor(children.get(2));
-    assertLabel(children.get(3));
-    assertTextField(children.get(4));
+    assertTextArea(children.get(1));
+    assertLabel(children.get(2));
+    assertHtmlEditor(children.get(3));
+    assertLabel(children.get(4));
+    assertTextField(children.get(5));
   }
 
   protected void assertLabel(Node node) {
@@ -85,6 +87,10 @@ public class EditStepTest {
 
   protected void assertTextField(Node node) {
     assertTrue("Expected TextField, but was " + node.getClass().getSimpleName(), node instanceof TextField);
+  }
+
+  protected void assertTextArea(Node node) {
+    assertTrue("Expected TextArea, but was " + node.getClass().getSimpleName(), node instanceof TextArea);
   }
 
   protected void assertHtmlEditor(Node node) {
@@ -109,6 +115,12 @@ public class EditStepTest {
 
     nameEditor.onFocusChange(true, false);
     expectValidationError("name");
+
+    TextArea validationMessage = editStep.getController().getValidationMessage();
+    assertTrue(validationMessage.isVisible());
+    assertFalse(validationMessage.getText().isEmpty());
+    assertTrue(validationMessage.getText().contains("not"));
+    assertTrue(validationMessage.getText().contains("empty"));
   }
 
   private void expectValidationError(String name) {

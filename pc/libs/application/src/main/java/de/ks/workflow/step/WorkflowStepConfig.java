@@ -5,6 +5,7 @@ package de.ks.workflow.step;
  * All rights reserved by now, license may come later.
  */
 
+import de.ks.executor.ExecutorService;
 import de.ks.workflow.WorkflowConfig;
 
 import javax.enterprise.inject.spi.CDI;
@@ -79,7 +80,7 @@ public class WorkflowStepConfig {
 
   public <T extends WorkflowStep> T getStep() {
     if (step == null) {
-      step = CDI.current().select(implementationClass).get();
+      step = ExecutorService.instance.loadInJavaFXThread(() -> CDI.current().select(implementationClass).get());
     }
     return (T) step;
   }

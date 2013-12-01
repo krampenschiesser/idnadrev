@@ -9,6 +9,8 @@ import de.ks.workflow.WorkflowNavigator;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 
 import javax.inject.Inject;
 import java.net.URL;
@@ -24,6 +26,11 @@ public class HorizontalNextPreviousView implements Initializable {
   protected Button next;
   @FXML
   protected Button cancel;
+  @FXML
+  protected Label progressLabel;
+  @FXML
+  protected ProgressBar progressBar;
+
   @Inject
   protected WorkflowNavigator navigator;
 

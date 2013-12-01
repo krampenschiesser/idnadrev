@@ -38,7 +38,6 @@ public abstract class Workflow<M, V extends Node, C> implements NodeProvider<V> 
       throw new RuntimeException("Could not initialize steps for workfllw " + getName());
     }
     log.debug("Configured {} steps for workflow {}", cfg.getStepList().size(), getName());
-    loader = new DefaultLoader<>(getViewDefinition());
   }
 
   public abstract M getModel();
@@ -57,11 +56,11 @@ public abstract class Workflow<M, V extends Node, C> implements NodeProvider<V> 
 
   @Override
   public V getNode() {
-    return loader.getView();
+    return getLoader().getView();
   }
 
   public C getController() {
-    return loader.getController();
+    return getLoader().getController();
   }
 
   public WorkflowNavigator getNavigator() {
@@ -69,6 +68,17 @@ public abstract class Workflow<M, V extends Node, C> implements NodeProvider<V> 
   }
 
   public void waitForInitialization() {
-    loader.getView();
+    getLoader().getView();
+  }
+
+  public WorkflowConfig getCfg() {
+    return cfg;
+  }
+
+  public DefaultLoader<V, C> getLoader() {
+    if (loader == null) {
+      loader = new DefaultLoader<>(getViewDefinition());
+    }
+    return loader;
   }
 }
