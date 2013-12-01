@@ -2,7 +2,6 @@ dependencies {
     compile project(":pc:libs:i18n")
     compile project(":pc:libs:images")
     compile project(":pc:libs:persistence")
-    compile project(":pc:libs:menu")
     compile project(":pc:libs:validation")
 
     compile "org.apache.deltaspike.cdictrl:deltaspike-cdictrl-api:$deltaspike"
