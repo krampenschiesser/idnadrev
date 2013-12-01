@@ -1,5 +1,6 @@
 dependencies {
     compile "$jpa2api"
+    compile project(":pc:libs:validation")
     runtime "org.hibernate:hibernate-core:$hibernate"
     runtime "org.hibernate:hibernate-entitymanager:$hibernate"
     runtime "com.h2database:h2:$h2"

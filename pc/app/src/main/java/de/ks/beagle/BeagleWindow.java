@@ -6,12 +6,13 @@ package de.ks.beagle;
  */
 
 import de.ks.application.MainWindow;
+import de.ks.application.fxml.DefaultLoader;
 import de.ks.menu.presenter.MenuBarPresenter;
 import de.ks.menu.sink.ContentSink;
 import de.ks.menu.sink.PopupSink;
 import javafx.scene.Parent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.StackPane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,22 +33,23 @@ public class BeagleWindow extends MainWindow {
   ContentSink contentSink;
 
   private BorderPane borderPane;
+  private DefaultLoader<BorderPane, Object> loader;
 
   @PostConstruct
   public void initialize() {
     popupSink.setMenuPath("/main/help");
     contentSink.setMenuPath("/main");
+    loader = new DefaultLoader<>(BeagleWindow.class);
   }
 
   @Override
   public Parent getNode() {
-    borderPane = new BorderPane();
-    borderPane.setPrefSize(640, 480);
+    borderPane = loader.getView();
     borderPane.setTop(menuBarPresenter.getMenu("/main"));
 
-    VBox vBox = new VBox();
-    borderPane.setCenter(vBox);
-    contentSink.setPane(vBox);
+    StackPane contentPane = new StackPane();
+    borderPane.setCenter(contentPane);
+    contentSink.setPane(contentPane);
     return borderPane;
   }
 
