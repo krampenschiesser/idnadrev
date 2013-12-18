@@ -39,6 +39,8 @@ public class HorizontalNextPreviousView implements Initializable {
     next.setOnAction((event) -> navigator.next());
     previous.setOnAction((event) -> navigator.previous());
     cancel.setOnAction((event) -> navigator.cancel());
+    progressBar.setVisible(false);
+    progressLabel.setVisible(false);
   }
 
   public Button getPrevious() {

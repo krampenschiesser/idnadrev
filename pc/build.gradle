@@ -1,21 +1,6 @@
 subprojects {
     apply plugin: "java"
 
-    sourceSets {
-        main {
-            resources {
-                srcDir 'src/main/java'
-            }
-            output.resourcesDir = "build/classes/main"
-        }
-        test {
-            resources {
-                srcDir 'src/test/java'
-            }
-            output.resourcesDir = "build/classes/test"
-        }
-    }
-
     dependencies {
         testCompile "junit:junit:$junit"
         testCompile "org.mockito:mockito-core:$mockito"

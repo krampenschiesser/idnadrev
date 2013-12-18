@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="info">
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level [%-25t] %-40logger{36} - %msg%n"/>
+        </Console>
+        <File name="file" fileName="log/beagle.log">
+            <PatternLayout>
+                <pattern>%d %p %c{1.} [%t] %m%n</pattern>
+            </PatternLayout>
+        </File>
+        <Async name="async">
+            <AppenderRef ref="file"/>
+        </Async>
+    </Appenders>
+    <Loggers>
+        <Root level="debug">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="file"/>
+        </Root>
+        <!--
+         <logger name="de.ks" level="debug">
+             <AppenderRef ref="console"/>
+             <AppenderRef ref="file"/>
+         </logger>  -->
+        <logger name="de.ks.i18n" level="off">
+            <!--<appender-ref ref="Console"/>-->
+        </logger>
+    </Loggers>
+</Configuration>

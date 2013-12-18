@@ -5,22 +5,31 @@ package de.ks.workflow.step;
  * All rights reserved by now, license may come later.
  */
 
+import com.google.common.eventbus.Subscribe;
 import de.ks.application.fxml.DefaultLoader;
 import de.ks.editor.AbstractEditor;
 import de.ks.editor.Detailed;
 import de.ks.editor.DetailedLiteral;
 import de.ks.editor.EditorForLiteral;
+import de.ks.eventsystem.bus.EventBus;
+import de.ks.eventsystem.bus.HandlingThread;
+import de.ks.eventsystem.bus.Threading;
 import de.ks.i18n.Localized;
 import de.ks.persistence.entity.AbstractPersistentObject;
 import de.ks.reflection.ReflectionUtil;
 import de.ks.workflow.WorkflowState;
 import de.ks.workflow.cdi.DefaultLiteral;
 import de.ks.workflow.cdi.WorkflowSpecificLiteral;
+import de.ks.workflow.validation.event.ValidationResultEvent;
 import javafx.geometry.VPos;
+import javafx.scene.Node;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Any;
@@ -41,6 +50,8 @@ public class EditStep extends InteractiveStep<GridPane> {
   @Inject
   @Any
   Instance<AbstractEditor> editorProvider;
+  @Inject
+  EventBus eventBus;
 
   private EditStepGrid controller;
   private Map<String, AbstractEditor> registeredEditors = new HashMap<>();
@@ -54,6 +65,7 @@ public class EditStep extends InteractiveStep<GridPane> {
     controller = loader.getController();
     controller.getInstruction().setText(Localized.get(getTitle()));
     populateEditGrid(controller.getEditGrid(), editors);
+    eventBus.register(this);
   }
 
   protected void populateEditGrid(GridPane editGrid, LinkedHashMap<Field, AbstractEditor> editors) {
@@ -141,5 +153,28 @@ public class EditStep extends InteractiveStep<GridPane> {
 
   public EditStepGrid getController() {
     return controller;
+  }
+
+  private static final Logger log = LogManager.getLogger(EditStep.class);
+
+  @Subscribe
+  @Threading(HandlingThread.JavaFX)
+  public void onValidationEvent(ValidationResultEvent event) {
+    if (!event.isSuccessful()) {
+      Node node = getEditor(event.getValidatedField()).getNode();
+
+      for (AbstractEditor editor : getRegisteredEditors().values()) {
+        editor.getNode().setDisable(true);
+      }
+      node.setDisable(false);
+      node.requestFocus();
+      TextField field = (TextField) node;
+      log.info("Requesting focus! Field: {}, Text:{}", event.getValidatedField().getName(), field.getText());
+    } else {
+      log.info("Enabling all fields again.");
+      for (AbstractEditor editor : getRegisteredEditors().values()) {
+        editor.getNode().setDisable(false);
+      }
+    }
   }
 }

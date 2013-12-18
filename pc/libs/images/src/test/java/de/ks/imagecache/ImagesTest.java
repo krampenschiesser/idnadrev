@@ -6,6 +6,8 @@ package de.ks.imagecache;
  */
 
 import javafx.scene.image.Image;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,6 +19,7 @@ import static org.junit.Assert.assertNotNull;
  */
 @SuppressWarnings("SpellCheckingInspection")
 public class ImagesTest {
+  private static final Logger log = LogManager.getLogger(ImagesTest.class);
   private String packageImage = "packageimage.png";
   private String imageFolderImage = "imageFolderImage.png";
   private String fileImage;
@@ -24,10 +27,11 @@ public class ImagesTest {
   @Before
   public void setUp() throws Exception {
     String workingDirectory = System.getProperty("user.dir");
+    log.info("working in {}", workingDirectory);
     if (workingDirectory.endsWith("images")) {
       fileImage = "../../libs/images/fileimage.jpg";
     } else {
-      fileImage = "libs/images/fileimage.jpg";
+      fileImage = "pc/libs/images/fileimage.jpg";
     }
 
   }

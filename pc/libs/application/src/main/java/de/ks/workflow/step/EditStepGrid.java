@@ -38,6 +38,7 @@ public class EditStepGrid implements Initializable {
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
     eventBus.register(this);
+    validationMessage.setVisible(false);
   }
 
   @Subscribe

@@ -10,6 +10,7 @@ import de.ks.eventsystem.bus.EventBus;
 import de.ks.workflow.validation.event.ValidationRequiredEvent;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.stage.Window;
 
@@ -33,9 +34,12 @@ public class StringEditor extends AbstractEditor {
     textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
       @Override
       public void changed(ObservableValue<? extends Boolean> observableValue, Boolean wasFocused, Boolean isFocused) {
-        Window window = textField.getScene().getWindow();
-        if (window != null && window.isShowing() && window.isFocused()) {
-          onFocusChange(wasFocused, isFocused);
+        Scene scene = textField.getScene();
+        if (scene != null) {
+          Window window = scene.getWindow();
+          if (window != null && window.isShowing() && window.isFocused()) {
+            onFocusChange(wasFocused, isFocused);
+          }
         }
       }
     });
