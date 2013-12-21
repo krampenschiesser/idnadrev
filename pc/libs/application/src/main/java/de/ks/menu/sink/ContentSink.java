@@ -10,8 +10,8 @@ import de.ks.eventsystem.bus.EventBus;
 import de.ks.menu.MenuItemDescriptor;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 
@@ -19,7 +19,7 @@ import javax.inject.Inject;
  *
  */
 public class ContentSink extends AbstractSink<ContentSink> {
-  private static final Logger log = LogManager.getLogger(ContentSink.class);
+  private static final Logger log = LoggerFactory.getLogger(ContentSink.class);
 
   protected Pane pane;
 

@@ -6,8 +6,8 @@ package de.ks.persistence;
  * All rights reserved by now, license may come later.
  */
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -19,7 +19,7 @@ import javax.persistence.criteria.CriteriaBuilder;
  * and read with {@link #get()}
  */
 public abstract class PersistentWork {
-  private static final Logger log = LogManager.getLogger(PersistentWork.class);
+  private static final Logger log = LoggerFactory.getLogger(PersistentWork.class);
 
   protected EntityManager em;
   protected CriteriaBuilder builder;

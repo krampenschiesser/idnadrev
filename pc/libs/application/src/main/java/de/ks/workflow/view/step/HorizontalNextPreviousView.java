@@ -9,6 +9,7 @@ import com.google.common.eventbus.Subscribe;
 import de.ks.eventsystem.bus.EventBus;
 import de.ks.eventsystem.bus.HandlingThread;
 import de.ks.eventsystem.bus.Threading;
+import de.ks.i18n.Localized;
 import de.ks.workflow.navigation.WorkflowNavigator;
 import de.ks.workflow.step.DefaultOutput;
 import de.ks.workflow.step.WorkflowStepConfig;
@@ -61,6 +62,11 @@ public class HorizontalNextPreviousView implements Initializable {
             previous.setVisible(false);
           } else {
             previous.setVisible(true);
+          }
+          if (current.getOutputs().size() == 1) {
+            if (current.getOutputs().iterator().next().getOutputs().isEmpty()) {
+              next.setText(Localized.get("/workflow/ok"));
+            }
           }
         }
       }

@@ -15,8 +15,8 @@ import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 
@@ -24,7 +24,7 @@ import javax.inject.Inject;
  *
  */
 public class PopupSink extends AbstractSink<PopupSink> {
-  private static final Logger log = LogManager.getLogger(PopupSink.class);
+  private static final Logger log = LoggerFactory.getLogger(PopupSink.class);
   private Stage mockStage = null;
 
   @Inject

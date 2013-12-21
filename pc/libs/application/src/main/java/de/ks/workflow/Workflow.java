@@ -10,8 +10,8 @@ import de.ks.workflow.cdi.WorkflowScoped;
 import de.ks.workflow.navigation.WorkflowNavigator;
 import de.ks.workflow.view.full.FullWorkflowView;
 import javafx.scene.Node;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Vetoed;
@@ -23,7 +23,7 @@ import javax.inject.Inject;
 @WorkflowScoped
 @Vetoed
 public abstract class Workflow<M, V extends Node, C> implements NodeProvider<V> {
-  private static final Logger log = LogManager.getLogger(Workflow.class);
+  private static final Logger log = LoggerFactory.getLogger(Workflow.class);
   @Inject
   protected WorkflowConfig cfg;
   @Inject

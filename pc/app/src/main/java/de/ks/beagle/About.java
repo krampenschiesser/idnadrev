@@ -9,15 +9,15 @@ import de.ks.NodeProvider;
 import de.ks.application.fxml.DefaultLoader;
 import de.ks.menu.MenuItem;
 import javafx.scene.layout.StackPane;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  */
 @MenuItem("/main/help")
 public class About implements NodeProvider<StackPane> {
-  private static final Logger log = LogManager.getLogger(About.class);
+  private static final Logger log = LoggerFactory.getLogger(About.class);
 
   @Override
   public StackPane getNode() {

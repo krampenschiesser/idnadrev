@@ -13,8 +13,8 @@ import de.ks.menu.sink.PopupSink;
 import javafx.scene.Parent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -23,7 +23,7 @@ import javax.inject.Inject;
  *
  */
 public class BeagleWindow extends MainWindow {
-  private static final Logger log = LogManager.getLogger(BeagleWindow.class);
+  private static final Logger log = LoggerFactory.getLogger(BeagleWindow.class);
 
   @Inject
   MenuBarPresenter menuBarPresenter;

@@ -7,8 +7,8 @@ package de.ks.workflow.cdi;
 
 import de.ks.executor.ThreadCallBoundValue;
 import de.ks.workflow.Workflow;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 
@@ -16,7 +16,7 @@ import java.util.LinkedList;
  *
  */
 public class WorkflowPropagator implements ThreadCallBoundValue {
-  private static final Logger log = LogManager.getLogger(WorkflowPropagator.class);
+  private static final Logger log = LoggerFactory.getLogger(WorkflowPropagator.class);
   protected final WorkflowContext context;
   private Class<? extends Workflow> propagatedWorkflowId;
   private String propagatedWorkflowSequence;

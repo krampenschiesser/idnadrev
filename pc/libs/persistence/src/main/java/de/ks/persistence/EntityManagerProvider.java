@@ -6,8 +6,8 @@ package de.ks.persistence;
  * All rights reserved by now, license may come later.
  */
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -23,7 +23,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class EntityManagerProvider {
   private static final String PU_KEY = "de.ks.persistence.persistenceunit";
-  private static final Logger log = LogManager.getLogger(EntityManagerProvider.class);
+  private static final Logger log = LoggerFactory.getLogger(EntityManagerProvider.class);
   public static String PERSISTENCE_UNIT_NAME = "persistence";
   private static final ReentrantLock lock = new ReentrantLock();
   private static EntityManagerFactory entityManagerFactory;

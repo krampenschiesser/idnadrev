@@ -8,8 +8,8 @@ package de.ks.eventsystem.bus;
 import de.ks.executor.ExecutorService;
 import de.ks.reflection.ReflectionUtil;
 import javafx.application.Platform;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
@@ -21,7 +21,7 @@ import java.util.concurrent.FutureTask;
  *
  */
 class EventHandler {
-  private static final Logger log = LogManager.getLogger(EventHandler.class);
+  private static final Logger log = LoggerFactory.getLogger(EventHandler.class);
   protected final WeakReference<Object> target;
   protected final Method method;
   protected final Integer priority;

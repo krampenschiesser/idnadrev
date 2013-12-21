@@ -5,8 +5,8 @@ package de.ks.persistence.converter;
  * All rights reserved by now, license may come later.
  */
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
  */
 @Converter(autoApply = true)
 public class LocalDateTimeConverter implements AttributeConverter<LocalDateTime, String> {
-  private static final Logger log = LogManager.getLogger(LocalDateTimeConverter.class);
+  private static final Logger log = LoggerFactory.getLogger(LocalDateTimeConverter.class);
 
   @Override
   public String convertToDatabaseColumn(LocalDateTime attribute) {

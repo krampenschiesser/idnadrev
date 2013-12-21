@@ -7,8 +7,8 @@ package de.ks.imagecache;
 
 import com.google.common.cache.CacheLoader;
 import javafx.scene.image.Image;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -20,7 +20,7 @@ import java.net.URL;
 public class ImageLoader extends CacheLoader<String, Image> {
   public static final String DEFAULT_IMAGE_PACKAGE = "/de/ks/images/";
 
-  private static final Logger log = LogManager.getLogger(ImageLoader.class);
+  private static final Logger log = LoggerFactory.getLogger(ImageLoader.class);
 
   @Override
   public Image load(String key) throws Exception {

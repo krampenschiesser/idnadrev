@@ -10,8 +10,8 @@ import de.ks.i18n.Localized;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Node;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.util.concurrent.Callable;
@@ -23,7 +23,7 @@ import java.util.concurrent.Future;
  * @param <C> the controller
  */
 public class DefaultLoader<V extends Node, C> {
-  private static final Logger log = LogManager.getLogger(DefaultLoader.class);
+  private static final Logger log = LoggerFactory.getLogger(DefaultLoader.class);
   private final FXMLLoader loader;
   private final Future<V> future;
 

@@ -8,15 +8,15 @@ import de.ks.workflow.cdi.WorkflowScoped;
 import de.ks.workflow.step.DefaultOutput;
 import de.ks.workflow.step.WorkflowStep;
 import de.ks.workflow.step.WorkflowStepConfig;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @WorkflowScoped
 public class WorkflowConfig {
-  private static final Logger log = LogManager.getLogger(WorkflowConfig.class);
+  private static final Logger log = LoggerFactory.getLogger(WorkflowConfig.class);
 
   protected WorkflowStepConfig root;
 

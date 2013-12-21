@@ -8,7 +8,6 @@ package de.ks.workflow.view.full;
 import de.ks.workflow.navigation.WorkflowNavigator;
 import de.ks.workflow.step.InteractiveStep;
 import de.ks.workflow.step.WorkflowStep;
-import de.ks.workflow.view.navigator.ListBasedStepView;
 import de.ks.workflow.view.step.HorizontalNextPreviousView;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -27,8 +26,6 @@ public class FullWorkflowView implements Initializable {
   StackPane content;
   @FXML
   StackPane stepView;
-  @FXML
-  ListBasedStepView stepViewController;
   @FXML
   StackPane stepButton;
   @FXML
@@ -52,10 +49,6 @@ public class FullWorkflowView implements Initializable {
       content.getChildren().clear();
       content.getChildren().add(node);
     }
-  }
-
-  public ListBasedStepView getStepViewController() {
-    return stepViewController;
   }
 
   public HorizontalNextPreviousView getStepButtonController() {

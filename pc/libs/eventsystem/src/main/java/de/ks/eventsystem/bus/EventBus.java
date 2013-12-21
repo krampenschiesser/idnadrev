@@ -10,8 +10,8 @@ import com.google.common.eventbus.DeadEvent;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.primitives.Primitives;
 import de.ks.reflection.ReflectionUtil;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.CDI;
@@ -26,7 +26,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 @Vetoed
 public class EventBus {
   public static boolean alwaysWait = false;
-  private static final Logger log = LogManager.getLogger(EventBus.class);
+  private static final Logger log = LoggerFactory.getLogger(EventBus.class);
   protected final ArrayListMultimap<Class<?>, EventHandler> handlers = ArrayListMultimap.create();
   protected final HandlerComparator handlerComparator = new HandlerComparator();
   protected final ReadWriteLock lock = new ReentrantReadWriteLock(true);

@@ -4,8 +4,9 @@ subprojects {
     dependencies {
         testCompile "junit:junit:$junit"
         testCompile "org.mockito:mockito-core:$mockito"
-        compile "org.apache.logging.log4j:log4j-core:$log4j"
-        compile "org.apache.logging.log4j:log4j-api:$log4j"
+        compile "org.slf4j:slf4j-api:$slf4j"
+        compile "ch.qos.logback:logback-core:$logback"
+        compile "ch.qos.logback:logback-classic:$logback"
         compile "com.google.guava:guava:$guava"
         compile "org.apache.commons:commons-lang3:$lang3"
         compile "javax.validation:validation-api:$javaxValidation"

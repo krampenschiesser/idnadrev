@@ -5,16 +5,16 @@ package de.ks.executor;
  * All rights reserved by now, license may come later.
  */
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Future;
 
 import static org.junit.Assert.assertEquals;
 
 public class ExecutorServiceTest {
-  private static final Logger log = LogManager.getLogger(ExecutorServiceTest.class);
+  private static final Logger log = LoggerFactory.getLogger(ExecutorServiceTest.class);
 
   ThreadLocal<String> threadLocal = new ThreadLocal<>();
   protected String value;

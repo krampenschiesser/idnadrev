@@ -28,8 +28,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Any;
@@ -155,7 +155,7 @@ public class EditStep extends InteractiveStep<GridPane> {
     return controller;
   }
 
-  private static final Logger log = LogManager.getLogger(EditStep.class);
+  private static final Logger log = LoggerFactory.getLogger(EditStep.class);
 
   @Subscribe
   @Threading(HandlingThread.JavaFX)

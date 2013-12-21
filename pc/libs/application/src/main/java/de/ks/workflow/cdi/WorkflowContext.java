@@ -9,8 +9,8 @@ package de.ks.workflow.cdi;
 
 import de.ks.workflow.Workflow;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
@@ -30,7 +30,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  *
  */
 public class WorkflowContext implements Context {
-  private static final Logger log = LogManager.getLogger(WorkflowContext.class);
+  private static final Logger log = LoggerFactory.getLogger(WorkflowContext.class);
   protected final ConcurrentHashMap<Class<? extends Workflow>, WorkflowHolder> workflows = new ConcurrentHashMap<>();
   protected final ThreadLocal<LinkedList<Class<? extends Workflow>>> workflowStack = ThreadLocal.withInitial(LinkedList::new);
 
@@ -204,7 +204,7 @@ public class WorkflowContext implements Context {
         try {
           Thread.sleep(100);
         } catch (InterruptedException e) {
-          log.error(e);
+          log.error("Interrupted",e);
         }
       }
       cleanupSingleWorkflow(workflow);

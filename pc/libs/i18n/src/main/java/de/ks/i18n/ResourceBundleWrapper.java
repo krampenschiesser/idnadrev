@@ -6,8 +6,8 @@ package de.ks.i18n;
  * All rights reserved by now, license may come later.
  */
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.Enumeration;
@@ -22,7 +22,7 @@ import java.util.Set;
  */
 class ResourceBundleWrapper extends ResourceBundle {
 
-  private static final Logger log = LogManager.getLogger(ResourceBundleWrapper.class);
+  private static final Logger log = LoggerFactory.getLogger(ResourceBundleWrapper.class);
   private final ResourceBundle bundle;
   private final String path;
 

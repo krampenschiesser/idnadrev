@@ -3,8 +3,8 @@ package de.ks.reflection;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -18,7 +18,7 @@ public class PropertyPath<T> {
     return new PropertyPath<>(clazz);
   }
 
-  private static final Logger log = LogManager.getLogger(PropertyPath.class);
+  private static final Logger log = LoggerFactory.getLogger(PropertyPath.class);
 
   protected Class<T> root;
   protected List<Method> methodPath = new ArrayList<>(25);

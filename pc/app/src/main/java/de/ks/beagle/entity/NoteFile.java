@@ -2,8 +2,8 @@ package de.ks.beagle.entity;
 
 import com.google.common.io.Files;
 import de.ks.persistence.entity.NamedPersistentObject;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
 import java.io.File;
@@ -17,7 +17,7 @@ import java.io.IOException;
 
 @Entity
 public class NoteFile extends NamedPersistentObject<NoteFile> {
-  private static final Logger log = LogManager.getLogger(NoteFile.class);
+  private static final Logger log = LoggerFactory.getLogger(NoteFile.class);
   private static final long serialVersionUID = 1L;
 
   @ManyToOne

@@ -13,8 +13,8 @@ import de.ks.workflow.Workflow;
 import de.ks.workflow.cdi.WorkflowContext;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 
@@ -22,7 +22,7 @@ import javax.inject.Inject;
  *
  */
 public abstract class AbstractPresenter<T> {
-  private static final Logger log = LogManager.getLogger(AbstractPresenter.class);
+  private static final Logger log = LoggerFactory.getLogger(AbstractPresenter.class);
   @Inject
   MenuExtension menuExtension;
 

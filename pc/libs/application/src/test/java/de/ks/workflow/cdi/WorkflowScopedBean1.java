@@ -5,8 +5,8 @@ package de.ks.workflow.cdi;
  * All rights reserved by now, license may come later.
  */
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -16,7 +16,7 @@ import javax.annotation.PreDestroy;
  */
 @WorkflowScoped()
 public class WorkflowScopedBean1 {
-  private static final Logger log = LogManager.getLogger(WorkflowScopedBean1.class);
+  private static final Logger log = LoggerFactory.getLogger(WorkflowScopedBean1.class);
   protected String value;
 
   public String getValue() {

@@ -7,8 +7,8 @@ package de.ks.reflection;
 
 import de.ks.util.Predicates;
 import javafx.util.Pair;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -21,8 +21,7 @@ import java.util.stream.Collectors;
  *
  */
 public class ReflectionUtil {
-  private static final Logger log = LogManager.getLogger(ReflectionUtil.class);
-
+  private static final Logger log = LoggerFactory.getLogger(ReflectionUtil.class);
   /**
    * Returns a List of all methods of this class and its supertypes without the methods of Object.
    * The list is ordered by hierarchy level (clazz first, then clazz.getSuperClass etc.)

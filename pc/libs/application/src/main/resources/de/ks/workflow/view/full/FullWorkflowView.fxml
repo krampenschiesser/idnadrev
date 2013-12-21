@@ -14,9 +14,4 @@
     <center>
         <StackPane fx:id="content" prefHeight="400.0" prefWidth="500.0"/>
     </center>
-    <left>
-        <fx:include fx:id="stepView" source="../navigator/ListBasedStepView.fxml" maxHeight="1.7976931348623157E308"
-                    maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="150.0"
-                    BorderPane.alignment="TOP_LEFT"/>
-    </left>
 </BorderPane>

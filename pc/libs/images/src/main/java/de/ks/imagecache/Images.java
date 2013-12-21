@@ -10,8 +10,8 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 import javafx.scene.image.Image;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
@@ -20,7 +20,7 @@ import java.util.concurrent.ForkJoinPool;
  *
  */
 public class Images {
-  private static final Logger log = LogManager.getLogger(Images.class);
+  private static final Logger log = LoggerFactory.getLogger(Images.class);
   private static final Images instance = new Images();
 
   private final LoadingCache<String, Image> cache;

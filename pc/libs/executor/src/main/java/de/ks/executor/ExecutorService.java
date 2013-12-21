@@ -6,8 +6,8 @@ package de.ks.executor;
  */
 
 import javafx.application.Platform;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.Vetoed;
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ import java.util.concurrent.*;
  */
 @Vetoed
 public class ExecutorService implements ScheduledExecutorService {
-  private static final Logger log = LogManager.getLogger(ExecutorService.class);
+  private static final Logger log = LoggerFactory.getLogger(ExecutorService.class);
   public static final ExecutorService instance = new ExecutorService();
 
   protected final ScheduledExecutorService pool;
