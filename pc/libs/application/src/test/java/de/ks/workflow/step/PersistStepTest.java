@@ -9,7 +9,7 @@ import de.ks.JFXCDIRunner;
 import de.ks.persistence.PersistentWork;
 import de.ks.workflow.SimpleWorkflowModel;
 import de.ks.workflow.TestWorkflow;
-import de.ks.workflow.WorkflowNavigator;
+import de.ks.workflow.navigation.WorkflowNavigator;
 import de.ks.workflow.cdi.WorkflowContext;
 import org.junit.After;
 import org.junit.Before;

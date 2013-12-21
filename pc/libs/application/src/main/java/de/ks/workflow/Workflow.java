@@ -7,6 +7,7 @@ package de.ks.workflow;/*
 import de.ks.NodeProvider;
 import de.ks.application.fxml.DefaultLoader;
 import de.ks.workflow.cdi.WorkflowScoped;
+import de.ks.workflow.navigation.WorkflowNavigator;
 import de.ks.workflow.view.full.FullWorkflowView;
 import javafx.scene.Node;
 import org.apache.logging.log4j.LogManager;

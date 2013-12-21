@@ -1,4 +1,4 @@
-package de.ks.workflow;
+package de.ks.workflow.navigation;
 /*
  * Created by Christian Loehnert
  * Krampenschiesser@freenet.de
@@ -6,6 +6,7 @@ package de.ks.workflow;
  */
 
 import de.ks.executor.ExecutorService;
+import de.ks.workflow.WorkflowConfig;
 import de.ks.workflow.cdi.WorkflowScoped;
 import de.ks.workflow.step.AutomaticStep;
 import de.ks.workflow.step.WorkflowStepConfig;

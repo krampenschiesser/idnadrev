@@ -5,7 +5,16 @@ package de.ks.workflow.view.step;
  * All rights reserved by now, license may come later.
  */
 
-import de.ks.workflow.WorkflowNavigator;
+import com.google.common.eventbus.Subscribe;
+import de.ks.eventsystem.bus.EventBus;
+import de.ks.eventsystem.bus.HandlingThread;
+import de.ks.eventsystem.bus.Threading;
+import de.ks.workflow.navigation.WorkflowNavigator;
+import de.ks.workflow.step.DefaultOutput;
+import de.ks.workflow.step.WorkflowStepConfig;
+import de.ks.workflow.validation.event.ValidationResultEvent;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -33,6 +42,8 @@ public class HorizontalNextPreviousView implements Initializable {
 
   @Inject
   protected WorkflowNavigator navigator;
+  @Inject
+  protected EventBus eventBus;
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -41,6 +52,19 @@ public class HorizontalNextPreviousView implements Initializable {
     cancel.setOnAction((event) -> navigator.cancel());
     progressBar.setVisible(false);
     progressLabel.setVisible(false);
+    eventBus.register(this);
+    navigator.currentStepProperty().addListener(new ChangeListener<WorkflowStepConfig>() {
+      @Override
+      public void changed(ObservableValue<? extends WorkflowStepConfig> observableValue, WorkflowStepConfig old, WorkflowStepConfig current) {
+        if (current != null) {
+          if (DefaultOutput.ROOT.name().equals(current.getIncomingKey())) {
+            previous.setVisible(false);
+          } else {
+            previous.setVisible(true);
+          }
+        }
+      }
+    });
   }
 
   public Button getPrevious() {
@@ -55,4 +79,13 @@ public class HorizontalNextPreviousView implements Initializable {
     return cancel;
   }
 
+  @Subscribe
+  @Threading(HandlingThread.JavaFX)
+  public void onValidation(ValidationResultEvent e) {
+    if (e.isSuccessful()) {
+      next.setDisable(false);
+    } else {
+      next.setDisable(true);
+    }
+  }
 }

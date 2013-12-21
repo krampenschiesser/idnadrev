@@ -161,12 +161,13 @@ public class EditStep extends InteractiveStep<GridPane> {
   @Threading(HandlingThread.JavaFX)
   public void onValidationEvent(ValidationResultEvent event) {
     if (!event.isSuccessful()) {
+      log.info("Validation failed: {}",event.getViolations());
       Node node = getEditor(event.getValidatedField()).getNode();
 
-      for (AbstractEditor editor : getRegisteredEditors().values()) {
-        editor.getNode().setDisable(true);
-      }
-      node.setDisable(false);
+//      for (AbstractEditor editor : getRegisteredEditors().values()) {
+//        editor.getNode().setDisable(true);
+//      }
+//      node.setDisable(false);
       node.requestFocus();
       TextField field = (TextField) node;
       log.info("Requesting focus! Field: {}, Text:{}", event.getValidatedField().getName(), field.getText());

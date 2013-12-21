@@ -7,7 +7,7 @@ package de.ks.workflow.view.navigator;
 
 import de.ks.i18n.Localized;
 import de.ks.workflow.WorkflowConfig;
-import de.ks.workflow.WorkflowNavigator;
+import de.ks.workflow.navigation.WorkflowNavigator;
 import de.ks.workflow.step.WorkflowStepConfig;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;

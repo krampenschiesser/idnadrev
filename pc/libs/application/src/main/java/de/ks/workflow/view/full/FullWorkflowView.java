@@ -5,7 +5,7 @@ package de.ks.workflow.view.full;
  * All rights reserved by now, license may come later.
  */
 
-import de.ks.workflow.WorkflowNavigator;
+import de.ks.workflow.navigation.WorkflowNavigator;
 import de.ks.workflow.step.InteractiveStep;
 import de.ks.workflow.step.WorkflowStep;
 import de.ks.workflow.view.navigator.ListBasedStepView;

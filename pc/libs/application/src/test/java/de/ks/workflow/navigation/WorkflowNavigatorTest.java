@@ -1,4 +1,4 @@
-package de.ks.workflow;
+package de.ks.workflow.navigation;
 /*
  * Created by Christian Loehnert
  * Krampenschiesser@freenet.de
@@ -6,6 +6,7 @@ package de.ks.workflow;
  */
 
 import de.ks.JFXCDIRunner;
+import de.ks.workflow.TestWorkflow;
 import de.ks.workflow.cdi.WorkflowContext;
 import de.ks.workflow.step.DefaultOutput;
 import de.ks.workflow.step.WorkflowStepConfig;

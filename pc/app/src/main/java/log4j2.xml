@@ -23,8 +23,7 @@
              <AppenderRef ref="console"/>
              <AppenderRef ref="file"/>
          </logger>  -->
-        <logger name="de.ks.i18n" level="off">
-            <!--<appender-ref ref="Console"/>-->
-        </logger>
+        <logger name="de.ks.i18n" level="off" />
+        <logger name="de.ks.workflow.cdi" level="off" />
     </Loggers>
 </Configuration>
