@@ -27,6 +27,7 @@ public abstract class NamedPersistentObject<T extends NamedPersistentObject<T>> 
     return name;
   }
 
+  @SuppressWarnings("unchecked")
   public T setName(String name) {
     this.name = name;
     return (T) this;

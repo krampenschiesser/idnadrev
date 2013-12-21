@@ -1,12 +1,22 @@
 subprojects {
     apply plugin: "java"
 
+
+    sourceSets {
+        main {
+            output.resourcesDir = "build/classes/main"
+        }
+        test {
+            output.resourcesDir = "build/classes/test"
+        }
+    }
+
     dependencies {
         testCompile "junit:junit:$junit"
         testCompile "org.mockito:mockito-core:$mockito"
         compile "org.slf4j:slf4j-api:$slf4j"
-        compile "ch.qos.logback:logback-core:$logback"
-        compile "ch.qos.logback:logback-classic:$logback"
+        testRuntime "ch.qos.logback:logback-core:$logback"
+        testRuntime "ch.qos.logback:logback-classic:$logback"
         compile "com.google.guava:guava:$guava"
         compile "org.apache.commons:commons-lang3:$lang3"
         compile "javax.validation:validation-api:$javaxValidation"
