@@ -31,9 +31,10 @@ public class ReflectionUtil {
    * @param predicates combined with AND
    * @return
    */
+  @SafeVarargs
   public static List<Method> getAllMethods(Class<?> clazz, Predicate<Method>... predicates) {
     ArrayList<Method> methods = new ArrayList<>(100);
-    Map<Pair<String, Class[]>, Method> collected = new HashMap<>();
+    Map<Pair<String, List<Class<?>>>, Method> collected = new HashMap<>();
 
     List<Class<?>> hierarchy = getClassHierarchy(clazz);
     for (Class<?> current : hierarchy) {
@@ -42,10 +43,10 @@ public class ReflectionUtil {
 
       for (Method declaredMethod : declaredMethods) {
         String methodName = declaredMethod.getName();
-        Pair key = new Pair(methodName, Arrays.asList(declaredMethod.getParameterTypes()));
+        Pair<String,List<Class<?>>> key = new Pair<String,List<Class<?>>>(methodName, Arrays.asList(declaredMethod.getParameterTypes()));
 
         if (!collected.containsKey(key)) {
-          collected.put(new Pair(methodName, Arrays.asList(declaredMethod.getParameterTypes())), declaredMethod);
+          collected.put(new Pair<String,List<Class<?>>>(methodName, Arrays.asList(declaredMethod.getParameterTypes())), declaredMethod);
           methods.add(declaredMethod);
         }
       }

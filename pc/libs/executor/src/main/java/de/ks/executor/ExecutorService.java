@@ -195,7 +195,7 @@ public class ExecutorService implements ScheduledExecutorService {
   }
 
   protected <T> Collection<? extends Callable<T>> wrap(Collection<? extends Callable<T>> tasks) {
-    ArrayList retval = new ArrayList(tasks.size());
+    ArrayList<Callable<T>> retval = new ArrayList<>(tasks.size());
     for (Callable<T> task : tasks) {
       retval.add(wrap(task));
     }
