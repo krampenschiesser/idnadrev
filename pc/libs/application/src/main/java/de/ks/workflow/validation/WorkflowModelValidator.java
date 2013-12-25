@@ -9,6 +9,7 @@ import com.google.common.eventbus.Subscribe;
 import de.ks.eventsystem.bus.EventBus;
 import de.ks.eventsystem.bus.HandlingThread;
 import de.ks.eventsystem.bus.Threading;
+import de.ks.validation.violation.IllegalArgumentViolation;
 import de.ks.workflow.WorkflowState;
 import de.ks.workflow.validation.event.ValidationRequiredEvent;
 import de.ks.workflow.validation.event.ValidationResultEvent;
@@ -16,8 +17,10 @@ import de.ks.workflow.validation.event.ValidationResultEvent;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
+import javax.validation.Path;
 import javax.validation.Validator;
 import java.lang.reflect.Field;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -40,13 +43,22 @@ public class WorkflowModelValidator {
   @Threading(HandlingThread.Async)
   public void validate(ValidationRequiredEvent event) {
     Field field = event.getField();
+    Object value = event.getValue();
 
     Object model = workflowState.getModel();
-    Class<Object> clazz = (Class<Object>) model.getClass();
+    @SuppressWarnings("unchecked") Class<Object> clazz = (Class<Object>) model.getClass();
 
-    Set<ConstraintViolation<Object>> violations = validator.validateValue(clazz, field.getName(), event.getValue());
+    ValidationResultEvent result;
+    try {
+      Set<ConstraintViolation<Object>> violations = validator.validateValue(clazz, field.getName(), value);
 
-    ValidationResultEvent result = new ValidationResultEvent(violations.isEmpty(), field, violations);
+      result = new ValidationResultEvent(violations.isEmpty(), field, value, violations);
+    } catch (IllegalArgumentException e) {
+      Set<ConstraintViolation<Object>> violations = new HashSet<>();
+      Path path = null;
+      violations.add(new IllegalArgumentViolation<>(model, field, value));
+      result = new ValidationResultEvent(violations.isEmpty(), field, value, violations);
+    }
     eventBus.post(result);
   }
 }
