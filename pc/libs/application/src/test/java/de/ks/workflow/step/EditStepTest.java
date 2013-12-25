@@ -121,6 +121,15 @@ public class EditStepTest {
     assertFalse(validationMessage.getText().isEmpty());
     assertTrue(validationMessage.getText().contains("not"));
     assertTrue(validationMessage.getText().contains("empty"));
+
+    nameEditor.getNode().setText("Hello");
+    expectNoValidationError();
+    assertFalse(validationMessage.isVisible());
+  }
+
+  @Test
+  public void testFieldAssignment() throws Exception {
+
   }
 
   private void expectValidationError(String name) {
@@ -132,8 +141,9 @@ public class EditStepTest {
   }
 
   private void expectNoValidationError() {
-    assertNull(lastValidation);
-
+    if(lastValidation!=null) {
+      assertTrue(lastValidation.isSuccessful());
+    }
   }
 
   @Subscribe
