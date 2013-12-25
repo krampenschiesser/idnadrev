@@ -11,6 +11,8 @@ import de.ks.editor.AbstractEditor;
 import de.ks.editor.EditorFor;
 import de.ks.editor.StringEditor;
 import de.ks.eventsystem.EventSystem;
+import de.ks.eventsystem.bus.EventBus;
+import de.ks.workflow.SimpleWorkflowModel;
 import de.ks.workflow.TestWorkflow;
 import de.ks.workflow.cdi.WorkflowContext;
 import de.ks.workflow.navigation.WorkflowNavigator;
@@ -51,18 +53,19 @@ public class EditStepTest {
   FullWorkflowView view;
   private ValidationResultEvent lastValidation;
 
-
-  @After
-  public void tearDown() throws Exception {
-    WorkflowContext.stopAll();
-  }
-
   @Before
   public void setUp() throws Exception {
     WorkflowContext.start(TestWorkflow.class);
     workflow = CDI.current().select(TestWorkflow.class).get();
     navigator.start();
     view = workflow.getController();
+    EventBus.alwaysWait = true;
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    WorkflowContext.stopAll();
+    EventBus.alwaysWait = false;
   }
 
   @Test
@@ -129,7 +132,18 @@ public class EditStepTest {
 
   @Test
   public void testFieldAssignment() throws Exception {
+    StackPane content = view.getContent();
+    EditStep editStep = navigator.getCurrentStep().getStep();
 
+    Map<String, AbstractEditor> registeredEditors = editStep.getRegisteredEditors();
+    StringEditor nameEditor = (StringEditor) registeredEditors.get("name");
+    assertNotNull(nameEditor);
+
+    nameEditor.getNode().setText("Hello Sauerland!");
+
+    SimpleWorkflowModel model = workflow.getModel();
+    assertNotNull("no name set!", model.getName());
+    assertEquals("Hello Sauerland!", model.getName());
   }
 
   private void expectValidationError(String name) {
@@ -141,8 +155,8 @@ public class EditStepTest {
   }
 
   private void expectNoValidationError() {
-    if(lastValidation!=null) {
-      assertTrue(lastValidation.isSuccessful());
+    if (lastValidation != null) {
+      assertTrue("validaiton not successful!", lastValidation.isSuccessful());
     }
   }
 

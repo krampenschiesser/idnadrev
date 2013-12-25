@@ -25,6 +25,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 @Vetoed
 public class EventBus {
+  /**
+   * Used to synchronous execute all events, mainly in tests
+   */
   public static boolean alwaysWait = false;
   private static final Logger log = LoggerFactory.getLogger(EventBus.class);
   protected final ArrayListMultimap<Class<?>, EventHandler> handlers = ArrayListMultimap.create();

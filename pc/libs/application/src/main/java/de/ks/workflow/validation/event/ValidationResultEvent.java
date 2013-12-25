@@ -15,11 +15,13 @@ import java.util.Set;
 public class ValidationResultEvent {
   private boolean successful;
   private Field field;
+  private final Object value;
   private final Set<ConstraintViolation<Object>> violations;
 
-  public ValidationResultEvent(boolean successful, Field field, Set<ConstraintViolation<Object>> violations) {
+  public ValidationResultEvent(boolean successful, Field field, Object value, Set<ConstraintViolation<Object>> violations) {
     this.successful = successful;
     this.field = field;
+    this.value = value;
     this.violations = violations;
   }
 
@@ -33,5 +35,9 @@ public class ValidationResultEvent {
 
   public Set<ConstraintViolation<Object>> getViolations() {
     return violations;
+  }
+
+  public Object getValue() {
+    return value;
   }
 }
