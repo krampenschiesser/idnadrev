@@ -15,6 +15,7 @@ subprojects {
         testCompile "junit:junit:$junit"
         testCompile "org.mockito:mockito-core:$mockito"
         compile "org.slf4j:slf4j-api:$slf4j"
+        compile "org.slf4j:slf4j-ext:$slf4j"
         testRuntime "ch.qos.logback:logback-core:$logback"
         testRuntime "ch.qos.logback:logback-classic:$logback"
         compile "com.google.guava:guava:$guava"
