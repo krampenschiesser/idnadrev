@@ -21,6 +21,8 @@ import javax.enterprise.inject.spi.CDI;
  *
  */
 public class App extends Application {
+  static MainWindow blurb;
+
   @Override
   public void start(Stage stage) throws Exception {
     Launcher.instance.waitForInitialization();
@@ -31,6 +33,7 @@ public class App extends Application {
       stage.setScene(new Scene(new Label(Localized.get("/warning/unsatisfiedApplication")), 640, 480));
     } else {
       MainWindow mainWindow = select.get();
+      blurb = mainWindow;
       stage.setTitle(mainWindow.getApplicationTitle());
       stage.setScene(new Scene(mainWindow.getNode()));
 
