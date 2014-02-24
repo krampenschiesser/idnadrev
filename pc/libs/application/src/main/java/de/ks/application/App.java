@@ -29,8 +29,8 @@ public class App extends Application {
 
     Instance<MainWindow> select = CDI.current().select(MainWindow.class);
     if (select.isUnsatisfied()) {
-      stage.setTitle(Localized.get("/warning/general"));
-      stage.setScene(new Scene(new Label(Localized.get("/warning/unsatisfiedApplication")), 640, 480));
+      stage.setTitle(Localized.get("warning.general"));
+      stage.setScene(new Scene(new Label(Localized.get("warning.unsatisfiedApplication")), 640, 480));
     } else {
       MainWindow mainWindow = select.get();
       blurb = mainWindow;
@@ -46,5 +46,6 @@ public class App extends Application {
       Launcher.instance.stop();
     });
     stage.show();
+    //TODO register mainstage with navigator
   }
 }

@@ -27,7 +27,7 @@ public class MenuExtension implements Extension {
       MenuItemDescriptor menuItemDescriptor = new MenuItemDescriptor(annotation, event.getBean().getBeanClass());
       menuEntries.put(menuItemDescriptor.getMenuItemPath(), menuItemDescriptor);
     }
-    log.info("Discovered bean {}", event.getBean().getBeanClass().getName());
+    log.debug("Discovered bean {}", event.getBean().getBeanClass().getName());
   }
 
   public TreeMap<String, MenuItemDescriptor> getMenuEntries() {

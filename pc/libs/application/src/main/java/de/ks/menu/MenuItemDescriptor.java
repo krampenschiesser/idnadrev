@@ -44,6 +44,10 @@ public class MenuItemDescriptor implements Comparable<MenuItemDescriptor> {
     return menuItemPath;
   }
 
+  public String getTranslationPath() {
+    return menuItemPath.substring(1).replace("/",".");
+  }
+
   public String getImagePath() {
     return imagePath;
   }

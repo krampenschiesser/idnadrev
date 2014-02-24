@@ -49,24 +49,24 @@ public class MenuBarPresenterTest {
     assertEquals(2, menu.getMenus().size());
 
     Menu fileMenu = menu.getMenus().sorted().get(0);
-    assertEquals(Localized.get(Open.MENUPATH), fileMenu.getText());
+    assertEquals(Localized.get(getTranslationKey(Open.MENUPATH)), fileMenu.getText());
     assertFalse(fileMenu.getText().contains("/"));
 
     Menu optionsMenu = menu.getMenus().sorted().get(1);
-    assertEquals(Localized.get(About.MENUPATH), optionsMenu.getText());
+    assertEquals(Localized.get(getTranslationKey(About.MENUPATH)), optionsMenu.getText());
 
     assertEquals(2, fileMenu.getItems().size());
-    assertEquals(Localized.get(Open.ITEMPATH), fileMenu.getItems().get(0).getText());
+    assertEquals(Localized.get(getTranslationKey(Open.ITEMPATH)), fileMenu.getItems().get(0).getText());
     assertFalse(fileMenu.getItems().get(0).getText().contains("/"));
-    assertEquals(Localized.get(Save.ITEMPATH), fileMenu.getItems().get(1).getText());
+    assertEquals(Localized.get(getTranslationKey(Save.ITEMPATH)), fileMenu.getItems().get(1).getText());
 
     assertEquals(2, optionsMenu.getItems().size());
-    assertEquals(Localized.get(About.ITEMPATH), optionsMenu.getItems().get(0).getText());
-    assertEquals(Localized.get(Keymap.MENUPATH), optionsMenu.getItems().get(1).getText());
+    assertEquals(Localized.get(getTranslationKey(About.ITEMPATH)), optionsMenu.getItems().get(0).getText());
+    assertEquals(Localized.get(getTranslationKey(Keymap.MENUPATH)), optionsMenu.getItems().get(1).getText());
 
     Menu preferencesMenu = (Menu) optionsMenu.getItems().get(1);
     assertEquals(1, preferencesMenu.getItems().size());
-    assertEquals(Localized.get(Keymap.ITEMPATH), preferencesMenu.getItems().get(0).getText());
+    assertEquals(Localized.get(getTranslationKey(Keymap.ITEMPATH)), preferencesMenu.getItems().get(0).getText());
 
     MenuItem keymapItem = preferencesMenu.getItems().get(0);
     for (int i = 0; i < 10; i++) {
@@ -78,6 +78,10 @@ public class MenuBarPresenterTest {
     assertEquals(ImageView.class, keymapItem.getGraphic().getClass());
     ImageView view = (ImageView) keymapItem.getGraphic();
     assertSame(Images.get("keymap.jpg"), view.getImage());
+  }
+
+  private String getTranslationKey(String menupath) {
+    return menupath.substring(1).replace("/", ".");
   }
 
   @Test

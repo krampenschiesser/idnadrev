@@ -255,10 +255,10 @@ public class PropertyPath<T> {
   }
 
   public String toLocalizationPath() {
-    StringBuilder builder = new StringBuilder("/");
-    builder.append(root.getSimpleName()).append("/");
+    StringBuilder builder = new StringBuilder();
+    builder.append(root.getSimpleName()).append(".");
     for (String fieldName : fieldPath) {
-      builder.append(fieldName).append("/");
+      builder.append(fieldName).append(".");
     }
     String path = builder.toString();
     return path.substring(0, path.length() - 1);

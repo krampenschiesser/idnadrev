@@ -53,10 +53,10 @@ public class Localized {
 
   /**
    * Use this method to get a translation for a key.
-   * The key "/hello/world" is stored like that:
-   * /hello/world=Hello {0}{1}
+   * The key "hello.world" is stored like that:
+   * hello.world=Hello {0}{1}
    * And the corresponding method parameters will be:
-   * "/hello/world", "world", "!"
+   * "hello.world", "world", "!"
    * Which will result in:
    * Hello world!
    * If you add a colon ":" to the end of the string it is ignored.
@@ -67,12 +67,6 @@ public class Localized {
    * @return
    */
   public static String get(String key, Object... args) {
-    if (key.contains(".")) {
-      key = key.replace(".", "/");
-    }
-    if (!key.startsWith("/")) {
-      key = "/" + key;
-    }
     String string = getBundle().getString(key);
 
     for (int i = 0; i < args.length; i++) {
@@ -83,8 +77,8 @@ public class Localized {
   }
 
   public static String get(Field field) {
-    String key = "/" + field.getDeclaringClass().getName().replace(".", "/");
-    key += "/" + field.getName();
+    String key = field.getDeclaringClass().getName();
+    key += field.getName();
     return get(key);
   }
 }

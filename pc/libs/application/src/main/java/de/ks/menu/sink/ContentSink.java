@@ -25,7 +25,7 @@ public class ContentSink extends AbstractSink<ContentSink> {
 
   @Inject
   public ContentSink(EventBus bus) {
-    super(bus);
+    super(bus);//TODO use navigator to show next activity
   }
 
   @Override

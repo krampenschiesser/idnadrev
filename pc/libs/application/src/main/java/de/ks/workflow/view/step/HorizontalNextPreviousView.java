@@ -65,7 +65,7 @@ public class HorizontalNextPreviousView implements Initializable {
           }
           if (current.getOutputs().size() == 1) {
             if (current.getOutputs().iterator().next().getOutputs().isEmpty()) {
-              next.setText(Localized.get("/workflow/ok"));
+              next.setText(Localized.get("workflow.ok"));
             }
           }
         }

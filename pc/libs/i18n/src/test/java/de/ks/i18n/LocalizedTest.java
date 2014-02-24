@@ -26,27 +26,27 @@ public class LocalizedTest {
 
   @Test
   public void testLanguageChange() throws Exception {
-    String helloWorld = Localized.get("/hello");
+    String helloWorld = Localized.get("hello");
     assertEquals("Hello world!", helloWorld);
 
     Localized.changeLocale(Locale.GERMAN);
-    helloWorld = Localized.get("/hello");
+    helloWorld = Localized.get("hello");
     assertEquals("Hallo Welt!", helloWorld);
 
     Localized.changeLocale(Locale.ENGLISH);
-    helloWorld = Localized.get("/hello");
+    helloWorld = Localized.get("hello");
     assertEquals("Hello world!", helloWorld);
   }
 
   @Test
   public void testParameters() throws Exception {
-    String helloSauerland = Localized.get("/hello/parametererized", "Sauerland", "!!!");
+    String helloSauerland = Localized.get("hello.parametererized", "Sauerland", "!!!");
     assertEquals("Hello Sauerland!!!", helloSauerland);
   }
 
   @Test
   public void testParametersPositioned() throws Exception {
-    String helloSauerland = Localized.get("/hello/positioned", "!!!", "Sauerland");
+    String helloSauerland = Localized.get("hello.positioned", "!!!", "Sauerland");
     assertEquals("Hello Sauerland!!!", helloSauerland);
   }
 

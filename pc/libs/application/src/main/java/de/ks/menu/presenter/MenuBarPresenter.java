@@ -51,14 +51,14 @@ public class MenuBarPresenter extends AbstractPresenter<MenuBar> {
     if (item.getImagePath() != null && !item.getImagePath().isEmpty()) {
       Images.later(item.getImagePath(), (Image img) -> menuItem.setGraphic(new ImageView(img)));
     }
-    menuItem.setText(Localized.get(item.getMenuItemPath()));
+    menuItem.setText(Localized.get(item.getTranslationPath()));
     menuItem.setOnAction(createDefaultActionHandler(item));
     return menuItem;
   }
 
   private void createMenu(String menuPath) {
     Menu menu = new Menu();
-    menu.setText(Localized.get(menuPath.toLowerCase()));
+    menu.setText(Localized.get(menuPath.toLowerCase().substring(1).replace("/",".")));
     menus.put(menuPath, menu);
   }
 

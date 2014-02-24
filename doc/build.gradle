@@ -1,13 +1,20 @@
 buildscript {
     repositories {
         maven { url 'http://repo.springsource.org/plugins-release' }
+        maven {
+            name 'Bintray Asciidoctor repo'
+            url 'http://dl.bintray.com/content/aalmiray/asciidoctor'
+        }
+        jcenter()
     }
     dependencies {
+        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:0.7.0'
         classpath "org.springframework.build.gradle:docbook-reference-plugin:$docbook"
     }
 }
 
 apply plugin: 'docbook-reference'
+apply plugin: 'asciidoctor'
 
 reference {
     sourceDir = file('src')

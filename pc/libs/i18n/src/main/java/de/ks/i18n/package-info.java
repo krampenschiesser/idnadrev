@@ -15,10 +15,10 @@
  * Naming convention is: Translation_en.properties
  *
  * Basic usage: {@link de.ks.i18n.Localized#get(String, Object...)}
- * The key "/hello/world" is stored like that:
- *  /hello/world=Hello {0}{1}
+ * The key "hello.world" is stored like that:
+ *  hello.world=Hello {0}{1}
  * And the corresponding method call will be:
- *  "/hello/world", "world", "!"
+ *  "hello.world", "world", "!"
  * Which will result in:
  *  Hello world!
  * If you add a colon ":" to the end of the string it is ignored.

@@ -5,6 +5,7 @@ package de.ks.executor;
  * All rights reserved by now, license may come later.
  */
 
+import com.google.common.util.concurrent.*;
 import javafx.application.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,15 +25,15 @@ import java.util.concurrent.*;
  * {@link ThreadCallBoundValue}.
  */
 @Vetoed
-public class ExecutorService implements ScheduledExecutorService {
+public class ExecutorService implements ListeningScheduledExecutorService {
   private static final Logger log = LoggerFactory.getLogger(ExecutorService.class);
   public static final ExecutorService instance = new ExecutorService();
 
-  protected final ScheduledExecutorService pool;
+  protected final ListeningScheduledExecutorService pool;
   protected final ThreadPropagations propagations;
 
   private ExecutorService() {
-    pool = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors(), new SimpleThreadFactory());
+    pool = MoreExecutors.listeningDecorator(Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors(), new SimpleThreadFactory()));
     propagations = new ThreadPropagations();
   }
 
@@ -41,25 +42,25 @@ public class ExecutorService implements ScheduledExecutorService {
   }
 
   @Override
-  public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
+  public ListenableScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
     command = wrap(command);
     return pool.schedule(command, delay, unit);
   }
 
   @Override
-  public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit) {
+  public <V> ListenableScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit) {
     callable = wrap(callable);
     return pool.schedule(callable, delay, unit);
   }
 
   @Override
-  public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit) {
+  public ListenableScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit) {
     command = wrap(command);
     return pool.scheduleAtFixedRate(command, initialDelay, period, unit);
   }
 
   @Override
-  public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit) {
+  public ListenableScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit) {
     command = wrap(command);
     return pool.scheduleWithFixedDelay(command, initialDelay, delay, unit);
   }
@@ -90,19 +91,19 @@ public class ExecutorService implements ScheduledExecutorService {
   }
 
   @Override
-  public <T> Future<T> submit(Callable<T> task) {
+  public <T> ListenableFuture<T> submit(Callable<T> task) {
     task = wrap(task);
     return pool.submit(task);
   }
 
   @Override
-  public <T> Future<T> submit(Runnable task, T result) {
+  public <T> ListenableFuture<T> submit(Runnable task, T result) {
     task = wrap(task);
     return pool.submit(task, result);
   }
 
   @Override
-  public Future<?> submit(Runnable task) {
+  public ListenableFuture<?> submit(Runnable task) {
     task = wrap(task);
     return pool.submit(task);
   }
@@ -140,6 +141,7 @@ public class ExecutorService implements ScheduledExecutorService {
   public void invokeInJavaFXThread(Runnable command) {
     final Runnable runner = wrap(command);
 
+    @SuppressWarnings("unchecked")
     FutureTask futureTask = new FutureTask(() -> {
       runner.run();
       return null;
@@ -157,16 +159,16 @@ public class ExecutorService implements ScheduledExecutorService {
     executeInJavaFXThreadInternal(command);
   }
 
-  public <V> Future<V> executeInJavaFXThread(Callable<V> command) {
+  public <V> ListenableFuture<V> executeInJavaFXThread(Callable<V> command) {
     final Callable<V> runner = wrap(command);
-    FutureTask<V> futureTask = new FutureTask<>(runner);
+    ListenableFutureTask<V> futureTask = ListenableFutureTask.create(runner);
     executeInJavaFXThreadInternal(futureTask);
     return futureTask;
   }
 
   public <V> V loadInJavaFXThread(Callable<V> command) {
     final Callable<V> runner = wrap(command);
-    FutureTask<V> futureTask = new FutureTask<>(runner);
+    ListenableFutureTask<V> futureTask = ListenableFutureTask.create(runner);
     executeInJavaFXThreadInternal(futureTask);
     try {
       return futureTask.get();

@@ -26,7 +26,7 @@ public class IllegalArgumentViolation<T> implements ConstraintViolation<T> {
 
   @SuppressWarnings("unchecked")
   public IllegalArgumentViolation(T rootBean, Field field, Object invalidValue) {
-    this.messageTemplate = "/validation/error/illegalValue";
+    this.messageTemplate = "validation.errorillegalValue";
     this.message = Localized.get(messageTemplate, invalidValue);
     this.rootBean = rootBean;
     this.rootBeanClass = (Class<T>) field.getDeclaringClass();
