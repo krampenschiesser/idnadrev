@@ -4,12 +4,13 @@
         <!-- encoders are assigned the type
              ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%-15.15thread] %-5level - %-100msg %logger{36}:%L %n  </pattern>
+            <pattern>%d{HH:mm:ss.SSS} [%-15.15thread] %-5level - %-100msg %logger{36}:%L %n</pattern>
         </encoder>
     </appender>
 
     <root level="info">
-        <appender-ref ref="STDOUT" />
+        <appender-ref ref="STDOUT"/>
     </root>
-    <logger name="de.ks" level="debug" />
+    <logger name="de.ks" level="debug"/>
+    <logger name="de.ks.workflow.cdi" level="info"/>
 </configuration>
