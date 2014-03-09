@@ -6,6 +6,7 @@ package de.ks.menu.sink;
  */
 
 import de.ks.NodeProvider;
+import de.ks.application.Navigator;
 import de.ks.eventsystem.bus.EventBus;
 import de.ks.menu.MenuItemDescriptor;
 import javafx.scene.Node;
@@ -25,17 +26,24 @@ public class ContentSink extends AbstractSink<ContentSink> {
 
   @Inject
   public ContentSink(EventBus bus) {
-    super(bus);//TODO use navigator to show next activity
+    super(bus);
   }
 
   @Override
   protected void showMenuItem(Object menuItem, MenuItemDescriptor item) {
-    pane.getChildren().clear();
+    Navigator navigator = Navigator.getNavigator(pane);
+    if (navigator == null) {
+      log.error("No navigator registered, can't show item {}", item);
+      return;
+    }
+    //  pane.getChildren().clear();
     if (menuItem instanceof Node) {
-      pane.getChildren().add((Node) menuItem);
+      navigator.presentInMain((Node) menuItem);
+      //pane.getChildren().add((Node) menuItem);
     } else if (menuItem instanceof NodeProvider) {
       NodeProvider nodeProvider = (NodeProvider) menuItem;
-      pane.getChildren().add(nodeProvider.getNode());
+      navigator.presentInMain(nodeProvider.getNode());
+      //pane.getChildren().add(nodeProvider.getNode());
     } else {
       log.error("Could not handle MenuItemClickedEvent because {} is not a {}", menuItem.getClass(), Node.class.getName());
     }

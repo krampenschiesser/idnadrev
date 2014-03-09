@@ -13,6 +13,9 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javafx.stage.Window;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Deque;
 import java.util.HashMap;
@@ -23,15 +26,28 @@ import java.util.concurrent.ConcurrentMap;
  *
  */
 public class Navigator {
-  private static ConcurrentMap<Stage, Navigator> navigators = new MapMaker().weakKeys().makeMap();
+  private static final Logger log = LoggerFactory.getLogger(Navigator.class);
+  private static ConcurrentMap<Window, Navigator> navigators = new MapMaker().weakKeys().makeMap();
 
-  public static Navigator getNavigator(Stage stage) {
+  /**
+   * @param node
+   * @return the navigator associated with the window of this node.
+   */
+  public static Navigator getNavigator(Node node) {
+    return navigators.get(node.getScene().getWindow());
+  }
+
+  public static Navigator getNavigator(Window stage) {
     return navigators.get(stage);
   }
 
-  public static Navigator registerNavigator(Stage stage, Pane root) {
+  public static Navigator registerNavigator(Window stage, Pane root) {
     Navigator navigator = new Navigator(root);
-    navigators.putIfAbsent(stage, navigator);
+    Navigator old = navigators.remove(stage);
+    if (old != null) {
+      log.warn("Replacing root pane of navigator, old={} new={}", old.getMainArea().getContent(), root);
+    }
+    navigators.put(stage, navigator);
     return navigator;
   }
 

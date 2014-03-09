@@ -8,11 +8,14 @@ package de.ks.application;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  */
 public class PresentationArea {
+  private static final Logger log = LoggerFactory.getLogger(PresentationArea.class);
   protected final String id;
   protected final Pane content;
   protected final SimpleObjectProperty<Node> currentNode = new SimpleObjectProperty<>();
@@ -21,6 +24,7 @@ public class PresentationArea {
     this.id = id;
     this.content = content;
     currentNode.addListener((o, f, n) -> {
+      log.debug("Showing new node {} in content {} of presentation area {}", n, content, this);
       content.getChildren().clear();
 
       content.getChildren().add(n);
@@ -44,7 +48,14 @@ public class PresentationArea {
     return this;
   }
 
-  public  SimpleObjectProperty<Node> currentNodeProperty() {
+  public SimpleObjectProperty<Node> currentNodeProperty() {
     return currentNode;
+  }
+
+  @Override
+  public String toString() {
+    return super.toString() + " {" +
+            "id='" + id + '\'' +
+            '}';
   }
 }

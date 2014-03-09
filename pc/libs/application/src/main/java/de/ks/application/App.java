@@ -11,6 +11,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -41,11 +42,12 @@ public class App extends Application {
       if (icon != null) {
         stage.getIcons().add(icon);
       }
+      Navigator.registerNavigator(stage, (Pane) mainWindow.getNode());
     }
     stage.setOnCloseRequest((WindowEvent e) -> {
       Launcher.instance.stop();
     });
+
     stage.show();
-    //TODO register mainstage with navigator
   }
 }

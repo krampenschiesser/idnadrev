@@ -62,15 +62,16 @@ public abstract class AbstractSink<T extends AbstractSink> {
   @Subscribe
   @Threading(HandlingThread.JavaFX)
   public boolean onEvent(MenuItemClickedEvent event) {
-    if (event.getItem().getMenuPath().startsWith(getMenuPath())) {
-      Instance<?> select = menuItem.select(event.getTarget());
-      Object menuItem = select.get();
+    if (getMenuPath() != null) {
+      if (event.getItem().getMenuPath().startsWith(getMenuPath())) {
+        Instance<?> select = menuItem.select(event.getTarget());
+        Object menuItem = select.get();
 
-      showMenuItem(menuItem, event.getItem());
-      return true;
-    } else {
-      return false;
+        showMenuItem(menuItem, event.getItem());
+        return true;
+      }
     }
+    return false;
   }
 
   protected abstract void showMenuItem(Object menuItem, MenuItemDescriptor item);

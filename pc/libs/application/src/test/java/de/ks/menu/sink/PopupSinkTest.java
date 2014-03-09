@@ -14,6 +14,7 @@ import de.ks.menu.mainmenu.About;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,11 +40,16 @@ public class PopupSinkTest {
     sink.mockWindow(stage);
   }
 
+  @After
+  public void tearDown() throws Exception {
+    EventSystem.bus.unregister(sink);
+  }
+
   @Test
   public void testNullMenuPath() throws Exception {
     sink.setMenuPath(null);
 
-    EventSystem.bus.post(//
+    EventSystem.bus.postAndWait(//
             new MenuItemClickedEvent(//
                     new MenuItemDescriptor(About.MENUPATH, About.class)));
   }
