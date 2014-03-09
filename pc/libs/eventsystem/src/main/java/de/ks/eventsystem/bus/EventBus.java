@@ -74,8 +74,8 @@ public class EventBus {
 
         for (Iterator<EventHandler> iterator = eventHandlers.iterator(); iterator.hasNext(); ) {
           EventHandler next = iterator.next();
-          if (next.isValid()) {
-            Object instance = next.target.get();
+          Object instance = next.target.get();
+          if (instance !=null) {
             if (instance == handler) {
               iterator.remove();
             }

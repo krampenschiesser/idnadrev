@@ -43,13 +43,9 @@ class EventHandler {
     }
   }
 
-  public boolean isValid() {
-    return target.get() != null;
-  }
-
   public boolean handleEvent(Object event, boolean wait) {
-    if (isValid()) {
-      Object targetInstance = target.get();
+    Object targetInstance = target.get();
+    if (targetInstance != null) {
       Object retval = null;
       switch (this.handlingThread) {
         case Sync:
