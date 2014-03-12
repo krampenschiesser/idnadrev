@@ -28,16 +28,14 @@ public abstract class AbstractPresenter<T> {
 
   public abstract T getMenu(String menuPath);
 
+  @SuppressWarnings("unchecked")
   public EventHandler<ActionEvent> createDefaultActionHandler(MenuItemDescriptor item) {
-    return new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent actionEvent) {
-        if (Workflow.class.isAssignableFrom(item.getTarget())) {
-          WorkflowContext.start((Class<? extends Workflow>) item.getTarget());
-        }
-        log.debug("Sending event for item {}", item.getTarget().getSimpleName());
-        EventSystem.bus.post(new MenuItemClickedEvent(item));
+    return event -> {
+      if (Workflow.class.isAssignableFrom(item.getTarget())) {
+        WorkflowContext.start((Class<? extends Workflow>) item.getTarget());
       }
+      log.debug("Sending event for item {}", item.getTarget().getSimpleName());
+      EventSystem.bus.post(new MenuItemClickedEvent(item));
     };
   }
 }
