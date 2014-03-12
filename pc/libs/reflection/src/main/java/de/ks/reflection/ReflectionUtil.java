@@ -33,6 +33,7 @@ public class ReflectionUtil {
    * @return
    */
   @SafeVarargs
+  @SuppressWarnings("unchecked")
   public static List<Method> getAllMethods(Class<?> clazz, Predicate<Method>... predicates) {
     ArrayList<Method> methods = new ArrayList<>(100);
     Map<Pair<String, List<Class<?>>>, Method> collected = new HashMap<>();
@@ -61,6 +62,8 @@ public class ReflectionUtil {
     }
   }
 
+  @SafeVarargs
+  @SuppressWarnings("unchecked")
   public static List<Field> getAllFields(Class<?> clazz, Predicate<Field>... predicates) {
     ArrayList<Field> fields = new ArrayList<>(100);
 
@@ -107,21 +110,11 @@ public class ReflectionUtil {
   }
 
   protected static Comparator<Method> getMethodComparator() {
-    return new Comparator<Method>() {
-      @Override
-      public int compare(Method o1, Method o2) {
-        return o1.getName().compareTo(o2.getName());
-      }
-    };
+    return (o1, o2) -> o1.getName().compareTo(o2.getName());
   }
 
   protected static Comparator<Field> getFieldComparator() {
-    return new Comparator<Field>() {
-      @Override
-      public int compare(Field o1, Field o2) {
-        return o1.getName().compareTo(o2.getName());
-      }
-    };
+    return (o1, o2) -> o1.getName().compareTo(o2.getName());
   }
 
   public static Object invokeMethod(Method method, Object target, Object... parameters) {

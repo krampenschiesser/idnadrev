@@ -23,6 +23,7 @@ public class Predicates {
    * @return null if predicates are null or empty
    */
   @SafeVarargs
+  @SuppressWarnings("unchecked")
   public static <T> Predicate<T> combineAnd(Predicate<T>... predicates) {
     if (!check(predicates)) {
       return null;
@@ -43,6 +44,7 @@ public class Predicates {
    * @return null if predicates are null or empty
    */
   @SafeVarargs
+  @SuppressWarnings("unchecked")
   public static <T> Predicate<T> combineOr(Predicate<T>... predicates) {
     if (!check(predicates)) {
       return null;
@@ -58,6 +60,8 @@ public class Predicates {
     }
   }
 
+  @SafeVarargs
+  @SuppressWarnings("unchecked")
   private static <T> boolean check(T... predicates) {
     return predicates != null && predicates.length != 0;
   }
