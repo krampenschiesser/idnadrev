@@ -44,12 +44,14 @@ public class BeagleWindow extends MainWindow {
 
   @Override
   public Parent getNode() {
-    borderPane = loader.getView();
-    borderPane.setTop(menuBarPresenter.getMenu("/main"));
+    if (borderPane == null) {
+      borderPane = loader.getView();
+      borderPane.setTop(menuBarPresenter.getMenu("/main"));
 
-    StackPane contentPane = new StackPane();
-    borderPane.setCenter(contentPane);
-    contentSink.setPane(contentPane);
+      StackPane contentPane = new StackPane();
+      borderPane.setCenter(contentPane);
+      contentSink.setPane(contentPane);
+    }
     return borderPane;
   }
 
