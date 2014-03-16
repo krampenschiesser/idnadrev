@@ -48,4 +48,16 @@ public class TaskLink {
     this.id = id;
     this.task = task;
   }
+
+  public Class<?> getSourceController() {
+    return sourceController;
+  }
+
+  public String getId() {
+    return id;
+  }
+
+  public Class<? extends Task<?>> getTask() {
+    return task;
+  }
 }

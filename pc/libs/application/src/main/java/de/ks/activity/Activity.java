@@ -5,13 +5,15 @@ package de.ks.activity;
  * All rights reserved by now, license may come later.
  */
 
-import de.ks.application.Navigator;
-import de.ks.application.fxml.DefaultLoader;
 import de.ks.activity.callback.InitializeActivityLinks;
+import de.ks.activity.callback.InitializeModelBindings;
+import de.ks.activity.callback.InitializeTaskLinks;
 import de.ks.activity.callback.InitializeViewLinks;
 import de.ks.activity.link.ActivityLink;
 import de.ks.activity.link.TaskLink;
 import de.ks.activity.link.ViewLink;
+import de.ks.application.Navigator;
+import de.ks.application.fxml.DefaultLoader;
 import javafx.concurrent.Task;
 import javafx.scene.Node;
 
@@ -60,10 +62,9 @@ public class Activity {
    * @param sourceController
    * @param id
    * @param task
-   * @param <V>
    * @return
    */
-  public <V> Activity withTask(Class<?> sourceController, String id, Class<? extends Task<V>> task) {
+  public Activity withTask(Class<?> sourceController, String id, Class<? extends Task<?>> task) {
     TaskLink taskLink = TaskLink.from(sourceController).with(id).execute(task).build();
     taskLinks.add(taskLink);
     return this;
@@ -123,9 +124,20 @@ public class Activity {
   private void addCallbacks(DefaultLoader<Node, Object> loader) {
     loader.addCallback(new InitializeViewLinks(viewLinks, activityController));
     loader.addCallback(new InitializeActivityLinks(activityLinks, activityController));
+    loader.addCallback(new InitializeTaskLinks(taskLinks, activityController));
+    loader.addCallback(new InitializeModelBindings(this));
+
   }
 
   public List<ViewLink> getViewLinks() {
     return viewLinks;
+  }
+
+  public List<TaskLink> getTaskLinks() {
+    return taskLinks;
+  }
+
+  public List<ActivityLink> getActivityLinks() {
+    return activityLinks;
   }
 }
