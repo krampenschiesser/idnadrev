@@ -19,7 +19,7 @@ import java.util.concurrent.*;
 /**
  * The thread pool for the application.
  * It delegates to the {@link ScheduledExecutorService}.
- * <p/>
+ * <p>
  * But there is one major difference: {@link #getPropagations()}
  * It will wrap each task that is submitted to the thread pool in order to execute all registered
  * {@link ThreadCallBoundValue}.
@@ -31,9 +31,11 @@ public class ExecutorService implements ListeningScheduledExecutorService {
 
   protected final ListeningScheduledExecutorService pool;
   protected final ThreadPropagations propagations;
+  private final ScheduledThreadPoolExecutor delegate;
 
   private ExecutorService() {
-    pool = MoreExecutors.listeningDecorator(Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors(), new SimpleThreadFactory()));
+    delegate = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors(), new SimpleThreadFactory());
+    pool = MoreExecutors.listeningDecorator(delegate);
     propagations = new ThreadPropagations();
   }
 
@@ -141,8 +143,7 @@ public class ExecutorService implements ListeningScheduledExecutorService {
   public void invokeInJavaFXThread(Runnable command) {
     final Runnable runner = wrap(command);
 
-    @SuppressWarnings("unchecked")
-    FutureTask futureTask = new FutureTask(() -> {
+    @SuppressWarnings("unchecked") FutureTask futureTask = new FutureTask(() -> {
       runner.run();
       return null;
     });
@@ -252,5 +253,9 @@ public class ExecutorService implements ListeningScheduledExecutorService {
       }
     };
     return runnable;
+  }
+
+  public BlockingQueue<Runnable> getQueue() {
+    return delegate.getQueue();
   }
 }
