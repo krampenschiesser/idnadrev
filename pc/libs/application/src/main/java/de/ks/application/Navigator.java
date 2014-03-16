@@ -29,6 +29,15 @@ public class Navigator {
   private static final Logger log = LoggerFactory.getLogger(Navigator.class);
   private static ConcurrentMap<Window, Navigator> navigators = new MapMaker().weakKeys().makeMap();
 
+  public static Navigator getCurrentNavigator() {
+    for (Map.Entry<Window, Navigator> entry : navigators.entrySet()) {
+      if (entry.getKey().isFocused() && entry.getKey().isShowing()) {
+        return entry.getValue();
+      }
+    }
+    return null;
+  }
+
   /**
    * @param node
    * @return the navigator associated with the window of this node.
@@ -41,7 +50,7 @@ public class Navigator {
     return navigators.get(stage);
   }
 
-  public static Navigator registerNavigator(Window stage, Pane root) {
+  public static Navigator register(Window stage, Pane root) {
     Navigator navigator = new Navigator(root);
     Navigator old = navigators.remove(stage);
     if (old != null) {
@@ -51,28 +60,30 @@ public class Navigator {
     return navigator;
   }
 
-  public static Navigator registerNavigatorWithBorderPane(Stage stage) {
+  public static Navigator registerWithBorderPane(Stage stage) {
     BorderPane borderPane = new BorderPane();
-    StackPane content = new StackPane();
-    borderPane.setCenter(content);
-    Navigator navigator = new Navigator(content);
-
-    content = new StackPane();
+    borderPane.setCenter(new StackPane());
     borderPane.setTop(new StackPane());
-    navigator.addPresentationArea(TOP_AREA, content);
-
-    content = new StackPane();
     borderPane.setBottom(new StackPane());
-    navigator.addPresentationArea(BOTTOM_AREA, content);
-
-    content = new StackPane();
     borderPane.setLeft(new StackPane());
-    navigator.addPresentationArea(LEFT_AREA, content);
-
-    content = new StackPane();
     borderPane.setRight(new StackPane());
-    navigator.addPresentationArea(RIGHT_AREA, content);
+    return registerWithExistingPane(stage, borderPane);
+  }
 
+  public static Navigator registerWithExistingPane(Stage stage, BorderPane borderPane) {
+    Navigator navigator = new Navigator((Pane) borderPane.getCenter());
+    if (borderPane.getTop() instanceof Pane) {
+      navigator.addPresentationArea(TOP_AREA, (Pane) borderPane.getTop());
+    }
+    if (borderPane.getBottom() instanceof Pane) {
+      navigator.addPresentationArea(BOTTOM_AREA, (Pane) borderPane.getBottom());
+    }
+    if (borderPane.getLeft() instanceof Pane) {
+      navigator.addPresentationArea(LEFT_AREA, (Pane) borderPane.getLeft());
+    }
+    if (borderPane.getRight() instanceof Pane) {
+      navigator.addPresentationArea(RIGHT_AREA, (Pane) borderPane.getRight());
+    }
     navigators.put(stage, navigator);
     return navigator;
   }

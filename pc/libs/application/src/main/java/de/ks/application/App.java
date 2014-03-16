@@ -11,6 +11,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -42,7 +43,12 @@ public class App extends Application {
       if (icon != null) {
         stage.getIcons().add(icon);
       }
-      Navigator.registerNavigator(stage, (Pane) mainWindow.getNode());
+      Pane pane = (Pane) mainWindow.getNode();
+      if (pane instanceof BorderPane) {
+        Navigator.registerWithExistingPane(stage, (BorderPane) pane);
+      } else {
+        Navigator.register(stage, pane);
+      }
     }
     stage.setOnCloseRequest((WindowEvent e) -> {
       Launcher.instance.stop();
