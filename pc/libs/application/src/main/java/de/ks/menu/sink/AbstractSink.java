@@ -6,6 +6,7 @@ package de.ks.menu.sink;
  */
 
 import com.google.common.eventbus.Subscribe;
+import de.ks.activity.ActivityController;
 import de.ks.eventsystem.bus.EventBus;
 import de.ks.eventsystem.bus.HandlingThread;
 import de.ks.eventsystem.bus.Threading;
@@ -22,7 +23,8 @@ import javax.inject.Inject;
  *
  */
 public abstract class AbstractSink<T extends AbstractSink> {
-  protected EventBus bus;
+  protected final ActivityController controller;
+  protected final EventBus bus;
   protected String menuPath;
 
   @Inject
@@ -30,8 +32,9 @@ public abstract class AbstractSink<T extends AbstractSink> {
   Instance<Object> menuItem;
 
   @Inject
-  public AbstractSink(EventBus bus) {
+  public AbstractSink(EventBus bus, ActivityController controller) {
     this.bus = bus;
+    this.controller = controller;
   }
 
   @SuppressWarnings("unchecked")

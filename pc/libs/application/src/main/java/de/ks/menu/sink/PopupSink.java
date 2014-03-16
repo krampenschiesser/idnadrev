@@ -6,6 +6,7 @@ package de.ks.menu.sink;
  */
 
 import de.ks.NodeProvider;
+import de.ks.activity.ActivityController;
 import de.ks.eventsystem.bus.EventBus;
 import de.ks.i18n.Localized;
 import de.ks.menu.MenuItemDescriptor;
@@ -28,8 +29,8 @@ public class PopupSink extends AbstractSink<PopupSink> {
   private Stage mockStage = null;
 
   @Inject
-  public PopupSink(EventBus bus) {
-    super(bus);
+  public PopupSink(EventBus bus, ActivityController controller) {
+    super(bus, controller);
   }
 
   protected void showMenuItem(Object menuItem, MenuItemDescriptor item) {

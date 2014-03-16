@@ -6,6 +6,8 @@ package de.ks.menu.sink;
  */
 
 import de.ks.NodeProvider;
+import de.ks.activity.Activity;
+import de.ks.activity.ActivityController;
 import de.ks.application.Navigator;
 import de.ks.eventsystem.bus.EventBus;
 import de.ks.menu.MenuItemDescriptor;
@@ -25,8 +27,8 @@ public class ContentSink extends AbstractSink<ContentSink> {
   protected Pane pane;
 
   @Inject
-  public ContentSink(EventBus bus) {
-    super(bus);
+  public ContentSink(EventBus bus, ActivityController controller) {
+    super(bus, controller);
   }
 
   @Override
@@ -44,6 +46,8 @@ public class ContentSink extends AbstractSink<ContentSink> {
       NodeProvider nodeProvider = (NodeProvider) menuItem;
       navigator.presentInMain(nodeProvider.getNode());
       //pane.getChildren().add(nodeProvider.getNode());
+    } else if (menuItem instanceof Activity) {
+      controller.start((Activity) menuItem);
     } else {
       log.error("Could not handle MenuItemClickedEvent because {} is not a {}", menuItem.getClass(), Node.class.getName());
     }

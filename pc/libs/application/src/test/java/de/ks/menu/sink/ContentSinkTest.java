@@ -54,7 +54,7 @@ public class ContentSinkTest {
       Scene scene = new Scene(pane);
       JFXCDIRunner.getStage().setScene(scene);
     });
-    Navigator.registerNavigator(JFXCDIRunner.getStage(), pane);
+    Navigator.register(JFXCDIRunner.getStage(), pane);
     ExecutorService.instance.invokeInJavaFXThread(() -> assertNotNull(Navigator.getNavigator(pane)));
     ExecutorService.instance.invokeInJavaFXThread(() -> pane.getScene().getWindow());
     assertNotNull(Navigator.getNavigator(pane));
