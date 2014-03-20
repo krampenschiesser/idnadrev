@@ -1,3 +1,19 @@
+/*
+ * Copyright [2014] [Christian Loehnert]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package de.ks.activity;
 /*
  * Created by Christian Loehnert
@@ -14,6 +30,7 @@ import de.ks.activity.link.TaskLink;
 import de.ks.activity.link.ViewLink;
 import de.ks.application.Navigator;
 import de.ks.application.fxml.DefaultLoader;
+import de.ks.datasource.DataSource;
 import javafx.concurrent.Task;
 import javafx.scene.Node;
 
@@ -23,6 +40,7 @@ import java.util.*;
  *
  */
 public class Activity {
+  private final DataSource<?> dataSource;
   private final Class<?> initialController;
   private final ActivityController activityController;
   private final Navigator navigator;
@@ -32,7 +50,8 @@ public class Activity {
 
   protected final Map<Class<?>, DefaultLoader<Node, Object>> preloads = new HashMap<>();
 
-  public Activity(Class<?> initialController, ActivityController activityController, Navigator navigator) {
+  public Activity(DataSource<?> dataSource, Class<?> initialController, ActivityController activityController, Navigator navigator) {
+    this.dataSource = dataSource;
     this.initialController = initialController;
     this.activityController = activityController;
     this.navigator = navigator;
@@ -139,5 +158,9 @@ public class Activity {
 
   public List<ActivityLink> getActivityLinks() {
     return activityLinks;
+  }
+
+  public DataSource<?> getDataSource() {
+    return dataSource;
   }
 }

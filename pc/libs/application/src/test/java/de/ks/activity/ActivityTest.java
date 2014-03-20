@@ -1,3 +1,19 @@
+/*
+ * Copyright [${YEAR}] [Christian Loehnert]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package de.ks.activity;
 /*
  * Created by Christian Loehnert
@@ -5,41 +21,23 @@ package de.ks.activity;
  * All rights reserved by now, license may come later.
  */
 
-import de.ks.JFXCDIRunner;
+import de.ks.activity.callback.InitializeTaskLinks;
+import de.ks.activity.callback.InitializeViewLinks;
 import de.ks.application.Navigator;
 import de.ks.application.PresentationArea;
 import de.ks.application.fxml.DefaultLoader;
-import de.ks.activity.callback.InitializeViewLinks;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
+import javax.enterprise.inject.spi.CDI;
+
+import static de.ks.JunitMatchers.withRetry;
 import static org.junit.Assert.*;
 
-/**
- *
- */
-@RunWith(JFXCDIRunner.class)
-public class ActivityTest {
-  private Navigator navigator;
-  private ActivityController activityController;
-  private Activity activity;
-
-  @Before
-  public void setUp() throws Exception {
-    navigator = Navigator.registerNavigatorWithBorderPane(JFXCDIRunner.getStage());
-    activityController = new ActivityController();
-
-    activity = new Activity(ActivityHome.class, activityController, navigator);
-    activity.withLink(ActivityHome.class, "showDetails", Navigator.RIGHT_AREA, DetailController.class);
-    activity.withLink(ActivityHome.class, "switchView", OtherController.class);
-    activity.withLink(OtherController.class, "back", ActivityHome.class);
-  }
-
+public class ActivityTest extends AbstractActivityTest {
   @Test
   public void testViewLinkNavigation() throws Exception {
     activityController.start(activity);
@@ -69,7 +67,7 @@ public class ActivityTest {
     assertNotNull(back.getOnAction());
     back.getOnAction().handle(new ActionEvent());
 
-    assertSame(currentNode,navigator.getMainArea().getCurrentNode());
+    assertSame(currentNode, navigator.getMainArea().getCurrentNode());
   }
 
   @Test
@@ -83,5 +81,18 @@ public class ActivityTest {
 
     button = (Button) loader.getView().lookup("#switchView");
     assertNotNull(button.getOnAction());
+  }
+
+  @Test
+  public void testInitializeTaskLinks() throws Exception {
+    DefaultLoader<StackPane, DetailController> loader = new DefaultLoader<>(DetailController.class);
+    InitializeTaskLinks taskLinks = new InitializeTaskLinks(activity.getTaskLinks(), activityController);
+    taskLinks.accept(loader.getController(), loader.getView());
+
+    Button button = (Button) loader.getView().lookup("#pressMe");
+    assertNotNull(button.getOnAction());
+    button.getOnAction().handle(new ActionEvent());
+
+    assertTrue(withRetry(() -> CDI.current().select(ActivityAction.class).get().isExecuted()));
   }
 }
