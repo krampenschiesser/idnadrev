@@ -1,5 +1,5 @@
 /*
- * Copyright [2014] [Christian Loehnert]
+ * Copyright [2014] [Christian Loehnert, krampenschiesser@freenet.de]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,6 @@
  */
 
 package de.ks.activity.callback;
-/*
- * Created by Christian Loehnert
- * Krampenschiesser@freenet.de
- * All rights reserved by now, license may come later.
- */
 
 import de.ks.activity.Activity;
 import de.ks.activity.ModelBound;
@@ -33,9 +28,6 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-/**
- *
- */
 public class InitializeModelBindings implements BiConsumer<Object, Node> {
   private static final Logger log = LoggerFactory.getLogger(InitializeModelBindings.class);
   private final Activity activity;

@@ -1,7 +1,7 @@
 The Article Title
 =================
 Author's Name <authors@email.address>
-v1.0, 2003-12
+v $version, 2003-12
 
 
 This is the optional preamble (an untitled section body). Useful for

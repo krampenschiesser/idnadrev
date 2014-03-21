@@ -15,11 +15,7 @@
  */
 
 package de.ks.workflow.cdi;
-/*
- * Created by Christian Loehnert
- * Krampenschiesser@freenet.de
- * All rights reserved by now, license may come later.
- */
+
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

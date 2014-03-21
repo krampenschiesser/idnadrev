@@ -1,5 +1,5 @@
 /*
- * Copyright [2014] [Christian Loehnert]
+ * Copyright [2014] [Christian Loehnert, krampenschiesser@freenet.de]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-package de.ks.workflow;/*
- * Created by Christian Loehnert
- * Krampenschiesser@freenet.de
- * All rights reserved by now, license may come later.
- */
+package de.ks.workflow;
 
 import de.ks.workflow.cdi.WorkflowScoped;
 import de.ks.workflow.step.DefaultOutput;

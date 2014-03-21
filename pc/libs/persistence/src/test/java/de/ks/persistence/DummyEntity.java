@@ -15,11 +15,7 @@
  */
 
 package de.ks.persistence;
-/*
- * Created by Christian Loehnert
- * Krampenschiesser@freenet.de
- * All rights reserved by now, license may come later.
- */
+
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

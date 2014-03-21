@@ -3,7 +3,7 @@ include "doc"
 include "pc:libs:testutil", "pc:libs:util", "pc:libs:reflection"
 
 /*
- * Copyright [2014] [Christian Loehnert]
+ * Copyright [2014] [Christian Loehnert, krampenschiesser@freenet.de]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

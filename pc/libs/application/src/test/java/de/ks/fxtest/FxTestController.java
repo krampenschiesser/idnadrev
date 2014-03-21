@@ -15,11 +15,7 @@
  */
 
 package de.ks.fxtest;
-/*
- * Created by Christian Loehnert
- * Krampenschiesser@freenet.de
- * All rights reserved by now, license may come later.
- */
+
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

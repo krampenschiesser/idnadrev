@@ -1,5 +1,5 @@
 /*
- * Copyright [2014] [Christian Loehnert]
+ * Copyright [2014] [Christian Loehnert, krampenschiesser@freenet.de]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 buildscript {
     repositories {
-        maven { url 'http://repo.springsource.org/plugins-release' }
         maven {
             name 'Bintray Asciidoctor repo'
             url 'http://dl.bintray.com/content/aalmiray/asciidoctor'
@@ -24,15 +23,9 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:0.7.0'
-        classpath "org.springframework.build.gradle:docbook-reference-plugin:$docbook"
+        classpath "org.asciidoctor:asciidoctor-gradle-plugin:$asciidoc"
     }
 }
 
-apply plugin: 'docbook-reference'
 apply plugin: 'asciidoctor'
 
-reference {
-    sourceDir = file('src')
-    pdfFilename = 'beagle.pdf'
-}

@@ -15,11 +15,7 @@
  */
 
 package de.ks.executor;
-/*
- * Created by Christian Loehnert
- * Krampenschiesser@freenet.de
- * All rights reserved by now, license may come later.
- */
+
 
 import org.junit.Test;
 import org.slf4j.Logger;

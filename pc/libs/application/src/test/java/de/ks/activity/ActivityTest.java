@@ -15,11 +15,7 @@
  */
 
 package de.ks.activity;
-/*
- * Created by Christian Loehnert
- * Krampenschiesser@freenet.de
- * All rights reserved by now, license may come later.
- */
+
 
 import de.ks.activity.callback.InitializeTaskLinks;
 import de.ks.activity.callback.InitializeViewLinks;

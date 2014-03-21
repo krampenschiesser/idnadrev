@@ -15,11 +15,7 @@
  */
 
 package de.ks.workflow.cdi;
-/*
- * Created by Christian Loehnert
- * Krampenschiesser@freenet.de
- * All rights reserved by now, license may come later.
- */
+
 
 import de.ks.workflow.Workflow;
 import de.ks.workflow.step.EditStep;

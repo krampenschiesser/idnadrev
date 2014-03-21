@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-package de.ks.beagle.entity;/*
- * Created by Christian Loehnert
- * Krampenschiesser@freenet.de
- * All rights reserved by now, license may come later.
- */
+package de.ks.beagle.entity;
 
 import com.google.common.io.Files;
 import de.ks.persistence.PersistentWork;

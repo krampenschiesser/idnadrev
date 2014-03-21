@@ -15,11 +15,7 @@
  */
 
 package de.ks.beagle.entity;
-/*
- * Created by Christian Loehnert
- * Krampenschiesser@freenet.de
- * All rights reserved by now, license may come later.
- */
+
 
 import de.ks.persistence.PersistentWork;
 import de.ks.persistence.entity.AbstractPersistentObject;

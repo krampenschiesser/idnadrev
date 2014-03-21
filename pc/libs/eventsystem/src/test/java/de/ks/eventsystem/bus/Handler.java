@@ -15,11 +15,7 @@
  */
 
 package de.ks.eventsystem.bus;
-/*
- * Created by Christian Loehnert
- * Krampenschiesser@freenet.de
- * All rights reserved by now, license may come later.
- */
+
 
 import com.google.common.eventbus.Subscribe;
 

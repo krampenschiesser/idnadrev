@@ -15,11 +15,7 @@
  */
 
 package de.ks.menu.presenter;
-/*
- * Created by Christian Loehnert
- * Krampenschiesser@freenet.de
- * All rights reserved by now, license may come later.
- */
+
 
 import com.google.common.eventbus.Subscribe;
 import de.ks.JFXCDIRunner;

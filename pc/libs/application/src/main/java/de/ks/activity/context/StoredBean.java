@@ -1,5 +1,5 @@
 /*
- * Copyright [2014] [Christian Loehnert]
+ * Copyright [2014] [Christian Loehnert, krampenschiesser@freenet.de]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,7 @@
  */
 
 package de.ks.activity.context;
-/*
- * Created by Christian Loehnert
- * Krampenschiesser@freenet.de
- * All rights reserved by now, license may come later.
- */
+
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;

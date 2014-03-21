@@ -15,11 +15,7 @@
  */
 
 package de.ks.activity;
-/*
- * Created by Christian Loehnert
- * Krampenschiesser@freenet.de
- * All rights reserved by now, license may come later.
- */
+
 
 import javafx.concurrent.Task;
 import org.slf4j.Logger;

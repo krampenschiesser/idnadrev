@@ -15,11 +15,7 @@
  */
 
 package de.ks.workflow;
-/*
- * Created by Christian Loehnert
- * Krampenschiesser@freenet.de
- * All rights reserved by now, license may come later.
- */
+
 
 import de.ks.workflow.cdi.WorkflowScoped;
 import de.ks.workflow.cdi.WorkflowSpecificLiteral;

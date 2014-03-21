@@ -15,11 +15,7 @@
  */
 
 package de.ks.workflow.specific;
-/*
- * Created by Christian Loehnert
- * Krampenschiesser@freenet.de
- * All rights reserved by now, license may come later.
- */
+
 
 import de.ks.workflow.cdi.TestWorkflow2;
 import de.ks.workflow.cdi.WorkflowSpecific;
