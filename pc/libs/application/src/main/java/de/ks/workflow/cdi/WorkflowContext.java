@@ -119,12 +119,12 @@ public class WorkflowContext implements Context {
     Class<?> beanClass = bean.getBeanClass();
     Annotation annotation = beanClass.getAnnotation(WorkflowScoped.class);
 
-    if (annotation instanceof WorkflowScoped) {
+    if (annotation != null) {
       if (workflowStack.get().isEmpty()) {
         throw new IllegalStateException("No workflow currently active!");
       }
       Class<?> currentWorkflow = this.workflowStack.get().getLast();
-      Pair<Class<?>, Class<?>> pair = (Pair<Class<?>, Class<?>>) Pair.of(currentWorkflow, beanClass);
+      Pair<Class<?>, Class<?>> pair = Pair.of(currentWorkflow, beanClass);
       return pair;
     } else {
       throw new IllegalStateException("Unable to retrieve " + WorkflowScoped.class.getName());

@@ -35,17 +35,15 @@ public class InitializeActivityLinks extends LoaderCallback {
 
   @Override
   public void accept(Object controller, Node node) {
-    for (ActivityLink activityLink : activityLinks) {
-      if (activityLink.getSourceController().equals(controller.getClass())) {
-        EventHandler<ActionEvent> handler = new EventHandler<ActionEvent>() {
-          @Override
-          public void handle(ActionEvent actionEvent) {
-            activityController.start(activityLink.getNextActivity());
-          }
-        };
-        addHandlerToNode(node, activityLink.getId(), handler);
-      }
-    }
+    activityLinks.stream().filter(activityLink -> activityLink.getSourceController().equals(controller.getClass())).forEach(activityLink -> {
+      EventHandler<ActionEvent> handler = new EventHandler<ActionEvent>() {
+        @Override
+        public void handle(ActionEvent actionEvent) {
+          activityController.start(activityLink.getNextActivity());
+        }
+      };
+      addHandlerToNode(node, activityLink.getId(), handler);
+    });
 
   }
 }

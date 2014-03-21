@@ -186,7 +186,7 @@ public class ExecutorService implements ListeningScheduledExecutorService {
     try {
       return futureTask.get();
     } catch (InterruptedException | ExecutionException e) {
-      log.error("Could not invoke " + command, e);
+      log.error("Could not invoke {}", command, e);
       throw new RuntimeException(e);
     }
   }
@@ -204,7 +204,7 @@ public class ExecutorService implements ListeningScheduledExecutorService {
     try {
       submit.get();
     } catch (InterruptedException | ExecutionException e) {
-      log.error("Could not execute " + runnable, e);
+      log.error("Could not execute {}", runnable, e);
       throw new RuntimeException(e);
     }
   }
@@ -219,24 +219,19 @@ public class ExecutorService implements ListeningScheduledExecutorService {
 
   protected <T> Callable<T> wrap(final Callable<T> delegate) {
     final Collection<ThreadCallBoundValue> threadCallBoundValues = propagations.getPropagations();
-    for (ThreadCallBoundValue threadCallBoundValue : threadCallBoundValues) {
-      threadCallBoundValue.initializeInCallerThread();
-    }
+    threadCallBoundValues.forEach(ThreadCallBoundValue::initializeInCallerThread);
+
     Callable<T> runnable = new Callable<T>() {
       @Override
       public T call() throws Exception {
-        for (ThreadCallBoundValue threadCallBoundValue : threadCallBoundValues) {
-          threadCallBoundValue.doBeforeCallInTargetThread();
-        }
+        threadCallBoundValues.forEach(ThreadCallBoundValue::doBeforeCallInTargetThread);
         try {
           return delegate.call();
         } catch (Throwable t) {
           log.error("Could not execute async action: ", t);
           throw t;
         } finally {
-          for (ThreadCallBoundValue threadCallBoundValue : threadCallBoundValues) {
-            threadCallBoundValue.doAfterCallInTargetThread();
-          }
+          threadCallBoundValues.forEach(ThreadCallBoundValue::doAfterCallInTargetThread);
         }
       }
     };
@@ -246,21 +241,16 @@ public class ExecutorService implements ListeningScheduledExecutorService {
 
   protected Runnable wrap(final Runnable delegate) {
     final Collection<ThreadCallBoundValue> threadCallBoundValues = propagations.getPropagations();
-    for (ThreadCallBoundValue threadCallBoundValue : threadCallBoundValues) {
-      threadCallBoundValue.initializeInCallerThread();
-    }
+    threadCallBoundValues.forEach(ThreadCallBoundValue::initializeInCallerThread);
+
     Runnable runnable = new Runnable() {
       @Override
       public void run() {
-        for (ThreadCallBoundValue threadCallBoundValue : threadCallBoundValues) {
-          threadCallBoundValue.doBeforeCallInTargetThread();
-        }
+        threadCallBoundValues.forEach(ThreadCallBoundValue::doBeforeCallInTargetThread);
         try {
           delegate.run();
         } finally {
-          for (ThreadCallBoundValue threadCallBoundValue : threadCallBoundValues) {
-            threadCallBoundValue.doAfterCallInTargetThread();
-          }
+          threadCallBoundValues.forEach(ThreadCallBoundValue::doAfterCallInTargetThread);
         }
       }
     };

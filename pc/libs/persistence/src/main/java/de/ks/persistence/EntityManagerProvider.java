@@ -40,7 +40,7 @@ public class EntityManagerProvider {
   private static EntityManagerFactory entityManagerFactory;
 
   static {
-    new Thread(() -> initialize()).start();
+    new Thread(EntityManagerProvider::initialize).start();
   }
 
   private static void initialize() {
@@ -51,9 +51,7 @@ public class EntityManagerProvider {
     }
     lock.lock();
     try {
-      if (entityManagerFactory != null) {
-        return;
-      } else {
+      if (entityManagerFactory == null) {
         entityManagerFactory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
       }
     } finally {

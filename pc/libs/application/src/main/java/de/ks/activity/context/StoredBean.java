@@ -23,7 +23,7 @@ import javax.enterprise.inject.spi.Bean;
 /**
  *
  */
-class StoredBean {
+public class StoredBean {
   final Bean bean;
   final CreationalContext creationalContext;
   final Object instance;

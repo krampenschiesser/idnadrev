@@ -69,7 +69,7 @@ public class ImageLoader extends CacheLoader<String, Image> {
     try (InputStream stream = url.openStream()) {
       return new Image(stream);
     } catch (IOException e) {
-      log.error("Could not load from stream " + url, e);
+      log.error("Could not load from stream {}", url, e);
       return null;
     }
   }
@@ -78,7 +78,7 @@ public class ImageLoader extends CacheLoader<String, Image> {
     try (FileInputStream stream = new FileInputStream(file)) {
       return new Image(stream);
     } catch (IOException e) {
-      log.error("Could not load from file " + file.getPath(), e);
+      log.error("Could not load from file {}", file.getPath(), e);
       return null;
     }
   }

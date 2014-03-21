@@ -87,9 +87,7 @@ public class JFXCDIRunner extends BlockJUnit4ClassRunner {
 
   public static void startApp() {
     if (barrier.getCount() == 2) {
-      executor.execute(() -> {
-        Application.launch(JFXTestApp.class);
-      });
+      executor.execute(() -> Application.launch(JFXTestApp.class));
     }
     executor.execute(() -> {
       try {

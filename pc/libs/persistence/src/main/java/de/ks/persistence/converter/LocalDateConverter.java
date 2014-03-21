@@ -40,7 +40,7 @@ public class LocalDateConverter implements AttributeConverter<LocalDate, String>
     if (dbData == null) {
       return null;
     } else {
+      return LocalDate.parse(dbData);
     }
-    return LocalDate.parse(dbData);
   }
 }

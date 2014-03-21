@@ -21,24 +21,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
+import java.util.function.Consumer;
 
 /**
  * Handles transactions and {@link EntityManager} closing.
  * Usually used as an anonymous class.
- * return values might be set with {@link #setReturnValue(Object)}
- * and read with {@link #get()}
  */
-public abstract class PersistentWork {
+public class PersistentWork {
   private static final Logger log = LoggerFactory.getLogger(PersistentWork.class);
 
   protected EntityManager em;
-  protected CriteriaBuilder builder;
-  private Object value;
+  protected Consumer<EntityManager> consumer;
+
+
+  public PersistentWork(Consumer<EntityManager> consumer) {
+    this.consumer = consumer;
+    em = EntityManagerProvider.getEntityManager();
+    run();
+  }
 
   public PersistentWork() {
     em = EntityManagerProvider.getEntityManager();
-    builder = em.getCriteriaBuilder();
     run();
   }
 
@@ -60,14 +63,9 @@ public abstract class PersistentWork {
     }
   }
 
-  protected abstract void execute();
-
-  protected void setReturnValue(Object value) {
-    this.value = value;
-  }
-
-  @SuppressWarnings("unchecked")
-  public <T> T get() {
-    return (T) value;
+  protected void execute() {
+    if (consumer != null) {
+      consumer.accept(em);
+    }
   }
 }

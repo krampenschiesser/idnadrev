@@ -28,7 +28,9 @@ public class NotEmptyValidator implements ConstraintValidator<NotEmpty, Object> 
   }
 
   public boolean isValid(Object value, ConstraintValidatorContext context) {
-    if (value == null) return true;
+    if (value == null) {
+      return true;
+    }
     if (value.getClass().isArray()) {
       return Array.getLength(value) > 0;
     } else {
@@ -37,11 +39,7 @@ public class NotEmptyValidator implements ConstraintValidator<NotEmpty, Object> 
         if (isEmptyMethod != null) {
           return !((Boolean) isEmptyMethod.invoke(value)).booleanValue();
         }
-      } catch (IllegalAccessException iae) {
-        // do nothing
-      } catch (NoSuchMethodException nsme) {
-        // do nothing
-      } catch (InvocationTargetException ite) {
+      } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException iae) {
         // do nothing
       }
       return value.toString().length() > 0;

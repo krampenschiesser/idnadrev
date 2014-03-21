@@ -43,18 +43,16 @@ public class InitializeViewLinks extends LoaderCallback {
   @Override
   public void accept(Object controller, Node node) {
     log.debug("initializing view-links for controller {}", controller);
-    for (ViewLink viewLink : viewLinks) {
-      if (viewLink.getSourceController().equals(controller.getClass())) {
-        EventHandler<ActionEvent> handler = new EventHandler<ActionEvent>() {
-          @Override
-          public void handle(ActionEvent actionEvent) {
-            activityController.getCurrentActivity().select(viewLink);
-          }
-        };
-        addHandlerToNode(node, viewLink.getId(), handler);
-        log.debug("done with view-link {} for controller {}", viewLink.getId(), controller);
-      }
-    }
+    viewLinks.stream().filter(viewLink -> viewLink.getSourceController().equals(controller.getClass())).forEach(viewLink -> {
+      EventHandler<ActionEvent> handler = new EventHandler<ActionEvent>() {
+        @Override
+        public void handle(ActionEvent actionEvent) {
+          activityController.getCurrentActivity().select(viewLink);
+        }
+      };
+      addHandlerToNode(node, viewLink.getId(), handler);
+      log.debug("done with view-link {} for controller {}", viewLink.getId(), controller);
+    });
 
   }
 }

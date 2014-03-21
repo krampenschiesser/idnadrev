@@ -34,6 +34,7 @@ subprojects {
         compile("org.slf4j:slf4j-ext:$slf4j") {
             exclude module: "cal10n-api"
         }
+        // copmile "org.slf4j:jul-to-slf4j:$slf4j"
         testRuntime "ch.qos.logback:logback-core:$logback"
         testRuntime "ch.qos.logback:logback-classic:$logback"
         compile "com.google.guava:guava:$guava"

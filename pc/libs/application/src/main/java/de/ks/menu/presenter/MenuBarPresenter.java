@@ -26,7 +26,11 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -95,10 +99,7 @@ public class MenuBarPresenter extends AbstractPresenter<MenuBar> {
         lastMenu = currentMenu;
       }
     }
-    ArrayList<Menu> retval = new ArrayList<>();
-    for (String rootMenu : rootMenus) {
-      retval.add(getOrCreateMenu(rootMenu));
-    }
+    List<Menu> retval = rootMenus.stream().map(m -> getOrCreateMenu(m)).collect(Collectors.toList());
     return retval;
   }
 }

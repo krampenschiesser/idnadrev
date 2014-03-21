@@ -51,10 +51,10 @@ class ResourceBundleWrapper extends ResourceBundle {
     }
     boolean isContained = bundle.containsKey(key);
     if (!isContained) {
-      log.warn("Key \"" + key + "\" not found in properties file:" + path);
+      log.warn("Key \"{}\" not found in properties file:{}", key, path);
       return true;
     }
-    return isContained;
+    return true;
   }
 
   @Override
@@ -86,7 +86,7 @@ class ResourceBundleWrapper extends ResourceBundle {
         retval = retval + ending;
       }
       if (retval == null) {
-        log.warn("Key \"" + key + "\" not found in properties file:" + path);
+        log.warn("Key \"{}\" not found in properties file:{}", key, path);
         return "?" + key + "?";
       }
       return retval;

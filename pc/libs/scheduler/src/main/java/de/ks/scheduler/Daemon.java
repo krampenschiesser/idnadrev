@@ -43,7 +43,7 @@ public class Daemon {
   private LocalDateTime fixedTime;
 
   public Daemon() {
-    future = ExecutorService.instance.schedule(() -> trigger(), 15, TimeUnit.SECONDS);
+    future = ExecutorService.instance.schedule(this::trigger, 15, TimeUnit.SECONDS);
   }
 
   public void trigger() {

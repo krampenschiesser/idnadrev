@@ -54,6 +54,6 @@ public class MenuExtension implements Extension {
   }
 
   public List<Class<?>> getMenuClasses() {
-    return getMenuEntries().values().stream().map(item -> item.getTarget()).collect(Collectors.toList());
+    return getMenuEntries().values().stream().map(MenuItemDescriptor::getTarget).collect(Collectors.toList());
   }
 }

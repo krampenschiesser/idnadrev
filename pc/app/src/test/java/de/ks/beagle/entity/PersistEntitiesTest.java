@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.persistence.PersistenceException;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import java.io.File;
 import java.util.ArrayList;
@@ -61,41 +62,26 @@ public class PersistEntitiesTest {
 
   @Test
   public void testSimpleEntities() throws Exception {
-    //save em
-    for (NamedPersistentObject<?> entity : simpleEntities) {
-      new PersistentWork() {
-        @Override
-        protected void execute() {
-          em.persist(entity);
-        }
-      };
-    }
+    simpleEntities.forEach(entity -> new PersistentWork(em -> em.persist(entity)));
     //read em
-    for (NamedPersistentObject entity : simpleEntities) {
-      new PersistentWork() {
-        @Override
-        protected void execute() {
-          Class<? extends NamedPersistentObject> entityClass = entity.getClass();
-          CriteriaQuery<? extends NamedPersistentObject> query = builder.createQuery(entityClass);
-          query.from(entityClass);
+    simpleEntities.forEach(entity -> new PersistentWork(em -> {
+      Class<? extends NamedPersistentObject> entityClass = entity.getClass();
+      CriteriaBuilder builder = em.getCriteriaBuilder();
+      CriteriaQuery<? extends NamedPersistentObject> query = builder.createQuery(entityClass);
+      query.from(entityClass);
 
-          List<? extends NamedPersistentObject> found = em.createQuery(query).getResultList();
-          assertEquals(1, found.size());
-          assertEquals(entity, found.get(0));
-        }
-      };
-    }
+      List<? extends NamedPersistentObject> found = em.createQuery(query).getResultList();
+      assertEquals(1, found.size());
+      assertEquals(entity, found.get(0));
+    }));
   }
 
   @Test(expected = PersistenceException.class)
   public void testNoDuplicateNamedPersistentObject() throws Exception {
-    new PersistentWork() {
-      @Override
-      protected void execute() {
-        em.persist(new Tag("hello"));
-        em.persist(new Tag("hello"));
-      }
-    };
+    new PersistentWork((em) -> {
+      em.persist(new Tag("hello"));
+      em.persist(new Tag("hello"));
+    });
   }
 
   @Test
@@ -111,26 +97,20 @@ public class PersistEntitiesTest {
     noteFile.setData(data);
     note.addNoteFile(noteFile);
 
-    new PersistentWork() {
-      @Override
-      protected void execute() {
-        em.persist(note);
-        em.persist(noteFile);
-      }
-    };
+    new PersistentWork((em) -> {
+      em.persist(note);
+      em.persist(noteFile);
+    });
 
-    new PersistentWork() {
-      @Override
-      protected void execute() {
-        Note readNote = em.find(Note.class, note.getId());
-        assertEquals(note, readNote);
-        assertNotNull(note.getFiles());
-        assertEquals(1, note.getFiles().size());
-        NoteFile readNoteFile = note.getFiles().iterator().next();
-        assertEquals(data.length, readNoteFile.getData().length);
-        assertEquals(data, readNoteFile.getData());
-      }
-    };
+    new PersistentWork((em) -> {
+      Note readNote = em.find(Note.class, note.getId());
+      assertEquals(note, readNote);
+      assertNotNull(note.getFiles());
+      assertEquals(1, note.getFiles().size());
+      NoteFile readNoteFile = note.getFiles().iterator().next();
+      assertEquals(data.length, readNoteFile.getData().length);
+      assertEquals(data, readNoteFile.getData());
+    });
   }
 
   @Test
@@ -141,23 +121,16 @@ public class PersistEntitiesTest {
     Note note = new Note("myNote");
     note.addFile(imageFile);
 
-    new PersistentWork() {
-      @Override
-      protected void execute() {
-        em.persist(note);
-      }
-    };
+    new PersistentWork(em -> em.persist(note));
 
-    new PersistentWork() {
-      @Override
-      protected void execute() {
+
+    new PersistentWork((em) -> {
         Note readNote = em.find(Note.class, note.getId());
         assertEquals(note, readNote);
         assertNotNull(note.getFiles());
         assertEquals(1, note.getFiles().size());
         NoteFile readNoteFile = note.getFiles().iterator().next();
         assertEquals(imageFile.length(), readNoteFile.getData().length);
-      }
-    };
+    });
   }
 }

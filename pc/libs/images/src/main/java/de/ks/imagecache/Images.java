@@ -58,7 +58,7 @@ public class Images {
     try {
       return cache.get(imagePath);
     } catch (ExecutionException | UncheckedExecutionException e) {
-      log.error("Could not load image " + imagePath, e);
+      log.error("Could not load image {}", imagePath, e);
       return null;
     }
   }

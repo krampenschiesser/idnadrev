@@ -31,6 +31,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -73,33 +74,33 @@ public class EventBus {
             (Method m) -> m.getParameters().length == 1                    //
     );
 
-    HashSet<Class<?>> classes = new HashSet<>();
-    for (Method method : methods) {
-      classes.add(getEventType(method));
-    }
+    Set<Class<?>> classes = methods.stream().map(this::getEventType).collect(Collectors.toSet());
 
     for (Class<?> clazz : classes) {
       List<EventHandler> eventHandlers = handlers.get(clazz);
-
-      lock.writeLock().lock();
-      try {
-
-        for (Iterator<EventHandler> iterator = eventHandlers.iterator(); iterator.hasNext(); ) {
-          EventHandler next = iterator.next();
-          Object instance = next.target.get();
-          if (instance != null) {
-            if (instance == handler) {
-              iterator.remove();
-            }
-          } else {
-            iterator.remove();
-          }
-        }
-      } finally {
-        lock.writeLock().unlock();
-      }
+      removeSpecificHandler(handler, eventHandlers);
     }
     return this;
+  }
+
+  private void removeSpecificHandler(Object specificHandler, List<EventHandler> eventHandlers) {
+    lock.writeLock().lock();
+    try {
+
+      for (Iterator<EventHandler> iterator = eventHandlers.iterator(); iterator.hasNext(); ) {
+        EventHandler next = iterator.next();
+        Object instance = next.target.get();
+        if (instance != null) {
+          if (instance == specificHandler) {
+            iterator.remove();
+          }
+        } else {
+          iterator.remove();
+        }
+      }
+    } finally {
+      lock.writeLock().unlock();
+    }
   }
 
   public EventBus post(Object event) {
@@ -145,6 +146,7 @@ public class EventBus {
     } finally {
       lock.readLock().unlock();
     }
+
     for (EventExecution execution : executions) {
       boolean consumed = execution.handler.handleEvent(event, wait);
       if (consumed) {
@@ -157,7 +159,7 @@ public class EventBus {
 
     if (noHandlerFound && !isDeadEvent) {
       postToEventHandlers(new DeadEvent(this, event), false);
-    } else if (noHandlerFound && isDeadEvent) {
+    } else if (noHandlerFound) {
       log.warn("Could not find dead event handler.");
     }
   }

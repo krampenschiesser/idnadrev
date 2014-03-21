@@ -53,7 +53,7 @@ public class WorkflowPropagator implements ThreadCallBoundValue {
       log.debug("Propagating workflow {}->{}", propagatedWorkflowSequence, propagatedWorkflowId.getSimpleName());
       context.propagateWorkflow(propagatedWorkflowId);
     } else {
-      log.debug("Nothing to propagate {}->{}", propagatedWorkflowSequence, propagatedWorkflowId != null ? propagatedWorkflowId.getSimpleName() : null);
+      log.debug("Nothing to propagate {}", propagatedWorkflowSequence);
     }
   }
 
@@ -63,7 +63,7 @@ public class WorkflowPropagator implements ThreadCallBoundValue {
       log.debug("Stopping workflow {}->{}", propagatedWorkflowSequence, propagatedWorkflowId.getSimpleName());
       context.stopWorkflow(propagatedWorkflowId);
     } else {
-      log.debug("Nothing to stopActivity {}->{}", propagatedWorkflowSequence, propagatedWorkflowId != null ? propagatedWorkflowId.getSimpleName() : null);
+      log.debug("Nothing to stopActivity {}", propagatedWorkflowSequence);
     }
   }
 

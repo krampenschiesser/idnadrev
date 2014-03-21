@@ -20,7 +20,7 @@ package de.ks.validation;
 import javax.validation.ElementKind;
 import javax.validation.Path;
 import java.lang.reflect.Field;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Spliterator;
@@ -69,7 +69,7 @@ public class FieldPath implements Path {
         return null;
       }
     };
-    nodes = Arrays.asList(node);
+    nodes = Collections.singletonList(node);
   }
 
   @Override

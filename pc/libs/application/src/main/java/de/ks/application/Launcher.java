@@ -46,9 +46,7 @@ public class Launcher {
       cdiContainer.boot();
       latch.countDown();
     });
-    executor.execute(() -> {
-      Application.launch(App.class, args);
-    });
+    executor.execute(() -> Application.launch(App.class, args));
     executor.execute(() -> {
       EntityManagerProvider.getEntityManagerFactory();
       latch.countDown();

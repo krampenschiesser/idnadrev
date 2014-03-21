@@ -58,10 +58,10 @@ public class ReflectionUtil {
 
       for (Method declaredMethod : declaredMethods) {
         String methodName = declaredMethod.getName();
-        Pair<String, List<Class<?>>> key = new Pair<String, List<Class<?>>>(methodName, Arrays.asList(declaredMethod.getParameterTypes()));
+        Pair<String, List<Class<?>>> key = new Pair<>(methodName, Arrays.asList(declaredMethod.getParameterTypes()));
 
         if (!collected.containsKey(key)) {
-          collected.put(new Pair<String, List<Class<?>>>(methodName, Arrays.asList(declaredMethod.getParameterTypes())), declaredMethod);
+          collected.put(new Pair<>(methodName, Arrays.asList(declaredMethod.getParameterTypes())), declaredMethod);
           methods.add(declaredMethod);
         }
       }
@@ -135,7 +135,7 @@ public class ReflectionUtil {
       method.setAccessible(true);
       return method.invoke(target, parameters);
     } catch (IllegalAccessException | InvocationTargetException e) {
-      log.error("Could not invoke method " + method.getName() + " of " + target.getClass().getName(), e);
+      log.error("Could not invoke method {} of {}", method.getName(), target.getClass().getName(), e);
       throw new RuntimeException(e);
     }
   }
@@ -145,7 +145,7 @@ public class ReflectionUtil {
       field.setAccessible(true);
       field.set(instance, value);
     } catch (IllegalAccessException e) {
-      log.error("Could not set field " + field, e);
+      log.error("Could not set field {}", field, e);
       throw new RuntimeException(e);
     }
   }

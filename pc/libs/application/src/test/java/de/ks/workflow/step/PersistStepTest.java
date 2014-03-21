@@ -67,7 +67,7 @@ public class PersistStepTest {
     new PersistentWork() {
       @Override
       protected void execute() {
-        CriteriaQuery<SimpleWorkflowModel> query = builder.createQuery(SimpleWorkflowModel.class);
+        CriteriaQuery<SimpleWorkflowModel> query = em.getCriteriaBuilder().createQuery(SimpleWorkflowModel.class);
         query.select(query.from(SimpleWorkflowModel.class));
         SimpleWorkflowModel model = em.createQuery(query).getSingleResult();
         assertEquals("testName", model.getName());

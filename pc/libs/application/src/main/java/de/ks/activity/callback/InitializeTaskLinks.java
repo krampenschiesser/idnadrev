@@ -46,16 +46,14 @@ public class InitializeTaskLinks extends LoaderCallback {
   @Override
   public void accept(Object controller, Node node) {
     log.debug("initializing task-links for controller {}", controller);
-    for (TaskLink taskLink : taskLinks) {
-      if (taskLink.getSourceController().equals(controller.getClass())) {
-        EventHandler<ActionEvent> handler = actionEvent -> {
-          Task<?> task = CDI.current().select(taskLink.getTask()).get();
-          ExecutorService.instance.submit(task);
-        };
-        addHandlerToNode(node, taskLink.getId(), handler);
-        log.debug("done with task-link {} for controller {}", taskLink.getId(), controller);
-      }
-    }
+    taskLinks.stream().filter(taskLink -> taskLink.getSourceController().equals(controller.getClass())).forEach(taskLink -> {
+      EventHandler<ActionEvent> handler = actionEvent -> {
+        Task<?> task = CDI.current().select(taskLink.getTask()).get();
+        ExecutorService.instance.submit(task);
+      };
+      addHandlerToNode(node, taskLink.getId(), handler);
+      log.debug("done with task-link {} for controller {}", taskLink.getId(), controller);
+    });
 
   }
 }

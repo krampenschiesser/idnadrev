@@ -17,7 +17,7 @@
 package de.ks.imagecache;
 
 
-import javafx.scene.image.Image;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -57,6 +57,6 @@ public class ImagesTest {
 
   @Test
   public void testAsyncImage() throws Exception {
-    Images.later(fileImage, (Image img) -> assertNotNull(img));
+    Images.later(fileImage, Assert::assertNotNull);
   }
 }

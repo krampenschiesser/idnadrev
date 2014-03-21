@@ -40,7 +40,7 @@ public class PeriodConverter implements AttributeConverter<Period, String> {
     if (dbData == null) {
       return null;
     } else {
+      return Period.parse(dbData);
     }
-    return Period.parse(dbData);
   }
 }

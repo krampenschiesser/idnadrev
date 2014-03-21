@@ -30,7 +30,10 @@ import de.ks.datasource.DataSource;
 import javafx.concurrent.Task;
 import javafx.scene.Node;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -104,7 +107,7 @@ public class Activity {
   }
 
   public void start() {
-    DefaultLoader<Node, Object> loader = new DefaultLoader<Node, Object>(initialController);
+    DefaultLoader<Node, Object> loader = new DefaultLoader<>(initialController);
     addCallbacks(loader);
     preloads.put(initialController, loader);
     select(initialController, Navigator.MAIN_AREA);
@@ -112,8 +115,7 @@ public class Activity {
   }
 
   protected void loadNextControllers() {
-    for (Iterator<ViewLink> iterator = viewLinks.iterator(); iterator.hasNext(); ) {
-      ViewLink next = iterator.next();
+    for (ViewLink next : viewLinks) {
       loadController(next.getSourceController());
       loadController(next.getTargetController());
     }

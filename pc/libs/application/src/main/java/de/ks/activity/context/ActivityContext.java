@@ -203,16 +203,10 @@ public class ActivityContext implements Context {
     log.debug("Cleanup all activities.");
     for (String id : activityStack.get()) {
       ActivityHolder activityHolder = activities.get(id);
-      if (activityHolder.getCount().get() > 1) {
+      if (multipleThreadsActive(activityHolder)) {
         log.warn("There are still {} other threads holding a reference to this activity, cleanup not allowed", activityHolder.getCount().get() - 1);
       }
-      while (activityHolder.getCount().get() > 1) {
-        try {
-          Thread.sleep(100);
-        } catch (InterruptedException e) {
-          log.error("Interrupted", e);
-        }
-      }
+      waitForOtherThreads(activityHolder);
       cleanupSingleActivity(id);
     }
     lock.writeLock().lock();
@@ -222,6 +216,20 @@ public class ActivityContext implements Context {
     } finally {
       lock.writeLock().unlock();
     }
+  }
+
+  private void waitForOtherThreads(ActivityHolder activityHolder) {
+    while (multipleThreadsActive(activityHolder)) {
+      try {
+        Thread.sleep(100);
+      } catch (InterruptedException e) {
+        log.error("Interrupted", e);
+      }
+    }
+  }
+
+  private boolean multipleThreadsActive(ActivityHolder activityHolder) {
+    return activityHolder.getCount().get() > 1;
   }
 
   public ActivityHolder getHolder() {

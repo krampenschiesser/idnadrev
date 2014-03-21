@@ -62,9 +62,7 @@ public class App extends Application {
         Navigator.register(stage, pane);
       }
     }
-    stage.setOnCloseRequest((WindowEvent e) -> {
-      Launcher.instance.stop();
-    });
+    stage.setOnCloseRequest((WindowEvent e) -> Launcher.instance.stop());
 
     stage.show();
   }

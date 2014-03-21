@@ -134,7 +134,7 @@ public class PropertyPath<T> {
 
   public void setValue(T source, Object value) {
     if (!isSetter()) {
-      log.error("Declared path [" + this + "]is no setter");
+      log.error("Declared path [{}]is no setter", this);
     }
     Object instance = source;
     Method lastMethod = methodPath.get(methodPath.size() - 1);
@@ -145,21 +145,21 @@ public class PropertyPath<T> {
       try {
         instance = method.invoke(instance);
       } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-        log.error("Could not follow path " + this + ": ", e);
+        log.error("Could not follow path {}: ", this, e);
         return;
       }
     }
     try {
       lastMethod.invoke(instance, value);
     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-      log.error("Could not invoke setter on path " + this + ": ", e);
+      log.error("Could not invoke setter on path {}: ", this, e);
     }
   }
 
   @SuppressWarnings("unchecked")
   public <U> U getValue(T source) {
     if (!isGetter()) {
-      log.error("Declared path [" + this + "]is no getter");
+      log.error("Declared path [{}]is no getter", this);
       return null;
     }
     Object instance = source;
@@ -170,7 +170,7 @@ public class PropertyPath<T> {
       try {
         instance = method.invoke(instance);
       } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-        log.error("Could not follow path " + this + ": ", e);
+        log.error("Could not follow path {}: ", this, e);
         return null;
       }
     }
@@ -189,7 +189,7 @@ public class PropertyPath<T> {
       try {
         instance = method.invoke(instance);
       } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-        log.error("Could not follow path " + this + ": ", e);
+        log.error("Could not follow path {}: ", this, e);
         return;
       }
     }

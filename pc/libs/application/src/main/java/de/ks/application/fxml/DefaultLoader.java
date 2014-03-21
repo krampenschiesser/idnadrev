@@ -89,7 +89,7 @@ public class DefaultLoader<V extends Node, C> {
       waitForAllParties();
       return future.get();
     } catch (InterruptedException | ExecutionException e) {
-      log.error("Could not load given FXML file " + loader.getLocation(), e);
+      log.error("Could not load given FXML file {}", loader.getLocation(), e);
       throw new RuntimeException(e);
     }
   }
