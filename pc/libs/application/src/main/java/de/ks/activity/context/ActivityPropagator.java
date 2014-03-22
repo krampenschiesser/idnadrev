@@ -21,6 +21,7 @@ import de.ks.executor.ThreadCallBoundValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.util.LinkedList;
 
 /**
@@ -32,6 +33,7 @@ public class ActivityPropagator implements ThreadCallBoundValue {
   private String propagatedActivityId;
   private String propagatedActivitySequence;
 
+  @Inject
   public ActivityPropagator(ActivityContext context) {
     this.context = context;
   }

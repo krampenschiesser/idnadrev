@@ -16,8 +16,6 @@
 
 package de.ks.workflow.cdi;
 
-import de.ks.executor.ExecutorService;
-import de.ks.executor.ThreadPropagations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,9 +35,6 @@ public class Extension implements javax.enterprise.inject.spi.Extension {
     log.debug("Registering {}", WorkflowContext.class.getName());
     WorkflowContext context = new WorkflowContext(mgr);
     event.addContext(context);
-
-    ThreadPropagations propagations = ExecutorService.instance.getPropagations();
-    propagations.register(new WorkflowPropagator(context));
   }
 
 }

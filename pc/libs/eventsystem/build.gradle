@@ -17,4 +17,6 @@
 dependencies {
     compile project(":pc:libs:reflection")
     compile project(":pc:libs:executor")
+
+    testCompile project(":pc:libs:testutil")
 }

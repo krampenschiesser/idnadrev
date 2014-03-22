@@ -16,8 +16,6 @@
 
 package de.ks.activity.context;
 
-import de.ks.executor.ExecutorService;
-import de.ks.executor.ThreadPropagations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,9 +35,5 @@ public class Extension implements javax.enterprise.inject.spi.Extension {
     log.debug("Registering {}", ActivityContext.class.getName());
     ActivityContext context = new ActivityContext(mgr);
     event.addContext(context);
-
-    ThreadPropagations propagations = ExecutorService.instance.getPropagations();
-    propagations.register(new ActivityPropagator(context));
   }
-
 }

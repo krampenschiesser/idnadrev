@@ -28,6 +28,7 @@ import javafx.scene.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.enterprise.inject.spi.CDI;
 import java.net.URL;
 import java.util.concurrent.*;
 import java.util.function.BiConsumer;
@@ -41,6 +42,7 @@ public class DefaultLoader<V extends Node, C> {
   private final Phaser phaser = new Phaser();
   private final FXMLLoader loader;
   private final ListenableFuture<V> future;
+  private final ExecutorService service = CDI.current().select(ExecutorService.class).get();
 
   public DefaultLoader(Class<?> modelController) {
     this(modelController.getResource(modelController.getSimpleName() + ".fxml"));
@@ -55,7 +57,7 @@ public class DefaultLoader<V extends Node, C> {
     loader = new FXMLLoader(fxmlFile, Localized.getBundle(), new JavaFXBuilderFactory(), new ControllerFactory());
 
     phaser.register();
-    future = ExecutorService.instance.executeInJavaFXThread((Callable<V>) () -> {
+    future = service.executeInJavaFXThread((Callable<V>) () -> {
       try {
         return loader.load();
       } finally {
@@ -81,7 +83,7 @@ public class DefaultLoader<V extends Node, C> {
       public void onFailure(Throwable t) {
         phaser.arriveAndDeregister();
       }
-    }, ExecutorService.instance);
+    }, service);
   }
 
   public V getView() {

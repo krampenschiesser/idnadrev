@@ -38,6 +38,8 @@ public class ScopeTest {
   WorkflowScopedBean1 bean2;
   @Inject
   WorkflowContext context;
+  @Inject
+  ExecutorService service;
 
   @After
   public void tearDown() throws Exception {
@@ -75,7 +77,7 @@ public class ScopeTest {
 
     bean1.setValue("Hello Sauerland!");
 
-    ExecutorService.instance.invokeAndWait(() -> {
+    service.invokeAndWait(() -> {
       WorkflowScopedBean1 bean = CDI.current().select(WorkflowScopedBean1.class).get();
       assertNotNull(bean.getValue());
       assertEquals("Hello Sauerland!", bean.getValue());
@@ -90,7 +92,7 @@ public class ScopeTest {
 
     bean1.setValue("Hello Sauerland!");
 
-    ExecutorService.instance.execute(() -> {
+    service.execute(() -> {
       WorkflowScopedBean1 bean = CDI.current().select(WorkflowScopedBean1.class).get();
       assertNotNull(bean.getValue());
       assertEquals("Hello Sauerland!", bean.getValue());

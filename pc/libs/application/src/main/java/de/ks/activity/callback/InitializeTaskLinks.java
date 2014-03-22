@@ -37,6 +37,7 @@ public class InitializeTaskLinks extends LoaderCallback {
   private static final Logger log = LoggerFactory.getLogger(InitializeTaskLinks.class);
   private final List<TaskLink> taskLinks;
   private final ActivityController activityController;
+  private final ExecutorService service = CDI.current().select(ExecutorService.class).get();
 
   public InitializeTaskLinks(List<TaskLink> taskLinks, ActivityController activityController) {
     this.taskLinks = taskLinks;
@@ -49,7 +50,7 @@ public class InitializeTaskLinks extends LoaderCallback {
     taskLinks.stream().filter(taskLink -> taskLink.getSourceController().equals(controller.getClass())).forEach(taskLink -> {
       EventHandler<ActionEvent> handler = actionEvent -> {
         Task<?> task = CDI.current().select(taskLink.getTask()).get();
-        ExecutorService.instance.submit(task);
+        service.submit(task);
       };
       addHandlerToNode(node, taskLink.getId(), handler);
       log.debug("done with task-link {} for controller {}", taskLink.getId(), controller);

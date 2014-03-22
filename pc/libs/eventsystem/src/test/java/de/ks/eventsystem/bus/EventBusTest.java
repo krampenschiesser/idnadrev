@@ -17,8 +17,10 @@
 package de.ks.eventsystem.bus;
 
 
+import de.ks.CDIRunner;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -28,6 +30,7 @@ import static org.junit.Assert.*;
 /**
  *
  */
+@RunWith(CDIRunner.class)
 public class EventBusTest {
   private EventBus eventBus;
 

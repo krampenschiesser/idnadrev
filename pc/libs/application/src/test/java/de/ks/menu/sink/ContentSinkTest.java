@@ -50,6 +50,8 @@ public class ContentSinkTest {
   private ContentSink sink;
   @Inject
   EventBus bus;
+  @Inject
+  ExecutorService service;
 
   @Before
   public void setUp() throws Exception {
@@ -65,13 +67,13 @@ public class ContentSinkTest {
   @Test
   public void testOpenContentInPane() throws Exception {
     VBox pane = new VBox();
-    ExecutorService.instance.invokeInJavaFXThread(() -> {
+    service.invokeInJavaFXThread(() -> {
       Scene scene = new Scene(pane);
       JFXCDIRunner.getStage().setScene(scene);
     });
     Navigator.register(JFXCDIRunner.getStage(), pane);
-    ExecutorService.instance.invokeInJavaFXThread(() -> assertNotNull(Navigator.getNavigator(pane)));
-    ExecutorService.instance.invokeInJavaFXThread(() -> pane.getScene().getWindow());
+    service.invokeInJavaFXThread(() -> assertNotNull(Navigator.getNavigator(pane)));
+    service.invokeInJavaFXThread(() -> pane.getScene().getWindow());
     assertNotNull(Navigator.getNavigator(pane));
     assertNotNull(pane.getScene().getWindow());
     log.info("registered sink");

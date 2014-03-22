@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class Localized {
   protected static final AtomicBoolean initialized = new AtomicBoolean(false);
-  protected static ResourceBundle bundle;
+  protected static volatile ResourceBundle bundle;
   public static final String BASENAME = "de.ks.i18n.Translation";
 
   /**

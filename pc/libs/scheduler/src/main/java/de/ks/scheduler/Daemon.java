@@ -44,7 +44,8 @@ public class Daemon {
   private LocalDateTime fixedTime;
 
   public Daemon() {
-    future = ExecutorService.instance.schedule(this::trigger, 15, TimeUnit.SECONDS);
+    ExecutorService executorService = CDI.current().select(ExecutorService.class).get();
+    future = executorService.schedule(this::trigger, 15, TimeUnit.SECONDS);
   }
 
   public void trigger() {

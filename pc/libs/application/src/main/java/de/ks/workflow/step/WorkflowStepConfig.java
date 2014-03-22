@@ -34,6 +34,7 @@ public class WorkflowStepConfig {
   private final String incomingKey;
   private final Map<String, WorkflowStepConfig> outputs = new HashMap<>();
   private WorkflowStep step;
+  private final ExecutorService service = CDI.current().select(ExecutorService.class).get();
 
   public WorkflowStepConfig(WorkflowConfig config, Class<? extends WorkflowStep> step, String incomingKey) {
     this.config = config;
@@ -90,9 +91,10 @@ public class WorkflowStepConfig {
     return incomingKey;
   }
 
+  @SuppressWarnings("unchecked")
   public <T extends WorkflowStep> T getStep() {
     if (step == null) {
-      step = ExecutorService.instance.loadInJavaFXThread(() -> CDI.current().select(implementationClass).get());
+      step = service.loadInJavaFXThread(() -> CDI.current().select(implementationClass).get());
     }
     return (T) step;
   }

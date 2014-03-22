@@ -23,6 +23,7 @@ import javafx.application.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.enterprise.inject.spi.CDI;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.concurrent.ExecutionException;
@@ -38,6 +39,7 @@ class EventHandler {
   protected final Method method;
   protected final Integer priority;
   protected final HandlingThread handlingThread;
+  protected final ExecutorService service = CDI.current().select(ExecutorService.class).get();
 
   protected EventHandler(Object target, Method method) {
     this.target = new WeakReference<>(target);
@@ -81,7 +83,7 @@ class EventHandler {
   }
 
   protected void executeAsync(Object event, Object targetInstance, boolean wait) {
-    Future<?> future = ExecutorService.instance.submit((Runnable) () -> ReflectionUtil.invokeMethod(method, targetInstance, event));
+    Future<?> future = service.submit((Runnable) () -> ReflectionUtil.invokeMethod(method, targetInstance, event));
     if (wait) {
       try {
         future.get();
@@ -97,7 +99,7 @@ class EventHandler {
       retval = ReflectionUtil.invokeMethod(method, targetInstance, event);
     } else {
       FutureTask<Class<Void>> task = new FutureTask<>(() -> ReflectionUtil.invokeMethod(method, targetInstance, event), Void.class);
-      ExecutorService.instance.executeInJavaFXThread(task);
+      service.executeInJavaFXThread(task);
       if (wait) {
         try {
           task.get();

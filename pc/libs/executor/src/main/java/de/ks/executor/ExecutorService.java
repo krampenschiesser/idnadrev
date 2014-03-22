@@ -23,9 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.Vetoed;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import javax.enterprise.inject.spi.CDI;
+import java.util.*;
 import java.util.concurrent.*;
 
 /**
@@ -39,20 +38,14 @@ import java.util.concurrent.*;
 @Vetoed
 public class ExecutorService implements ListeningScheduledExecutorService {
   private static final Logger log = LoggerFactory.getLogger(ExecutorService.class);
-  public static final ExecutorService instance = new ExecutorService();
+  static final ExecutorService instance = new ExecutorService();
 
   protected final ListeningScheduledExecutorService pool;
-  protected final ThreadPropagations propagations;
   private final ScheduledThreadPoolExecutor delegate;
 
   private ExecutorService() {
     delegate = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors(), new SimpleThreadFactory());
     pool = MoreExecutors.listeningDecorator(delegate);
-    propagations = new ThreadPropagations();
-  }
-
-  public ThreadPropagations getPropagations() {
-    return propagations;
   }
 
   @Override
@@ -218,7 +211,11 @@ public class ExecutorService implements ListeningScheduledExecutorService {
   }
 
   protected <T> Callable<T> wrap(final Callable<T> delegate) {
-    final Collection<ThreadCallBoundValue> threadCallBoundValues = propagations.getPropagations();
+    final Set<ThreadCallBoundValue> threadCallBoundValues = new HashSet<>();
+    for (ThreadCallBoundValue threadCallBoundValue : CDI.current().select(ThreadCallBoundValue.class)) {
+      threadCallBoundValues.add(threadCallBoundValue);
+    }
+
     threadCallBoundValues.forEach(ThreadCallBoundValue::initializeInCallerThread);
 
     Callable<T> runnable = new Callable<T>() {
@@ -240,7 +237,11 @@ public class ExecutorService implements ListeningScheduledExecutorService {
   }
 
   protected Runnable wrap(final Runnable delegate) {
-    final Collection<ThreadCallBoundValue> threadCallBoundValues = propagations.getPropagations();
+    final Set<ThreadCallBoundValue> threadCallBoundValues = new HashSet<>();
+    for (ThreadCallBoundValue threadCallBoundValue : CDI.current().select(ThreadCallBoundValue.class)) {
+      threadCallBoundValues.add(threadCallBoundValue);
+    }
+
     threadCallBoundValues.forEach(ThreadCallBoundValue::initializeInCallerThread);
 
     Runnable runnable = new Runnable() {

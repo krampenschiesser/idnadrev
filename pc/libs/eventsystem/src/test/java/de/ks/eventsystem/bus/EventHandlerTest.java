@@ -17,9 +17,11 @@
 package de.ks.eventsystem.bus;
 
 
+import de.ks.CDIRunner;
 import de.ks.reflection.PropertyPath;
 import de.ks.reflection.ReflectionUtil;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.lang.reflect.Method;
 
@@ -29,6 +31,7 @@ import static org.junit.Assert.assertTrue;
 /**
  *
  */
+@RunWith(CDIRunner.class)
 public class EventHandlerTest {
   @Test
   public void testEventHandling() throws Exception {
