@@ -17,7 +17,7 @@
 package de.ks.menu.presenter;
 
 
-import de.ks.eventsystem.EventSystem;
+import de.ks.eventsystem.bus.EventBus;
 import de.ks.menu.MenuExtension;
 import de.ks.menu.MenuItemDescriptor;
 import de.ks.menu.event.MenuItemClickedEvent;
@@ -37,6 +37,8 @@ public abstract class AbstractPresenter<T> {
   private static final Logger log = LoggerFactory.getLogger(AbstractPresenter.class);
   @Inject
   MenuExtension menuExtension;
+  @Inject
+  EventBus bus;
 
   public abstract T getMenu(String menuPath);
 
@@ -47,7 +49,7 @@ public abstract class AbstractPresenter<T> {
         WorkflowContext.start((Class<? extends Workflow>) item.getTarget());
       }
       log.debug("Sending event for item {}", item.getTarget().getSimpleName());
-      EventSystem.bus.post(new MenuItemClickedEvent(item));
+      bus.post(new MenuItemClickedEvent(item));
     };
   }
 }

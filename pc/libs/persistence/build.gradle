@@ -20,4 +20,6 @@ dependencies {
     runtime "org.hibernate:hibernate-core:$hibernate"
     runtime "org.hibernate:hibernate-entitymanager:$hibernate"
     runtime "com.h2database:h2:$h2"
+
+    testCompile project(":pc:libs:testutil")
 }

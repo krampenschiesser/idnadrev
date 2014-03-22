@@ -17,30 +17,36 @@
 package de.ks.scheduler;
 
 import com.google.common.eventbus.Subscribe;
-import de.ks.eventsystem.EventSystem;
+import de.ks.CDIRunner;
+import de.ks.eventsystem.bus.EventBus;
 import de.ks.scheduler.event.ScheduleTriggeredEvent;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import javax.enterprise.inject.spi.CDI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.junit.Assert.assertEquals;
 
+@RunWith(CDIRunner.class)
 public class DaemonTest {
   private Daemon daemon;
   private Object userData;
+  private EventBus bus;
 
   @Before
   public void setUp() throws Exception {
     daemon = new Daemon();
-    EventSystem.bus.register(this);
+    bus = CDI.current().select(EventBus.class).get();
+    bus.register(this);
   }
 
   @After
   public void tearDown() throws Exception {
-    EventSystem.bus.unregister(this);
+    bus.unregister(this);
   }
 
   @Test

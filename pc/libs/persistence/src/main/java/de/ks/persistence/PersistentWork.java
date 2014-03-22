@@ -20,6 +20,7 @@ package de.ks.persistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.enterprise.inject.spi.CDI;
 import javax.persistence.EntityManager;
 import java.util.function.Consumer;
 
@@ -36,12 +37,12 @@ public class PersistentWork {
 
   public PersistentWork(Consumer<EntityManager> consumer) {
     this.consumer = consumer;
-    em = EntityManagerProvider.getEntityManager();
+    em = CDI.current().select(EntityManager.class).get();
     run();
   }
 
   public PersistentWork() {
-    em = EntityManagerProvider.getEntityManager();
+    em = CDI.current().select(EntityManager.class).get();
     run();
   }
 

@@ -16,5 +16,6 @@
 
 dependencies {
     compile project(":pc:libs:eventsystem")
+    testCompile project(":pc:libs:testutil")
 }
 

@@ -17,9 +17,10 @@
 package de.ks.i18n;
 
 
-import de.ks.eventsystem.EventSystem;
+import de.ks.eventsystem.bus.EventBus;
 import de.ks.i18n.event.LanguageChangedEvent;
 
+import javax.enterprise.inject.spi.CDI;
 import java.lang.reflect.Field;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -42,7 +43,7 @@ public class Localized {
     Locale oldLocale = Locale.getDefault();
     Locale.setDefault(locale);
     initialize();
-    EventSystem.bus.post(new LanguageChangedEvent(oldLocale, locale));
+    CDI.current().select(EventBus.class).get().post(new LanguageChangedEvent(oldLocale, locale));
   }
 
   protected synchronized static void initialize() {

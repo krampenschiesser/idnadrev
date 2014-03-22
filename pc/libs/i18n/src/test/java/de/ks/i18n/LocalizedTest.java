@@ -17,11 +17,14 @@
 package de.ks.i18n;
 
 import com.google.common.eventbus.Subscribe;
-import de.ks.eventsystem.EventSystem;
+import de.ks.CDIRunner;
+import de.ks.eventsystem.bus.EventBus;
 import de.ks.i18n.event.LanguageChangedEvent;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import javax.enterprise.inject.spi.CDI;
 import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
@@ -32,6 +35,7 @@ import static org.junit.Assert.assertNotNull;
  * Krampenschiesser@freenet.de
  * All rights reserved by now, license may come later.
  */
+@RunWith(CDIRunner.class)
 public class LocalizedTest {
   private LanguageChangedEvent event;
 
@@ -68,14 +72,15 @@ public class LocalizedTest {
 
   @Test
   public void testLanguageChangeEvent() throws Exception {
-    EventSystem.bus.register(this);
+    EventBus eventBus = CDI.current().select(EventBus.class).get();
+    eventBus.register(this);
     try {
       Localized.changeLocale(Locale.GERMAN);
       assertNotNull(event);
       assertEquals(Locale.ENGLISH, event.getOldLocale());
       assertEquals(Locale.GERMAN, event.getNewLocale());
     } finally {
-      EventSystem.bus.unregister(this);
+      eventBus.unregister(this);
     }
   }
 

@@ -18,7 +18,7 @@ package de.ks.menu.sink;
 
 
 import de.ks.JFXCDIRunner;
-import de.ks.eventsystem.EventSystem;
+import de.ks.eventsystem.bus.EventBus;
 import de.ks.i18n.Localized;
 import de.ks.menu.MenuItemDescriptor;
 import de.ks.menu.event.MenuItemClickedEvent;
@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.enterprise.inject.spi.CDI;
+import javax.inject.Inject;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -43,6 +44,8 @@ import static org.junit.Assert.assertNotNull;
 public class PopupSinkTest {
   private PopupSink sink;
   private Stage stage;
+  @Inject
+  EventBus bus;
 
   @Before
   public void setUp() throws Exception {
@@ -54,14 +57,14 @@ public class PopupSinkTest {
 
   @After
   public void tearDown() throws Exception {
-    EventSystem.bus.unregister(sink);
+    bus.unregister(sink);
   }
 
   @Test
   public void testNullMenuPath() throws Exception {
     sink.setMenuPath(null);
 
-    EventSystem.bus.postAndWait(//
+    bus.postAndWait(//
             new MenuItemClickedEvent(//
                     new MenuItemDescriptor(About.MENUPATH, About.class))
     );
@@ -69,7 +72,7 @@ public class PopupSinkTest {
 
   @Test
   public void testOpenPopupForParent() throws Exception {
-    EventSystem.bus.postAndWait(//
+    bus.postAndWait(//
             new MenuItemClickedEvent(//
                     new MenuItemDescriptor(About.MENUPATH, About.class))
     );

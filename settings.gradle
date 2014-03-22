@@ -1,7 +1,3 @@
-include "doc"
-
-include "pc:libs:testutil", "pc:libs:util", "pc:libs:reflection"
-
 /*
  * Copyright [2014] [Christian Loehnert, krampenschiesser@freenet.de]
  *
@@ -17,6 +13,10 @@ include "pc:libs:testutil", "pc:libs:util", "pc:libs:reflection"
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+include "doc"
+
+include "pc:libs:testutil", "pc:libs:util", "pc:libs:reflection"
+
 
 //PC stuff
 include "pc:libs:validation", "pc:libs:persistence", "pc:libs:eventsystem", "pc:libs:i18n", "pc:libs:scheduler"

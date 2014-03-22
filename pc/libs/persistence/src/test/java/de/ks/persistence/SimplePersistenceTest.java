@@ -17,8 +17,10 @@
 package de.ks.persistence;
 
 
+import de.ks.CDIRunner;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import javax.persistence.criteria.CriteriaQuery;
 
@@ -27,6 +29,7 @@ import static org.junit.Assert.assertEquals;
 /**
  *
  */
+@RunWith(CDIRunner.class)
 public class SimplePersistenceTest {
   @Before
   public void setUp() throws Exception {

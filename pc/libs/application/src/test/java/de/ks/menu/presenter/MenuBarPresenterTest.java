@@ -19,7 +19,7 @@ package de.ks.menu.presenter;
 
 import com.google.common.eventbus.Subscribe;
 import de.ks.JFXCDIRunner;
-import de.ks.eventsystem.EventSystem;
+import de.ks.eventsystem.bus.EventBus;
 import de.ks.i18n.Localized;
 import de.ks.imagecache.Images;
 import de.ks.menu.MenuItemDescriptor;
@@ -38,6 +38,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.enterprise.inject.spi.CDI;
+import javax.inject.Inject;
 
 import static org.junit.Assert.*;
 
@@ -48,7 +49,8 @@ import static org.junit.Assert.*;
 public class MenuBarPresenterTest {
   private MenuBarPresenter presenter;
   private MenuItemDescriptor eventItem;
-
+  @Inject
+  EventBus bus;
 
   @Before
   public void setUp() throws Exception {
@@ -98,14 +100,14 @@ public class MenuBarPresenterTest {
 
   @Test
   public void testEventThrowing() throws Exception {
-    EventSystem.bus.register(this);
+    bus.register(this);
     try {
       MenuBar menu = this.presenter.getMenu("/main/file");
       menu.getMenus().get(0).getItems().get(0).getOnAction().handle(new ActionEvent());
       assertNotNull(eventItem);
       assertEquals(Open.ITEMPATH.toLowerCase(), eventItem.getMenuItemPath());
     } finally {
-      EventSystem.bus.unregister(this);
+      bus.unregister(this);
     }
   }
 

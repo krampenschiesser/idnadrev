@@ -26,4 +26,6 @@ dependencies {
 
     runtime "ch.qos.logback:logback-core:$logback"
     runtime "ch.qos.logback:logback-classic:$logback"
+
+    testCompile project(":pc:libs:testutil")
 }

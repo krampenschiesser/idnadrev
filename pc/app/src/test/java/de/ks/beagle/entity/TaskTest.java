@@ -17,10 +17,12 @@
 package de.ks.beagle.entity;
 
 
+import de.ks.CDIRunner;
 import de.ks.persistence.PersistentWork;
 import de.ks.persistence.entity.AbstractPersistentObject;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -33,6 +35,7 @@ import static org.junit.Assert.*;
 /**
  *
  */
+@RunWith(CDIRunner.class)
 public class TaskTest {
 
   @Before

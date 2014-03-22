@@ -21,11 +21,12 @@ package de.ks.scheduler;
  * All rights reserved by lastTime, license may come later.
  */
 
-import de.ks.eventsystem.EventSystem;
+import de.ks.eventsystem.bus.EventBus;
 import de.ks.executor.ExecutorService;
 import de.ks.scheduler.event.ScheduleTriggeredEvent;
 
 import javax.annotation.PreDestroy;
+import javax.enterprise.inject.spi.CDI;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -84,7 +85,8 @@ public class Daemon {
   }
 
   private void triggerSchedule(Object userData) {
-    EventSystem.bus.post(new ScheduleTriggeredEvent(userData));
+    EventBus eventBus = CDI.current().select(EventBus.class).get();
+    eventBus.post(new ScheduleTriggeredEvent(userData));
   }
 
 

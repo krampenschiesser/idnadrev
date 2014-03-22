@@ -25,7 +25,7 @@ import javax.validation.ValidatorFactory;
  *
  */
 public class Validation {
-  public static Validator getValidator() {
+  private static Validator getValidator() {
     ValidatorFactory validatorFactory = javax.validation.Validation.buildDefaultValidatorFactory();
     return validatorFactory.usingContext().messageInterpolator(new LocalizedInterpolator()).getValidator();
   }

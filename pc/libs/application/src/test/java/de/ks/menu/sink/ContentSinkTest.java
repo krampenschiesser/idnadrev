@@ -19,7 +19,7 @@ package de.ks.menu.sink;
 
 import de.ks.JFXCDIRunner;
 import de.ks.application.Navigator;
-import de.ks.eventsystem.EventSystem;
+import de.ks.eventsystem.bus.EventBus;
 import de.ks.executor.ExecutorService;
 import de.ks.menu.MenuItemDescriptor;
 import de.ks.menu.event.MenuItemClickedEvent;
@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.spi.CDI;
+import javax.inject.Inject;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -47,6 +48,8 @@ import static org.junit.Assert.assertNotNull;
 public class ContentSinkTest {
   private static final Logger log = LoggerFactory.getLogger(ContentSinkTest.class);
   private ContentSink sink;
+  @Inject
+  EventBus bus;
 
   @Before
   public void setUp() throws Exception {
@@ -56,7 +59,7 @@ public class ContentSinkTest {
 
   @After
   public void tearDown() throws Exception {
-    EventSystem.bus.unregister(sink);
+    bus.unregister(sink);
   }
 
   @Test
@@ -74,7 +77,7 @@ public class ContentSinkTest {
     log.info("registered sink");
     sink.setPane(pane);
 
-    EventSystem.bus.postAndWait(//
+    bus.postAndWait(//
             new MenuItemClickedEvent(//
                     new MenuItemDescriptor(About.MENUPATH, About.class))
     );

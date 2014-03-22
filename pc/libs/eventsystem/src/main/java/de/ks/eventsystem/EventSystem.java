@@ -28,7 +28,7 @@ import javax.enterprise.inject.Produces;
 public class EventSystem {
   private static final Logger log = LoggerFactory.getLogger(EventSystem.class);
 
-  public static final EventBus bus;
+  private static final EventBus bus;
 
   public static void setWaitForEvents(boolean wait) {
     EventBus.alwaysWait = wait;

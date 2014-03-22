@@ -61,6 +61,9 @@ public class EditStepTest {
   @Inject
   @EditorFor(String.class)
   StringEditor editor;
+  @Inject
+  EventBus bus;
+
   //------------
   FullWorkflowView view;
   private ValidationResultEvent lastValidation;
@@ -114,7 +117,7 @@ public class EditStepTest {
 
   @Test
   public void testValidation() throws Exception {
-    EventSystem.bus.register(this);
+    bus.register(this);
     EventSystem.setWaitForEvents(true);
 
     StackPane content = view.getContent();
