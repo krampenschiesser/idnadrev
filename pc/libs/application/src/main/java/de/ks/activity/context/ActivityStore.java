@@ -17,6 +17,7 @@
 package de.ks.activity.context;
 
 
+import de.ks.binding.Binding;
 import javafx.beans.property.SimpleObjectProperty;
 
 /**
@@ -24,7 +25,12 @@ import javafx.beans.property.SimpleObjectProperty;
  */
 @ActivityScoped
 public class ActivityStore {
-  private SimpleObjectProperty<Object> model = new SimpleObjectProperty<>();
+  private final SimpleObjectProperty<Object> model = new SimpleObjectProperty<>();
+  private final Binding binding = new Binding();
+
+  public ActivityStore() {
+    model.addListener(binding::bindChangedModel);
+  }
 
   @SuppressWarnings("unchecked")
   public <E> E getModel() {
@@ -35,7 +41,13 @@ public class ActivityStore {
     this.model.set(model);
   }
 
+
   public SimpleObjectProperty<?> getModelProperty() {
     return model;
+  }
+
+
+  public Binding getBinding() {
+    return binding;
   }
 }

@@ -21,6 +21,7 @@ import de.ks.activity.callback.InitializeActivityLinks;
 import de.ks.activity.callback.InitializeModelBindings;
 import de.ks.activity.callback.InitializeTaskLinks;
 import de.ks.activity.callback.InitializeViewLinks;
+import de.ks.activity.context.ActivityStore;
 import de.ks.activity.link.ActivityLink;
 import de.ks.activity.link.TaskLink;
 import de.ks.activity.link.ViewLink;
@@ -29,7 +30,10 @@ import de.ks.application.fxml.DefaultLoader;
 import de.ks.datasource.DataSource;
 import javafx.concurrent.Task;
 import javafx.scene.Node;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.enterprise.inject.spi.CDI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +43,7 @@ import java.util.Map;
  *
  */
 public class Activity {
+  private static final Logger log = LoggerFactory.getLogger(Activity.class);
   private final DataSource<?> dataSource;
   private final Class<?> initialController;
   private final ActivityController activityController;
@@ -142,8 +147,7 @@ public class Activity {
     loader.addCallback(new InitializeViewLinks(viewLinks, activityController));
     loader.addCallback(new InitializeActivityLinks(activityLinks, activityController));
     loader.addCallback(new InitializeTaskLinks(taskLinks, activityController));
-    loader.addCallback(new InitializeModelBindings(this));
-
+    loader.addCallback(new InitializeModelBindings(this, CDI.current().select(ActivityStore.class).get()));
   }
 
   public List<ViewLink> getViewLinks() {
@@ -160,5 +164,30 @@ public class Activity {
 
   public DataSource<?> getDataSource() {
     return dataSource;
+  }
+
+  public boolean isInitialized() {
+    for (DefaultLoader<Node, Object> loader : preloads.values()) {
+      if (!loader.isLoaded()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  public void waitForInitialization() {
+    for (DefaultLoader<Node, Object> loader : preloads.values()) {
+      loader.waitForLoading();
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T> T getController(Class<T> controllerClass) {
+    return (T) preloads.get(controllerClass).getController();
+  }
+
+  @SuppressWarnings("unchecked")
+  public <V> V getView(Class<?> controllerClass) {
+    return (V) preloads.get(controllerClass).getView();
   }
 }
