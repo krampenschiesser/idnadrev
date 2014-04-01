@@ -16,18 +16,14 @@
 
 package de.ks.activity;
 
-import de.ks.activity.callback.InitializeModelBindings;
 import de.ks.activity.context.ActivityStore;
 import de.ks.application.PresentationArea;
-import de.ks.application.fxml.DefaultLoader;
 import de.ks.executor.ExecutorService;
-import javafx.event.ActionEvent;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.StackPane;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
@@ -36,6 +32,7 @@ import static de.ks.JunitMatchers.withRetry;
 import static org.junit.Assert.*;
 
 public class ActivityBindingTest extends AbstractActivityTest {
+  private static final Logger log = LoggerFactory.getLogger(ActivityBindingTest.class);
   @Inject
   protected ActivityStore store;
   @Inject
@@ -47,8 +44,8 @@ public class ActivityBindingTest extends AbstractActivityTest {
     PresentationArea mainArea = navigator.getMainArea();
     Node currentNode = mainArea.getCurrentNode();
     assertNotNull(currentNode);
-    TextField input1 = (TextField) currentNode.lookup("#input1");
-    assertNotNull(input1);
+    TextField idInput = (TextField) currentNode.lookup("#id");
+    assertNotNull(idInput);
 
     withRetry(() -> store.getModelProperty().get() != null);
 
@@ -59,18 +56,24 @@ public class ActivityBindingTest extends AbstractActivityTest {
     executorService.submit(() -> assertSame(model, CDI.current().select(ActivityStore.class).get().getModel())).get();
   }
 
-  @Ignore
   @Test
   public void testBindings() throws Exception {
-    DefaultLoader<StackPane, ActivityHome> loader = new DefaultLoader<>(ActivityHome.class);
+    activityController.start(activity);
 
-    InitializeModelBindings bindings = new InitializeModelBindings(activity);
-    bindings.accept(loader.getController(), loader.getView());
+    activity.waitForInitialization();
+    log.info("Done with waiting");
+    Node view = activity.getView(ActivityHome.class);
 
-    Button button = (Button) loader.getView().lookup("#pressMe");
-    assertNotNull(button.getOnAction());
-    button.getOnAction().handle(new ActionEvent());
+    ActivityModel model = new ActivityModel();
+    model.setId(42);
+    model.setName("Hello Sauerland");
+    store.setModel(model);
 
-    assertTrue(withRetry(() -> CDI.current().select(ActivityAction.class).get().isExecuted()));
+    TextField idInput = (TextField) view.lookup("#id");
+    TextField nameInput = (TextField) view.lookup("#name");
+
+    assertEquals("42", idInput.getText());
+    assertEquals(model.getName(), nameInput.getText());
+
   }
 }
