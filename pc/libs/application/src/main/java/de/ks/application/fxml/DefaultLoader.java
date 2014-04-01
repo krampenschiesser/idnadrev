@@ -21,6 +21,7 @@ import de.ks.executor.ExecutorService;
 import de.ks.i18n.Localized;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
+import javafx.fxml.LoadException;
 import javafx.scene.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,9 @@ import javax.enterprise.inject.spi.CDI;
 import java.io.IOException;
 import java.net.URL;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 /**
  * @param <V> the view
@@ -37,7 +40,6 @@ import java.util.function.BiConsumer;
  */
 public class DefaultLoader<V extends Node, C> {
   private static final Logger log = LoggerFactory.getLogger(DefaultLoader.class);
-  private final FXMLLoader loader;
   private final ExecutorService service = CDI.current().select(ExecutorService.class).get();
   private final URL fxmlFile;
   private CompletableFuture<FXMLLoader> loaderFuture;
@@ -53,18 +55,24 @@ public class DefaultLoader<V extends Node, C> {
       log.error("FXML file not found, is null!");
       throw new IllegalArgumentException("FXML file not found, is null!");
     }
-    log.debug("Loading fxml file {}", fxmlFile);
-    loader = new FXMLLoader(fxmlFile, Localized.getBundle(), new JavaFXBuilderFactory(), new ControllerFactory());
 
-    loaderFuture = CompletableFuture.supplyAsync(() -> {
+    Supplier<FXMLLoader> supplier = () -> {
       try {
+        FXMLLoader loader = new FXMLLoader(fxmlFile, Localized.getBundle(), new JavaFXBuilderFactory(), new ControllerFactory());
+        log.debug("Loading fxml file {}", fxmlFile);
         loader.load();
         return loader;
       } catch (IOException e) {
         log.error("Could not load fxml file {}", fxmlFile, e);
         throw new RuntimeException(e);
       }
-    }, service);
+    };
+    loaderFuture = CompletableFuture.supplyAsync(supplier, service).exceptionally((t) -> {
+      if (t.getCause() instanceof RuntimeException && t.getCause().getCause() instanceof LoadException) {
+        return service.invokeInJavaFXThread(() -> supplier.get());
+      }
+      throw new RuntimeException(t);
+    });
   }
 
   public void addCallback(BiConsumer<Object, Node> callback) {
@@ -82,11 +90,23 @@ public class DefaultLoader<V extends Node, C> {
 
   public V getView() {
     waitForLoading();
-    return loader.getRoot();
+    return getLoader().getRoot();
+  }
+
+  private FXMLLoader getLoader() {
+    try {
+      return loaderFuture.get();
+    } catch (InterruptedException | ExecutionException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   public void waitForLoading() {
-    allCallbacks.join();
+    if (allCallbacks == null) {
+      loaderFuture.join();
+    } else {
+      allCallbacks.join();
+    }
   }
 
   public boolean isLoaded() {
@@ -95,6 +115,6 @@ public class DefaultLoader<V extends Node, C> {
 
   public C getController() {
     waitForLoading();
-    return loader.getController();
+    return getLoader().getController();
   }
 }
