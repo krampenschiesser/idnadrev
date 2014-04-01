@@ -29,8 +29,8 @@
                         GridPane.rowIndex="3"/>
                 <Button fx:id="switchView" mnemonicParsing="false" text="Switch View" GridPane.columnIndex="1"
                         GridPane.rowIndex="3"/>
-                <TextField id="input1" fx:id="id" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-                <TextField id="input2" fx:id="name" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                <TextField fx:id="id" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                <TextField fx:id="name" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
                 <Label text="ID:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
                 <Label text="Name:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
             </children>
