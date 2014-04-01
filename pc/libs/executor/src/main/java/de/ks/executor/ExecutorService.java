@@ -165,6 +165,13 @@ public class ExecutorService implements ListeningScheduledExecutorService {
     executeInJavaFXThreadInternal(command);
   }
 
+  public <V> V invokeInJavaFXThread(Callable<V> command) {
+    try {
+      return executeInJavaFXThread(command).get();
+    } catch (InterruptedException | ExecutionException e) {
+      throw new RuntimeException(e);
+    }
+  }
   public <V> ListenableFuture<V> executeInJavaFXThread(Callable<V> command) {
     final Callable<V> runner = wrap(command);
     ListenableFutureTask<V> futureTask = ListenableFutureTask.create(runner);
