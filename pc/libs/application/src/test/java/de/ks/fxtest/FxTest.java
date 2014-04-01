@@ -37,11 +37,12 @@ public class FxTest {
   public void testName() throws Exception {
     Profiler profiler = new Profiler("fxml loading of the same file");
     profiler.setLogger(log);
-    for (int i = 0; i < 1000; i++) {
+    int MAX = 100;
+    for (int i = 0; i < MAX; i++) {
       DefaultLoader<StackPane, FxTestController> loader = new DefaultLoader<>(FxTestController.class);
       loader.getController();
     }
     profiler.stop().log();
-    log.info("Average time: {}ms", profiler.elapsedTime() / 1000 / 1000 / 1000);
+    log.info("Average time: {}ms", profiler.elapsedTime() / 1000 / 1000 / MAX);
   }
 }
