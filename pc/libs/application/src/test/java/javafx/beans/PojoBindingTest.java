@@ -37,10 +37,11 @@ public class PojoBindingTest {
   public void testUIPojoCommunication() throws Exception {
     MyBindingPojo hello = new MyBindingPojo(1, "hello");
 
-    TextField nameInput = new TextField();
     TextField versionInput = new TextField();
 
-    JavaBeanIntegerProperty javaBeanIntegerProperty = JavaBeanIntegerPropertyBuilder.create().bean(hello).name("version").build();
+    JavaBeanIntegerPropertyBuilder builder = JavaBeanIntegerPropertyBuilder.create().beanClass(MyBindingPojo.class);
+    builder.bean(hello);
+    JavaBeanIntegerProperty javaBeanIntegerProperty = builder.name("version").build();
     assertEquals(1, javaBeanIntegerProperty.get());
     hello.setVersion(2);
     assertEquals(2, javaBeanIntegerProperty.get());
