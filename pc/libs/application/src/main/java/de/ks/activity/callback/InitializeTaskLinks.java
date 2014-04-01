@@ -19,6 +19,7 @@ package de.ks.activity.callback;
 
 import de.ks.activity.ActivityController;
 import de.ks.activity.link.TaskLink;
+import de.ks.application.fxml.LoaderCallback;
 import de.ks.executor.ExecutorService;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -55,6 +56,5 @@ public class InitializeTaskLinks extends LoaderCallback {
       addHandlerToNode(node, taskLink.getId(), handler);
       log.debug("done with task-link {} for controller {}", taskLink.getId(), controller);
     });
-
   }
 }

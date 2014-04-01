@@ -19,6 +19,7 @@ package de.ks.activity.callback;
 
 import de.ks.activity.ActivityController;
 import de.ks.activity.link.ViewLink;
+import de.ks.application.fxml.LoaderCallback;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;

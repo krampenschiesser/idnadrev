@@ -17,9 +17,6 @@
 package de.ks.application.fxml;
 
 
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 import de.ks.executor.ExecutorService;
 import de.ks.i18n.Localized;
 import javafx.fxml.FXMLLoader;
@@ -29,8 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.spi.CDI;
+import java.io.IOException;
 import java.net.URL;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
 /**
@@ -39,16 +37,18 @@ import java.util.function.BiConsumer;
  */
 public class DefaultLoader<V extends Node, C> {
   private static final Logger log = LoggerFactory.getLogger(DefaultLoader.class);
-  private final Phaser phaser = new Phaser();
   private final FXMLLoader loader;
-  private final ListenableFuture<V> future;
   private final ExecutorService service = CDI.current().select(ExecutorService.class).get();
+  private final URL fxmlFile;
+  private CompletableFuture<FXMLLoader> loaderFuture;
+  private CompletableFuture<Void> allCallbacks;
 
   public DefaultLoader(Class<?> modelController) {
     this(modelController.getResource(modelController.getSimpleName() + ".fxml"));
   }
 
   public DefaultLoader(URL fxmlFile) {
+    this.fxmlFile = fxmlFile;
     if (fxmlFile == null) {
       log.error("FXML file not found, is null!");
       throw new IllegalArgumentException("FXML file not found, is null!");
@@ -56,65 +56,45 @@ public class DefaultLoader<V extends Node, C> {
     log.debug("Loading fxml file {}", fxmlFile);
     loader = new FXMLLoader(fxmlFile, Localized.getBundle(), new JavaFXBuilderFactory(), new ControllerFactory());
 
-    phaser.register();
-    future = service.executeInJavaFXThread((Callable<V>) () -> {
+    loaderFuture = CompletableFuture.supplyAsync(() -> {
       try {
-        return loader.load();
-      } finally {
-        phaser.arriveAndDeregister();
-      }
-    });
-  }
-
-  public void addCallback(BiConsumer<C, V> callback) {
-    phaser.register();
-    Futures.addCallback(future, new FutureCallback<V>() {
-      @Override
-      public void onSuccess(V result) {
-        try {
-          C controller = loader.getController();
-          callback.accept(controller, result);
-        } finally {
-          phaser.arriveAndDeregister();
-        }
-      }
-
-      @Override
-      public void onFailure(Throwable t) {
-        phaser.arriveAndDeregister();
+        loader.load();
+        return loader;
+      } catch (IOException e) {
+        log.error("Could not load fxml file {}", fxmlFile, e);
+        throw new RuntimeException(e);
       }
     }, service);
   }
 
-  public V getView() {
-    try {
-      waitForAllParties();
-      return future.get();
-    } catch (InterruptedException | ExecutionException e) {
-      log.error("Could not load given FXML file {}", loader.getLocation(), e);
-      throw new RuntimeException(e);
+  public void addCallback(BiConsumer<Object, Node> callback) {
+    CompletableFuture<Object> controllerFuture = loaderFuture.thenApply(FXMLLoader::getController);
+    CompletableFuture<Node> nodeFuture = loaderFuture.thenApply(FXMLLoader::getRoot);
+
+    CompletableFuture<Void> asyncCall = controllerFuture.thenAcceptBothAsync(nodeFuture, callback, service);
+    asyncCall.thenRun(() -> log.info("Done with {} for {}", callback, this.fxmlFile));
+    if (allCallbacks == null) {
+      allCallbacks = asyncCall;
+    } else {
+      CompletableFuture.allOf(allCallbacks, asyncCall);
     }
   }
 
-  private void waitForAllParties() {
-    phaser.register();
-    int phase = -1;
-    try {
-      phase = phaser.arriveAndDeregister();
-      phaser.awaitAdvanceInterruptibly(phase, 5, TimeUnit.SECONDS);
-    } catch (InterruptedException e) {
-      log.warn("Got interrupted during arrival");
-    } catch (TimeoutException e) {
-      String msg = "Did not return from phase " + phase;
-      log.error(msg);
-      throw new RuntimeException(msg);
-    }
+  public V getView() {
+    waitForLoading();
+    return loader.getRoot();
+  }
+
+  public void waitForLoading() {
+    allCallbacks.join();
+  }
+
+  public boolean isLoaded() {
+    return allCallbacks.isDone();
   }
 
   public C getController() {
-    if (!future.isDone()) {
-      getView();//load it
-    }
+    waitForLoading();
     return loader.getController();
   }
 }

@@ -18,6 +18,7 @@ package de.ks.activity.callback;
 
 import de.ks.activity.ActivityController;
 import de.ks.activity.link.ActivityLink;
+import de.ks.application.fxml.LoaderCallback;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -44,6 +45,5 @@ public class InitializeActivityLinks extends LoaderCallback {
       };
       addHandlerToNode(node, activityLink.getId(), handler);
     });
-
   }
 }

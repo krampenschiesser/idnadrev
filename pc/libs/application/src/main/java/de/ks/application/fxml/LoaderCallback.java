@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.ks.activity.callback;
+package de.ks.application.fxml;
 
 
 import de.ks.reflection.ReflectionUtil;
@@ -36,7 +36,6 @@ public abstract class LoaderCallback implements BiConsumer<Object, Node> {
 
   protected void addHandlerToNode(Node node, String id, EventHandler<ActionEvent> handler) {
     try {
-
       if (!id.startsWith("#")) {
         id = "#" + id;
       }
@@ -49,7 +48,8 @@ public abstract class LoaderCallback implements BiConsumer<Object, Node> {
         ReflectionUtil.invokeMethod(method, found, handler);
       }
     } catch (Exception e) {
-      log.error("Could not do something", e);
+      log.error("Could execute loader callback", e);
     }
   }
+
 }
