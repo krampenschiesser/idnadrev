@@ -18,15 +18,13 @@ package de.ks.activity;
 
 import de.ks.activity.context.ActivityStore;
 import de.ks.datasource.DataSource;
-import de.ks.executor.ExecutorService;
-import de.ks.executor.ThreadCallBoundValue;
+import de.ks.executor.fx.ContextualEventHandler;
 import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.spi.CDI;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  *
@@ -34,31 +32,17 @@ import java.util.Set;
 public class DataSourceLoadingTask<M> extends Task<M> {
   private static final Logger log = LoggerFactory.getLogger(DataSourceLoadingTask.class);
   protected final DataSource<M> dataSource;
-  private final Set<ThreadCallBoundValue> propagations = new HashSet<>();
-  private final ExecutorService service = CDI.current().select(ExecutorService.class).get();
 
   public DataSourceLoadingTask(DataSource<M> dataSource) {
     this.dataSource = dataSource;
-    for (ThreadCallBoundValue threadCallBoundValue : CDI.current().select(ThreadCallBoundValue.class)) {
-      propagations.add(threadCallBoundValue);
-    }
 
-    propagations.stream().forEach(p -> p.initializeInCallerThread());
-    setOnSucceeded((e) -> {
-      propagations.stream().forEach(p -> p.doBeforeCallInTargetThread());
-      try {
-        ActivityStore activityStore = CDI.current().select(ActivityStore.class).get();
-        activityStore.setModel(getValue());
-      } finally {
-        propagations.stream().forEach(p -> p.doAfterCallInTargetThread());
-      }
-    });
+    setOnSucceeded(new ContextualEventHandler<WorkerStateEvent>((e) -> {
+      CDI.current().select(ActivityStore.class).get().setModel(getValue());
+    }));
   }
 
   @Override
   protected M call() throws Exception {
-
     return dataSource.loadModel();
-
   }
 }
