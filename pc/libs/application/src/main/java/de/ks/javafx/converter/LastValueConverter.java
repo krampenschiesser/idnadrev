@@ -46,6 +46,8 @@ public class LastValueConverter<T, C extends StringConverter<T>> extends StringC
   public T fromString(String s) {
     try {
       return delegate.fromString(s);
+    } catch (NumberFormatException e) {
+      return valueProperty.getValue();
     } catch (RuntimeException e) {
       if (e.getCause() instanceof ParseException) {
         return valueProperty.getValue();
