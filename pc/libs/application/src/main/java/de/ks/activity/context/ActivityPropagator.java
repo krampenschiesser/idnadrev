@@ -23,15 +23,16 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.LinkedList;
+import java.util.UUID;
 
 /**
  *
  */
 public class ActivityPropagator implements ThreadCallBoundValue {
   private static final Logger log = LoggerFactory.getLogger(ActivityPropagator.class);
+  private final String uid = UUID.randomUUID().toString();
   protected final ActivityContext context;
   private String propagatedActivityId;
-  private String propagatedActivitySequence;
 
   @Inject
   public ActivityPropagator(ActivityContext context) {
@@ -43,7 +44,6 @@ public class ActivityPropagator implements ThreadCallBoundValue {
     LinkedList<String> activityIds = context.activityStack.get();
     if (!activityIds.isEmpty()) {
       propagatedActivityId = activityIds.getLast();
-      propagatedActivitySequence = context.getHolder().getId();
       context.registerPlannedPropagation(propagatedActivityId);
     }
   }
@@ -51,21 +51,27 @@ public class ActivityPropagator implements ThreadCallBoundValue {
   @Override
   public void doBeforeCallInTargetThread() {
     if (propagatedActivityId != null) {
-      log.debug("Propagating activity {} seq={}", propagatedActivityId, propagatedActivitySequence);
+      log.debug("Propagating activity {}", propagatedActivityId);
       context.propagateActivity(propagatedActivityId);
     } else {
-      log.debug("Nothing to propagate seq={}", propagatedActivitySequence);
+      log.debug("No activity to propagate.");
     }
   }
 
   @Override
   public void doAfterCallInTargetThread() {
     if (propagatedActivityId != null) {
-      log.debug("Stopping activity {}->{}", propagatedActivitySequence, propagatedActivityId);
+      log.debug("Stopping activity {}", propagatedActivityId);
       context.stopActivity(propagatedActivityId);
     } else {
-      log.debug("Nothing to stopActivity seq={}", propagatedActivitySequence);
+      log.debug("No activity to stop.");
     }
+  }
+
+  @Override
+  public void registerAgain() {
+    log.debug("Registering activity {} again.", propagatedActivityId);
+    context.registerPlannedPropagation(propagatedActivityId);
   }
 
   public ActivityPropagator clone() {

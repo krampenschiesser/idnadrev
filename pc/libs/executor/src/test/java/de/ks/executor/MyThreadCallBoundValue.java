@@ -48,6 +48,11 @@ public class MyThreadCallBoundValue implements ThreadCallBoundValue {
   }
 
   @Override
+  public void registerAgain() {
+
+  }
+
+  @Override
   public ThreadCallBoundValue clone() {
     try {
       ThreadCallBoundValue clone = (ThreadCallBoundValue) super.clone();

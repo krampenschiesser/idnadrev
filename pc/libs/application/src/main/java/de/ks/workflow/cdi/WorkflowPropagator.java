@@ -71,6 +71,11 @@ public class WorkflowPropagator implements ThreadCallBoundValue {
     }
   }
 
+  @Override
+  public void registerAgain() {
+
+  }
+
   public WorkflowPropagator clone() {
     try {
       WorkflowPropagator clone = (WorkflowPropagator) super.clone();

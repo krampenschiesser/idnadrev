@@ -32,5 +32,7 @@ public interface ThreadCallBoundValue extends Cloneable {
 
   void doAfterCallInTargetThread();
 
+  void registerAgain();
+
   ThreadCallBoundValue clone();
 }
