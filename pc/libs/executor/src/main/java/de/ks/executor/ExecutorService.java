@@ -172,6 +172,7 @@ public class ExecutorService implements ListeningScheduledExecutorService {
       throw new RuntimeException(e);
     }
   }
+
   public <V> ListenableFuture<V> executeInJavaFXThread(Callable<V> command) {
     final Callable<V> runner = wrap(command);
     ListenableFutureTask<V> futureTask = ListenableFutureTask.create(runner);
@@ -257,6 +258,9 @@ public class ExecutorService implements ListeningScheduledExecutorService {
         threadCallBoundValues.forEach(ThreadCallBoundValue::doBeforeCallInTargetThread);
         try {
           delegate.run();
+        } catch (Throwable t) {
+          log.error("Could not execute async action: ", t);
+          throw t;
         } finally {
           threadCallBoundValues.forEach(ThreadCallBoundValue::doAfterCallInTargetThread);
         }
