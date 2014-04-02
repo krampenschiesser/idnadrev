@@ -22,6 +22,7 @@ import de.ks.activity.Activity;
 import de.ks.activity.ActivityController;
 import de.ks.application.Navigator;
 import de.ks.eventsystem.bus.EventBus;
+import de.ks.executor.ExecutorService;
 import de.ks.menu.MenuItemDescriptor;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
@@ -37,6 +38,8 @@ public class ContentSink extends AbstractSink<ContentSink> {
   private static final Logger log = LoggerFactory.getLogger(ContentSink.class);
 
   protected Pane pane;
+  @Inject
+  protected ExecutorService executorService;
 
   @Inject
   public ContentSink(EventBus bus, ActivityController controller) {
@@ -59,7 +62,7 @@ public class ContentSink extends AbstractSink<ContentSink> {
       navigator.presentInMain(nodeProvider.getNode());
       //pane.getChildren().add(nodeProvider.getNode());
     } else if (menuItem instanceof Activity) {
-      controller.start((Activity) menuItem);
+      executorService.submit(() -> controller.start((Activity) menuItem));
     } else {
       log.error("Could not handle MenuItemClickedEvent because {} is not a {}", menuItem.getClass(), Node.class.getName());
     }
