@@ -22,12 +22,14 @@ import de.ks.workflow.Workflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.enterprise.inject.Vetoed;
 import javax.inject.Inject;
 import java.util.LinkedList;
 
 /**
  *
  */
+@Vetoed
 public class WorkflowPropagator implements ThreadCallBoundValue {
   private static final Logger log = LoggerFactory.getLogger(WorkflowPropagator.class);
   protected final WorkflowContext context;

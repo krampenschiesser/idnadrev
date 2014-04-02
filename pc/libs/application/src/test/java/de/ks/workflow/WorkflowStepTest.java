@@ -23,6 +23,7 @@ import de.ks.workflow.step.DefaultOutput;
 import de.ks.workflow.step.WorkflowStepConfig;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -33,6 +34,7 @@ import static org.junit.Assert.*;
 /**
  *
  */
+@Ignore
 @RunWith(JFXCDIRunner.class)
 public class WorkflowStepTest {
 

@@ -40,6 +40,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.web.HTMLEditor;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -52,6 +53,7 @@ import static org.junit.Assert.*;
 /**
  *
  */
+@Ignore
 @RunWith(JFXCDIRunner.class)
 public class EditStepTest {
   @Inject

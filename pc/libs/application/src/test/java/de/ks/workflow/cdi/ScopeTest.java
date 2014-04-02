@@ -20,6 +20,7 @@ package de.ks.workflow.cdi;
 import de.ks.JFXCDIRunner;
 import de.ks.executor.ExecutorService;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -30,6 +31,7 @@ import java.util.concurrent.CyclicBarrier;
 
 import static org.junit.Assert.*;
 
+@Ignore
 @RunWith(JFXCDIRunner.class)
 public class ScopeTest {
   @Inject

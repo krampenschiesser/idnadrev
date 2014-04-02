@@ -19,10 +19,6 @@ package de.ks.workflow.cdi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.spi.AfterBeanDiscovery;
-import javax.enterprise.inject.spi.BeanManager;
-
 /**
  * Created by Christian Loehnert
  * Krampenschiesser@freenet.de
@@ -31,10 +27,10 @@ import javax.enterprise.inject.spi.BeanManager;
 public class Extension implements javax.enterprise.inject.spi.Extension {
   private static final Logger log = LoggerFactory.getLogger(Extension.class);
 
-  public void registerContext(@Observes AfterBeanDiscovery event, BeanManager mgr) {
-    log.debug("Registering {}", WorkflowContext.class.getName());
-    WorkflowContext context = new WorkflowContext(mgr);
-    event.addContext(context);
-  }
+//  public void registerContext(@Observes AfterBeanDiscovery event, BeanManager mgr) {
+//    log.debug("Registering {}", WorkflowContext.class.getName());
+//    WorkflowContext context = new WorkflowContext(mgr);
+//    event.addContext(context);
+//  }
 
 }
