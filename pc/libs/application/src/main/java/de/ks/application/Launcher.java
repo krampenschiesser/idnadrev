@@ -22,15 +22,19 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import org.apache.deltaspike.cdise.api.CdiContainer;
 import org.apache.deltaspike.cdise.api.CdiContainerLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
  */
 public class Launcher {
+  private static final Logger log = LoggerFactory.getLogger(Launcher.class);
   public static final Launcher instance = new Launcher();
 
   private final ExecutorService executor = Executors.newCachedThreadPool();
@@ -46,7 +50,16 @@ public class Launcher {
       cdiContainer.boot();
       latch.countDown();
     });
-    executor.execute(() -> Application.launch(App.class, args));
+    executor.execute(() -> {
+      try {
+
+        Application.launch(App.class, args);
+      } catch (Throwable t) {
+        log.error("Could not launch application", t);
+        stop();
+        throw t;
+      }
+    });
     executor.execute(() -> {
       EntityManagerProvider.getEntityManagerFactory();
       latch.countDown();
@@ -55,9 +68,29 @@ public class Launcher {
   }
 
   public void stop() {
-    cdiContainer.shutdown();
-    Platform.exit();
+    boolean exceptionOccured = false;
+    try {
+      cdiContainer.shutdown();
+    } catch (Exception e) {
+      log.error("Could not stop cdi container", e);
+      exceptionOccured = true;
+    }
+    try {
+      Platform.exit();
+    } catch (Exception e) {
+      log.error("Could not stop javafx platform", e);
+      exceptionOccured = true;
+    }
     executor.shutdownNow();
+    try {
+      executor.awaitTermination(5, TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+      log.error("Could not stop launching executor", e);
+      exceptionOccured = true;
+    }
+    if (exceptionOccured) {
+      System.exit(-1);
+    }
   }
 
   public void waitForInitialization() {
