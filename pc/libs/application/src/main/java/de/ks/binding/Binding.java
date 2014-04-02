@@ -16,6 +16,7 @@
 package de.ks.binding;
 
 import com.google.common.primitives.Primitives;
+import de.ks.javafx.converter.LastValueConverter;
 import de.ks.reflection.ReflectionUtil;
 import javafx.beans.property.Property;
 import javafx.beans.property.adapter.*;
@@ -29,26 +30,40 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Binding {
   private static final Logger log = LoggerFactory.getLogger(Binding.class);
   private final Map<String, Pair<Class<?>, Node>> propertyCandidates = new HashMap<>();
-  private final Map<String, Property<?>> properties = new HashMap<>();
+  private final Map<String, JavaBeanProperty<?>> properties = new HashMap<>();
+  private final Set<Pair<JavaBeanProperty<?>, Property<?>>> bindings = new HashSet<>();
 
   public void addBoundProperty(String name, Class<?> modelClass, Node node) {
     this.propertyCandidates.put(name, Pair.of(modelClass, node));
   }
 
   public void bindChangedModel(ObservableValue<?> observable, Object oldValue, Object newValue) {
-    unbind(oldValue);
-    bind(newValue);
+    if (oldValue == newValue) { //yes, no equals needed
+      fireValueChangedEvent();
+    } else {
+      unbind(oldValue);
+      bind(newValue);
+    }
   }
 
+  @SuppressWarnings("unchecked")
   public void unbind(Object oldValue) {
+    for (Pair<JavaBeanProperty<?>, Property<?>> pair : bindings) {
+      Property right = pair.getRight();
+      JavaBeanProperty left = pair.getLeft();
+      right.unbindBidirectional(left);
+    }
+  }
 
+  public void fireValueChangedEvent() {
+    for (JavaBeanProperty<?> property : properties.values()) {
+      property.fireValueChangedEvent();
+    }
   }
 
   public void bind(Object object) {
@@ -59,7 +74,7 @@ public class Binding {
       if (allFields.size() == 1) {
         Field field = allFields.get(0);
         Class<?> fieldType = field.getType();
-        Property<?> property = getProperty(name, fieldType, object);
+        JavaBeanProperty<?> property = getProperty(name, fieldType, object);
         this.properties.put(name, property);
         Node right = value.getRight();
         bindNode(right, property, fieldType);
@@ -68,15 +83,17 @@ public class Binding {
   }
 
   @SuppressWarnings("unchecked")
-  private void bindNode(Node node, Property<?> property, Class<?> fieldType) {
+  private void bindNode(Node node, JavaBeanProperty<?> property, Class<?> fieldType) {
     if (node instanceof TextInputControl) {
       TextInputControl textInputControl = (TextInputControl) node;
       StringConverter converter = getStringConverter(fieldType);
       if (converter != null) {
-        textInputControl.textProperty().bindBidirectional(property, converter);
+        LastValueConverter wrappedConverter = new LastValueConverter(converter, property);
+        textInputControl.textProperty().bindBidirectional(property, wrappedConverter);
       } else {
         textInputControl.textProperty().bindBidirectional((Property<String>) property);
       }
+      bindings.add(Pair.of(property, textInputControl.textProperty()));
     }
   }
 
@@ -97,7 +114,7 @@ public class Binding {
     }
   }
 
-  private Property<?> getProperty(String name, Class<?> type, Object object) {
+  private JavaBeanProperty<?> getProperty(String name, Class<?> type, Object object) {
     try {
       type = Primitives.wrap(type);
       if (Integer.class.equals(type)) {
