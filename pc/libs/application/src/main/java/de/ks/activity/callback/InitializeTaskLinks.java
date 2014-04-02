@@ -21,6 +21,7 @@ import de.ks.activity.ActivityController;
 import de.ks.activity.link.TaskLink;
 import de.ks.application.fxml.LoaderCallback;
 import de.ks.executor.ExecutorService;
+import de.ks.executor.fx.ContextualEventHandler;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -49,10 +50,10 @@ public class InitializeTaskLinks extends LoaderCallback {
   public void accept(Object controller, Node node) {
     log.debug("initializing task-links for controller {}", controller);
     taskLinks.stream().filter(taskLink -> taskLink.getSourceController().equals(controller.getClass())).forEach(taskLink -> {
-      EventHandler<ActionEvent> handler = actionEvent -> {
+      EventHandler<ActionEvent> handler = new ContextualEventHandler<ActionEvent>(actionEvent -> {
         Task<?> task = CDI.current().select(taskLink.getTask()).get();
         service.submit(task);
-      };
+      });
       addHandlerToNode(node, taskLink.getId(), handler);
       log.debug("done with task-link {} for controller {}", taskLink.getId(), controller);
     });
