@@ -18,6 +18,7 @@ package de.ks.application;
 
 
 import com.google.common.collect.MapMaker;
+import de.ks.executor.ExecutorService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import javafx.scene.Node;
@@ -29,6 +30,7 @@ import javafx.stage.Window;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.enterprise.inject.spi.CDI;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
@@ -109,6 +111,7 @@ public class Navigator {
 
   protected final ObservableMap<String, PresentationArea> presentationAreas = FXCollections.observableHashMap();
   protected final Map<String, Deque<Class<?>>> histories = new HashMap<>();
+  protected final ExecutorService executorService = CDI.current().select(ExecutorService.class).get();
 
 
   private Navigator(Pane mainArea) {
@@ -130,7 +133,9 @@ public class Navigator {
   }
 
   public void present(String area, Node node) {
-    presentationAreas.get(area).setCurrentNode(node);
+    executorService.invokeInJavaFXThread(() -> {
+      presentationAreas.get(area).setCurrentNode(node);
+    });
   }
 
   public void back(String area) {
