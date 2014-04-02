@@ -18,6 +18,7 @@ package de.ks.activity.context;
 
 
 import de.ks.binding.Binding;
+import de.ks.datasource.DataSource;
 import javafx.beans.property.SimpleObjectProperty;
 
 /**
@@ -27,6 +28,7 @@ import javafx.beans.property.SimpleObjectProperty;
 public class ActivityStore {
   private final SimpleObjectProperty<Object> model = new SimpleObjectProperty<>();
   private final Binding binding = new Binding();
+  private DataSource<?> datasource;
 
   public ActivityStore() {
     model.addListener(binding::bindChangedModel);
@@ -49,5 +51,14 @@ public class ActivityStore {
 
   public Binding getBinding() {
     return binding;
+  }
+
+  public void setDatasource(DataSource<?> datasource) {
+    this.datasource = datasource;
+  }
+
+  @SuppressWarnings("unchecked")
+  public <M> DataSource<M> getDatasource() {
+    return (DataSource<M>) datasource;
   }
 }

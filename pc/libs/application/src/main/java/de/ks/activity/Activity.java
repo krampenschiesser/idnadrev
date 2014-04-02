@@ -112,6 +112,7 @@ public class Activity {
   }
 
   public void start() {
+    CDI.current().select(ActivityStore.class).get().setDatasource(dataSource);
     DefaultLoader<Node, Object> loader = new DefaultLoader<>(initialController);
     addCallbacks(loader);
     preloads.put(initialController, loader);
