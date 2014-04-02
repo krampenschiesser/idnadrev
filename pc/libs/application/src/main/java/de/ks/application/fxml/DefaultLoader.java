@@ -69,6 +69,7 @@ public class DefaultLoader<V extends Node, C> {
     };
     loaderFuture = CompletableFuture.supplyAsync(supplier, service).exceptionally((t) -> {
       if (t.getCause() instanceof RuntimeException && t.getCause().getCause() instanceof LoadException) {
+        log.info("Last load of {} failed, will try again in JavaFX Thread", fxmlFile);
         return service.invokeInJavaFXThread(() -> supplier.get());
       }
       throw new RuntimeException(t);
