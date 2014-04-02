@@ -54,4 +54,8 @@ public class ActivityController {
   public Activity getCurrentActivity() {
     return activities.getLast();
   }
+
+  public void stop(Activity activity) {
+    context.stopActivity(activity.toString());
+  }
 }
