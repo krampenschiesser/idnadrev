@@ -57,6 +57,11 @@ public class ActivityContext implements Context {
     context.stopActivity(id);
   }
 
+  public static void cleanup(String id) {
+    ActivityContext context = (ActivityContext) CDI.current().getBeanManager().getContext(ActivityScoped.class);
+    context.cleanupSingleActivity(id);
+  }
+
   public static void stopAll() {
     ActivityContext context = (ActivityContext) CDI.current().getBeanManager().getContext(ActivityScoped.class);
     context.cleanupAllActivities();
@@ -130,7 +135,7 @@ public class ActivityContext implements Context {
     }
   }
 
-  protected void cleanupSingleActivity(String id) {
+  public void cleanupSingleActivity(String id) {
     lock.writeLock().lock();
     try {
       ActivityHolder activityHolder = activities.remove(id);
@@ -178,6 +183,10 @@ public class ActivityContext implements Context {
     try {
       activityStack.get().add(id);
       ActivityHolder activityHolder = activities.get(id);
+      if (activityHolder == null) {
+        log.error("No activity found for id '{}'", id);
+        throw new IllegalStateException("No activity found for id " + id);
+      }
       log.debug("Propagated activity {}", activityHolder.getId());
     } finally {
       lock.writeLock().unlock();
@@ -203,6 +212,10 @@ public class ActivityContext implements Context {
     log.debug("Cleanup all activities.");
     for (String id : activityStack.get()) {
       ActivityHolder activityHolder = activities.get(id);
+      if (activityHolder == null) {
+        log.error("No activity active in thread {}", Thread.currentThread().getName());
+        throw new IllegalStateException("No activity active in thread " + Thread.currentThread().getName());
+      }
       if (multipleThreadsActive(activityHolder)) {
         log.warn("There are still {} other threads holding a reference to this activity, cleanup not allowed", activityHolder.getCount().get() - 1);
       }
@@ -239,4 +252,5 @@ public class ActivityContext implements Context {
     String id = this.activityStack.get().getLast();
     return activities.get(id);
   }
+
 }
