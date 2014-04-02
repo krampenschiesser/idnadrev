@@ -198,6 +198,10 @@ public class ActivityContext implements Context {
     try {
       activityStack.get().remove(id);
       ActivityHolder activityHolder = activities.get(id);
+      if (activityHolder == null) {
+        log.warn("Activity {} is already stopped", id);
+        return;
+      }
       int count = activityHolder.getCount().decrementAndGet();
       if (count == 0) {
         cleanupSingleActivity(id);
