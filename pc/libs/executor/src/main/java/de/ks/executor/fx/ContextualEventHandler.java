@@ -43,6 +43,7 @@ public class ContextualEventHandler<T extends Event> implements EventHandler<T> 
     try {
       delegate.handle(event);
     } finally {
+      threadCallBoundValues.forEach(ThreadCallBoundValue::registerAgain);
       threadCallBoundValues.forEach(ThreadCallBoundValue::doAfterCallInTargetThread);
     }
   }
