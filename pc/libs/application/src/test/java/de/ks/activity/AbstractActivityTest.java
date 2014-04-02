@@ -18,8 +18,10 @@ package de.ks.activity;
 
 
 import de.ks.JFXCDIRunner;
+import de.ks.activity.context.ActivityContext;
 import de.ks.application.Navigator;
 import de.ks.datasource.NewInstanceDataSource;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 
@@ -45,6 +47,13 @@ public abstract class AbstractActivityTest {
     activity.withLink(ActivityHome.class, "switchView", OtherController.class);
     activity.withLink(OtherController.class, "back", ActivityHome.class);
     activity.withTask(DetailController.class, "pressMe", ActivityAction.class);
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    activityController.stop(activity);
+    ActivityContext.stopAll();
+
   }
 
   public void save(ActivityModel model) {

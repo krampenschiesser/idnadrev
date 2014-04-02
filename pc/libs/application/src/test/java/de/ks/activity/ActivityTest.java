@@ -81,6 +81,7 @@ public class ActivityTest extends AbstractActivityTest {
 
   @Test
   public void testInitializeTaskLinks() throws Exception {
+    activityController.start(activity);
     DefaultLoader<StackPane, DetailController> loader = new DefaultLoader<>(DetailController.class);
     InitializeTaskLinks taskLinks = new InitializeTaskLinks(activity.getTaskLinks(), activityController);
     taskLinks.accept(loader.getController(), loader.getView());
