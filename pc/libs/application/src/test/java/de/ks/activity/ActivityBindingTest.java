@@ -61,7 +61,6 @@ public class ActivityBindingTest extends AbstractActivityTest {
     activityController.start(activity);
 
     activity.waitForInitialization();
-    log.info("Done with waiting");
     Node view = activity.getView(ActivityHome.class);
 
     ActivityModel model = new ActivityModel();
@@ -75,5 +74,44 @@ public class ActivityBindingTest extends AbstractActivityTest {
     assertEquals("42", idInput.getText());
     assertEquals(model.getName(), nameInput.getText());
 
+    model.setId(13);
+    store.getBinding().fireValueChangedEvent();
+    assertEquals("13", idInput.getText());
+
+    idInput.setText("78");
+    assertEquals(78, model.getId());
+
+    idInput.setText("bla");
+    assertEquals(78, model.getId());
+  }
+
+  @Test
+  public void testRebinding() throws Exception {
+    activityController.start(activity);
+    activity.waitForInitialization();
+
+    Node view = activity.getView(ActivityHome.class);
+
+    ActivityModel model = new ActivityModel();
+    model.setId(42);
+    model.setName("Hello Sauerland");
+    store.setModel(model);
+
+    TextField idInput = (TextField) view.lookup("#id");
+    TextField nameInput = (TextField) view.lookup("#name");
+
+    assertEquals("42", idInput.getText());
+    assertEquals(model.getName(), nameInput.getText());
+
+    ActivityModel nextModel = new ActivityModel().setId(13).setName("Steak");
+    store.setModel(nextModel);
+
+    assertEquals("13", idInput.getText());
+    assertEquals(nextModel.getName(), nameInput.getText());
+
+    model.setId(0);
+    store.getBinding().fireValueChangedEvent();
+
+    assertEquals("13", idInput.getText());
   }
 }
