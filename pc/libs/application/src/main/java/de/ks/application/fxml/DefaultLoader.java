@@ -80,7 +80,7 @@ public class DefaultLoader<V extends Node, C> {
     CompletableFuture<Node> nodeFuture = loaderFuture.thenApply(FXMLLoader::getRoot);
 
     CompletableFuture<Void> asyncCall = controllerFuture.thenAcceptBothAsync(nodeFuture, callback, service);
-    asyncCall.thenRun(() -> log.info("Done with {} for {}", callback, this.fxmlFile));
+    asyncCall.thenRun(() -> log.trace("Done with {} for {}", callback, this.fxmlFile));
     if (allCallbacks == null) {
       allCallbacks = asyncCall;
     } else {
