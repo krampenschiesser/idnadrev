@@ -30,7 +30,6 @@ import java.util.LinkedList;
  * used to control different activities and their interaction
  */
 @Singleton
-//@Vetoed
 public class ActivityController {
   @Inject
   protected ActivityContext context;
@@ -40,7 +39,6 @@ public class ActivityController {
   protected ExecutorService executorService;
 
   protected final Deque<Activity> activities = new LinkedList<>();
-
 
   public void start(Activity activity) {
     context.startActivity(activity.toString());
