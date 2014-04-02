@@ -35,9 +35,12 @@ public class SaveThought extends Task<Void> {
 
   @Override
   protected Void call() throws Exception {
-    Object model = context.getModel();
+    log.info("Try to save thought, yeah baby!");
 
-    log.info("Saving thought, yeah baby!");
+    Object model = context.getModel();
+    context.getDatasource().saveModel(model);
+
+    log.info("Saved thought, yeah baby!");
     return null;
   }
 }
