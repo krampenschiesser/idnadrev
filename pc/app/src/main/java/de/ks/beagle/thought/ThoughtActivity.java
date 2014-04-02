@@ -23,14 +23,18 @@ import de.ks.application.Navigator;
 import de.ks.beagle.entity.Thought;
 import de.ks.datasource.NewInstanceDataSource;
 import de.ks.menu.MenuItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 
 @MenuItem("/main/activity")
 public class ThoughtActivity extends Activity {
+  private static final Logger log = LoggerFactory.getLogger(ThoughtActivity.class);
+
   @Inject
   public ThoughtActivity(ActivityController activityController, Navigator navigator) {
-    super(new NewInstanceDataSource<>(Thought.class, null), AddThought.class, activityController, navigator);
+    super(new NewInstanceDataSource<>(Thought.class, (t) -> log.info("NOW saving {}", t)), AddThought.class, activityController, navigator);
 
     configure();
   }
