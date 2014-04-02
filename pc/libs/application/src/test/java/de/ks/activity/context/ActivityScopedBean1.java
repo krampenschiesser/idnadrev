@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.ks.workflow.cdi;
+package de.ks.activity.context;
 
 
 import org.slf4j.Logger;
@@ -26,9 +26,9 @@ import javax.annotation.PreDestroy;
 /**
  *
  */
-@WorkflowScoped()
-public class WorkflowScopedBean1 {
-  private static final Logger log = LoggerFactory.getLogger(WorkflowScopedBean1.class);
+@ActivityScoped()
+public class ActivityScopedBean1 {
+  private static final Logger log = LoggerFactory.getLogger(ActivityScopedBean1.class);
   protected String value;
 
   public String getValue() {
@@ -45,11 +45,11 @@ public class WorkflowScopedBean1 {
 
   @PostConstruct
   public void before() {
-    log.debug("PostConstruct {}", WorkflowScopedBean1.class.getSimpleName());
+    log.debug("PostConstruct {}", ActivityScopedBean1.class.getSimpleName());
   }
 
   @PreDestroy
   public void after() {
-    log.debug("PreDestroy {}", WorkflowScopedBean1.class.getSimpleName());
+    log.debug("PreDestroy {}", ActivityScopedBean1.class.getSimpleName());
   }
 }
