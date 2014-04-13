@@ -133,7 +133,7 @@ public class EventBus {
   }
 
   private void postToEventHandlers(Object event, boolean wait) {
-    List<Class<?>> hierarchy = ReflectionUtil.getClassHierarchy(event.getClass());
+    List<Class<?>> hierarchy = ReflectionUtil.getClassHierarchy(event.getClass(), false);
     LinkedList<EventExecution> executions = new LinkedList<>();
     lock.readLock().lock();
     try {

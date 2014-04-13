@@ -51,7 +51,7 @@ public class ReflectionUtil {
     ArrayList<Method> methods = new ArrayList<>(100);
     Map<Pair<String, List<Class<?>>>, Method> collected = new HashMap<>();
 
-    List<Class<?>> hierarchy = getClassHierarchy(clazz);
+    List<Class<?>> hierarchy = getClassHierarchy(clazz, true);
     for (Class<?> current : hierarchy) {
       List<Method> declaredMethods = Arrays.asList(current.getDeclaredMethods());
       Collections.sort(declaredMethods, getMethodComparator());
@@ -80,7 +80,7 @@ public class ReflectionUtil {
   public static List<Field> getAllFields(Class<?> clazz, Predicate<Field>... predicates) {
     ArrayList<Field> fields = new ArrayList<>(100);
 
-    List<Class<?>> hierarchy = getClassHierarchy(clazz);
+    List<Class<?>> hierarchy = getClassHierarchy(clazz, false);
     Collections.reverse(hierarchy);
     for (Class<?> current : hierarchy) {
       List<Field> declaredFields = Arrays.asList(current.getDeclaredFields());
@@ -96,10 +96,23 @@ public class ReflectionUtil {
     }
   }
 
-  public static List<Class<?>> getClassHierarchy(Class<?> clazz) {
+  public static List<Class<?>> getClassHierarchy(Class<?> clazz, boolean includeInterfaces) {
+    Predicate<Class<?>> filter = new Predicate<Class<?>>() {
+      @Override
+      public boolean test(Class<?> clazz) {
+        boolean retval = !Object.class.equals(clazz);
+        retval = retval && (includeInterfaces ? true : !clazz.isInterface());
+        return retval;
+      }
+    };
     ArrayList<Class<?>> classes = new ArrayList<>(25);
-    for (Class<?> current = clazz; !Object.class.equals(current); current = current.getSuperclass()) {
-      classes.add(current);
+    try {
+
+      for (Class<?> current = clazz; filter.test(current); current = current.getSuperclass()) {
+        classes.add(current);
+      }
+    } catch (NullPointerException e) {
+      e.printStackTrace();
     }
     return classes;
   }

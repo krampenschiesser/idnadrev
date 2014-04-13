@@ -74,7 +74,7 @@ public class ReflectionUtilTest {
 
   @Test
   public void testGetClassHierarchy() throws Exception {
-    List<Class<?>> hierarchy = ReflectionUtil.getClassHierarchy(Child.class);
+    List<Class<?>> hierarchy = ReflectionUtil.getClassHierarchy(Child.class, true);
     assertEquals(2, hierarchy.size());
     assertEquals(Child.class, hierarchy.get(0));
     assertEquals(Parent.class, hierarchy.get(1));
