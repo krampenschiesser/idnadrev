@@ -1,5 +1,5 @@
-/*
- * Copyright [${YEAR}] [Christian Loehnert]
+/**
+ * Copyright [2014] [Christian Loehnert]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package de.ks.activity.listbinding;
 
-package de.ks.activity;
+import de.ks.activity.Activity;
+import de.ks.activity.ActivityController;
+import de.ks.application.Navigator;
+import de.ks.datasource.DataSource;
 
-
-/**
- *
- */
-@ModelBound(value = ActivityModel.class, property = "detailItems")
-public class DetailController {
+public class ListActivity extends Activity {
+  public ListActivity(DataSource<?> dataSource, Class<?> initialController, ActivityController activityController, Navigator navigator) {
+    super(dataSource, SimpleListView.class, activityController, navigator);
+  }
 }

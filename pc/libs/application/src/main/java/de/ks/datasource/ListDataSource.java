@@ -1,5 +1,5 @@
 /*
- * Copyright [${YEAR}] [Christian Loehnert]
+ * Copyright [2014] [Christian Loehnert, krampenschiesser@freenet.de]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,40 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package de.ks.datasource;
 
-package de.ks.activity;
-
-
-import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- */
-public class ActivityModel {
-  protected int id;
-  protected String name;
-  protected List<DetailItem> detailItems = new ArrayList<>();
-
-  public int getId() {
-    return id;
-  }
-
-  public ActivityModel setId(int id) {
-    this.id = id;
-    return this;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public ActivityModel setName(String name) {
-    this.name = name;
-    return this;
-  }
-
-  public List<DetailItem> getDetailItems() {
-    return detailItems;
-  }
+public interface ListDataSource<M> extends DataSource<List<M>> {
 }

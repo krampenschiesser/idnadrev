@@ -17,10 +17,7 @@
 package de.ks.activity;
 
 
-import de.ks.activity.callback.InitializeActivityLinks;
-import de.ks.activity.callback.InitializeModelBindings;
-import de.ks.activity.callback.InitializeTaskLinks;
-import de.ks.activity.callback.InitializeViewLinks;
+import de.ks.activity.callback.*;
 import de.ks.activity.context.ActivityStore;
 import de.ks.activity.link.ActivityLink;
 import de.ks.activity.link.TaskLink;
@@ -149,6 +146,7 @@ public class Activity {
     loader.addCallback(new InitializeActivityLinks(activityLinks, activityController));
     loader.addCallback(new InitializeTaskLinks(taskLinks, activityController));
     loader.addCallback(new InitializeModelBindings(this, CDI.current().select(ActivityStore.class).get()));
+    loader.addCallback(new InitializeListBindings(this, CDI.current().select(ActivityStore.class).get()));
   }
 
   public List<ViewLink> getViewLinks() {

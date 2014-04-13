@@ -19,16 +19,24 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 <StackPane id="StackPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-           prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2"
+           prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="de.ks.activity.DetailController">
     <children>
         <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="15.0">
             <children>
-                <Label text="Label"/>
-                <Label text="Label"/>
-                <Label text="Label"/>
-                <Label text="Label"/>
+                <Label text="DetailItems of ActivityModel:">
+                    <font>
+                        <Font size="24.0"/>
+                    </font>
+                </Label>
+                <TableView fx:id="detailItems" prefHeight="200.0" prefWidth="200.0">
+                    <columns>
+                        <TableColumn id="name" fx:id="name" prefWidth="75.0" text="name"/>
+                        <TableColumn id="description" fx:id="description" prefWidth="75.0" text="descriptioni"/>
+                    </columns>
+                </TableView>
                 <Button fx:id="pressMe" mnemonicParsing="false" text="Button"/>
             </children>
         </VBox>

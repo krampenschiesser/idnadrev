@@ -19,6 +19,7 @@ package de.ks.application;
 
 import de.ks.i18n.Localized;
 import de.ks.imagecache.Images;
+import de.ks.javafx.FxCss;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -49,7 +50,7 @@ public class App extends Application {
       MainWindow mainWindow = select.get();
       blurb = mainWindow;
       stage.setTitle(mainWindow.getApplicationTitle());
-      stage.setScene(new Scene(mainWindow.getNode()));
+      stage.setScene(createScene(mainWindow));
 
       Image icon = Images.get("appicon.png");
       if (icon != null) {
@@ -65,5 +66,14 @@ public class App extends Application {
     stage.setOnCloseRequest((WindowEvent e) -> Launcher.instance.stop());
 
     stage.show();
+  }
+
+  private Scene createScene(MainWindow mainWindow) {
+    Scene scene = new Scene(mainWindow.getNode());
+    Instance<String> styleSheets = CDI.current().select(String.class, FxCss.LITERAL);
+    styleSheets.forEach((sheet) -> {
+      scene.getStylesheets().add(sheet);
+    });
+    return scene;
   }
 }

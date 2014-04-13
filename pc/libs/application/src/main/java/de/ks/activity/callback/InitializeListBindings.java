@@ -17,7 +17,7 @@
 package de.ks.activity.callback;
 
 import de.ks.activity.Activity;
-import de.ks.activity.ModelBound;
+import de.ks.activity.ListBound;
 import de.ks.activity.context.ActivityStore;
 import de.ks.application.fxml.LoaderCallback;
 import de.ks.reflection.ReflectionUtil;
@@ -29,12 +29,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
-public class InitializeModelBindings extends LoaderCallback {
-  private static final Logger log = LoggerFactory.getLogger(InitializeModelBindings.class);
+public class InitializeListBindings extends LoaderCallback {
+  private static final Logger log = LoggerFactory.getLogger(InitializeListBindings.class);
   private final Activity activity;
   private final ActivityStore store;
 
-  public InitializeModelBindings(Activity activity, ActivityStore store) {
+  public InitializeListBindings(Activity activity, ActivityStore store) {
     this.activity = activity;
     this.store = store;
   }
@@ -42,15 +42,24 @@ public class InitializeModelBindings extends LoaderCallback {
   @Override
   public void accept(Object controller, Node node) {
     if (controller == null) {
-      log.warn("Invoking model bindings for null controller. Node={}", node);
+      log.warn("Invoking list bindings for null controller. Node={}", node);
       return;
     }
-    if (!controller.getClass().isAnnotationPresent(ModelBound.class)) {
+    if (!controller.getClass().isAnnotationPresent(ListBound.class)) {
       return;
     }
-    ModelBound modelBound = controller.getClass().getAnnotation(ModelBound.class);
+    ListBound modelBound = controller.getClass().getAnnotation(ListBound.class);
     String property = modelBound.property();
     Class<?> modelClass = modelBound.value();
+
+    if (property.equals("this")) {
+      Node table = node.lookup("#_this");
+      log.debug("Found node {} for property '{}' for model class '{}' in {}", table, property, modelClass.getSimpleName(), node);
+      store.getBinding().addBoundProperty(property, List.class, table);
+      return;
+//      List<TableView> tables = ((Parent) node).getChildrenUnmodifiable().stream()//
+//              .filter((n) -> n instanceof TableView).map((n) -> (TableView) n).collect(Collectors.toList());
+    }
 
 
     List<Field> allFields = ReflectionUtil.getAllFields(modelClass, (f) -> !Modifier.isStatic(f.getModifiers()));

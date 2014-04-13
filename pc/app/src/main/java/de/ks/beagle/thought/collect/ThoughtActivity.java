@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.ks.beagle.thought;
+package de.ks.beagle.thought.collect;
 
 
 import de.ks.activity.Activity;

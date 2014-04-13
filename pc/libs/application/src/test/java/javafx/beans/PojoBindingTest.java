@@ -18,20 +18,31 @@ package javafx.beans;
 
 import de.ks.JFXCDIRunner;
 import de.ks.javafx.converter.LastValueConverter;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.adapter.JavaBeanIntegerProperty;
 import javafx.beans.property.adapter.JavaBeanIntegerPropertyBuilder;
+import javafx.beans.property.adapter.JavaBeanObjectProperty;
+import javafx.beans.property.adapter.JavaBeanObjectPropertyBuilder;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.scene.control.TextField;
 import javafx.util.converter.NumberStringConverter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import static org.junit.Assert.assertEquals;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  *
  */
 @RunWith(JFXCDIRunner.class)
 public class PojoBindingTest {
+  private static final Logger log = LoggerFactory.getLogger(PojoBindingTest.class);
 
   @Test
   public void testUIPojoCommunication() throws Exception {
@@ -89,5 +100,52 @@ public class PojoBindingTest {
     javaBeanIntegerProperty.set(8);
     assertEquals(8, hello.getVersion());
     assertEquals("8", versionInput.getText());
+  }
+
+  @Test
+  public void testListTableBinding() throws Exception {
+    MyBindingPojo hello = new MyBindingPojo(1, "hello");
+    for (int i = 0; i < 10; i++) {
+      hello.getCollection().add(String.valueOf(i));
+    }
+    ObservableList<String> observableList = FXCollections.observableArrayList();
+    observableList.add("Bla");
+
+    @SuppressWarnings("unchecked") JavaBeanObjectProperty<List<String>> collection = JavaBeanObjectPropertyBuilder.create().bean(hello).name("collection").build();
+    collection.addListener((observable, oldValue, newValue) -> {
+      log.info("Oldvalue ={}", oldValue);
+      log.info("Oldvalue ={}", newValue);
+    });
+
+    observableList.addListener((ListChangeListener<String>) c -> {
+      while (c.next()) {
+        log.info("Added to 'observableList' {}", c.getAddedSubList());
+        log.info("Removed  from 'observableList' {}", c.getRemoved());
+      }
+    });
+    ObservableList<String> wrappedObservable = FXCollections.observableList(collection.get());
+    wrappedObservable.addListener((ListChangeListener<String>) c -> {
+      while (c.next()) {
+        log.info("Added to 'wrappedObservable' {}", c.getAddedSubList());
+        log.info("Removed  from 'wrappedObservable' {}", c.getRemoved());
+      }
+    });
+
+    Bindings.bindContentBidirectional(observableList, wrappedObservable);
+
+    log.info("Adding to wrapped collection");
+    wrappedObservable.add("Hello");
+    assertTrue(hello.getCollection().contains("Hello"));
+    log.info("Removing from wrapped collection");
+    wrappedObservable.remove("Hello");
+    assertFalse(hello.getCollection().contains("Hello"));
+
+
+    log.info("Adding to observableList");
+    observableList.add("Hello");
+    assertTrue(hello.getCollection().contains("Hello"));
+    log.info("Removing from observableList");
+    observableList.remove("Hello");
+    assertFalse(hello.getCollection().contains("Hello"));
   }
 }

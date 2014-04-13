@@ -17,6 +17,7 @@
 package de.ks.activity;
 
 
+import com.google.common.util.concurrent.ListenableFuture;
 import de.ks.activity.context.ActivityContext;
 import de.ks.activity.context.ActivityStore;
 import de.ks.executor.ExecutorService;
@@ -39,12 +40,21 @@ public class ActivityController {
   protected ExecutorService executorService;
 
   protected final Deque<Activity> activities = new LinkedList<>();
+  private ListenableFuture<?> dataSourceFuture;
 
   public void start(Activity activity) {
     context.startActivity(activity.toString());
     activity.start();
-    executorService.submit(new DataSourceLoadingTask<>(activity.getDataSource()));
+    dataSourceFuture = executorService.submit(new DataSourceLoadingTask<>(activity.getDataSource()));
     activities.add(activity);
+  }
+
+  public void waitForDataSourceLoading() {
+    try {
+      dataSourceFuture.get();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   public void stopCurrentResumeLast() {

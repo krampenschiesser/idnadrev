@@ -1,5 +1,5 @@
 /*
- * Copyright [${YEAR}] [Christian Loehnert]
+ * Copyright [2014] [Christian Loehnert, krampenschiesser@freenet.de]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package de.ks.beagle.thought.view;
 
-package de.ks.activity;
+import de.ks.activity.Activity;
+import de.ks.activity.ActivityController;
+import de.ks.application.Navigator;
+import de.ks.menu.MenuItem;
 
+import javax.inject.Inject;
 
-/**
- *
- */
-@ModelBound(value = ActivityModel.class, property = "detailItems")
-public class DetailController {
+@MenuItem("/main/activity")
+public class ViewThoughsActivity extends Activity {
+  @Inject
+  public ViewThoughsActivity(ActivityController activityController, Navigator navigator) {
+    super(new DummyThoughtsDataSource(), ViewThoughts.class, activityController, navigator);
+  }
 }

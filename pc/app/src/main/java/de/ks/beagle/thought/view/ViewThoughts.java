@@ -13,23 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package de.ks.beagle.thought.view;
 
-package de.ks.beagle.thought;
-
-
-import de.ks.activity.ModelBound;
+import de.ks.activity.ListBound;
 import de.ks.beagle.entity.Thought;
-import javafx.fxml.FXML;
-import javafx.scene.control.TextField;
-import javafx.scene.web.HTMLEditor;
 
-/**
- *
- */
-@ModelBound(Thought.class)
-public class AddThought {
-  @FXML
-  protected HTMLEditor description;
-  @FXML
-  protected TextField name;
+@ListBound(Thought.class)
+public class ViewThoughts {
 }

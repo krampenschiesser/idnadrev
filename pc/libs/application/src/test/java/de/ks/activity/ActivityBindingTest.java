@@ -19,8 +19,12 @@ package de.ks.activity;
 import de.ks.activity.context.ActivityStore;
 import de.ks.application.PresentationArea;
 import de.ks.executor.ExecutorService;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.control.TablePosition;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Pane;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,5 +117,32 @@ public class ActivityBindingTest extends AbstractActivityTest {
     store.getBinding().fireValueChangedEvent();
 
     assertEquals("13", idInput.getText());
+  }
+
+  @Test
+  public void testBindTable() throws Exception {
+    activityController.start(activity);
+    activity.waitForInitialization();
+
+    ActivityModel model = new ActivityModel();
+    model.setId(42);
+    model.setName("Hello Sauerland");
+    for (int i = 0; i < 10; i++) {
+      DetailItem detailItem = new DetailItem();
+      detailItem.setName("item" + i);
+      detailItem.setDescription("descirption" + i);
+      model.getDetailItems().add(detailItem);
+    }
+
+    store.setModel(model);
+    Pane detailView = activity.getView(DetailController.class);
+    @SuppressWarnings("unchecked") TableView<DetailItem> table = (TableView<DetailItem>) detailView.lookup("#detailItems");
+    assertNotNull(table);
+
+    assertEquals(10, table.getItems().size());
+    assertEquals(2, table.getColumns().size());
+    table.getSelectionModel().select(9, table.getColumns().get(1));
+    ObservableList<TablePosition> selectedCells = table.getSelectionModel().getSelectedCells();
+    assertEquals(1, selectedCells.size());
   }
 }

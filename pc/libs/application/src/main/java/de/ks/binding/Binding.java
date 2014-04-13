@@ -21,16 +21,25 @@ import de.ks.reflection.ReflectionUtil;
 import javafx.beans.property.Property;
 import javafx.beans.property.adapter.*;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextInputControl;
+import javafx.util.Callback;
 import javafx.util.StringConverter;
 import javafx.util.converter.*;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Binding {
   private static final Logger log = LoggerFactory.getLogger(Binding.class);
@@ -70,16 +79,108 @@ public class Binding {
     for (Map.Entry<String, Pair<Class<?>, Node>> entry : propertyCandidates.entrySet()) {
       Pair<Class<?>, Node> value = entry.getValue();
       String name = entry.getKey();
-      List<Field> allFields = ReflectionUtil.getAllFields(value.getLeft(), (f) -> f.getName().equals(name));
-      if (allFields.size() == 1) {
-        Field field = allFields.get(0);
-        Class<?> fieldType = field.getType();
-        JavaBeanProperty<?> property = getProperty(name, fieldType, object);
-        this.properties.put(name, property);
-        Node right = value.getRight();
-        bindNode(right, property, fieldType);
+      Node node = value.getRight();
+      Class<?> clazz = value.getLeft();
+      if ("this".equals(name)) {
+        bindRootObject(object, node);
+      } else {
+        bindAllFields(object, name, node, clazz);
       }
     }
+  }
+
+  private void bindAllFields(Object object, String name, Node node, Class<?> clazz) {
+    List<Field> allFields = ReflectionUtil.getAllFields(clazz, (f) -> f.getName().equals(name));
+    if (allFields.size() == 1) {
+      Field field = allFields.get(0);
+      Class<?> fieldType = field.getType();
+      JavaBeanProperty<?> property = getProperty(name, fieldType, object);
+      if (property != null) {
+        this.properties.put(name, property);
+        bindNode(node, property, fieldType);
+      }
+      if (Collection.class.isAssignableFrom(fieldType)) {
+        bindCollectionNode(node, fieldType, name, object);
+      }
+    }
+  }
+
+  private void bindRootObject(Object object, Node node) {
+    if (Collection.class.isAssignableFrom(object.getClass())) {
+      bindCollectionNode(node, List.class, "this", object);
+    }
+  }
+
+  private void bindCollectionNode(Node node, Class<?> fieldType, String name, Object object) {
+    if (node instanceof TableView) {
+      TableView tableView = (TableView) node;
+      assignObservableCollection(tableView, fieldType, name, object);
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  private void assignObservableCollection(TableView tableView, Class<?> fieldType, String name, Object object) {
+    if (List.class.isAssignableFrom(fieldType) && "this".equals(name)) {
+      initilalizeTableColumns(tableView, fieldType, object);
+      tableView.setItems(FXCollections.observableList((List<Object>) object));
+    } else {
+      MethodHandle listGetter = findGetter(List.class, fieldType, name, object);
+      if (listGetter != null) {
+        try {
+          List list = (List) listGetter.invoke(object);
+          initilalizeTableColumns(tableView, fieldType, list);
+          tableView.setItems(FXCollections.observableList(list));
+        } catch (Throwable throwable) {
+          log.error("Could not get list of {} for property {}", object, name, throwable);
+        }
+      }
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  protected void initilalizeTableColumns(TableView tableView, Class<?> listType, Object object) {
+    Collection collection = (Collection) object;
+    if (collection.iterator().hasNext()) {
+      Object next = collection.iterator().next();
+      Class<?> elementType = next.getClass();
+
+
+      Map<String, Field> fieldMap = ReflectionUtil.getAllFields(elementType).stream().filter((f) -> !Modifier.isStatic(f.getModifiers())).collect(Collectors.toMap((f) -> f.getName(), (f) -> f));
+      ObservableList<TableColumn> columns = (ObservableList<TableColumn>) tableView.getColumns();
+
+      Map<TableColumn, Field> columnFieldMap = columns.stream().collect(Collectors.toMap((c) -> c, (c) -> {
+        String id = c.getId();
+        return fieldMap.get(id);
+      }));
+
+      for (TableColumn column : columns) {
+        column.setCellValueFactory(new Callback<TableColumn.CellDataFeatures, ObservableValue>() {
+          @Override
+          public ObservableValue call(TableColumn.CellDataFeatures param) {
+            String propertyName = param.getTableColumn().getId();
+            Field field = columnFieldMap.get(param.getTableColumn());
+            Object value = param.getValue();
+            return getProperty(propertyName, field.getType(), value);
+          }
+        });
+      }
+    }
+  }
+
+  private MethodHandle findGetter(Class<?> returnType, Class<?> fieldType, String name, Object object) {
+    try {
+      List<Field> allFields = ReflectionUtil.getAllFields(object.getClass(), (f) -> f.getName().equals(name) && List.class.isAssignableFrom(f.getType()));
+      if (allFields.size() == 1) {
+        Field field = allFields.get(0);
+        field.setAccessible(true);
+        return MethodHandles.lookup().unreflectGetter(field);
+      } else {
+        log.warn("Could not find any field for {}.{}", object.getClass(), name);
+      }
+    } catch (IllegalAccessException e) {
+      log.error("Could not access{}.{}", object.getClass(), name, e);
+    }
+    return null;
   }
 
   @SuppressWarnings("unchecked")

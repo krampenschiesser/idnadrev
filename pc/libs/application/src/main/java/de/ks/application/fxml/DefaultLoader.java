@@ -85,7 +85,7 @@ public class DefaultLoader<V extends Node, C> {
     if (allCallbacks == null) {
       allCallbacks = asyncCall;
     } else {
-      CompletableFuture.allOf(allCallbacks, asyncCall);
+      allCallbacks = CompletableFuture.allOf(allCallbacks, asyncCall);
     }
   }
 
@@ -104,8 +104,10 @@ public class DefaultLoader<V extends Node, C> {
 
   public void waitForLoading() {
     if (allCallbacks == null) {
+      log.trace("Waiting simple fxml loading");
       loaderFuture.join();
     } else {
+      log.trace("Waiting for all callbacks {}", allCallbacks);
       allCallbacks.join();
     }
   }

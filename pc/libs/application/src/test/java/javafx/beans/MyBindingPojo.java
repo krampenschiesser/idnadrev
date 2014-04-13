@@ -16,12 +16,16 @@
 
 package javafx.beans;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  */
 public class MyBindingPojo {
   protected String name;
   protected int version;
+  protected final List<String> collection = new ArrayList<>();
 
   public MyBindingPojo(int version, String name) {
     this.version = version;
@@ -44,15 +48,32 @@ public class MyBindingPojo {
     this.version = version;
   }
 
+  public List<String> getCollection() {
+    return collection;
+  }
+
+  public void setCollection(List<String> collection) {
+    this.collection.clear();
+    this.collection.addAll(collection);
+  }
+
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof MyBindingPojo)) return false;
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof MyBindingPojo)) {
+      return false;
+    }
 
     MyBindingPojo that = (MyBindingPojo) o;
 
-    if (version != that.version) return false;
-    if (name != null ? !name.equals(that.name) : that.name != null) return false;
+    if (version != that.version) {
+      return false;
+    }
+    if (name != null ? !name.equals(that.name) : that.name != null) {
+      return false;
+    }
 
     return true;
   }

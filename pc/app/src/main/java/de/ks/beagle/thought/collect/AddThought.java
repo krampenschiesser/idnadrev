@@ -1,5 +1,5 @@
 /*
- * Copyright [${YEAR}] [Christian Loehnert]
+ * Copyright [2014] [Christian Loehnert, krampenschiesser@freenet.de]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,22 @@
  * limitations under the License.
  */
 
-package de.ks.activity;
+package de.ks.beagle.thought.collect;
 
+
+import de.ks.activity.ModelBound;
+import de.ks.beagle.entity.Thought;
+import javafx.fxml.FXML;
+import javafx.scene.control.TextField;
+import javafx.scene.web.HTMLEditor;
 
 /**
  *
  */
-@ModelBound(value = ActivityModel.class, property = "detailItems")
-public class DetailController {
+@ModelBound(Thought.class)
+public class AddThought {
+  @FXML
+  protected HTMLEditor description;
+  @FXML
+  protected TextField name;
 }
