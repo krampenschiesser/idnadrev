@@ -45,11 +45,15 @@ public class Navigator {
 
   public static Navigator getCurrentNavigator() {
     for (Map.Entry<Window, Navigator> entry : navigators.entrySet()) {
-      if (entry.getKey().isFocused() && entry.getKey().isShowing()) {
+      Window window = entry.getKey();
+      if (window.isFocused() && window.isShowing()) {
         return entry.getValue();
       }
     }
-    return null;
+    if (navigators.size() == 1) {
+      return navigators.entrySet().iterator().next().getValue();
+    }
+    throw new IllegalStateException("Could not resovle the current navigator. Registered: " + navigators.values());
   }
 
   /**

@@ -69,7 +69,7 @@ public class ActivityTest extends AbstractActivityTest {
   @Test
   public void testInitializeViewLinks() throws Exception {
     DefaultLoader<StackPane, ActivityHome> loader = new DefaultLoader<>(ActivityHome.class);
-    InitializeViewLinks viewLinks = new InitializeViewLinks(activity.getViewLinks(), activityController);
+    InitializeViewLinks viewLinks = new InitializeViewLinks(activity, activity.getViewLinks(), activityController);
     viewLinks.accept(loader.getController(), loader.getView());
 
     Button button = (Button) loader.getView().lookup("#showDetails");

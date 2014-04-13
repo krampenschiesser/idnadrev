@@ -1,5 +1,5 @@
-/*
- * Copyright [2014] [Christian Loehnert, krampenschiesser@freenet.de]
+/**
+ * Copyright [2014] [Christian Loehnert]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,26 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package de.ks.activity;
 
-package de.ks.datasource;
+import de.ks.datasource.NewInstanceDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import de.ks.reflection.ReflectionUtil;
+public class DummyTestDataSource extends NewInstanceDataSource<ActivityModel> {
+  private static final Logger log = LoggerFactory.getLogger(DummyTestDataSource.class);
 
-/**
- *
- */
-public abstract class NewInstanceDataSource<M> implements DataSource<M> {
-  protected final Class<M> modelClass;
-
-  public NewInstanceDataSource(Class<M> modelClass) {
-    this.modelClass = modelClass;
+  public DummyTestDataSource() {
+    super(ActivityModel.class);
   }
 
   @Override
-  public M loadModel() {
-    return ReflectionUtil.newInstance(modelClass);
+  public void saveModel(ActivityModel model) {
+    log.info("Writing back {}", model);
   }
-
-  @Override
-  public abstract void saveModel(M model);
 }

@@ -1,5 +1,5 @@
-/*
- * Copyright [2014] [Christian Loehnert, krampenschiesser@freenet.de]
+/**
+ * Copyright [2014] [Christian Loehnert]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,26 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package de.ks.activity.listbinding;
 
-package de.ks.datasource;
+import de.ks.activity.DetailItem;
+import de.ks.datasource.ListDataSource;
 
-import de.ks.reflection.ReflectionUtil;
+import java.util.Arrays;
+import java.util.List;
 
-/**
- *
- */
-public abstract class NewInstanceDataSource<M> implements DataSource<M> {
-  protected final Class<M> modelClass;
+public class DummyDetailItemDataSource implements ListDataSource<DetailItem> {
 
-  public NewInstanceDataSource(Class<M> modelClass) {
-    this.modelClass = modelClass;
+  @Override
+  public List<DetailItem> loadModel() {
+    return Arrays.asList(new DetailItem().setName("Name1").setDescription("Desc1"), new DetailItem().setName("Name2").setDescription("Desc2"));
   }
 
   @Override
-  public M loadModel() {
-    return ReflectionUtil.newInstance(modelClass);
+  public void saveModel(List<DetailItem> items) {
+    //
   }
-
-  @Override
-  public abstract void saveModel(M model);
 }

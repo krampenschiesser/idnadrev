@@ -17,8 +17,6 @@
 package de.ks.activity;
 
 
-import de.ks.activity.callback.*;
-import de.ks.activity.context.ActivityStore;
 import de.ks.activity.link.ActivityLink;
 import de.ks.activity.link.TaskLink;
 import de.ks.activity.link.ViewLink;
@@ -30,7 +28,6 @@ import javafx.scene.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.inject.spi.CDI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,21 +38,17 @@ import java.util.Map;
  */
 public class Activity {
   private static final Logger log = LoggerFactory.getLogger(Activity.class);
-  private final DataSource<?> dataSource;
+  private final Class<? extends DataSource<?>> dataSource;
   private final Class<?> initialController;
-  private final ActivityController activityController;
-  private final Navigator navigator;
   protected final List<ViewLink> viewLinks = new ArrayList<>();
   protected final List<TaskLink> taskLinks = new ArrayList<>();
   protected final List<ActivityLink> activityLinks = new ArrayList<>();
 
   protected final Map<Class<?>, DefaultLoader<Node, Object>> preloads = new HashMap<>();
 
-  public Activity(DataSource<?> dataSource, Class<?> initialController, ActivityController activityController, Navigator navigator) {
+  public Activity(Class<? extends DataSource<?>> dataSource, Class<?> initialController) {
     this.dataSource = dataSource;
     this.initialController = initialController;
-    this.activityController = activityController;
-    this.navigator = navigator;
   }
 
   /**
@@ -108,46 +101,6 @@ public class Activity {
     return initialController;
   }
 
-  public void start() {
-    CDI.current().select(ActivityStore.class).get().setDatasource(dataSource);
-    DefaultLoader<Node, Object> loader = new DefaultLoader<>(initialController);
-    addCallbacks(loader);
-    preloads.put(initialController, loader);
-    select(initialController, Navigator.MAIN_AREA);
-    loadNextControllers();
-  }
-
-  protected void loadNextControllers() {
-    for (ViewLink next : viewLinks) {
-      loadController(next.getSourceController());
-      loadController(next.getTargetController());
-    }
-  }
-
-  private void loadController(Class<?> controller) {
-    if (!preloads.containsKey(controller)) {
-      DefaultLoader<Node, Object> loader = new DefaultLoader<>(controller);
-      preloads.put(controller, loader);
-      addCallbacks(loader);
-    }
-  }
-
-  public void select(ViewLink link) {
-    select(link.getTargetController(), link.getPresentationArea());
-  }
-
-  public void select(Class<?> targetController, String presentationArea) {
-    DefaultLoader<Node, Object> loader = preloads.get(targetController);
-    navigator.present(presentationArea, loader.getView());
-  }
-
-  private void addCallbacks(DefaultLoader<Node, Object> loader) {
-    loader.addCallback(new InitializeViewLinks(viewLinks, activityController));
-    loader.addCallback(new InitializeActivityLinks(activityLinks, activityController));
-    loader.addCallback(new InitializeTaskLinks(taskLinks, activityController));
-    loader.addCallback(new InitializeModelBindings(this, CDI.current().select(ActivityStore.class).get()));
-    loader.addCallback(new InitializeListBindings(this, CDI.current().select(ActivityStore.class).get()));
-  }
 
   public List<ViewLink> getViewLinks() {
     return viewLinks;
@@ -161,7 +114,7 @@ public class Activity {
     return activityLinks;
   }
 
-  public DataSource<?> getDataSource() {
+  public Class<? extends DataSource<?>> getDataSource() {
     return dataSource;
   }
 
@@ -188,5 +141,9 @@ public class Activity {
   @SuppressWarnings("unchecked")
   public <V> V getView(Class<?> controllerClass) {
     return (V) preloads.get(controllerClass).getView();
+  }
+
+  public Map<Class<?>, DefaultLoader<Node, Object>> getPreloads() {
+    return preloads;
   }
 }

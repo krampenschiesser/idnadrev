@@ -18,10 +18,18 @@ package de.ks.activity;
 
 
 import com.google.common.util.concurrent.ListenableFuture;
+import de.ks.activity.callback.*;
 import de.ks.activity.context.ActivityContext;
 import de.ks.activity.context.ActivityStore;
+import de.ks.activity.link.ViewLink;
+import de.ks.application.Navigator;
+import de.ks.application.fxml.DefaultLoader;
+import de.ks.datasource.DataSource;
 import de.ks.executor.ExecutorService;
+import javafx.scene.Node;
 
+import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Deque;
@@ -38,16 +46,60 @@ public class ActivityController {
   protected ActivityStore store;
   @Inject
   protected ExecutorService executorService;
+  @Inject
+  protected Instance<Navigator> navigator;
 
   protected final Deque<Activity> activities = new LinkedList<>();
   private ListenableFuture<?> dataSourceFuture;
 
+  @SuppressWarnings("unchecked")
   public void start(Activity activity) {
     context.startActivity(activity.toString());
-    activity.start();
-    dataSourceFuture = executorService.submit(new DataSourceLoadingTask<>(activity.getDataSource()));
+    DataSource dataSource = CDI.current().select(activity.getDataSource()).get();
+    store.setDatasource(dataSource);
+    DefaultLoader<Node, Object> loader = new DefaultLoader<>(activity.getInitialController());
+    addCallbacks(loader, activity);
+    activity.getPreloads().put(activity.getInitialController(), loader);
+    select(activity, activity.getInitialController(), Navigator.MAIN_AREA);
+    loadNextControllers(activity);
+
+    dataSourceFuture = executorService.submit(new DataSourceLoadingTask<>(dataSource));
     activities.add(activity);
   }
+
+  private void addCallbacks(DefaultLoader<Node, Object> loader, Activity activity) {
+    loader.addCallback(new InitializeViewLinks(activity, activity.getViewLinks(), this));
+    loader.addCallback(new InitializeActivityLinks(activity.getActivityLinks(), this));
+    loader.addCallback(new InitializeTaskLinks(activity.getTaskLinks(), this));
+    loader.addCallback(new InitializeModelBindings(activity, store));
+    loader.addCallback(new InitializeListBindings(activity, store));
+  }
+
+
+  public void select(Activity activity, ViewLink link) {
+    select(activity, link.getTargetController(), link.getPresentationArea());
+  }
+
+  public void select(Activity activity, Class<?> targetController, String presentationArea) {
+    DefaultLoader<Node, Object> loader = activity.getPreloads().get(targetController);
+    navigator.get().present(presentationArea, loader.getView());
+  }
+
+  protected void loadNextControllers(Activity activity) {
+    for (ViewLink next : activity.getViewLinks()) {
+      loadController(activity, next.getSourceController());
+      loadController(activity, next.getTargetController());
+    }
+  }
+
+  private void loadController(Activity activity, Class<?> controller) {
+    if (!activity.getPreloads().containsKey(controller)) {
+      DefaultLoader<Node, Object> loader = new DefaultLoader<>(controller);
+      activity.getPreloads().put(controller, loader);
+      addCallbacks(loader, activity);
+    }
+  }
+
 
   public void waitForDataSourceLoading() {
     try {

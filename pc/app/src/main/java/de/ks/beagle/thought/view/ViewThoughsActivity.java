@@ -26,6 +26,6 @@ import javax.inject.Inject;
 public class ViewThoughsActivity extends Activity {
   @Inject
   public ViewThoughsActivity(ActivityController activityController, Navigator navigator) {
-    super(new DummyThoughtsDataSource(), ViewThoughts.class, activityController, navigator);
+    super(DummyThoughtsDataSource.class, ViewThoughts.class);
   }
 }

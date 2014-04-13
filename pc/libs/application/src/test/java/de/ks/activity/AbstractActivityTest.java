@@ -20,7 +20,6 @@ package de.ks.activity;
 import de.ks.JFXCDIRunner;
 import de.ks.activity.context.ActivityContext;
 import de.ks.application.Navigator;
-import de.ks.datasource.NewInstanceDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -41,8 +40,7 @@ public abstract class AbstractActivityTest {
   public void setUp() throws Exception {
     navigator = Navigator.registerWithBorderPane(JFXCDIRunner.getStage());
 
-    NewInstanceDataSource<ActivityModel> dataSource = new NewInstanceDataSource<>(ActivityModel.class, this::save);
-    activity = new Activity(dataSource, ActivityHome.class, activityController, navigator);
+    activity = new Activity((Class<? extends de.ks.datasource.DataSource<?>>) DummyTestDataSource.class, ActivityHome.class);
     activity.withLink(ActivityHome.class, "showDetails", Navigator.RIGHT_AREA, DetailController.class);
     activity.withLink(ActivityHome.class, "switchView", OtherController.class);
     activity.withLink(OtherController.class, "back", ActivityHome.class);

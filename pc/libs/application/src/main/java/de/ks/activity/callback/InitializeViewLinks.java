@@ -17,6 +17,7 @@
 package de.ks.activity.callback;
 
 
+import de.ks.activity.Activity;
 import de.ks.activity.ActivityController;
 import de.ks.activity.link.ViewLink;
 import de.ks.application.fxml.LoaderCallback;
@@ -33,10 +34,12 @@ import java.util.List;
  */
 public class InitializeViewLinks extends LoaderCallback {
   private static final Logger log = LoggerFactory.getLogger(InitializeViewLinks.class);
+  private final Activity activity;
   private final List<ViewLink> viewLinks;
   private final ActivityController activityController;
 
-  public InitializeViewLinks(List<ViewLink> viewLinks, ActivityController activityController) {
+  public InitializeViewLinks(Activity activity, List<ViewLink> viewLinks, ActivityController activityController) {
+    this.activity = activity;
     this.viewLinks = viewLinks;
     this.activityController = activityController;
   }
@@ -48,7 +51,7 @@ public class InitializeViewLinks extends LoaderCallback {
       EventHandler<ActionEvent> handler = new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent actionEvent) {
-          activityController.getCurrentActivity().select(viewLink);
+          activityController.select(activity, viewLink);
         }
       };
       addHandlerToNode(node, viewLink.getId(), handler);

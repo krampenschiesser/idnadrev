@@ -13,26 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package de.ks.beagle.thought.collect;
 
-package de.ks.datasource;
+import de.ks.beagle.entity.Thought;
+import de.ks.datasource.NewInstanceDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import de.ks.reflection.ReflectionUtil;
+public class ThoughStoreDS extends NewInstanceDataSource<Thought> {
+  private static final Logger log = LoggerFactory.getLogger(ThoughStoreDS.class);
 
-/**
- *
- */
-public abstract class NewInstanceDataSource<M> implements DataSource<M> {
-  protected final Class<M> modelClass;
-
-  public NewInstanceDataSource(Class<M> modelClass) {
-    this.modelClass = modelClass;
+  public ThoughStoreDS() {
+    super(Thought.class);
   }
 
   @Override
-  public M loadModel() {
-    return ReflectionUtil.newInstance(modelClass);
+  public void saveModel(Thought model) {
+    log.info("Saving model {}", model);
   }
-
-  @Override
-  public abstract void saveModel(M model);
 }

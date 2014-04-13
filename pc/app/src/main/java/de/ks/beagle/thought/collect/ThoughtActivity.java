@@ -20,8 +20,6 @@ package de.ks.beagle.thought.collect;
 import de.ks.activity.Activity;
 import de.ks.activity.ActivityController;
 import de.ks.application.Navigator;
-import de.ks.beagle.entity.Thought;
-import de.ks.datasource.NewInstanceDataSource;
 import de.ks.menu.MenuItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +32,7 @@ public class ThoughtActivity extends Activity {
 
   @Inject
   public ThoughtActivity(ActivityController activityController, Navigator navigator) {
-    super(new NewInstanceDataSource<>(Thought.class, (t) -> log.info("NOW saving {}", t)), AddThought.class, activityController, navigator);
+    super(ThoughStoreDS.class, AddThought.class);
 
     configure();
   }

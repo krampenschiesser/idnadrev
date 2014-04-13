@@ -16,12 +16,9 @@
 package de.ks.activity.listbinding;
 
 import de.ks.activity.Activity;
-import de.ks.activity.ActivityController;
-import de.ks.application.Navigator;
-import de.ks.datasource.DataSource;
 
 public class ListActivity extends Activity {
-  public ListActivity(DataSource<?> dataSource, Class<?> initialController, ActivityController activityController, Navigator navigator) {
-    super(dataSource, SimpleListView.class, activityController, navigator);
+  public ListActivity() {
+    super(DummyDetailItemDataSource.class, SimpleListView.class);
   }
 }

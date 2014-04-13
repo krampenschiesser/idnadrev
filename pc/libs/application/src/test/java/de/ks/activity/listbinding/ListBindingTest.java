@@ -22,7 +22,6 @@ import de.ks.activity.ActivityController;
 import de.ks.activity.DetailItem;
 import de.ks.activity.context.ActivityContext;
 import de.ks.application.Navigator;
-import de.ks.datasource.ListDataSource;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.StackPane;
 import org.junit.After;
@@ -31,9 +30,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -48,22 +44,7 @@ public class ListBindingTest {
   @Before
   public void setUp() throws Exception {
     navigator = Navigator.registerWithBorderPane(JFXCDIRunner.getStage());
-    CountDownLatch latch = new CountDownLatch(1);
-
-    ListDataSource<DetailItem> dataSource = new ListDataSource<DetailItem>() {
-
-      @Override
-      public List<DetailItem> loadModel() {
-        return Arrays.asList(new DetailItem().setName("Name1").setDescription("Desc1"), new DetailItem().setName("Name2").setDescription("Desc2"));
-      }
-
-      @Override
-      public void saveModel(List<DetailItem> items) {
-        //
-      }
-    };
-
-    activity = new ListActivity(dataSource, SimpleListView.class, activityController, navigator);
+    activity = new ListActivity();
     activityController.start(activity);
     activityController.waitForDataSourceLoading();
   }
