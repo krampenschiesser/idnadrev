@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.StackPane?>
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
+           prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="de.ks.activity.listbinding.SimpleListView">
+    <children>
+        <TableView fx:id="_this" prefHeight="200.0" prefWidth="200.0">
+            <columns>
+                <TableColumn id="name" fx:id="name" prefWidth="150.0" text="Name"/>
+                <TableColumn id="description" fx:id="description" minWidth="0.0" prefWidth="390.0" text="Description"/>
+            </columns>
+        </TableView>
+    </children>
+</StackPane>
