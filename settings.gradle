@@ -17,13 +17,9 @@ include "doc"
 
 include "pc:libs:testutil", "pc:libs:util", "pc:libs:reflection"
 
-
 //PC stuff
 include "pc:libs:validation", "pc:libs:persistence", "pc:libs:eventsystem", "pc:libs:i18n", "pc:libs:scheduler"
 include "pc:libs:executor"
 //javaFX stuff
 include "pc:libs:images", "pc:libs:application"
 include "pc:app"
-
-//android stuff
-//include "android:storage", "android:app"
