@@ -28,7 +28,7 @@ public class MyThreadCallBoundValue implements ThreadCallBoundValue {
 
   @Override
   public void initializeInCallerThread() {
-    log.debug("initializing");
+    log.trace("initializing");
     currentValue = threadLocal.get();
   }
 
@@ -37,13 +37,13 @@ public class MyThreadCallBoundValue implements ThreadCallBoundValue {
     if (threadLocal.get() != null) {
       throw new RuntimeException("ThreadLocal not set to null again!");
     }
-    log.debug("setting value");
+    log.trace("setting value");
     threadLocal.set(currentValue);
   }
 
   @Override
   public void doAfterCallInTargetThread() {
-    log.debug("reset");
+    log.trace("reset");
     threadLocal.set(null);
   }
 
