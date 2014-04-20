@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright [2014] [Christian Loehnert, krampenschiesser@freenet.de]
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<StackPane id="StackPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+           prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2"
+           fx:controller="de.ks.workflow.step.EditStepGrid">
+    <children>
+        <GridPane fx:id="editGrid" hgap="5.0" vgap="5.0">
+            <children>
+                <Label fx:id="instruction" text="Instruction:" GridPane.columnIndex="0" GridPane.columnSpan="2147483647"
+                       GridPane.halignment="LEFT" GridPane.hgrow="SOMETIMES" GridPane.rowIndex="0"
+                       GridPane.valignment="TOP" GridPane.vgrow="NEVER">
+                    <font>
+                        <Font size="13.0"/>
+                    </font>
+                </Label>
+                <TextArea id="validationMsg" fx:id="validationMessage" editable="false" focusTraversable="false"
+                          maxWidth="-Infinity" prefHeight="25.0" prefWidth="200.0" wrapText="false"
+                          GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="0"
+                          GridPane.valignment="CENTER"/>
+            </children>
+            <columnConstraints>
+                <ColumnConstraints halignment="LEFT" hgrow="NEVER" minWidth="75.0" prefWidth="-1.0"/>
+                <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" minWidth="10.0" prefWidth="-1.0"/>
+            </columnConstraints>
+            <padding>
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+            </padding>
+            <rowConstraints>
+                <RowConstraints minHeight="25.0" valignment="CENTER" vgrow="NEVER"/>
+            </rowConstraints>
+        </GridPane>
+    </children>
+</StackPane>
