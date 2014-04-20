@@ -18,20 +18,15 @@ package de.ks.beagle.thought.collect;
 
 
 import de.ks.activity.Activity;
-import de.ks.activity.ActivityController;
-import de.ks.application.Navigator;
 import de.ks.menu.MenuItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.inject.Inject;
 
 @MenuItem("/main/activity")
 public class ThoughtActivity extends Activity {
   private static final Logger log = LoggerFactory.getLogger(ThoughtActivity.class);
 
-  @Inject
-  public ThoughtActivity(ActivityController activityController, Navigator navigator) {
+  public ThoughtActivity() {
     super(ThoughStoreDS.class, AddThought.class);
 
     configure();
