@@ -17,7 +17,9 @@
 package de.ks.activity.callback;
 
 
+import de.ks.activity.Activity;
 import de.ks.activity.ActivityController;
+import de.ks.activity.context.ActivityStore;
 import de.ks.activity.link.TaskLink;
 import de.ks.application.fxml.LoaderCallback;
 import de.ks.executor.ExecutorService;
@@ -31,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.spi.CDI;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  *
@@ -38,11 +41,13 @@ import java.util.List;
 public class InitializeTaskLinks extends LoaderCallback {
   private static final Logger log = LoggerFactory.getLogger(InitializeTaskLinks.class);
   private final List<TaskLink> taskLinks;
+  private final Activity activity;
   private final ActivityController activityController;
   private final ExecutorService service = CDI.current().select(ExecutorService.class).get();
 
-  public InitializeTaskLinks(List<TaskLink> taskLinks, ActivityController activityController) {
+  public InitializeTaskLinks(List<TaskLink> taskLinks, Activity activity, ActivityController activityController) {
     this.taskLinks = taskLinks;
+    this.activity = activity;
     this.activityController = activityController;
   }
 
@@ -50,8 +55,21 @@ public class InitializeTaskLinks extends LoaderCallback {
   public void accept(Object controller, Node node) {
     log.debug("initializing task-links for controller {}", controller);
     taskLinks.stream().filter(taskLink -> taskLink.getSourceController().equals(controller.getClass())).forEach(taskLink -> {
-      EventHandler<ActionEvent> handler = new ContextualEventHandler<ActionEvent>(actionEvent -> {
+      EventHandler<ActionEvent> handler = new ContextualEventHandler<>(actionEvent -> {
         Task<?> task = CDI.current().select(taskLink.getTask()).get();
+        if (taskLink.isEnd()) {
+          Function returnConverter = activity.getReturnConverter();
+          task.setOnSucceeded(new ContextualEventHandler<>((e) -> {
+                    if (returnConverter != null) {
+                      @SuppressWarnings("unchecked") Object hint = returnConverter.apply(CDI.current().select(ActivityStore.class).get().getModel());
+                      activityController.resumePreviousActivity(hint);
+                    } else {
+                      activityController.resumePreviousActivity();
+                    }
+                  }
+                  )
+          );
+        }
         service.submit(task);
       });
       addHandlerToNode(node, taskLink.getId(), handler);

@@ -1,5 +1,5 @@
-/*
- * Copyright [2014] [Christian Loehnert, krampenschiesser@freenet.de]
+/**
+ * Copyright [2014] [Christian Loehnert]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package de.ks.activity.activitylink;
 
-package de.ks.datasource;
+import javafx.concurrent.Task;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.Callable;
+public class ActivityBFinishTask extends Task<Void> {
+  private static final Logger log = LoggerFactory.getLogger(ActivityBFinishTask.class);
 
-/**
- *
- */
-public interface DataSource<M> extends Callable<M> {
-  default M call() throws Exception {
-    return loadModel();
-  }
-
-  M loadModel();
-
-  void saveModel(M model);
-
-  default void setLoadingHint(Object dataSourceHint) {
-    //ignored by default
+  @Override
+  protected Void call() throws Exception {
+    log.info("Finished!");
+    return null;
   }
 }

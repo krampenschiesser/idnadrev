@@ -19,6 +19,8 @@ package de.ks.activity.link;
 
 import de.ks.activity.Activity;
 
+import java.util.function.Function;
+
 /**
  *
  */
@@ -26,7 +28,9 @@ public class ActivityLink {
   public static class ActivityLinkBuilder {
     private final Class<?> sourceController;
     private String id;
-    private Activity nextActivity;
+    private Class<? extends Activity> nextActivity;
+    private Function toConverter;
+    private Function returnConverter;
 
     public ActivityLinkBuilder(Class<?> sourceController) {
       this.sourceController = sourceController;
@@ -37,13 +41,23 @@ public class ActivityLink {
       return this;
     }
 
-    public ActivityLinkBuilder start(Activity next) {
+    public ActivityLinkBuilder start(Class<? extends Activity> next) {
       this.nextActivity = next;
       return this;
     }
 
+    public ActivityLinkBuilder toConverter(Function toConverter) {
+      this.toConverter = toConverter;
+      return this;
+    }
+
+    public ActivityLinkBuilder returnConverter(Function returnConverter) {
+      this.returnConverter = returnConverter;
+      return this;
+    }
+
     public ActivityLink build() {
-      return new ActivityLink(sourceController, id, nextActivity);
+      return new ActivityLink(sourceController, id, nextActivity, toConverter, returnConverter);
     }
   }
 
@@ -53,12 +67,16 @@ public class ActivityLink {
 
   protected final Class<?> sourceController;
   protected final String id;
-  protected final Activity nextActivity;
+  protected final Class<? extends Activity> nextActivity;
+  protected final Function toConverter;
+  protected final Function returnConverter;
 
-  private ActivityLink(Class<?> sourceController, String id, Activity nextActivity) {
+  private ActivityLink(Class<?> sourceController, String id, Class<? extends Activity> nextActivity, Function toConverter, Function returnConverter) {
     this.sourceController = sourceController;
     this.id = id;
     this.nextActivity = nextActivity;
+    this.toConverter = toConverter;
+    this.returnConverter = returnConverter;
   }
 
   public Class<?> getSourceController() {
@@ -69,7 +87,15 @@ public class ActivityLink {
     return id;
   }
 
-  public Activity getNextActivity() {
+  public Class<? extends Activity> getNextActivity() {
     return nextActivity;
+  }
+
+  public Function getToConverter() {
+    return toConverter;
+  }
+
+  public Function getReturnConverter() {
+    return returnConverter;
   }
 }

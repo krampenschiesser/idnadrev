@@ -1,5 +1,5 @@
-/*
- * Copyright [2014] [Christian Loehnert, krampenschiesser@freenet.de]
+/**
+ * Copyright [2014] [Christian Loehnert]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package de.ks.activity.activitylink;
 
-package de.ks.datasource;
+import de.ks.datasource.NewInstanceDataSource;
 
-import java.util.concurrent.Callable;
-
-/**
- *
- */
-public interface DataSource<M> extends Callable<M> {
-  default M call() throws Exception {
-    return loadModel();
+public class ActivityADS extends NewInstanceDataSource<ActivityAModel> {
+  public ActivityADS() {
+    super(ActivityAModel.class);
   }
 
-  M loadModel();
+  @Override
+  public void saveModel(ActivityAModel model) {
 
-  void saveModel(M model);
-
-  default void setLoadingHint(Object dataSourceHint) {
-    //ignored by default
   }
 }

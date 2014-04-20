@@ -40,7 +40,7 @@ public class InitializeActivityLinks extends LoaderCallback {
       EventHandler<ActionEvent> handler = new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent actionEvent) {
-          activityController.start(activityLink.getNextActivity());
+          activityController.start(activityLink.getNextActivity(), activityLink.getToConverter(), activityLink.getReturnConverter());
         }
       };
       addHandlerToNode(node, activityLink.getId(), handler);

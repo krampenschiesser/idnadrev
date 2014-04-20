@@ -171,6 +171,9 @@ public class ActivityContext implements Context {
     lock.writeLock().lock();
     try {
       ActivityHolder activityHolder = activities.get(id);
+      if (activityHolder == null) {
+        throw new IllegalStateException("Unknown activity " + id + ". Known=" + activities.keySet());
+      }
       activityHolder.getCount().incrementAndGet();
       log.debug("Registered planned propagation for activity {}", activityHolder.getId());
     } finally {
@@ -257,4 +260,12 @@ public class ActivityContext implements Context {
     return activities.get(id);
   }
 
+
+  public String getCurrentActivity() {
+    return activityStack.get().peekLast();
+  }
+
+  public boolean hasCurrentActivity() {
+    return !activityStack.get().isEmpty();
+  }
 }

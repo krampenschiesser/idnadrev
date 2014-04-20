@@ -32,11 +32,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  *
  */
-public class Activity {
+public class Activity {//TODO extract ativityConfig containing all the with* methods and collections
   private static final Logger log = LoggerFactory.getLogger(Activity.class);
   private final Class<? extends DataSource<?>> dataSource;
   private final Class<?> initialController;
@@ -45,6 +46,8 @@ public class Activity {
   protected final List<ActivityLink> activityLinks = new ArrayList<>();
 
   protected final Map<Class<?>, DefaultLoader<Node, Object>> preloads = new HashMap<>();
+  private Class<?> currentController;
+  private Function returnConverter;
 
   public Activity(Class<? extends DataSource<?>> dataSource, Class<?> initialController) {
     this.dataSource = dataSource;
@@ -69,6 +72,10 @@ public class Activity {
     return this;
   }
 
+  public Activity withTask(String id, Class<? extends Task<?>> task) {
+    return withTask(getInitialController(), id, task);
+  }
+
   /**
    * Execute given task
    *
@@ -83,6 +90,16 @@ public class Activity {
     return this;
   }
 
+  public Activity withEnd(String id, Class<? extends Task<?>> task) {
+    return withEnd(getInitialController(), id, task);
+  }
+
+  public Activity withEnd(Class<?> sourceController, String id, Class<? extends Task<?>> task) {
+    TaskLink taskLink = TaskLink.from(sourceController).with(id).execute(task).endActivity().build();
+    taskLinks.add(taskLink);
+    return this;
+  }
+
   /**
    * Switch to next activity
    *
@@ -91,8 +108,20 @@ public class Activity {
    * @param next
    * @return
    */
-  public Activity withActivity(Class<?> sourceController, String id, Activity next) {
+  public Activity withActivity(Class<?> sourceController, String id, Class<? extends Activity> next) {
     ActivityLink activityLink = ActivityLink.from(sourceController).with(id).start(next).build();
+    activityLinks.add(activityLink);
+    return this;
+  }
+
+  public <T, R> Activity withActivity(Class<?> sourceController, String id, Class<? extends Activity> next, Function<T, R> toConverter) {
+    ActivityLink activityLink = ActivityLink.from(sourceController).with(id).start(next).toConverter(toConverter).build();
+    activityLinks.add(activityLink);
+    return this;
+  }
+
+  public <T, R> Activity withActivityAndReturn(Class<?> sourceController, String id, Class<? extends Activity> next, Function<T, R> toConverter, Function<R, T> returnConverter) {
+    ActivityLink activityLink = ActivityLink.from(sourceController).with(id).start(next).toConverter(toConverter).returnConverter(returnConverter).build();
     activityLinks.add(activityLink);
     return this;
   }
@@ -145,5 +174,26 @@ public class Activity {
 
   public Map<Class<?>, DefaultLoader<Node, Object>> getPreloads() {
     return preloads;
+  }
+
+  public void setCurrentController(Class<?> currentController) {
+    this.currentController = currentController;
+  }
+
+  public Class<?> getCurrentController() {
+    return currentController;
+  }
+
+  @SuppressWarnings("unchecked")
+  public <N extends Node> N getCurrentNode() {
+    return (N) preloads.get(getCurrentController()).getView();
+  }
+
+  public void setReturnConverter(Function returnConverter) {
+    this.returnConverter = returnConverter;
+  }
+
+  public Function getReturnConverter() {
+    return returnConverter;
   }
 }

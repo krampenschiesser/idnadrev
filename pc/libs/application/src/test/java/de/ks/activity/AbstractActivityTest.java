@@ -40,7 +40,7 @@ public abstract class AbstractActivityTest {
   public void setUp() throws Exception {
     navigator = Navigator.registerWithBorderPane(JFXCDIRunner.getStage());
 
-    activity = new Activity((Class<? extends de.ks.datasource.DataSource<?>>) DummyTestDataSource.class, ActivityHome.class);
+    activity = new Activity(DummyTestDataSource.class, ActivityHome.class);
     activity.withLink(ActivityHome.class, "showDetails", Navigator.RIGHT_AREA, DetailController.class);
     activity.withLink(ActivityHome.class, "switchView", OtherController.class);
     activity.withLink(OtherController.class, "back", ActivityHome.class);

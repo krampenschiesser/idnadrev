@@ -83,7 +83,7 @@ public class ActivityTest extends AbstractActivityTest {
   public void testInitializeTaskLinks() throws Exception {
     activityController.start(activity);
     DefaultLoader<StackPane, DetailController> loader = new DefaultLoader<>(DetailController.class);
-    InitializeTaskLinks taskLinks = new InitializeTaskLinks(activity.getTaskLinks(), activityController);
+    InitializeTaskLinks taskLinks = new InitializeTaskLinks(activity.getTaskLinks(), activity, activityController);
     taskLinks.accept(loader.getController(), loader.getView());
 
     Button button = (Button) loader.getView().lookup("#pressMe");
@@ -91,5 +91,11 @@ public class ActivityTest extends AbstractActivityTest {
     button.getOnAction().handle(new ActionEvent());
 
     assertTrue(withRetry(() -> CDI.current().select(ActivityAction.class).get().isExecuted()));
+  }
+
+  @Test
+  public void testActivityLinks() throws Exception {
+
+
   }
 }

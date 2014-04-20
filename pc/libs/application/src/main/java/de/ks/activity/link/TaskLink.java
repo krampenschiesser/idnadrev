@@ -31,6 +31,7 @@ public class TaskLink {
     private final Class<?> sourceController;
     private String id;
     private Class<? extends Task<?>> task;
+    private boolean end = false;
 
     public TaskLinkBuilder(Class<?> sourceController) {
       this.sourceController = sourceController;
@@ -46,19 +47,31 @@ public class TaskLink {
       return this;
     }
 
-    public TaskLink build() {
-      return new TaskLink(sourceController, id, task);
+    public TaskLinkBuilder endActivity() {
+      this.end = true;
+      return this;
     }
+
+    public TaskLink build() {
+      return new TaskLink(sourceController, id, task, end);
+    }
+
   }
 
   private final Class<?> sourceController;
   private final String id;
   private final Class<? extends Task<?>> task;
+  private final boolean end;
 
-  protected TaskLink(Class<?> sourceController, String id, Class<? extends Task<?>> task) {
+  protected TaskLink(Class<?> sourceController, String id, Class<? extends Task<?>> task, boolean end) {
     this.sourceController = sourceController;
     this.id = id;
     this.task = task;
+    this.end = end;
+  }
+
+  public boolean isEnd() {
+    return end;
   }
 
   public Class<?> getSourceController() {

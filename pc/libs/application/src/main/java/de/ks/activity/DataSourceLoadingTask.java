@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.spi.CDI;
+import java.util.concurrent.CountDownLatch;
 
 /**
  *
@@ -32,17 +33,36 @@ import javax.enterprise.inject.spi.CDI;
 public class DataSourceLoadingTask<M> extends Task<M> {
   private static final Logger log = LoggerFactory.getLogger(DataSourceLoadingTask.class);
   protected final DataSource<M> dataSource;
+  protected final CountDownLatch latch = new CountDownLatch(2);
 
   public DataSourceLoadingTask(DataSource<M> dataSource) {
     this.dataSource = dataSource;
 
     setOnSucceeded(new ContextualEventHandler<WorkerStateEvent>((e) -> {
-      CDI.current().select(ActivityStore.class).get().setModel(getValue());
+      try {
+        M value = getValue();
+        log.debug("Loaded model '{}'", value);
+        CDI.current().select(ActivityStore.class).get().setModel(value);
+      } finally {
+        latch.countDown();
+      }
     }));
   }
 
   @Override
   protected M call() throws Exception {
-    return dataSource.loadModel();
+    try {
+      return dataSource.loadModel();
+    } finally {
+      latch.countDown();
+    }
+  }
+
+  public void await() {
+    try {
+      latch.await();
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
   }
 }
