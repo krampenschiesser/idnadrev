@@ -23,6 +23,7 @@ import org.objenesis.ObjenesisStd;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -163,12 +164,19 @@ public class ReflectionUtil {
     }
   }
 
+  @SuppressWarnings("unchecked")
   public static <T> T newInstance(Class<T> clazz) {
     try {
-      return clazz.newInstance();
+      Constructor<?>[] constructors = clazz.getDeclaredConstructors();
+      for (Constructor<?> constructor : constructors) {
+        if (constructor.getParameterTypes().length == 0) {
+          constructor.setAccessible(true);
+          return (T) constructor.newInstance();
+        }
+      }
     } catch (Exception e) {
       log.trace("Could not create a new instance of {} by using the default constructor.", clazz.getName(), e);
-      return new ObjenesisStd().newInstance(clazz);
     }
+    return new ObjenesisStd().newInstance(clazz);
   }
 }
