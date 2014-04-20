@@ -15,6 +15,9 @@
  */
 
 allprojects {
+    apply plugin: "java"
+    version = "$version"
+
     repositories {
         mavenCentral()
         maven {
@@ -24,5 +27,29 @@ allprojects {
             url = "https://repository.sonatype.org/content/repositories/central/"
         }
     }
-    version = "$version"
+
+    sourceSets {
+        main {
+            output.resourcesDir = "build/classes/main"
+        }
+        test {
+            output.resourcesDir = "build/classes/test"
+        }
+    }
+
+    dependencies {
+        compile "org.slf4j:slf4j-api:$slf4j"
+        compile("org.slf4j:slf4j-ext:$slf4j") {
+            exclude module: "cal10n-api"
+        }
+        compile "com.google.guava:guava:$guava"
+        compile "org.apache.commons:commons-lang3:$lang3"
+        compile "javax.validation:validation-api:$javaxValidation"
+        compile "javax.enterprise:cdi-api:1.1"
+
+        testCompile "junit:junit:$junit"
+        testCompile "org.mockito:mockito-core:$mockito"
+        testRuntime "ch.qos.logback:logback-core:$logback"
+        testRuntime "ch.qos.logback:logback-classic:$logback"
+    }
 }

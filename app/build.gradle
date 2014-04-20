@@ -13,13 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-include "doc"
 
-include "libs:testutil", "libs:util", "libs:reflection"
+dependencies {
+    compile project(":libs:application")
+    compile project(":libs:scheduler")
 
-//PC stuff
-include "libs:validation", "libs:persistence", "libs:eventsystem", "libs:i18n", "libs:scheduler"
-include "libs:executor"
-//javaFX stuff
-include "libs:images", "libs:application"
-include "app"
+    compile "$jpa2api"
+
+    runtime "org.apache.bval:bval-jsr303:$bval"
+    runtime "commons-logging:commons-logging:$commons_logging"
+
+
+    runtime "ch.qos.logback:logback-core:$logback"
+    runtime "ch.qos.logback:logback-classic:$logback"
+
+    testCompile project(":libs:testutil")
+}
