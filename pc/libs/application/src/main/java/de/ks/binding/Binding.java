@@ -19,11 +19,13 @@ import com.google.common.primitives.Primitives;
 import de.ks.javafx.converter.LastValueConverter;
 import de.ks.reflection.ReflectionUtil;
 import javafx.beans.property.Property;
+import javafx.beans.property.StringProperty;
 import javafx.beans.property.adapter.*;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.control.Labeled;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextInputControl;
@@ -183,20 +185,32 @@ public class Binding {
     return null;
   }
 
-  @SuppressWarnings("unchecked")
+
   private void bindNode(Node node, JavaBeanProperty<?> property, Class<?> fieldType) {
     if (node instanceof TextInputControl) {
       TextInputControl textInputControl = (TextInputControl) node;
-      StringConverter converter = getStringConverter(fieldType);
-      if (converter != null) {
-        LastValueConverter wrappedConverter = new LastValueConverter(converter, property);
-        textInputControl.textProperty().bindBidirectional(property, wrappedConverter);
-      } else {
-        textInputControl.textProperty().bindBidirectional((Property<String>) property);
-      }
-      bindings.add(Pair.of(property, textInputControl.textProperty()));
+      StringProperty stringProperty = textInputControl.textProperty();
+      bindStringProperty(property, fieldType, stringProperty);
+    } else if (node instanceof Labeled) {
+      Labeled labeled = ((Labeled) node);
+      StringProperty stringProperty = labeled.textProperty();
+      bindStringProperty(property, fieldType, stringProperty);
+
     }
   }
+
+  @SuppressWarnings("unchecked")
+  private void bindStringProperty(JavaBeanProperty<?> property, Class<?> fieldType, StringProperty stringProperty) {
+    StringConverter converter = getStringConverter(fieldType);
+    if (converter != null) {
+      LastValueConverter wrappedConverter = new LastValueConverter(converter, property);
+      stringProperty.bindBidirectional(property, wrappedConverter);
+    } else {
+      stringProperty.bindBidirectional((Property<String>) property);
+    }
+    bindings.add(Pair.of(property, stringProperty));
+  }
+
 
   private StringConverter getStringConverter(Class<?> type) {
     type = Primitives.wrap(type);
