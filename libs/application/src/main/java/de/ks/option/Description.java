@@ -13,21 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package de.ks.option;
 
-dependencies {
-    compile project(":libs:i18n")
-    compile project(":libs:images")
-    compile project(":libs:persistence")
-    compile project(":libs:validation")
-    compile project(":libs:eventsystem")
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-    compile "com.fasterxml.jackson.core:jackson-databind:$jackson"
-    compile "org.apache.deltaspike.cdictrl:deltaspike-cdictrl-api:$deltaspike"
-    compile "javax.enterprise:cdi-api:1.1"
-
-    runtime "org.apache.deltaspike.cdictrl:deltaspike-cdictrl-weld:$deltaspike"
-    runtime "org.jboss.weld.se:weld-se:$weld"
-
-    testCompile project(":libs:testutil")
-    testRuntime "org.apache.bval:bval-jsr303:$bval"
+@Retention(RetentionPolicy.RUNTIME)
+//@Target(ElementType.TYPE)
+public @interface Description {
+  /**
+   * @return the description key resolved with i18n
+   */
+  String value();
 }
