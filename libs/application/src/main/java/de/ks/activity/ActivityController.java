@@ -73,10 +73,29 @@ public class ActivityController {
       Activity previous = activityIterator.next();
       log.info("Resuming previous activity {}, current={}", previous.getClass().getName(), current.getClass().getName());
       stop(current);
-      start(previous);
+      resume(previous, hint);
     } finally {
       lock.unlock();
     }
+  }
+
+  private void resume(Activity activity, Object dataSourceHint) {
+    String id = activity.getClass().getName();
+    context.startActivity(id);
+    log.info("Resuming activity {}", id);
+    DataSource dataSource = CDI.current().select(activity.getDataSource()).get();
+    dataSource.setLoadingHint(dataSourceHint);
+    store.setDatasource(dataSource);
+    select(activity, activity.getInitialController(), Navigator.MAIN_AREA);
+    reload();
+    log.info("Resumed activity {} with hint", id, dataSourceHint);
+  }
+
+  @SuppressWarnings("unchecked")
+  public void reload() {
+    DataSource dataSource = store.getDatasource();
+    loadingTask = new DataSourceLoadingTask<>(dataSource);
+    dataSourceFuture = executorService.submit(loadingTask);
   }
 
   public <T extends Activity> T start(Class<T> activityClass) {
@@ -85,16 +104,16 @@ public class ActivityController {
 
   public <T extends Activity> T start(Class<T> activityClass, Function toConverter, Function returnConverter) {
     T activity = CDI.current().select(activityClass).get();
-    start(activity, toConverter, returnConverter);
+    start(activity, toConverter, returnConverter, true);
     return activity;
   }
 
   public void start(Activity activity) {
-    start(activity, null, null);
+    start(activity, null, null, true);
   }
 
   @SuppressWarnings("unchecked")
-  public void start(Activity activity, Function toConverter, Function returnConverter) {
+  public void start(Activity activity, Function toConverter, Function returnConverter, boolean loadControllers) {
     lock.lock();
     try {
       Object dataSourceHint = null;
@@ -108,14 +127,18 @@ public class ActivityController {
       DataSource dataSource = CDI.current().select(activity.getDataSource()).get();
       dataSource.setLoadingHint(dataSourceHint);
       store.setDatasource(dataSource);
-      DefaultLoader<Node, Object> loader = new DefaultLoader<>(activity.getInitialController());
-      addCallbacks(loader, activity);
-      activity.getPreloads().put(activity.getInitialController(), loader);
-      select(activity, activity.getInitialController(), Navigator.MAIN_AREA);
-      loadNextControllers(activity);
 
-      loadingTask = new DataSourceLoadingTask<>(dataSource);
-      dataSourceFuture = executorService.submit(loadingTask);
+      if (loadControllers) {
+        DefaultLoader<Node, Object> loader = new DefaultLoader<>(activity.getInitialController());
+        addCallbacks(loader, activity);
+        activity.getPreloads().put(activity.getInitialController(), loader);
+      }
+      select(activity, activity.getInitialController(), Navigator.MAIN_AREA);
+      if (loadControllers) {
+        loadNextControllers(activity);
+      }
+
+      reload();
       activities.add(activity);
       log.info("Started activity {}", id);
     } finally {
@@ -159,11 +182,14 @@ public class ActivityController {
 
 
   public void waitForDataSourceLoading() {
+    lock.lock();
     try {
       dataSourceFuture.get();
       loadingTask.await();
     } catch (Exception e) {
       throw new RuntimeException(e);
+    } finally {
+      lock.unlock();
     }
   }
 

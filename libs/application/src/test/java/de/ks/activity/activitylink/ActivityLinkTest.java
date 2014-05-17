@@ -21,6 +21,7 @@ import de.ks.activity.ActivityController;
 import de.ks.activity.context.ActivityContext;
 import de.ks.activity.context.ActivityStore;
 import de.ks.application.Navigator;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -33,6 +34,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
+import java.util.concurrent.CountDownLatch;
 
 import static org.junit.Assert.*;
 
@@ -117,10 +119,17 @@ public class ActivityLinkTest {
     assertNotNull(finishAction);
 
     finishAction.handle(new ActionEvent());
+    waitForJavaFXThread();
     controller.waitForDataSourceLoading();
 
     Node topNode = Navigator.getCurrentNavigator().getMainArea().getCurrentNode();
     assertNotEquals(activityBNode, topNode);
     assertEquals(activityANode, topNode);
+  }
+
+  public void waitForJavaFXThread() throws InterruptedException {
+    CountDownLatch latch = new CountDownLatch(1);
+    Platform.runLater(() -> latch.countDown());
+    latch.await();
   }
 }
