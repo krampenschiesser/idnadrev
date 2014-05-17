@@ -19,9 +19,8 @@ package de.ks.activity.context;
 
 import de.ks.JFXCDIRunner;
 import de.ks.executor.ExecutorService;
-import de.ks.executor.fx.ContextualEventHandler;
-import javafx.event.Event;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -85,6 +84,7 @@ public class ScopeTest {
     assertEquals("Hello Sauerland!", bean1.getValue());
   }
 
+  @Ignore
   @Test
   public void testScopeCleanup() throws Exception {
     final CyclicBarrier barrier = new CyclicBarrier(2);
@@ -111,21 +111,5 @@ public class ScopeTest {
     Thread.sleep(100);
 
     assertEquals(0, context.activities.size());
-  }
-
-  @Test
-  public void testContextualEventHandler() throws Exception {
-    ActivityContext.start("2");
-
-    bean1.setValue("Hello Sauerland!");
-    ContextualEventHandler<Event> handler = new ContextualEventHandler<>((e) -> {
-      ActivityScopedBean1 bean = CDI.current().select(ActivityScopedBean1.class).get();
-      assertNotNull(bean.getValue());
-      assertEquals("Hello Sauerland!", bean.getValue());
-    });
-    for (int i = 0; i < 5; i++) {
-      handler.handle(null);
-    }
-    ActivityContext.stop("2");
   }
 }

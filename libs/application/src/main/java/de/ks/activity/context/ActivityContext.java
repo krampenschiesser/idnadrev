@@ -29,7 +29,6 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.CDI;
 import java.lang.annotation.Annotation;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,10 +40,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class ActivityContext implements Context {
   private static final Logger log = LoggerFactory.getLogger(ActivityContext.class);
   protected final ConcurrentHashMap<String, ActivityHolder> activities = new ConcurrentHashMap<>();
-  protected final ThreadLocal<LinkedList<String>> activityStack = ThreadLocal.withInitial(LinkedList::new);
+  protected volatile String currentActivity = null;
 
   private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
-
   private final BeanManager beanManager;
 
   public static void start(String id) {
@@ -125,10 +123,9 @@ public class ActivityContext implements Context {
     Annotation annotation = beanClass.getAnnotation(ActivityScoped.class);
 
     if (annotation != null) {
-      if (activityStack.get().isEmpty()) {
+      if (currentActivity == null) {
         throw new IllegalStateException("No activity currently active!");
       }
-      String currentActivity = this.activityStack.get().getLast();
       return Pair.of(currentActivity, beanClass);
     } else {
       throw new IllegalStateException("Unable to retrieve " + ActivityScoped.class.getName());
@@ -155,8 +152,7 @@ public class ActivityContext implements Context {
   public ActivityHolder startActivity(String id) {
     lock.writeLock().lock();
     try {
-      LinkedList<String> activities = activityStack.get();
-      activities.add(id);
+      currentActivity = id;
       ActivityHolder holder = new ActivityHolder(id);
       this.activities.put(id, holder);
 
@@ -167,40 +163,9 @@ public class ActivityContext implements Context {
     }
   }
 
-  public void registerPlannedPropagation(String id) {
-    lock.writeLock().lock();
-    try {
-      ActivityHolder activityHolder = activities.get(id);
-      if (activityHolder == null) {
-        log.error("Unknown activity {}. Known: {}", id, activities.keySet());
-        throw new IllegalStateException("Unknown activity " + id + ". Known=" + activities.keySet());
-      }
-      activityHolder.getCount().incrementAndGet();
-      log.debug("Registered planned propagation for activity {}", activityHolder.getId());
-    } finally {
-      lock.writeLock().unlock();
-    }
-  }
-
-  public void propagateActivity(String id) {
-    lock.writeLock().lock();
-    try {
-      activityStack.get().add(id);
-      ActivityHolder activityHolder = activities.get(id);
-      if (activityHolder == null) {
-        log.error("No activity found for id '{}'", id);
-        throw new IllegalStateException("No activity found for id " + id);
-      }
-      log.debug("Propagated activity {}", activityHolder.getId());
-    } finally {
-      lock.writeLock().unlock();
-    }
-  }
-
   public void stopActivity(String id) {
     lock.writeLock().lock();
     try {
-      activityStack.get().remove(id);
       ActivityHolder activityHolder = activities.get(id);
       if (activityHolder == null) {
         log.warn("Activity {} is already stopped", id);
@@ -209,8 +174,11 @@ public class ActivityContext implements Context {
       int count = activityHolder.getCount().decrementAndGet();
       if (count == 0) {
         cleanupSingleActivity(id);
+        currentActivity = null;
+        log.debug("Stopped activity {}", activityHolder.getId());
+      } else {
+        log.debug("Don't stop activity {} because of {} holders.", activityHolder.getId(), count);
       }
-      log.debug("Stopped activity {}", activityHolder.getId());
     } finally {
       lock.writeLock().unlock();
     }
@@ -218,7 +186,7 @@ public class ActivityContext implements Context {
 
   public void cleanupAllActivities() {
     log.debug("Cleanup all activities.");
-    for (String id : activityStack.get()) {
+    for (String id : activities.keySet()) {
       ActivityHolder activityHolder = activities.get(id);
       if (activityHolder == null) {
         log.error("No activity active in thread {}", Thread.currentThread().getName());
@@ -233,7 +201,6 @@ public class ActivityContext implements Context {
     lock.writeLock().lock();
     try {
       this.activities.clear();
-      activityStack.get().clear();
     } finally {
       lock.writeLock().unlock();
     }
@@ -254,19 +221,18 @@ public class ActivityContext implements Context {
   }
 
   public ActivityHolder getHolder() {
-    if (this.activityStack.get().isEmpty()) {
+    if (currentActivity == null) {
       throw new RuntimeException("No activity active in current thread!");
     }
-    String id = this.activityStack.get().getLast();
-    return activities.get(id);
+    return activities.get(currentActivity);
   }
 
 
   public String getCurrentActivity() {
-    return activityStack.get().peekLast();
+    return currentActivity;
   }
 
   public boolean hasCurrentActivity() {
-    return !activityStack.get().isEmpty();
+    return currentActivity != null;
   }
 }

@@ -18,9 +18,7 @@ package de.ks.activity;
 
 import de.ks.activity.context.ActivityStore;
 import de.ks.datasource.DataSource;
-import de.ks.executor.fx.ContextualEventHandler;
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +36,7 @@ public class DataSourceLoadingTask<M> extends Task<M> {
   public DataSourceLoadingTask(DataSource<M> dataSource) {
     this.dataSource = dataSource;
 
-    setOnSucceeded(new ContextualEventHandler<WorkerStateEvent>((e) -> {
+    setOnSucceeded((e) -> {
       try {
         M value = getValue();
         log.debug("Loaded model '{}'", value);
@@ -46,7 +44,7 @@ public class DataSourceLoadingTask<M> extends Task<M> {
       } finally {
         latch.countDown();
       }
-    }));
+    });
   }
 
   @Override
