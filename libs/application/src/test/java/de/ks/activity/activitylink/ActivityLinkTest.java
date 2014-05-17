@@ -34,8 +34,7 @@ import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @RunWith(JFXCDIRunner.class)
 public class ActivityLinkTest {
@@ -86,7 +85,7 @@ public class ActivityLinkTest {
     Node activityBNode = Navigator.getCurrentNavigator().getMainArea().getCurrentNode();
     controller.waitForDataSourceLoading();
     TextField descriptionInput = (TextField) activityBNode.lookup("#description");
-    assertEquals("bla" + "Hello", descriptionInput.getText());
+    assertEquals("bla", descriptionInput.getText());
   }
 
   @Test
@@ -120,6 +119,8 @@ public class ActivityLinkTest {
     finishAction.handle(new ActionEvent());
     controller.waitForDataSourceLoading();
 
-    assertEquals(activityANode, Navigator.getCurrentNavigator().getMainArea().getCurrentNode());
+    Node topNode = Navigator.getCurrentNavigator().getMainArea().getCurrentNode();
+    assertNotEquals(activityBNode, topNode);
+    assertEquals(activityANode, topNode);
   }
 }
