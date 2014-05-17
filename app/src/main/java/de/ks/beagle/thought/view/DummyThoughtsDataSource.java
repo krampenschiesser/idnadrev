@@ -17,22 +17,22 @@ package de.ks.beagle.thought.view;
 
 import de.ks.beagle.entity.Thought;
 import de.ks.datasource.ListDataSource;
+import de.ks.persistence.PersistentWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DummyThoughtsDataSource implements ListDataSource<Thought> {
   private static final Logger log = LoggerFactory.getLogger(DummyThoughtsDataSource.class);
 
   @Override
   public List<Thought> loadModel() {
-    ArrayList<Thought> thoughts = new ArrayList<>();
-    for (int i = 10; i < 50; i++) {
-      Thought thought = new Thought("Thought " + i).setDescription(" A description!");
-      thoughts.add(thought);
-    }
+    List<Thought> thoughts = PersistentWork.from(Thought.class);
+    log.debug("Found {} thoughts", thoughts.size());
+    thoughts = thoughts.stream().filter((t) -> !t.isPostponed()).collect(Collectors.toList());
+    log.debug("After filtering {} thoughts", thoughts.size());
     return thoughts;
   }
 

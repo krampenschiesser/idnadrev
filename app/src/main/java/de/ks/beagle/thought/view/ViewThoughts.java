@@ -15,9 +15,31 @@
  */
 package de.ks.beagle.thought.view;
 
+import de.ks.activity.ActivityController;
 import de.ks.activity.ListBound;
 import de.ks.beagle.entity.Thought;
+import de.ks.persistence.PersistentWork;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.TableView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
 
 @ListBound(Thought.class)
 public class ViewThoughts {
+  private static final Logger log = LoggerFactory.getLogger(ViewThoughts.class);
+
+  @Inject
+  ActivityController controller;
+  @FXML
+  TableView<Thought> _this;
+
+  public void postPone(ActionEvent event) {
+    Thought selectedItem = _this.getSelectionModel().getSelectedItem();
+    PersistentWork.run((em) -> em.find(Thought.class, selectedItem.getId()).postPone());
+    log.info("Postponing {}", selectedItem);
+    controller.reload();
+  }
 }

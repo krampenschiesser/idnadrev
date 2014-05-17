@@ -16,11 +16,14 @@
 
 package de.ks.beagle.entity;
 
+import de.ks.beagle.thought.ThoughtOptions;
 import de.ks.editor.Detailed;
+import de.ks.option.Options;
 import de.ks.persistence.entity.NamedPersistentObject;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import java.time.LocalDate;
 
 /**
  * Created by Christian Loehnert
@@ -34,6 +37,7 @@ public class Thought extends NamedPersistentObject<Thought> {
   @Column(length = 4096)
   @Detailed
   protected String description;
+  protected LocalDate postponedDate;
 
   public Thought() {
   }
@@ -59,4 +63,21 @@ public class Thought extends NamedPersistentObject<Thought> {
     }
   }
 
+  public void postPone() {
+    ThoughtOptions thoughtOptions = Options.get(ThoughtOptions.class);
+    int daysToPostpone = thoughtOptions.getDaysToPostpone();
+    postPone(daysToPostpone);
+  }
+
+  public void postPone(int daysToPostPone) {
+    postponedDate = LocalDate.now().plusDays(daysToPostPone);
+  }
+
+  public boolean isPostponed() {
+    if (postponedDate != null) {
+      LocalDate now = LocalDate.now();
+      return now.isBefore(postponedDate);
+    }
+    return false;
+  }
 }

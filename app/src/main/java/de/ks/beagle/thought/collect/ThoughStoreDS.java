@@ -17,6 +17,7 @@ package de.ks.beagle.thought.collect;
 
 import de.ks.beagle.entity.Thought;
 import de.ks.datasource.NewInstanceDataSource;
+import de.ks.persistence.PersistentWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,5 +31,6 @@ public class ThoughStoreDS extends NewInstanceDataSource<Thought> {
   @Override
   public void saveModel(Thought model) {
     log.info("Saving model {}", model);
+    PersistentWork.persist(model);
   }
 }

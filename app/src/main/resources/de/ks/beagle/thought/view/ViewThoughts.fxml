@@ -22,8 +22,8 @@
                 </TableView>
                 <GridPane VBox.vgrow="NEVER">
                     <children>
-                        <Button mnemonicParsing="false" text="%thought.transform.later" GridPane.columnIndex="0"
-                                GridPane.rowIndex="0"/>
+                        <Button mnemonicParsing="false" onAction="#postPone" text="%thought.transform.later"
+                                GridPane.columnIndex="0" GridPane.rowIndex="0"/>
                         <Button mnemonicParsing="false" text="%thought.transform.info" GridPane.columnIndex="1"
                                 GridPane.rowIndex="0"/>
                         <Button mnemonicParsing="false" text="%thought.transform.project" GridPane.columnIndex="2"

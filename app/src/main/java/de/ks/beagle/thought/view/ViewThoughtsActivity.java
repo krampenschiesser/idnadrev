@@ -23,9 +23,9 @@ import de.ks.menu.MenuItem;
 import javax.inject.Inject;
 
 @MenuItem("/main/activity")
-public class ViewThoughsActivity extends Activity {
+public class ViewThoughtsActivity extends Activity {
   @Inject
-  public ViewThoughsActivity(ActivityController activityController, Navigator navigator) {
+  public ViewThoughtsActivity(ActivityController activityController, Navigator navigator) {
     super(DummyThoughtsDataSource.class, ViewThoughts.class);
   }
 }
