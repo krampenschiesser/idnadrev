@@ -172,6 +172,7 @@ public class ActivityContext implements Context {
     try {
       ActivityHolder activityHolder = activities.get(id);
       if (activityHolder == null) {
+        log.error("Unknown activity {}. Known: {}", id, activities.keySet());
         throw new IllegalStateException("Unknown activity " + id + ". Known=" + activities.keySet());
       }
       activityHolder.getCount().incrementAndGet();
