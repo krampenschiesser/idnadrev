@@ -28,8 +28,15 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class PropertyPath<T> {
+  public static <T> String keyOf(Class<T> clazz, Consumer<T> consumer) {
+    PropertyPath<T> path = new PropertyPath<>(clazz);
+    consumer.accept(path.build());
+    return path.getPropertyPath();
+  }
+
   public static <T> PropertyPath<T> of(Class<T> clazz) {
     return new PropertyPath<>(clazz);
   }
