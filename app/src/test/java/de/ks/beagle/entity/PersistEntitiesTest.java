@@ -53,21 +53,15 @@ public class PersistEntitiesTest {
   @Before
   public void setUp() throws Exception {
     for (Class<?> clazz : allEntityClasses) {
-      new PersistentWork() {
-        @Override
-        protected void execute() {
-          em.createQuery("delete from " + clazz.getName()).executeUpdate();
-        }
-      };
+      PersistentWork.deleteAllOf(clazz);
     }
-
   }
 
   @Test
   public void testSimpleEntities() throws Exception {
-    simpleEntities.forEach(entity -> new PersistentWork(em -> em.persist(entity)));
+    simpleEntities.forEach(entity -> PersistentWork.persist(entity));
     //read em
-    simpleEntities.forEach(entity -> new PersistentWork(em -> {
+    simpleEntities.forEach(entity -> PersistentWork.run(em -> {
       Class<? extends NamedPersistentObject> entityClass = entity.getClass();
       CriteriaBuilder builder = em.getCriteriaBuilder();
       CriteriaQuery<? extends NamedPersistentObject> query = builder.createQuery(entityClass);
@@ -81,7 +75,7 @@ public class PersistEntitiesTest {
 
   @Test(expected = PersistenceException.class)
   public void testNoDuplicateNamedPersistentObject() throws Exception {
-    new PersistentWork((em) -> {
+    PersistentWork.run((em) -> {
       em.persist(new Tag("hello"));
       em.persist(new Tag("hello"));
     });
@@ -100,12 +94,12 @@ public class PersistEntitiesTest {
     noteFile.setData(data);
     note.addNoteFile(noteFile);
 
-    new PersistentWork((em) -> {
+    PersistentWork.run((em) -> {
       em.persist(note);
       em.persist(noteFile);
     });
 
-    new PersistentWork((em) -> {
+    PersistentWork.run((em) -> {
       Note readNote = em.find(Note.class, note.getId());
       assertEquals(note, readNote);
       assertNotNull(note.getFiles());
@@ -124,10 +118,9 @@ public class PersistEntitiesTest {
     Note note = new Note("myNote");
     note.addFile(imageFile);
 
-    new PersistentWork(em -> em.persist(note));
+    PersistentWork.persist(note);
 
-
-    new PersistentWork((em) -> {
+    PersistentWork.run((em) -> {
       Note readNote = em.find(Note.class, note.getId());
       assertEquals(note, readNote);
       assertNotNull(note.getFiles());

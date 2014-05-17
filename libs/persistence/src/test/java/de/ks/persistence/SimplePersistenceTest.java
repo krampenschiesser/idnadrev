@@ -22,9 +22,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.persistence.criteria.CriteriaQuery;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  *
@@ -33,60 +34,32 @@ import static org.junit.Assert.assertEquals;
 public class SimplePersistenceTest {
   @Before
   public void setUp() throws Exception {
-    new PersistentWork() {
-      @Override
-      protected void execute() {
-        em.createQuery("delete from " + DummyEntity.class.getName()).executeUpdate();
-      }
-    };
+    PersistentWork.deleteAllOf(DummyEntity.class);
   }
 
   @Test
   public void testPersist() throws Exception {
-    new PersistentWork() {
-      @Override
-      protected void execute() {
-        DummyEntity entity = new DummyEntity("Hello World");
-        em.persist(entity);
-      }
-    };
-    //read
-    new PersistentWork() {
-      @Override
-      protected void execute() {
-        CriteriaQuery<DummyEntity> query = em.getCriteriaBuilder().createQuery(DummyEntity.class);
-        query.from(DummyEntity.class);
-        DummyEntity readEntity = em.createQuery(query).getSingleResult();
+    PersistentWork.persist(new DummyEntity("Hello World"));
+    // read
 
-        assertEquals("Hello World", readEntity.getName());
-      }
-    };
+    List<DummyEntity> result = PersistentWork.from(DummyEntity.class);
+    DummyEntity readEntity = result.get(0);
+
+    assertEquals("Hello World", readEntity.getName());
   }
 
   @Test
   public void testTransactionFailed() {
     try {
-      new PersistentWork() {
-        @Override
-        protected void execute() {
-          DummyEntity entity = new DummyEntity("Hello World");
-          em.persist(entity);
-          throw new RuntimeException();
-        }
-      };
+      PersistentWork.run(em -> {
+        DummyEntity entity = new DummyEntity("Hello World");
+        em.persist(entity);
+        throw new RuntimeException();
+      });
     } catch (RuntimeException e) {
       //ok!
     }
 
-    new PersistentWork() {
-      @Override
-      protected void execute() {
-        CriteriaQuery<DummyEntity> query = em.getCriteriaBuilder().createQuery(DummyEntity.class);
-        query.from(DummyEntity.class);
-
-        int amount = em.createQuery(query).getResultList().size();
-        assertEquals(0, amount);
-      }
-    };
+    assertTrue(PersistentWork.from(DummyEntity.class).isEmpty());
   }
 }

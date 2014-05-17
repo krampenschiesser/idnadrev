@@ -40,22 +40,13 @@ public class TaskTest {
 
   @Before
   public void setUp() throws Exception {
-    new PersistentWork() {
-      @Override
-      protected void execute() {
-        em.createNativeQuery("delete from " + Note.NOTE_TAG_JOINTABLE).executeUpdate();
-      }
-    };
-    new PersistentWork() {
-      @Override
-      protected void execute() {
-        List<Class<? extends AbstractPersistentObject<?>>> entitiesToDelete = Arrays.asList(//
-                Tag.class, WorkUnit.class, NoteFile.class, Note.class, Task.class, Context.class);
-        for (Class<? extends AbstractPersistentObject<?>> clazz : entitiesToDelete) {
-          em.createQuery("delete from " + clazz.getName()).executeUpdate();
-        }
-      }
-    };
+    PersistentWork.run((em) -> em.createNativeQuery("delete from " + Note.NOTE_TAG_JOINTABLE).executeUpdate());
+
+    List<Class<? extends AbstractPersistentObject<?>>> entitiesToDelete = Arrays.asList(//
+            Tag.class, WorkUnit.class, NoteFile.class, Note.class, Task.class, Context.class);
+    for (Class<? extends AbstractPersistentObject<?>> clazz : entitiesToDelete) {
+      PersistentWork.deleteAllOf(clazz);
+    }
   }
 
   @Test
@@ -80,14 +71,11 @@ public class TaskTest {
     last.setEnd(end);
 
     persistTask(task);
-    new PersistentWork() {
-      @Override
-      protected void execute() {
-        Task readTask = em.find(Task.class, task.getId());
-        assertEquals(workUnitAmount, readTask.getWorkUnits().size());
-        assertEquals(3, task.getSpentMinutes());
-      }
-    };
+    PersistentWork.run((em) -> {
+      Task readTask = em.find(Task.class, task.getId());
+      assertEquals(workUnitAmount, readTask.getWorkUnits().size());
+      assertEquals(3, task.getSpentMinutes());
+    });
   }
 
   @Test
@@ -104,41 +92,29 @@ public class TaskTest {
 
     persistTask(task);
 
-    new PersistentWork() {
-      @Override
-      protected void execute() {
-        Task readTask = em.find(Task.class, task.getId());
-        assertEquals(1, readTask.getNotes().size());
-        Note readNote = readTask.getNotes().iterator().next();
-        assertEquals(1, readNote.getFiles().size());
-        assertEquals(fileName, readNote.getFiles().iterator().next().getName());
-        assertEquals(1, readNote.getTags().size());
-        assertEquals(tagName, readNote.getTags().iterator().next().getName());
-      }
-    };
+    PersistentWork.run((em) -> {
+      Task readTask = em.find(Task.class, task.getId());
+      assertEquals(1, readTask.getNotes().size());
+      Note readNote = readTask.getNotes().iterator().next();
+      assertEquals(1, readNote.getFiles().size());
+      assertEquals(fileName, readNote.getFiles().iterator().next().getName());
+      assertEquals(1, readNote.getTags().size());
+      assertEquals(tagName, readNote.getTags().iterator().next().getName());
+    });
 
-    new PersistentWork() {
-      @Override
-      protected void execute() {
-        Note readNote = em.find(Note.class, note.getId());
-        em.remove(readNote);
-      }
-    };
-    new PersistentWork() {
-      @Override
-      protected void execute() {
-        Tag readTag = em.find(Tag.class, tag.getId());
-        assertNotNull(readTag);
-        NoteFile readFile = em.find(NoteFile.class, note.getFiles().iterator().next().getId());
-        assertNull(readFile);
-      }
-    };
-    new PersistentWork() {
-      @Override
-      protected void execute() {
-        em.remove(em.find(Task.class, task.getId()));
-      }
-    };
+    PersistentWork.run((em) -> {
+      Note readNote = em.find(Note.class, note.getId());
+      em.remove(readNote);
+    });
+    PersistentWork.run((em) -> {
+      Tag readTag = em.find(Tag.class, tag.getId());
+      assertNotNull(readTag);
+      NoteFile readFile = em.find(NoteFile.class, note.getFiles().iterator().next().getId());
+      assertNull(readFile);
+    });
+    PersistentWork.run((em) -> {
+      em.remove(em.find(Task.class, task.getId()));
+    });
   }
 
   @Test
@@ -149,28 +125,19 @@ public class TaskTest {
 
     persistTask(task);
 
-    new PersistentWork() {
-      @Override
-      protected void execute() {
-        Task readTask = em.find(Task.class, task.getId());
-        assertNotNull(readTask.getContext());
-        assertEquals(contextName, readTask.getContext().getName());
-      }
-    };
-    new PersistentWork() {
-      @Override
-      protected void execute() {
-        em.remove(em.find(Task.class, task.getId()));
-      }
-    };
-    new PersistentWork() {
-      @Override
-      protected void execute() {
-        Context context = em.find(Context.class, task.getContext().getId());
-        assertNotNull(context);
-        assertEquals(contextName, context.getName());
-      }
-    };
+    PersistentWork.run((em) -> {
+      Task readTask = em.find(Task.class, task.getId());
+      assertNotNull(readTask.getContext());
+      assertEquals(contextName, readTask.getContext().getName());
+    });
+    PersistentWork.run((em) -> {
+      em.remove(em.find(Task.class, task.getId()));
+    });
+    PersistentWork.run((em) -> {
+      Context context = em.find(Context.class, task.getContext().getId());
+      assertNotNull(context);
+      assertEquals(contextName, context.getName());
+    });
   }
 
   @Test
@@ -183,45 +150,33 @@ public class TaskTest {
 
     persistTask(parent);
 
-    new PersistentWork() {
-      @Override
-      protected void execute() {
-        Task readParent = em.find(parent.getClass(), parent.getId());
-        Set<Task> children = readParent.getChildren();
-        assertEquals(2, children.size());
-        for (Task child : children) {
-          if (child.getName().endsWith("2")) {
-            assertEquals(1, child.getChildren().size());
-          } else {
-            assertEquals(0, child.getChildren().size());
-          }
+    PersistentWork.run((em) -> {
+      Task readParent = em.find(parent.getClass(), parent.getId());
+      Set<Task> children = readParent.getChildren();
+      assertEquals(2, children.size());
+      for (Task child : children) {
+        if (child.getName().endsWith("2")) {
+          assertEquals(1, child.getChildren().size());
+        } else {
+          assertEquals(0, child.getChildren().size());
         }
       }
-    };
+    });
 
-    new PersistentWork() {
-      @Override
-      protected void execute() {
-        em.remove(em.find(parent.getClass(), parent.getId()));
-      }
-    };
+    PersistentWork.run((em) -> {
+      em.remove(em.find(parent.getClass(), parent.getId()));
+    });
 
-    new PersistentWork() {
-      @Override
-      protected void execute() {
-        List foundTasks = em.createQuery("from " + Task.class.getName()).getResultList();
-        assertEquals(0, foundTasks.size());
-      }
-    };
+    PersistentWork.run((em) -> {
+      List foundTasks = em.createQuery("from " + Task.class.getName()).getResultList();
+      assertEquals(0, foundTasks.size());
+    });
   }
 
   private void persistTask(final Task task) {
-    new PersistentWork() {
-      @Override
-      protected void execute() {
-        em.persist(task);
-      }
-    };
+    PersistentWork.run((em) -> {
+      em.persist(task);
+    });
   }
 
 

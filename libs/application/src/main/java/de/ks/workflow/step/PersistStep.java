@@ -40,7 +40,7 @@ public class PersistStep extends AutomaticStep {
       protected String call() throws Exception {
         Object model = workflowState.getModel();
         log.debug("Persisting worfklow model {}", model);
-        new PersistentWork(em -> em.persist(model));
+        PersistentWork.run(em -> em.persist(model));
         return DefaultOutput.NEXT.name();
       }
     };

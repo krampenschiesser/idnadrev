@@ -31,7 +31,6 @@ import org.junit.runner.RunWith;
 
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
-import javax.persistence.criteria.CriteriaQuery;
 
 import static org.junit.Assert.assertEquals;
 
@@ -66,15 +65,8 @@ public class PersistStepTest {
     model.setDescription("Hello Sauerland!");
     navigator.next();
 
-    new PersistentWork() {
-      @Override
-      protected void execute() {
-        CriteriaQuery<SimpleWorkflowModel> query = em.getCriteriaBuilder().createQuery(SimpleWorkflowModel.class);
-        query.select(query.from(SimpleWorkflowModel.class));
-        SimpleWorkflowModel model = em.createQuery(query).getSingleResult();
-        assertEquals("testName", model.getName());
-        assertEquals("Hello Sauerland!", model.getDescription());
-      }
-    };
+    SimpleWorkflowModel workflowModel = PersistentWork.from(SimpleWorkflowModel.class).get(0);
+    assertEquals("testName", workflowModel.getName());
+    assertEquals("Hello Sauerland!", workflowModel.getDescription());
   }
 }
