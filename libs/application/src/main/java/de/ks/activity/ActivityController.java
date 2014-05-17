@@ -27,13 +27,17 @@ import de.ks.application.fxml.DefaultLoader;
 import de.ks.datasource.DataSource;
 import de.ks.executor.ExecutorService;
 import javafx.scene.Node;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
 /**
@@ -41,6 +45,7 @@ import java.util.function.Function;
  */
 @Singleton
 public class ActivityController {
+  private static final Logger log = LoggerFactory.getLogger(ActivityController.class);
   @Inject
   protected ActivityContext context;
   @Inject
@@ -51,6 +56,8 @@ public class ActivityController {
   protected Instance<Navigator> navigator;
 
   protected final Deque<Activity> activities = new LinkedList<>();
+  protected final ReentrantLock lock = new ReentrantLock(true);
+
   private ListenableFuture<?> dataSourceFuture;
   private DataSourceLoadingTask<Object> loadingTask;
 
@@ -59,7 +66,17 @@ public class ActivityController {
   }
 
   public void resumePreviousActivity(Object hint) {
-
+    lock.lock();
+    try {
+      Iterator<Activity> activityIterator = activities.descendingIterator();
+      Activity current = activityIterator.next();
+      Activity previous = activityIterator.next();
+      log.info("Resuming previous activity {}, current={}", previous.getClass().getName(), current.getClass().getName());
+      stop(current);
+      start(previous);
+    } finally {
+      lock.unlock();
+    }
   }
 
   public <T extends Activity> T start(Class<T> activityClass) {
@@ -78,24 +95,32 @@ public class ActivityController {
 
   @SuppressWarnings("unchecked")
   public void start(Activity activity, Function toConverter, Function returnConverter) {
-    Object dataSourceHint = null;
-    if (context.hasCurrentActivity() && toConverter != null) {
-      dataSourceHint = toConverter.apply(store.getModel());
-    }
-    activity.setReturnConverter(returnConverter);
-    context.startActivity(activity.getClass().getName());
-    DataSource dataSource = CDI.current().select(activity.getDataSource()).get();
-    dataSource.setLoadingHint(dataSourceHint);
-    store.setDatasource(dataSource);
-    DefaultLoader<Node, Object> loader = new DefaultLoader<>(activity.getInitialController());
-    addCallbacks(loader, activity);
-    activity.getPreloads().put(activity.getInitialController(), loader);
-    select(activity, activity.getInitialController(), Navigator.MAIN_AREA);
-    loadNextControllers(activity);
+    lock.lock();
+    try {
+      Object dataSourceHint = null;
+      if (context.hasCurrentActivity() && toConverter != null) {
+        dataSourceHint = toConverter.apply(store.getModel());
+      }
+      activity.setReturnConverter(returnConverter);
+      String id = activity.getClass().getName();
+      context.startActivity(id);
+      log.info("Starting activity {}", id);
+      DataSource dataSource = CDI.current().select(activity.getDataSource()).get();
+      dataSource.setLoadingHint(dataSourceHint);
+      store.setDatasource(dataSource);
+      DefaultLoader<Node, Object> loader = new DefaultLoader<>(activity.getInitialController());
+      addCallbacks(loader, activity);
+      activity.getPreloads().put(activity.getInitialController(), loader);
+      select(activity, activity.getInitialController(), Navigator.MAIN_AREA);
+      loadNextControllers(activity);
 
-    loadingTask = new DataSourceLoadingTask<>(dataSource);
-    dataSourceFuture = executorService.submit(loadingTask);
-    activities.add(activity);
+      loadingTask = new DataSourceLoadingTask<>(dataSource);
+      dataSourceFuture = executorService.submit(loadingTask);
+      activities.add(activity);
+      log.info("Started activity {}", id);
+    } finally {
+      lock.unlock();
+    }
   }
 
   private void addCallbacks(DefaultLoader<Node, Object> loader, Activity activity) {
@@ -151,8 +176,15 @@ public class ActivityController {
   }
 
   public void stop(Activity activity) {
-    String id = activity.getClass().getName();
-    stop(id);
+    lock.lock();
+    try {
+      activity.waitForInitialization();
+      waitForDataSourceLoading();
+      String id = activity.getClass().getName();
+      stop(id);
+    } finally {
+      lock.unlock();
+    }
   }
 
   public void stop(String id) {
