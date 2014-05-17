@@ -108,7 +108,7 @@ public class ScopeTest {
 
     assertEquals("Activity got removed although one thread still holds it", 1, context.activities.size());
     barrier.await();
-    Thread.sleep(500);
+    Thread.sleep(100);
 
     assertEquals(0, context.activities.size());
   }

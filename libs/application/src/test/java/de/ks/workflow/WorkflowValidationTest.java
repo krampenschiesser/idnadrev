@@ -75,7 +75,7 @@ public class WorkflowValidationTest {
     WorkflowContext.start(TestWorkflow.class);
 
     eventBus.postAndWait(new ValidationRequiredEvent(null, null));
-    Thread.sleep(500);
+    Thread.sleep(100);
     assertNotNull(result);
     assertFalse(result.isSuccessful());
 
