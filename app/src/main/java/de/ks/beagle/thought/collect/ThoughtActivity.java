@@ -33,6 +33,6 @@ public class ThoughtActivity extends Activity {
   }
 
   private void configure() {
-    withTask(getInitialController(), "save", SaveThought.class);
+    withEnd(getInitialController(), "save", SaveThought.class);
   }
 }

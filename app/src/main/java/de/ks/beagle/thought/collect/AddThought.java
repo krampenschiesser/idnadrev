@@ -20,8 +20,8 @@ package de.ks.beagle.thought.collect;
 import de.ks.activity.ModelBound;
 import de.ks.beagle.entity.Thought;
 import javafx.fxml.FXML;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.web.HTMLEditor;
 
 /**
  *
@@ -29,7 +29,7 @@ import javafx.scene.web.HTMLEditor;
 @ModelBound(Thought.class)
 public class AddThought {
   @FXML
-  protected HTMLEditor description;
+  protected TextArea description;
   @FXML
   protected TextField name;
 }

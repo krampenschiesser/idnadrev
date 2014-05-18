@@ -19,22 +19,20 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.web.HTMLEditor?>
 <GridPane hgap="5.0" prefHeight="400.0" prefWidth="600.0" vgap="5.0" xmlns="http://javafx.com/javafx/8"
           xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.beagle.thought.collect.AddThought">
     <children>
-        <Button fx:id="save" mnemonicParsing="false" text="%default.save" GridPane.columnIndex="1"
+        <Label text="%thought.name" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <Label text="%thought.description" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+        <TextField fx:id="name" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <TextArea fx:id="description" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1"
+                  GridPane.rowIndex="2"/>
+        <Button fx:id="save" defaultButton="true" mnemonicParsing="false" text="%default.save" GridPane.columnIndex="1"
                 GridPane.rowIndex="3">
             <GridPane.margin>
                 <Insets/>
             </GridPane.margin>
         </Button>
-        <Label text="%thought.name" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-        <Label text="%thought.description" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-        <HTMLEditor fx:id="description"
-                    htmlText="&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body contenteditable=&quot;true&quot;&gt;&lt;/body&gt;&lt;/html&gt;"
-                    prefHeight="200.0" prefWidth="506.0" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-        <TextField fx:id="name" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
         <Label styleClass="title" text="%main.thought.addthought" GridPane.columnSpan="2147483647"
                GridPane.halignment="LEFT"/>
     </children>
