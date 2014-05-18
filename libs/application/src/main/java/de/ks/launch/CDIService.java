@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package de.ks.launch;
 
-package de.ks.beagle;
+import org.apache.deltaspike.cdise.api.CdiContainer;
+import org.apache.deltaspike.cdise.api.CdiContainerLoader;
 
+public class CDIService extends Service {
+  private final CdiContainer cdiContainer = CdiContainerLoader.getCdiContainer();
 
-import de.ks.launch.Launcher;
+  @Override
+  protected void doStart() {
+    cdiContainer.boot();
+  }
 
-/**
- *
- */
-public class Application {
-  public static void main(String[] args) {
-    Launcher launcher = Launcher.instance;
-    launcher.startAll(args);
-    launcher.awaitStart();
+  @Override
+  protected void doStop() {
+    cdiContainer.shutdown();
   }
 }

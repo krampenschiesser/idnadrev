@@ -99,6 +99,36 @@ public class LauncherTest {
       assertEquals(ServiceRuntimeState.STOPPED, serviceA.getState());
       assertEquals(ServiceRuntimeState.STOPPED, serviceB.getState());
     }
+  }
 
+  @Test
+  public void testStopping() throws Exception {
+    TestService serviceA = (TestService) launcher.getServices().get(0);
+    TestService serviceB = (TestService) launcher.getServices().get(1);
+    launcher.startAll();
+    serviceA.await();
+    serviceB.await();
+    Thread.sleep(100);
+    launcher.awaitStart();
+
+
+    assertEquals(ServiceRuntimeState.RUNNING, serviceA.getState());
+    assertEquals(ServiceRuntimeState.RUNNING, serviceB.getState());
+
+    launcher.stopAll();
+    assertEquals(ServiceRuntimeState.RUNNING, serviceA.getState());
+    assertEquals(ServiceRuntimeState.STOPPING, serviceB.getState());
+
+    serviceB.await();
+    Thread.sleep(100);
+    assertEquals(ServiceRuntimeState.STOPPING, serviceA.getState());
+    assertEquals(ServiceRuntimeState.STOPPED, serviceB.getState());
+
+    serviceA.await();
+    Thread.sleep(100);
+    assertEquals(ServiceRuntimeState.STOPPED, serviceA.getState());
+    assertEquals(ServiceRuntimeState.STOPPED, serviceB.getState());
+
+    launcher.awaitStop();
   }
 }

@@ -30,6 +30,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.CDI;
@@ -38,33 +40,41 @@ import javax.enterprise.inject.spi.CDI;
  *
  */
 public class App extends Application {
+  private static final Logger log = LoggerFactory.getLogger(App.class);
   private MainWindow mainWindow;
 
   @Override
   public void start(Stage stage) throws Exception {
+    try {
 
-
-    Instance<MainWindow> select = CDI.current().select(MainWindow.class);
-    if (select.isUnsatisfied()) {
-      stage.setTitle(Localized.get("warning.general"));
-      stage.setScene(new Scene(new Label(Localized.get("warning.unsatisfiedApplication")), 640, 480));
-    } else {
-      mainWindow = select.get();
-      stage.setTitle(mainWindow.getApplicationTitle());
-      stage.setScene(createScene(mainWindow));
-
-      Image icon = Images.get("appicon.png");
-      if (icon != null) {
-        stage.getIcons().add(icon);
-      }
-      Pane pane = (Pane) mainWindow.getNode();
-      if (pane instanceof BorderPane) {
-        Navigator.registerWithExistingPane(stage, (BorderPane) pane);
+      Instance<MainWindow> select = CDI.current().select(MainWindow.class);
+      if (select.isUnsatisfied()) {
+        stage.setTitle(Localized.get("warning.general"));
+        stage.setScene(new Scene(new Label(Localized.get("warning.unsatisfiedApplication")), 640, 480));
       } else {
-        Navigator.register(stage, pane);
+        mainWindow = select.get();
+        stage.setTitle(mainWindow.getApplicationTitle());
+        stage.setScene(createScene(mainWindow));
+
+        Image icon = Images.get("appicon.png");
+        if (icon != null) {
+          stage.getIcons().add(icon);
+        }
+        Pane pane = (Pane) mainWindow.getNode();
+        if (pane instanceof BorderPane) {
+          Navigator.registerWithExistingPane(stage, (BorderPane) pane);
+        } else {
+          Navigator.register(stage, pane);
+        }
       }
+      stage.setOnCloseRequest((WindowEvent e) -> {
+        Launcher.instance.stopAll();
+        Launcher.instance.awaitStop();
+      });
+    } catch (Exception e) {
+      log.error("Could not start JavaFXApp", e);
+      throw e;
     }
-    stage.setOnCloseRequest((WindowEvent e) -> Launcher.instance.stopAll());
     Launcher.instance.getService(JavaFXService.class).setStage(stage);
 
     stage.show();

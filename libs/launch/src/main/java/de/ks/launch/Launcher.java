@@ -156,10 +156,10 @@ public class Launcher {
     TreeMap<Integer, List<Service>> waves = getServiceWaves();
     latch = new CountDownLatch(waves.keySet().size());
     Iterator<Integer> iter = waves.keySet().iterator();
-    runWave(iter, waves, args);
+    startWave(iter, waves, args);
   }
 
-  private void runWave(Iterator<Integer> iter, TreeMap<Integer, List<Service>> waves, String[] args) {
+  private void startWave(Iterator<Integer> iter, TreeMap<Integer, List<Service>> waves, String[] args) {
     if (!iter.hasNext()) {
       return;
     }
@@ -177,7 +177,7 @@ public class Launcher {
     CompletableFuture<Void> allOf = CompletableFuture.allOf(waveFutures.toArray(new CompletableFuture[waveFutures.size()]));
     allOf.thenRun(() -> log.info("Started services with prio {}", prio))//
             .thenRun(() -> latch.countDown())//
-            .thenRun(() -> runWave(iter, waves, args))//
+            .thenRun(() -> startWave(iter, waves, args))//
             .exceptionally((t) -> {
               while (latch.getCount() > 0) {
                 latch.countDown();
@@ -210,7 +210,45 @@ public class Launcher {
   }
 
   public void stopAll() {
+    try {
+      latch.await();
+    } catch (InterruptedException e) {
+      log.error("Could not await latch.", e);
+    }
+    TreeMap<Integer, List<Service>> waves = getServiceWaves();
+    latch = new CountDownLatch(waves.keySet().size());
+    Iterator<Integer> iter = waves.descendingKeySet().iterator();
+    stopWave(iter, waves);
+  }
 
+  private void stopWave(Iterator<Integer> iter, TreeMap<Integer, List<Service>> waves) {
+    if (!iter.hasNext()) {
+      return;
+    }
+    Integer prio = iter.next();
+    log.info("Stopping services with prio {}", prio);
+    List<CompletableFuture<Void>> waveFutures = waves.get(prio).stream()//
+            .map((s) -> {
+              return CompletableFuture.supplyAsync(() -> s.stop(), executorService)//
+                      .thenAccept((service) -> log.info("Successfully stopped service {}", service.getName()));
+            }).collect(Collectors.toList());
+
+    CompletableFuture<Void> allOf = CompletableFuture.allOf(waveFutures.toArray(new CompletableFuture[waveFutures.size()]));
+    allOf.thenRun(() -> log.info("Stopped services with prio {}", prio))//
+            .thenRun(() -> latch.countDown())//
+            .thenRun(() -> stopWave(iter, waves))//
+            .exceptionally((t) -> {
+              log.info("Failed to stop services", t);
+              return null;
+            });
+  }
+
+  public void awaitStop() {
+    try {
+      latch.await();
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   public ExecutorService getExecutorService() {
