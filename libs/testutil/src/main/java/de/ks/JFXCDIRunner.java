@@ -59,12 +59,16 @@ public class JFXCDIRunner extends CDIRunner {
     if (barrier.getCount() == 1) {
       executor.execute(() -> {
         try {
-          Application.launch(JFXTestApp.class);
+          Application.launch(getApplicationClass());
         } finally {
           barrier.countDown();
         }
       });
     }
+  }
+
+  protected Class<? extends Application> getApplicationClass() {
+    return JFXTestApp.class;
   }
 
   @Override
