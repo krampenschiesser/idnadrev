@@ -70,10 +70,15 @@ public class ActivityController {
     try {
       Iterator<Activity> activityIterator = activities.descendingIterator();
       Activity current = activityIterator.next();
-      Activity previous = activityIterator.next();
-      log.info("Resuming previous activity {}, current={}", previous.getClass().getName(), current.getClass().getName());
-      stop(current);
-      resume(previous, hint);
+      if (activityIterator.hasNext()) {
+        Activity previous = activityIterator.next();
+        log.info("Resuming previous activity {}, current={}", previous.getClass().getName(), current.getClass().getName());
+        stop(current);
+        resume(previous, hint);
+      } else {
+        log.info("Relaoding current activity {}", current.getClass().getName());
+        reload();
+      }
     } finally {
       lock.unlock();
     }
