@@ -38,8 +38,13 @@ public class ViewThoughts {
 
   public void postPone(ActionEvent event) {
     Thought selectedItem = _this.getSelectionModel().getSelectedItem();
-    PersistentWork.run((em) -> em.find(Thought.class, selectedItem.getId()).postPone());
-    log.info("Postponing {}", selectedItem);
-    controller.reload();
+    if (selectedItem != null) {
+
+      PersistentWork.runAsync((em) -> em.find(Thought.class, selectedItem.getId()).postPone())//
+              .thenRun(() -> {
+                log.info("Postponing {}", selectedItem);
+                controller.reload();
+              });
+    }
   }
 }
