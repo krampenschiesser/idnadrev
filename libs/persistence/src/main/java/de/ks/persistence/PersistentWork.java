@@ -17,6 +17,7 @@
 package de.ks.persistence;
 
 
+import de.ks.executor.ExecutorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +26,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -35,6 +37,18 @@ import java.util.function.Function;
  */
 public class PersistentWork {
   private static final Logger log = LoggerFactory.getLogger(PersistentWork.class);
+
+  public static CompletableFuture<Void> runAsync(Consumer<EntityManager> consumer) {
+    ExecutorService executorService = CDI.current().select(ExecutorService.class).get();
+    CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(() -> run(consumer), executorService);
+    return completableFuture;
+  }
+
+  public static <T> CompletableFuture<T> readAsync(Function<EntityManager, T> function) {
+    ExecutorService executorService = CDI.current().select(ExecutorService.class).get();
+    CompletableFuture<T> completableFuture = CompletableFuture.supplyAsync(() -> read(function), executorService);
+    return completableFuture;
+  }
 
   public static void run(Consumer<EntityManager> consumer) {
     new PersistentWork(consumer).run();
