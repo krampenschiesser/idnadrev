@@ -17,7 +17,7 @@
 package de.ks.workflow.step;
 
 
-import de.ks.JFXCDIRunner;
+import de.ks.LauncherRunner;
 import de.ks.persistence.PersistentWork;
 import de.ks.workflow.SimpleWorkflowModel;
 import de.ks.workflow.TestWorkflow;
@@ -38,7 +38,7 @@ import static org.junit.Assert.assertEquals;
  *
  */
 @Ignore
-@RunWith(JFXCDIRunner.class)
+@RunWith(LauncherRunner.class)
 public class PersistStepTest {
   @Inject
   TestWorkflow workflow;

@@ -17,10 +17,12 @@
 package de.ks.menu.sink;
 
 
-import de.ks.JFXCDIRunner;
+import de.ks.LauncherRunner;
 import de.ks.application.Navigator;
 import de.ks.eventsystem.bus.EventBus;
 import de.ks.executor.ExecutorService;
+import de.ks.launch.JavaFXService;
+import de.ks.launch.Launcher;
 import de.ks.menu.MenuItemDescriptor;
 import de.ks.menu.event.MenuItemClickedEvent;
 import de.ks.menu.mainmenu.About;
@@ -44,7 +46,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  *
  */
-@RunWith(JFXCDIRunner.class)
+@RunWith(LauncherRunner.class)
 public class ContentSinkTest {
   private static final Logger log = LoggerFactory.getLogger(ContentSinkTest.class);
   private ContentSink sink;
@@ -69,9 +71,9 @@ public class ContentSinkTest {
     VBox pane = new VBox();
     service.invokeInJavaFXThread(() -> {
       Scene scene = new Scene(pane);
-      JFXCDIRunner.getStage().setScene(scene);
+      Launcher.instance.getService(JavaFXService.class).getStage().setScene(scene);
     });
-    Navigator.register(JFXCDIRunner.getStage(), pane);
+    Navigator.register(Launcher.instance.getService(JavaFXService.class).getStage(), pane);
     service.invokeInJavaFXThread(() -> assertNotNull(Navigator.getNavigator(pane)));
     service.invokeInJavaFXThread(() -> pane.getScene().getWindow());
     assertNotNull(Navigator.getNavigator(pane));

@@ -16,7 +16,7 @@
 
 package de.ks.javafx.converter;
 
-import de.ks.JFXCDIRunner;
+import de.ks.LauncherRunner;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.util.converter.NumberStringConverter;
@@ -28,7 +28,7 @@ import static org.junit.Assert.assertEquals;
 /**
  *
  */
-@RunWith(JFXCDIRunner.class)
+@RunWith(LauncherRunner.class)
 public class LastValueConverterTest {
   @Test
   public void testExcpetionSaveConversion() throws Exception {

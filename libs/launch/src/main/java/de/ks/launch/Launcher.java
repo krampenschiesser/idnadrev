@@ -70,7 +70,7 @@ public class Launcher {
     Reflections reflections = builder.addScanners(new SubTypesScanner()).build();
 
     ArrayList<Service> services = instantiateServices(reflections);
-    log.debug("Found {} services", services.size());
+    log.debug("Found {} services: {}", services.size(), services);
 
     services.sort((o1, o2) -> Integer.compare(o1.getPriority(), o2.getPriority()));
     return services;
@@ -109,7 +109,7 @@ public class Launcher {
                   return true;
                 }
               }).forEach((url) -> {
-                log.info("Adding url {}", url);
+                log.debug("Adding url {}", url);
                 builder.addUrls(url);
               });
             });
@@ -168,7 +168,7 @@ public class Launcher {
     List<CompletableFuture<Void>> waveFutures = waves.get(prio).stream()//
             .map((s) -> {
               return CompletableFuture.supplyAsync(() -> {
-                s.initialize(args);
+                s.initialize(executorService, args);
                 return s.start();
               }, executorService)//
                       .thenAccept((service) -> log.info("Successfully started service {}", service.getName()));
@@ -207,5 +207,13 @@ public class Launcher {
       }
     }
     return true;
+  }
+
+  public void stopAll() {
+
+  }
+
+  public ExecutorService getExecutorService() {
+    return executorService;
   }
 }

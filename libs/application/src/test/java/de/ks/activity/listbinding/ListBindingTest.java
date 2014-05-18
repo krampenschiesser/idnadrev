@@ -15,13 +15,15 @@
  */
 package de.ks.activity.listbinding;
 
-import de.ks.JFXCDIRunner;
 import de.ks.JunitMatchers;
+import de.ks.LauncherRunner;
 import de.ks.activity.Activity;
 import de.ks.activity.ActivityController;
 import de.ks.activity.DetailItem;
 import de.ks.activity.context.ActivityContext;
 import de.ks.application.Navigator;
+import de.ks.launch.JavaFXService;
+import de.ks.launch.Launcher;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.StackPane;
 import org.junit.After;
@@ -34,7 +36,7 @@ import javax.inject.Inject;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@RunWith(JFXCDIRunner.class)
+@RunWith(LauncherRunner.class)
 public class ListBindingTest {
   protected Navigator navigator;
   @Inject
@@ -43,7 +45,7 @@ public class ListBindingTest {
 
   @Before
   public void setUp() throws Exception {
-    navigator = Navigator.registerWithBorderPane(JFXCDIRunner.getStage());
+    navigator = Navigator.registerWithBorderPane(Launcher.instance.getService(JavaFXService.class).getStage());
     activity = new ListActivity();
     activityController.start(activity);
     activityController.waitForDataSourceLoading();

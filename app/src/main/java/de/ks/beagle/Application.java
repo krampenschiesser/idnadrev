@@ -17,13 +17,13 @@
 package de.ks.beagle;
 
 
-import de.ks.application.Launcher;
+import de.ks.launch.Launcher;
 
 /**
  *
  */
 public class Application {
   public static void main(String[] args) {
-    Launcher.instance.start(args);
+    Launcher.instance.startAll(args);
   }
 }

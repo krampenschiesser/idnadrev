@@ -16,7 +16,7 @@
 
 package javafx.beans;
 
-import de.ks.JFXCDIRunner;
+import de.ks.LauncherRunner;
 import de.ks.javafx.converter.LastValueConverter;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.adapter.JavaBeanIntegerProperty;
@@ -40,7 +40,7 @@ import static org.junit.Assert.*;
 /**
  *
  */
-@RunWith(JFXCDIRunner.class)
+@RunWith(LauncherRunner.class)
 public class PojoBindingTest {
   private static final Logger log = LoggerFactory.getLogger(PojoBindingTest.class);
 

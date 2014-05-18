@@ -17,9 +17,11 @@
 package de.ks.activity;
 
 
-import de.ks.JFXCDIRunner;
+import de.ks.LauncherRunner;
 import de.ks.activity.context.ActivityContext;
 import de.ks.application.Navigator;
+import de.ks.launch.JavaFXService;
+import de.ks.launch.Launcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -29,7 +31,7 @@ import javax.inject.Inject;
 /**
  *
  */
-@RunWith(JFXCDIRunner.class)
+@RunWith(LauncherRunner.class)
 public abstract class AbstractActivityTest {
   protected Navigator navigator;
   @Inject
@@ -38,7 +40,8 @@ public abstract class AbstractActivityTest {
 
   @Before
   public void setUp() throws Exception {
-    navigator = Navigator.registerWithBorderPane(JFXCDIRunner.getStage());
+    JavaFXService service = Launcher.instance.getService(JavaFXService.class);
+    navigator = Navigator.registerWithBorderPane(service.getStage());
 
     activity = new Activity(DummyTestDataSource.class, ActivityHome.class);
     activity.withLink(ActivityHome.class, "showDetails", Navigator.RIGHT_AREA, DetailController.class);

@@ -18,6 +18,11 @@
 
 dependencies {
     compile project(":libs:reflection")
-    compile "org.reflections:reflections:$reflections"
+
+    compile("org.reflections:reflections:$reflections") {
+        exclude module: 'javassist'
+    }
+
+    runtime "org.javassist:javassist:$javassist"
 }
 

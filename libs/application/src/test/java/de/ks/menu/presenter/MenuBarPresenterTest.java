@@ -18,7 +18,7 @@ package de.ks.menu.presenter;
 
 
 import com.google.common.eventbus.Subscribe;
-import de.ks.JFXCDIRunner;
+import de.ks.LauncherRunner;
 import de.ks.eventsystem.bus.EventBus;
 import de.ks.i18n.Localized;
 import de.ks.imagecache.Images;
@@ -45,7 +45,7 @@ import static org.junit.Assert.*;
 /**
  *
  */
-@RunWith(JFXCDIRunner.class)
+@RunWith(LauncherRunner.class)
 public class MenuBarPresenterTest {
   private MenuBarPresenter presenter;
   private MenuItemDescriptor eventItem;

@@ -19,11 +19,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
 
 public abstract class Service {
   private static final Logger log = LoggerFactory.getLogger(Service.class);
   private volatile ServiceRuntimeState state = ServiceRuntimeState.STOPPED;
   private volatile CountDownLatch latch = new CountDownLatch(1);
+  protected ExecutorService executorService;
 
   public Service start() {
     if (state != ServiceRuntimeState.STOPPED) {
@@ -108,11 +110,16 @@ public abstract class Service {
     await();
   }
 
-  public void initialize(String[] args) {
-    //noop
+  public void initialize(ExecutorService executorService, String[] args) {
+    this.executorService = executorService;
   }
 
   protected abstract void doStart();
 
   protected abstract void doStop();
+
+  @Override
+  public String toString() {
+    return getName();
+  }
 }

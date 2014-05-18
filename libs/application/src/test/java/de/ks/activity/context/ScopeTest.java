@@ -17,7 +17,7 @@
 package de.ks.activity.context;
 
 
-import de.ks.JFXCDIRunner;
+import de.ks.LauncherRunner;
 import de.ks.executor.ExecutorService;
 import org.junit.After;
 import org.junit.Ignore;
@@ -31,7 +31,7 @@ import java.util.concurrent.CyclicBarrier;
 
 import static org.junit.Assert.*;
 
-@RunWith(JFXCDIRunner.class)
+@RunWith(LauncherRunner.class)
 public class ScopeTest {
   @Inject
   ActivityScopedBean1 bean1;

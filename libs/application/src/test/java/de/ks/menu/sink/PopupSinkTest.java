@@ -17,9 +17,11 @@
 package de.ks.menu.sink;
 
 
-import de.ks.JFXCDIRunner;
+import de.ks.LauncherRunner;
 import de.ks.eventsystem.bus.EventBus;
 import de.ks.i18n.Localized;
+import de.ks.launch.JavaFXService;
+import de.ks.launch.Launcher;
 import de.ks.menu.MenuItemDescriptor;
 import de.ks.menu.event.MenuItemClickedEvent;
 import de.ks.menu.mainmenu.About;
@@ -40,7 +42,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  *
  */
-@RunWith(JFXCDIRunner.class)
+@RunWith(LauncherRunner.class)
 public class PopupSinkTest {
   private PopupSink sink;
   private Stage stage;
@@ -51,7 +53,7 @@ public class PopupSinkTest {
   public void setUp() throws Exception {
     sink = CDI.current().select(PopupSink.class).get();
     sink.setMenuPath(About.MENUPATH);
-    stage = JFXCDIRunner.JFXTestApp.stage;
+    stage = Launcher.instance.getService(JavaFXService.class).getStage();
     sink.mockWindow(stage);
   }
 

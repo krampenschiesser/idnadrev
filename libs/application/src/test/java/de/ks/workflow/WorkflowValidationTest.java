@@ -18,7 +18,7 @@ package de.ks.workflow;
 
 
 import com.google.common.eventbus.Subscribe;
-import de.ks.JFXCDIRunner;
+import de.ks.LauncherRunner;
 import de.ks.eventsystem.bus.EventBus;
 import de.ks.reflection.PropertyPath;
 import de.ks.workflow.cdi.WorkflowContext;
@@ -38,8 +38,8 @@ import static org.junit.Assert.*;
  *
  *
  */
-@RunWith(JFXCDIRunner.class)
 @Ignore
+@RunWith(LauncherRunner.class)
 public class WorkflowValidationTest {
   private PropertyPath<SimpleWorkflowModel> path;
   private ValidationResultEvent result;

@@ -18,7 +18,7 @@ package de.ks.workflow.step;
 
 
 import com.google.common.eventbus.Subscribe;
-import de.ks.JFXCDIRunner;
+import de.ks.LauncherRunner;
 import de.ks.editor.AbstractEditor;
 import de.ks.editor.StringEditor;
 import de.ks.eventsystem.EventSystem;
@@ -53,7 +53,7 @@ import static org.junit.Assert.*;
  *
  */
 @Ignore
-@RunWith(JFXCDIRunner.class)
+@RunWith(LauncherRunner.class)
 public class EditStepTest {
   @Inject
   TestWorkflow workflow;

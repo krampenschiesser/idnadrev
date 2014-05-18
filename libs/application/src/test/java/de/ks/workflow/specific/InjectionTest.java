@@ -17,7 +17,7 @@
 package de.ks.workflow.specific;
 
 
-import de.ks.JFXCDIRunner;
+import de.ks.LauncherRunner;
 import de.ks.workflow.cdi.TestWorkflow1;
 import de.ks.workflow.cdi.TestWorkflow2;
 import de.ks.workflow.cdi.WorkflowSpecificLiteral;
@@ -30,7 +30,7 @@ import javax.inject.Inject;
 
 import static org.junit.Assert.assertFalse;
 
-@RunWith(JFXCDIRunner.class)
+@RunWith(LauncherRunner.class)
 public class InjectionTest {
 
   @Inject

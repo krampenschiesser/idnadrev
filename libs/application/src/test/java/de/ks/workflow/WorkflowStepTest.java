@@ -17,7 +17,7 @@
 package de.ks.workflow;
 
 
-import de.ks.JFXCDIRunner;
+import de.ks.LauncherRunner;
 import de.ks.workflow.cdi.WorkflowContext;
 import de.ks.workflow.step.DefaultOutput;
 import de.ks.workflow.step.WorkflowStepConfig;
@@ -35,7 +35,7 @@ import static org.junit.Assert.*;
  *
  */
 @Ignore
-@RunWith(JFXCDIRunner.class)
+@RunWith(LauncherRunner.class)
 public class WorkflowStepTest {
 
   private TestWorkflow workflow;

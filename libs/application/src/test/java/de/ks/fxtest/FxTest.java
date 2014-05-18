@@ -17,7 +17,7 @@
 package de.ks.fxtest;
 
 
-import de.ks.JFXCDIRunner;
+import de.ks.LauncherRunner;
 import de.ks.application.fxml.DefaultLoader;
 import javafx.scene.layout.StackPane;
 import org.junit.Test;
@@ -29,7 +29,7 @@ import org.slf4j.profiler.Profiler;
 /**
  *
  */
-@RunWith(JFXCDIRunner.class)
+@RunWith(LauncherRunner.class)
 public class FxTest {
   private static final Logger log = LoggerFactory.getLogger(FxTest.class);
 

@@ -15,12 +15,14 @@
  */
 package de.ks.activity.activitylink;
 
-import de.ks.JFXCDIRunner;
+import de.ks.LauncherRunner;
 import de.ks.activity.Activity;
 import de.ks.activity.ActivityController;
 import de.ks.activity.context.ActivityContext;
 import de.ks.activity.context.ActivityStore;
 import de.ks.application.Navigator;
+import de.ks.launch.JavaFXService;
+import de.ks.launch.Launcher;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -38,7 +40,7 @@ import java.util.concurrent.CountDownLatch;
 
 import static org.junit.Assert.*;
 
-@RunWith(JFXCDIRunner.class)
+@RunWith(LauncherRunner.class)
 public class ActivityLinkTest {
   public static final String STANDARD_HINT = "withStandardHint";
   public static final String RETURN_HINT = "withReturnHint";
@@ -50,7 +52,7 @@ public class ActivityLinkTest {
 
   @Before
   public void setUp() throws Exception {
-    Navigator.registerWithBorderPane(JFXCDIRunner.getStage());
+    Navigator.registerWithBorderPane(Launcher.instance.getService(JavaFXService.class).getStage());
 
     activityA = new Activity(ActivityADS.class, ActivityAController.class);
 

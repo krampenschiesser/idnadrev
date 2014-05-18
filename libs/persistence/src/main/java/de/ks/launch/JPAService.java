@@ -53,7 +53,7 @@ public class JPAService extends Service {
     try {
       InputStream resource = EntityManagerProvider.class.getResourceAsStream(propertyPath);
       if (resource == null) {
-        log.warn("Could not find {}", propertyPath);
+        log.warn("Could not find {} will use default PersistenceUnit={}", propertyPath, PERSISTENCE_UNIT_NAME);
         return;
       }
       properties.load(resource);

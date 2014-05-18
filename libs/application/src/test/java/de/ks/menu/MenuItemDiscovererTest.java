@@ -17,7 +17,7 @@
 package de.ks.menu;
 
 
-import de.ks.JFXCDIRunner;
+import de.ks.LauncherRunner;
 import de.ks.menu.mainmenu.Open;
 import de.ks.menu.mainmenu.Save;
 import org.junit.Test;
@@ -33,7 +33,7 @@ import static org.junit.Assert.assertEquals;
 /**
  *
  */
-@RunWith(JFXCDIRunner.class)
+@RunWith(LauncherRunner.class)
 public class MenuItemDiscovererTest {
   @Test
   public void testDiscoverItems() throws Exception {
