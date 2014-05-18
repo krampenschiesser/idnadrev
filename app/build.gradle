@@ -21,8 +21,7 @@ dependencies {
     compile "$jpa2api"
 
     runtime "org.apache.bval:bval-jsr303:$bval"
-    runtime "commons-logging:commons-logging:$commons_logging"
-
+    //runtime "commons-logging:commons-logging:$commons_logging"
 
     runtime "ch.qos.logback:logback-core:$logback"
     runtime "ch.qos.logback:logback-classic:$logback"

@@ -24,7 +24,7 @@
         <exclude name="com.google.**"/>
     </scan>
 
-    <alternatives>
-        <class>de.ks.executor.MyThreadCallBoundValue</class>
-    </alternatives>
+    <!--<alternatives>-->
+    <!--<class>de.ks.executor.MyThreadCallBoundValue</class>-->
+    <!--</alternatives>-->
 </beans>

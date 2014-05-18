@@ -16,6 +16,11 @@
 
 dependencies {
     compile "org.apache.deltaspike.cdictrl:deltaspike-cdictrl-weld:$deltaspike"
+//    compile "org.apache.deltaspike.cdictrl:deltaspike-cdictrl-owb:$deltaspike"
     compile "junit:junit:$junit"
+
     runtime "org.jboss.weld.se:weld-se:$weld"
+    runtime "org.jboss:jandex:$jandex"
+//    runtime "org.apache.openwebbeans:openwebbeans-impl:$openwebbeans"
+//    runtime "org.apache.openwebbeans:openwebbeans-spi:$openwebbeans"
 }

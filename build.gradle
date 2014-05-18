@@ -45,7 +45,7 @@ allprojects {
         compile "com.google.guava:guava:$guava"
         compile "org.apache.commons:commons-lang3:$lang3"
         compile "javax.validation:validation-api:$javaxValidation"
-        compile "javax.enterprise:cdi-api:1.1"
+        compile "javax.enterprise:cdi-api:$cdiapi"
 
         testCompile "junit:junit:$junit"
         testCompile "org.mockito:mockito-core:$mockito"

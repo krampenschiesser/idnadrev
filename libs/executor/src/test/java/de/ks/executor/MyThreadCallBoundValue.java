@@ -18,9 +18,7 @@ package de.ks.executor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.inject.Alternative;
-
-@Alternative
+//@Alternative
 public class MyThreadCallBoundValue implements ThreadCallBoundValue {
   private static final Logger log = LoggerFactory.getLogger(MyThreadCallBoundValue.class);
   String currentValue = null;

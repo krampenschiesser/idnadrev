@@ -20,7 +20,6 @@ package de.ks.workflow.step;
 import com.google.common.eventbus.Subscribe;
 import de.ks.JFXCDIRunner;
 import de.ks.editor.AbstractEditor;
-import de.ks.editor.EditorFor;
 import de.ks.editor.StringEditor;
 import de.ks.eventsystem.EventSystem;
 import de.ks.eventsystem.bus.EventBus;
@@ -60,9 +59,6 @@ public class EditStepTest {
   TestWorkflow workflow;
   @Inject
   WorkflowNavigator navigator;
-  @Inject
-  @EditorFor(String.class)
-  StringEditor editor;
   @Inject
   EventBus bus;
 

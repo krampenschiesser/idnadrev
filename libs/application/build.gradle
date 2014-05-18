@@ -27,6 +27,11 @@ dependencies {
 
     runtime "org.apache.deltaspike.cdictrl:deltaspike-cdictrl-weld:$deltaspike"
     runtime "org.jboss.weld.se:weld-se:$weld"
+    runtime "org.jboss:jandex:$jandex"
+//    runtime "org.apache.deltaspike.cdictrl:deltaspike-cdictrl-owb:$deltaspike"
+//    runtime "org.apache.openwebbeans:openwebbeans-impl:$openwebbeans"
+//    runtime "org.apache.openwebbeans:openwebbeans-spi:$openwebbeans"
+
 
     testCompile project(":libs:testutil")
     testRuntime "org.apache.bval:bval-jsr303:$bval"

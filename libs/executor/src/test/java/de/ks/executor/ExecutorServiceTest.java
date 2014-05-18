@@ -32,7 +32,7 @@ public class ExecutorServiceTest {
   private static final Logger log = LoggerFactory.getLogger(ExecutorServiceTest.class);
 
   ThreadLocal<String> threadLocal = new ThreadLocal<>();
-  protected String value;
+  protected volatile String value;
 
   @Test
   public void testThreadPropagation() throws Exception {
@@ -40,7 +40,10 @@ public class ExecutorServiceTest {
 
     threadLocal.set("Hello Sauerland!");
     for (int i = 0; i < 50; i++) {
-      Future<?> future = ExecutorService.instance.submit((Runnable) () -> value = threadLocal.get());
+      Future<?> future = ExecutorService.instance.submit((Runnable) () -> {
+        log.info("Receiving {}", threadLocal.get());
+        value = threadLocal.get();
+      });
       future.get();
     }
     assertEquals("Hello Sauerland!", value);
