@@ -119,6 +119,7 @@ public class ActivityLinkTest {
     assertNotNull(finishAction);
 
     finishAction.handle(new ActionEvent());
+    Thread.sleep(300);
     waitForJavaFXThread();
     controller.waitForDataSourceLoading();
 
