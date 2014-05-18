@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
+
+
 dependencies {
-    compile project(":libs:validation")
-    compile project(":libs:launch")
-
-    compile "$jpa2api"
-
-    runtime "org.hibernate:hibernate-core:$hibernate"
-    runtime "org.hibernate:hibernate-entitymanager:$hibernate"
-    runtime "com.h2database:h2:$h2"
-
-    testCompile project(":libs:testutil")
+    compile project(":libs:reflection")
+    compile "org.reflections:reflections:$reflections"
 }
+

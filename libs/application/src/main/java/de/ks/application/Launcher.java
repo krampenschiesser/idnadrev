@@ -17,7 +17,6 @@
 package de.ks.application;
 
 
-import de.ks.persistence.EntityManagerProvider;
 import javafx.application.Application;
 import javafx.application.Platform;
 import org.apache.deltaspike.cdise.api.CdiContainer;
@@ -34,6 +33,7 @@ import java.util.concurrent.TimeUnit;
  *
  */
 public class Launcher {
+
   private static final Logger log = LoggerFactory.getLogger(Launcher.class);
   public static final Launcher instance = new Launcher();
 
@@ -61,7 +61,7 @@ public class Launcher {
       }
     });
     executor.execute(() -> {
-      EntityManagerProvider.getEntityManagerFactory();
+      //EntityManagerProvider.getEntityManagerFactory();
       latch.countDown();
     });
 

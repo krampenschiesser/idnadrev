@@ -17,7 +17,7 @@
 package de.ks.beagle.entity;
 
 
-import de.ks.CDIRunner;
+import de.ks.LauncherRunner;
 import de.ks.persistence.PersistentWork;
 import de.ks.persistence.entity.AbstractPersistentObject;
 import org.junit.Before;
@@ -35,7 +35,7 @@ import static org.junit.Assert.*;
 /**
  *
  */
-@RunWith(CDIRunner.class)
+@RunWith(LauncherRunner.class)
 public class TaskTest {
 
   @Before

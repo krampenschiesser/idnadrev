@@ -17,7 +17,7 @@
 package de.ks.executor;
 
 
-import de.ks.CDIRunner;
+import de.ks.LauncherRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -27,7 +27,7 @@ import java.util.concurrent.Future;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(CDIRunner.class)
+@RunWith(LauncherRunner.class)
 public class ExecutorServiceTest {
   private static final Logger log = LoggerFactory.getLogger(ExecutorServiceTest.class);
 

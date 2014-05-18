@@ -17,7 +17,7 @@
 package de.ks.i18n;
 
 import com.google.common.eventbus.Subscribe;
-import de.ks.CDIRunner;
+import de.ks.LauncherRunner;
 import de.ks.eventsystem.bus.EventBus;
 import de.ks.i18n.event.LanguageChangedEvent;
 import org.junit.Before;
@@ -35,7 +35,7 @@ import static org.junit.Assert.assertNotNull;
  * Krampenschiesser@freenet.de
  * All rights reserved by now, license may come later.
  */
-@RunWith(CDIRunner.class)
+@RunWith(LauncherRunner.class)
 public class LocalizedTest {
   private LanguageChangedEvent event;
 

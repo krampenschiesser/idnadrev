@@ -15,6 +15,7 @@
  */
 
 dependencies {
+    compile project(":libs:launch")
     compile "org.apache.deltaspike.cdictrl:deltaspike-cdictrl-weld:$deltaspike"
 //    compile "org.apache.deltaspike.cdictrl:deltaspike-cdictrl-owb:$deltaspike"
     compile "junit:junit:$junit"

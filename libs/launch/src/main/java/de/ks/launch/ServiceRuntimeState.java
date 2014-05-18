@@ -13,16 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package de.ks.launch;
 
-dependencies {
-    compile project(":libs:validation")
-    compile project(":libs:launch")
-
-    compile "$jpa2api"
-
-    runtime "org.hibernate:hibernate-core:$hibernate"
-    runtime "org.hibernate:hibernate-entitymanager:$hibernate"
-    runtime "com.h2database:h2:$h2"
-
-    testCompile project(":libs:testutil")
+public enum ServiceRuntimeState {
+  STARTING, RUNNING, STOPPING, STOPPED;
 }

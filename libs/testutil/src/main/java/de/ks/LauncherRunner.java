@@ -15,8 +15,7 @@
  */
 package de.ks;
 
-import org.apache.deltaspike.cdise.api.CdiContainer;
-import org.apache.deltaspike.cdise.api.CdiContainerLoader;
+import de.ks.launch.Launcher;
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunListener;
 import org.junit.runner.notification.RunNotifier;
@@ -27,31 +26,20 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.CDI;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
-public class CDIRunner extends BlockJUnit4ClassRunner {
-  private static final Logger log = LoggerFactory.getLogger(CDIRunner.class);
+public class LauncherRunner extends BlockJUnit4ClassRunner {
+  private static final Logger log = LoggerFactory.getLogger(LauncherRunner.class);
 
-  protected static final ExecutorService executor = Executors.newCachedThreadPool(r -> {
-    Thread t = new Thread(r);
-    t.setDaemon(true);
-    return t;
-  });
-  private static final CountDownLatch barrier = new CountDownLatch(1);
-  private static final CdiContainer cdiContainer = CdiContainerLoader.getCdiContainer();
-
-  public CDIRunner(Class<?> klass) throws InitializationError {
+  public LauncherRunner(Class<?> klass) throws InitializationError {
     super(klass);
   }
 
   @Override
   public void run(RunNotifier notifier) {
-    if (barrier.getCount() > 0) {
-      start();
-      await();
+    Launcher launcher = Launcher.instance;
+    if (!launcher.isStarted()) {
+      launcher.startAll();
+      launcher.awaitStart();
     }
     notifier.addListener(new RunListener() {
       @Override
@@ -71,29 +59,5 @@ public class CDIRunner extends BlockJUnit4ClassRunner {
     } else {
       return select.get();
     }
-  }
-
-  protected void start() {
-    executor.execute(() -> {
-      try {
-        cdiContainer.boot();
-      } finally {
-        barrier.countDown();
-      }
-    });
-  }
-
-  protected void await() {
-    try {
-      if (!barrier.await(5, TimeUnit.SECONDS)) {
-        stop();
-      }
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  protected void stop() {
-    cdiContainer.shutdown();
   }
 }

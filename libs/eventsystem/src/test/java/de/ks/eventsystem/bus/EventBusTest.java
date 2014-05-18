@@ -17,7 +17,7 @@
 package de.ks.eventsystem.bus;
 
 
-import de.ks.CDIRunner;
+import de.ks.LauncherRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,7 +30,7 @@ import static org.junit.Assert.*;
 /**
  *
  */
-@RunWith(CDIRunner.class)
+@RunWith(LauncherRunner.class)
 public class EventBusTest {
   private EventBus eventBus;
 

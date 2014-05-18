@@ -1,5 +1,5 @@
-/*
- * Copyright [2014] [Christian Loehnert, krampenschiesser@freenet.de]
+/**
+ * Copyright [2014] [Christian Loehnert]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.dummy.other;
 
-dependencies {
-    compile project(":libs:validation")
-    compile project(":libs:launch")
+import de.ks.launch.TestService;
 
-    compile "$jpa2api"
+public class ServiceB extends TestService {
 
-    runtime "org.hibernate:hibernate-core:$hibernate"
-    runtime "org.hibernate:hibernate-entitymanager:$hibernate"
-    runtime "com.h2database:h2:$h2"
-
-    testCompile project(":libs:testutil")
+  @Override
+  public int getPriority() {
+    return 2;
+  }
 }

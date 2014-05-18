@@ -13,16 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package de.ks.launch;
 
-dependencies {
-    compile project(":libs:validation")
-    compile project(":libs:launch")
+import org.apache.deltaspike.cdise.api.CdiContainer;
+import org.apache.deltaspike.cdise.api.CdiContainerLoader;
 
-    compile "$jpa2api"
+public class CDIService extends Service {
+  private final CdiContainer cdiContainer = CdiContainerLoader.getCdiContainer();
 
-    runtime "org.hibernate:hibernate-core:$hibernate"
-    runtime "org.hibernate:hibernate-entitymanager:$hibernate"
-    runtime "com.h2database:h2:$h2"
+  @Override
+  protected void doStart() {
+    cdiContainer.boot();
+  }
 
-    testCompile project(":libs:testutil")
+  @Override
+  protected void doStop() {
+    cdiContainer.shutdown();
+  }
 }

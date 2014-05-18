@@ -17,7 +17,7 @@
 package de.ks.beagle.entity;
 
 import com.google.common.io.Files;
-import de.ks.CDIRunner;
+import de.ks.LauncherRunner;
 import de.ks.persistence.PersistentWork;
 import de.ks.persistence.entity.AbstractPersistentObject;
 import de.ks.persistence.entity.NamedPersistentObject;
@@ -38,7 +38,7 @@ import static org.junit.Assert.*;
 /**
  *
  */
-@RunWith(CDIRunner.class)
+@RunWith(LauncherRunner.class)
 public class PersistEntitiesTest {
   private List<Class<? extends AbstractPersistentObject<?>>> allEntityClasses = Arrays.asList(Category.class, Context.class, NoteFile.class, Note.class, Tag.class, Thought.class, WorkUnit.class, Task.class, WorkType.class);
 

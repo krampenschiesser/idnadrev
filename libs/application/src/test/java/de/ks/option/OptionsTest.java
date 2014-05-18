@@ -15,7 +15,7 @@
  */
 package de.ks.option;
 
-import de.ks.CDIRunner;
+import de.ks.LauncherRunner;
 import de.ks.persistence.PersistentWork;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +28,7 @@ import javax.persistence.criteria.Root;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(CDIRunner.class)
+@RunWith(LauncherRunner.class)
 public class OptionsTest {
   private static final Logger log = LoggerFactory.getLogger(OptionsTest.class);
 

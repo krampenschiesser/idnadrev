@@ -92,6 +92,7 @@ public class WorkflowContext implements Context {
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public <T> T get(Contextual<T> contextual, CreationalContext<T> creationalContext) {
     if (contextual instanceof Bean) {
       Bean bean = (Bean) contextual;

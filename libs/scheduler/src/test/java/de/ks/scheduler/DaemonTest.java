@@ -17,7 +17,7 @@
 package de.ks.scheduler;
 
 import com.google.common.eventbus.Subscribe;
-import de.ks.CDIRunner;
+import de.ks.LauncherRunner;
 import de.ks.eventsystem.bus.EventBus;
 import de.ks.scheduler.event.ScheduleTriggeredEvent;
 import org.junit.After;
@@ -31,7 +31,7 @@ import java.time.LocalDateTime;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(CDIRunner.class)
+@RunWith(LauncherRunner.class)
 public class DaemonTest {
   private Daemon daemon;
   private Object userData;
