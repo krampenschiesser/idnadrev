@@ -29,6 +29,7 @@ import javafx.scene.control.Labeled;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextInputControl;
+import javafx.scene.web.HTMLEditor;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import javafx.util.converter.*;
@@ -195,7 +196,8 @@ public class Binding {
       Labeled labeled = ((Labeled) node);
       StringProperty stringProperty = labeled.textProperty();
       bindStringProperty(property, fieldType, stringProperty);
-
+    } else if (node instanceof HTMLEditor) {
+      throw new IllegalStateException("Cannot bind HTMLEditor as it has no text property");
     }
   }
 
