@@ -15,60 +15,79 @@
  */
 package de.ks.beagle.thought.collect;
 
+import de.ks.FXPlatform;
 import de.ks.LauncherRunner;
-import de.ks.application.Navigator;
-import javafx.application.Platform;
-import javafx.collections.ObservableList;
-import javafx.scene.Node;
-import javafx.scene.Parent;
+import de.ks.activity.ActivityController;
+import de.ks.launch.JavaFXService;
+import de.ks.launch.Launcher;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.DataFormat;
+import javafx.stage.Stage;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Stack;
-import java.util.concurrent.CountDownLatch;
+import javax.inject.Inject;
+import java.util.HashMap;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
 public class CollectThoughtTest {
   private static final Logger log = LoggerFactory.getLogger(CollectThoughtTest.class);
   private Scene scene;
+  @Inject
+  ActivityController controller;
+  private AddThought addThought;
 
   @Before
   public void setUp() throws Exception {
-    CountDownLatch latch1 = new CountDownLatch(1);
-    Platform.runLater(() -> latch1.countDown());
-    latch1.await();
-    Navigator currentNavigator = Navigator.getCurrentNavigator();
-    assertNotNull(currentNavigator);
-    Pane content = currentNavigator.getMainArea().getContent();
-    scene = content.getScene();
+    JavaFXService service = Launcher.instance.getService(JavaFXService.class);
+    Stage stage = service.getStage();
+    scene = stage.getScene();
+    ThoughtActivity activity = controller.start(ThoughtActivity.class);
+    controller.waitForDataSourceLoading();
 
-    CountDownLatch latch2 = new CountDownLatch(1);
-    Platform.runLater(() -> {
-      scene.getWindow().hide();
-      latch2.countDown();
-    });
-    latch2.await();
+    addThought = activity.getCurrentController();
+  }
+
+
+  @After
+  public void tearDown() throws Exception {
+    controller.stop(ThoughtActivity.class);
   }
 
   @Test
-  public void testSaveThought() throws Exception {
-    Parent root = scene.getRoot();
-    Stack<Node> nodes = new Stack<>();
-    root.getChildrenUnmodifiable().forEach(node -> nodes.add(node));
-    while (!nodes.isEmpty()) {
-      Node node = nodes.pop();
-      if (node instanceof Parent) {
-        ObservableList<Node> children = ((Parent) node).getChildrenUnmodifiable();
-        nodes.addAll(children);
-      }
-      log.info("{}  -> {}", node.getClass().getSimpleName(), node);
-    }
+  public void testClipboard2LineString() throws Exception {
+    String clipboardText = "title\ndescription";
+    copy2Clipboard(clipboardText);
+
+    assertEquals(clipboardText, addThought.description.getText());
+    assertEquals("title", addThought.name.getText());
+    assertTrue(addThought.name.isFocused());
+  }
+
+  @Test
+  public void testClipboardSingleLineString() throws Exception {
+    String clipboardText = "description";
+    copy2Clipboard(clipboardText);
+
+    assertEquals(clipboardText, addThought.description.getText());
+    assertNull(addThought.name.getText());
+    assertTrue(addThought.name.isFocused());
+  }
+
+  private void copy2Clipboard(String clipboardText) {
+    FXPlatform.invokeLater(() -> {
+      Clipboard clipboard = Clipboard.getSystemClipboard();
+      HashMap<DataFormat, Object> content = new HashMap<>();
+      content.put(DataFormat.PLAIN_TEXT, clipboardText);
+      clipboard.setContent(content);
+      addThought.processClipboard(clipboard);
+    });
   }
 }
