@@ -21,9 +21,13 @@ import de.ks.editor.Detailed;
 import de.ks.option.Options;
 import de.ks.persistence.entity.NamedPersistentObject;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Christian Loehnert
@@ -31,13 +35,16 @@ import java.time.LocalDate;
  * All rights reserved by now, license may come later.
  */
 @Entity
-public class Thought extends NamedPersistentObject<Thought> {
+public class Thought extends NamedPersistentObject<Thought> implements FileContainer {
   private static final long serialVersionUID = 1L;
 
   @Column(length = 4096)
   @Detailed
   protected String description;
   protected LocalDate postponedDate;
+
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "thought")
+  protected Set<File> files = new HashSet<>();
 
   public Thought() {
   }
@@ -61,6 +68,16 @@ public class Thought extends NamedPersistentObject<Thought> {
     } else {
       return description;
     }
+  }
+
+
+  public Set<File> getFiles() {
+    return files;
+  }
+
+  public void addFile(File file) {
+    this.files.add(file);
+    file.setThought(this);
   }
 
   public void postPone() {

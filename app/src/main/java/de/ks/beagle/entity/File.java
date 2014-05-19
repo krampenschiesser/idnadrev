@@ -22,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
-import java.io.File;
 import java.io.IOException;
 
 /**
@@ -32,22 +31,32 @@ import java.io.IOException;
  */
 
 @Entity
-public class NoteFile extends NamedPersistentObject<NoteFile> {
-  private static final Logger log = LoggerFactory.getLogger(NoteFile.class);
+public class File extends NamedPersistentObject<File> {
+  private static final Logger log = LoggerFactory.getLogger(File.class);
   private static final long serialVersionUID = 1L;
 
   @ManyToOne
   protected Note note;
+  @ManyToOne
+  protected Thought thought;
 
   @Lob
   @Basic(fetch = FetchType.LAZY)
   protected byte[] data;
 
-  public NoteFile() {
+  public File() {
     //
   }
 
-  public NoteFile(String name) {
+  public Thought getThought() {
+    return thought;
+  }
+
+  public void setThought(Thought thought) {
+    this.thought = thought;
+  }
+
+  public File(String name) {
     super(name);
   }
 
@@ -63,15 +72,15 @@ public class NoteFile extends NamedPersistentObject<NoteFile> {
     return data;
   }
 
-  public NoteFile setData(byte[] data) {
+  public File setData(byte[] data) {
     this.data = data;
     return this;
   }
 
-  public static NoteFile fromFile(File file) throws IOException {
+  public static File fromFile(java.io.File file) throws IOException {
     try {
       byte[] data = Files.toByteArray(file);
-      NoteFile noteFile = new NoteFile(file.getName()).setData(data);
+      File noteFile = new File(file.getName()).setData(data);
       return noteFile;
     } catch (IllegalArgumentException e) {
       log.error("File {0} is too big");

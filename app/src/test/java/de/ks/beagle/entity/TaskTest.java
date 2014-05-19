@@ -24,7 +24,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.io.File;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -43,7 +42,7 @@ public class TaskTest {
     PersistentWork.run((em) -> em.createNativeQuery("delete from " + Note.NOTE_TAG_JOINTABLE).executeUpdate());
 
     List<Class<? extends AbstractPersistentObject<?>>> entitiesToDelete = Arrays.asList(//
-            Tag.class, WorkUnit.class, NoteFile.class, Note.class, Task.class, Context.class);
+            Tag.class, WorkUnit.class, File.class, Note.class, Task.class, Context.class);
     for (Class<? extends AbstractPersistentObject<?>> clazz : entitiesToDelete) {
       PersistentWork.deleteAllOf(clazz);
     }
@@ -84,7 +83,7 @@ public class TaskTest {
     final String tagName = "bla";
 
     Note note = new Note("a note");
-    note.addFile(new File(getClass().getResource(fileName).toURI()));
+    note.addFile(new java.io.File(getClass().getResource(fileName).toURI()));
     Task task = new Task("test");
     task.addNote(note);
     Tag tag = new Tag(tagName);
@@ -109,7 +108,7 @@ public class TaskTest {
     PersistentWork.run((em) -> {
       Tag readTag = em.find(Tag.class, tag.getId());
       assertNotNull(readTag);
-      NoteFile readFile = em.find(NoteFile.class, note.getFiles().iterator().next().getId());
+      File readFile = em.find(File.class, note.getFiles().iterator().next().getId());
       assertNull(readFile);
     });
     PersistentWork.run((em) -> {

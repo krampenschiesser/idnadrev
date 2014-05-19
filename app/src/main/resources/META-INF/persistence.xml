@@ -29,7 +29,7 @@
         <class>de.ks.beagle.entity.Category</class>
         <class>de.ks.beagle.entity.Context</class>
         <class>de.ks.beagle.entity.Note</class>
-        <class>de.ks.beagle.entity.NoteFile</class>
+        <class>de.ks.beagle.entity.File</class>
         <class>de.ks.beagle.entity.Tag</class>
         <class>de.ks.beagle.entity.Task</class>
         <class>de.ks.beagle.entity.Thought</class>

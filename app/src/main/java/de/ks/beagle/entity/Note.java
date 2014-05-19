@@ -19,8 +19,6 @@ package de.ks.beagle.entity;
 import de.ks.persistence.entity.NamedPersistentObject;
 
 import javax.persistence.*;
-import java.io.File;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,7 +28,7 @@ import java.util.Set;
  * All rights reserved by now, license may come later.
  */
 @Entity
-public class Note extends NamedPersistentObject<Note> {
+public class Note extends NamedPersistentObject<Note> implements FileContainer {
   public static final String NOTE_TAG_JOINTABLE = "note_tag";
 
   private static final long serialVersionUID = 1L;
@@ -43,7 +41,7 @@ public class Note extends NamedPersistentObject<Note> {
   protected Task task;
 
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "note")
-  protected Set<NoteFile> files = new HashSet<>();
+  protected Set<File> files = new HashSet<>();
 
   @ManyToMany(cascade = CascadeType.PERSIST)
   @JoinTable(name = NOTE_TAG_JOINTABLE)
@@ -68,23 +66,6 @@ public class Note extends NamedPersistentObject<Note> {
     this.content = content;
   }
 
-  public Set<NoteFile> getFiles() {
-    return files;
-  }
-
-  public void addNoteFile(NoteFile file) {
-    this.files.add(file);
-    file.setNote(this);
-  }
-
-  public void addFile(String fileName) throws IOException {
-    addFile(new File(fileName));
-  }
-
-  public void addFile(File file) throws IOException {
-    NoteFile noteFile = NoteFile.fromFile(file);
-    addNoteFile(noteFile);
-  }
 
   public Task getTask() {
     return task;
@@ -110,4 +91,14 @@ public class Note extends NamedPersistentObject<Note> {
   public void setCategory(Category category) {
     this.category = category;
   }
+
+  public Set<File> getFiles() {
+    return files;
+  }
+
+  public void addFile(File file) {
+    this.files.add(file);
+    file.setNote(this);
+  }
+
 }
