@@ -28,7 +28,7 @@ public abstract class NamedPersistentObject<T extends NamedPersistentObject<T>> 
   private static final long serialVersionUID = 1L;
   @NotNull
   @NotEmpty
-  @Column(nullable = false, unique = true)
+  @Column(nullable = false, unique = true, length = 4096)
   protected String name;
 
   protected NamedPersistentObject() {
