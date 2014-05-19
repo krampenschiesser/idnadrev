@@ -38,7 +38,7 @@ import java.util.Set;
 public class Thought extends NamedPersistentObject<Thought> implements FileContainer {
   private static final long serialVersionUID = 1L;
 
-  @Column(length = 4096)
+  @Column(length = Integer.MAX_VALUE)
   @Detailed
   protected String description;
   protected LocalDate postponedDate;
