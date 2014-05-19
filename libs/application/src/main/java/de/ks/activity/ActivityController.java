@@ -206,6 +206,10 @@ public class ActivityController {
     return activities.getLast();
   }
 
+  public void stop(Class<? extends Activity> activity) {
+    stop(activity.getName());
+  }
+
   public void stop(Activity activity) {
     lock.lock();
     try {

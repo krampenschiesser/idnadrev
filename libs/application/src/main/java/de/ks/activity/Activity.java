@@ -168,6 +168,11 @@ public class Activity {//TODO extract ativityConfig containing all the with* met
   }
 
   @SuppressWarnings("unchecked")
+  public <T> T getCurrentController() {
+    return getController((Class<T>) getCurrentControllerClass());
+  }
+
+  @SuppressWarnings("unchecked")
   public <V> V getView(Class<?> controllerClass) {
     return (V) preloads.get(controllerClass).getView();
   }
@@ -180,13 +185,13 @@ public class Activity {//TODO extract ativityConfig containing all the with* met
     this.currentController = currentController;
   }
 
-  public Class<?> getCurrentController() {
+  public Class<?> getCurrentControllerClass() {
     return currentController;
   }
 
   @SuppressWarnings("unchecked")
   public <N extends Node> N getCurrentNode() {
-    return (N) preloads.get(getCurrentController()).getView();
+    return (N) preloads.get(getCurrentControllerClass()).getView();
   }
 
   public void setReturnConverter(Function returnConverter) {
