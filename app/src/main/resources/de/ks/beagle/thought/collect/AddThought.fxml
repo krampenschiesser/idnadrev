@@ -19,7 +19,8 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<GridPane hgap="5.0" prefHeight="400.0" prefWidth="600.0" vgap="5.0" xmlns="http://javafx.com/javafx/8"
+<GridPane fx:id="root" hgap="5.0" onDragDropped="#onDragDrop" onDragOver="#onDragOver" onMouseEntered="#onMouseEntered"
+          prefHeight="400.0" prefWidth="600.0" vgap="5.0" xmlns="http://javafx.com/javafx/8"
           xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.beagle.thought.collect.AddThought">
     <children>
         <Label text="%thought.name" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
