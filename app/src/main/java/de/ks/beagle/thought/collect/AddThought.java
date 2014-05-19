@@ -21,6 +21,7 @@ import de.ks.activity.ModelBound;
 import de.ks.beagle.entity.Thought;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.Clipboard;
@@ -47,13 +48,13 @@ public class AddThought implements Initializable {
   protected TextArea description;
   @FXML
   protected TextField name;
-
+  @FXML
+  protected Button save;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
 
   }
-
 
   @FXML
   void onMouseEntered(MouseEvent event) {
