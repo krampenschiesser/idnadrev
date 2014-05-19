@@ -18,8 +18,11 @@ package de.ks.beagle.thought.collect;
 import de.ks.FXPlatform;
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityController;
+import de.ks.beagle.entity.Thought;
 import de.ks.launch.JavaFXService;
 import de.ks.launch.Launcher;
+import de.ks.persistence.PersistentWork;
+import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
@@ -33,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.HashMap;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -42,6 +46,7 @@ public class CollectThoughtTest {
   private Scene scene;
   @Inject
   ActivityController controller;
+
   private AddThought addThought;
 
   @Before
@@ -89,5 +94,25 @@ public class CollectThoughtTest {
       clipboard.setContent(content);
       addThought.processClipboard(clipboard);
     });
+  }
+
+  @Test
+  public void testSaveThought() throws Exception {
+    FXPlatform.invokeLater(() -> {
+      addThought.name.setText("name");
+      addThought.description.setText("description");
+
+      addThought.save.getOnAction().handle(new ActionEvent());
+    });
+
+    List<Thought> thoughts = PersistentWork.from(Thought.class);
+    assertEquals(1, thoughts.size());
+
+    Thought thought = thoughts.get(0);
+    assertEquals("name", thought.getName());
+    assertEquals("description", thought.getDescription());
+
+    assertNull(addThought.description.getText());
+    assertNull(addThought.name.getText());
   }
 }
