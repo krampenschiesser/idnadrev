@@ -20,6 +20,8 @@ package de.ks.reflection;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -114,5 +116,15 @@ public class PathTest {
 
     path.build().getContext().setName("dummy");
     path.walk(task);
+  }
+
+  @Test
+  public void testMethodName() throws Exception {
+    assertEquals("getName", PropertyPath.methodName(File.class, (f) -> f.getName()));
+  }
+
+  @Test
+  public void testPropertyName() throws Exception {
+    assertEquals("name", PropertyPath.property(File.class, (f) -> f.getName()));
   }
 }

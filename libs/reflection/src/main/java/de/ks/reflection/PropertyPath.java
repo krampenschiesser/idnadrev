@@ -16,9 +16,10 @@
 
 package de.ks.reflection;
 
-import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
+import javassist.util.proxy.MethodHandler;
+import javassist.util.proxy.Proxy;
+import javassist.util.proxy.ProxyFactory;
+import org.objenesis.ObjenesisStd;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,10 +32,37 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class PropertyPath<T> {
-  public static <T> String keyOf(Class<T> clazz, Consumer<T> consumer) {
+  private static final ObjenesisStd objenesis = new ObjenesisStd();
+
+  public static <T> String methodName(Class<T> clazz, Consumer<T> consumer) {
     PropertyPath<T> path = new PropertyPath<>(clazz);
     consumer.accept(path.build());
-    return path.getPropertyPath();
+    return path.getLastMethodName();
+  }
+
+  public static <T> String property(Class<T> clazz, Consumer<T> consumer) {
+    PropertyPath<T> path = new PropertyPath<>(clazz);
+    consumer.accept(path.build());
+    if (path.getPropertyPath().isEmpty()) {
+      String methodName = path.getLastMethodName();
+      if (methodName.startsWith("get")) {
+        return toFirstLowerCase(methodName, 3);
+      } else if (methodName.startsWith("is")) {
+        return toFirstLowerCase(methodName, 2);
+      }
+      throw new IllegalArgumentException("Could not find property for " + path);
+    } else {
+      return path.getPropertyPath();
+    }
+  }
+
+  public static String toFirstLowerCase(String methodName, int start) {
+    String substring = methodName.substring(start);
+    if (substring.length() == 1) {
+      return substring.toLowerCase();
+    } else {
+      return substring.substring(0, 1).toLowerCase() + substring.substring(1);
+    }
   }
 
   public static <T> PropertyPath<T> of(Class<T> clazz) {
@@ -74,10 +102,15 @@ public class PropertyPath<T> {
     if (Modifier.isFinal(clazz.getModifiers())) {
       return null;
     }
-    return Enhancer.create(clazz, new MethodInterceptor() {
+    ProxyFactory factory = new ProxyFactory();
+    factory.setSuperclass(clazz);
+    Class proxy = factory.createClass();
+
+    Object retval = objenesis.newInstance(proxy);
+    ((Proxy) retval).setHandler(new MethodHandler() {
       @Override
-      public Object intercept(Object arg0, Method arg1, Object[] arg2, MethodProxy arg3) throws Throwable {
-        String methodName = arg1.getName();
+      public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws Throwable {
+        String methodName = thisMethod.getName();
         switch (methodName) {
           case "finalize":
             return null;
@@ -87,28 +120,30 @@ public class PropertyPath<T> {
             break;
         }
         stringPath.add(methodName);
-        methodPath.add(arg1);
+        methodPath.add(thisMethod);
 
-        setter = isSetter(arg1);
-        getter = isGetter(arg1);
-        parameterTypes = arg1.getParameterTypes();
-        returnType = arg1.getReturnType();
+        setter = isSetter(thisMethod);
+        getter = isGetter(thisMethod);
+        parameterTypes = thisMethod.getParameterTypes();
+        returnType = thisMethod.getReturnType();
 
-        field = discoverField(arg1);
+        field = discoverField(thisMethod);
         if (field != null) {
           fieldPath.add(field.getName());
         }
 
-        Class<?> returnType = arg1.getReturnType();
+        Class<?> returnType = thisMethod.getReturnType();
         if (returnType.equals(Void.TYPE)) {
           return null;
         } else if (isSetter()) {
           return null;
         } else {
-          return callBack(arg1.getReturnType());
+          return callBack(thisMethod.getReturnType());
         }
       }
     });
+
+    return retval;
   }
 
   public static Logger getLog() {
@@ -266,7 +301,11 @@ public class PropertyPath<T> {
       builder.append(fieldName).append(".");
     }
     String path = builder.toString();
-    return path.substring(0, path.length() - 1);
+    if (path.isEmpty()) {
+      return path;
+    } else {
+      return path.substring(0, path.length() - 1);
+    }
   }
 
   public Method getLastMethod() {

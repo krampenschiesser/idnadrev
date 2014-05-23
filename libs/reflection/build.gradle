@@ -16,9 +16,7 @@
 
 dependencies {
     compile project(":libs:util")
-    compile "cglib:cglib:$cglib"
-    compile "org.objenesis:objenesis:$objenesis"
 
-    runtime "org.ow2.asm:asm:$asm"
-    runtime "org.ow2.asm:asm-util:$asm"
+    compile "org.javassist:javassist:$javassist"
+    compile "org.objenesis:objenesis:$objenesis"
 }
