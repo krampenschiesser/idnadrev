@@ -48,7 +48,9 @@ allprojects {
         compile "javax.enterprise:cdi-api:$cdiapi"
 
         testCompile "junit:junit:$junit"
-        testCompile "org.mockito:mockito-core:$mockito"
+        testCompile("org.mockito:mockito-core:$mockito") {
+            exclude module: "objenesis"
+        }
         testRuntime "ch.qos.logback:logback-core:$logback"
         testRuntime "ch.qos.logback:logback-classic:$logback"
     }
