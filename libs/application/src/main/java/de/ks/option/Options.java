@@ -16,38 +16,52 @@
 package de.ks.option;
 
 import com.google.common.primitives.Primitives;
-import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.MethodInterceptor;
+import javassist.util.proxy.Proxy;
+import javassist.util.proxy.ProxyFactory;
+import org.objenesis.ObjenesisStd;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.spi.CDI;
 
 public class Options {
+  private static final ObjenesisStd objenesis = new ObjenesisStd();
   private static final Logger log = LoggerFactory.getLogger(Options.class);
 
   @SuppressWarnings("unchecked")
   public static <T> T get(Class<T> optionClass) {
     T options = (T) CDI.current().select(optionClass).get();
-    return (T) Enhancer.create(optionClass, (MethodInterceptor) (o, method, parameters, proxy) -> {
+
+    ProxyFactory factory = new ProxyFactory();
+    factory.setSuperclass(optionClass);
+    Class proxy = factory.createClass();
+
+    Object retval = objenesis.newInstance(proxy);
+    ((Proxy) retval).setHandler((self, thisMethod, proceed, args) -> {
       OptionSource optionSource = CDI.current().select(OptionSource.class).get();
-      String key = method.getDeclaringClass().getName() + "." + method.getName();
+      String key = thisMethod.getDeclaringClass().getName() + "." + thisMethod.getName();
       Object value = optionSource.readOption(key);
       if (value != null) {
         log.debug("Found value for option '{}'. Value={}", key, value);
         return value;
       } else {
-        return method.invoke(options, parameters);
+        return thisMethod.invoke(options, args);
       }
     });
+    return (T) retval;
   }
 
   @SuppressWarnings("unchecked")
   public static <T> T store(Object value, Class<T> optionsDefiningClass) {
-    return (T) Enhancer.create(optionsDefiningClass, (MethodInterceptor) (o, method, parameters, proxy) -> {
+    ProxyFactory factory = new ProxyFactory();
+    factory.setSuperclass(optionsDefiningClass);
+    Class proxy = factory.createClass();
+
+    Object retval = objenesis.newInstance(proxy);
+    ((Proxy) retval).setHandler((self, thisMethod, proceed, args) -> {
       OptionSource optionSource = CDI.current().select(OptionSource.class).get();
-      String key = method.getDeclaringClass().getName() + "." + method.getName();
-      Class<?> retvalType = Primitives.unwrap(method.getReturnType());
+      String key = thisMethod.getDeclaringClass().getName() + "." + thisMethod.getName();
+      Class<?> retvalType = Primitives.unwrap(thisMethod.getReturnType());
       Class<?> argType = Primitives.unwrap(value.getClass());
       if (retvalType.isAssignableFrom(argType)) {
         optionSource.saveOption(key, value);
@@ -55,7 +69,8 @@ public class Options {
       } else {
         throw new IllegalArgumentException("Trying to save option with wrong type. Expected='" + retvalType + "', actual='" + argType + "'");
       }
-      return null;
+      return value;
     });
+    return (T) retval;
   }
 }
