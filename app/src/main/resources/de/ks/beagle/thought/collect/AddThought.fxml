@@ -39,7 +39,7 @@
         <Label text="%thought.files" GridPane.rowIndex="3"/>
         <StackPane GridPane.columnIndex="1" GridPane.rowIndex="3">
             <children>
-                <fx:include source="file/ThoughtFileView.fxml"/>
+                <fx:include fx:id="fileView" source="file/ThoughtFileView.fxml"/>
             </children>
         </StackPane>
 

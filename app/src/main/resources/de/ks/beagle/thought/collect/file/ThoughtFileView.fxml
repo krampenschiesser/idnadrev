@@ -5,7 +5,8 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <GridPane hgap="5.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity"
-          minWidth="-Infinity" vgap="5.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+          minWidth="-Infinity" vgap="5.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="de.ks.beagle.thought.collect.file.FileThoughtViewController">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
@@ -19,8 +20,9 @@
         <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
     </rowConstraints>
     <children>
-        <ListView prefHeight="250.0" GridPane.rowSpan="2147483647"/>
-        <Label text="%file.selection.nofileselected" GridPane.columnIndex="1" GridPane.columnSpan="2147483647"/>
+        <ListView fx:id="fileList" prefHeight="250.0" GridPane.rowSpan="2147483647"/>
+        <Label fx:id="fileNameLabel" text="%file.selection.nofileselected" GridPane.columnIndex="1"
+               GridPane.columnSpan="2147483647"/>
         <ImageView fitHeight="200.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1"
                    GridPane.columnSpan="2147483647" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS"
                    GridPane.rowIndex="1" GridPane.valignment="TOP" GridPane.vgrow="ALWAYS">
@@ -28,15 +30,15 @@
                 <DropShadow/>
             </effect>
         </ImageView>
-        <Button mnemonicParsing="false" prefWidth="100.0" text="%preview" GridPane.columnIndex="1"
+        <Button mnemonicParsing="false" onAction="#preview" prefWidth="100.0" text="%preview" GridPane.columnIndex="1"
                 GridPane.halignment="CENTER" GridPane.rowIndex="2"/>
-        <Button mnemonicParsing="false" prefWidth="100.0" text="%edit" GridPane.columnIndex="2"
+        <Button mnemonicParsing="false" onAction="#edit" prefWidth="100.0" text="%edit" GridPane.columnIndex="2"
                 GridPane.halignment="CENTER" GridPane.rowIndex="2"/>
-        <Button mnemonicParsing="false" prefWidth="100.0" text="%open.folder" GridPane.columnIndex="3"
-                GridPane.halignment="CENTER" GridPane.rowIndex="2"/>
-        <Button mnemonicParsing="false" prefWidth="100.0" text="%remove" GridPane.columnIndex="2"
+        <Button mnemonicParsing="false" onAction="#openFolder" prefWidth="100.0" text="%open.folder"
+                GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="2"/>
+        <Button mnemonicParsing="false" onAction="#removeFile" prefWidth="100.0" text="%remove" GridPane.columnIndex="2"
                 GridPane.halignment="CENTER" GridPane.rowIndex="3"/>
-        <Button mnemonicParsing="false" prefWidth="100.0" text="%add.new" GridPane.columnIndex="1"
-                GridPane.halignment="CENTER" GridPane.rowIndex="3"/>
+        <Button mnemonicParsing="false" onAction="#addNewFile" prefWidth="100.0" text="%add.new"
+                GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3"/>
     </children>
 </GridPane>

@@ -19,15 +19,13 @@ package de.ks.beagle.thought.collect;
 
 import de.ks.activity.ModelBound;
 import de.ks.beagle.entity.Thought;
+import de.ks.beagle.thought.collect.file.FileThoughtViewController;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
+import javafx.scene.input.*;
 import javafx.scene.layout.GridPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +48,10 @@ public class AddThought implements Initializable {
   protected TextField name;
   @FXML
   protected Button save;
+  @FXML
+  protected FileThoughtViewController fileViewController;
+  @FXML
+  protected GridPane fileView;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -79,13 +81,10 @@ public class AddThought implements Initializable {
 
   @FXML
   void onDragDrop(DragEvent event) {
-    event.getDragboard().getContentTypes().forEach((t) -> log.info("Got drag type {}", t));
-    event.getDragboard().getFiles().forEach((f) -> log.info("Got file from dragtype {}", f));
-    log.info("Got html from dragtype {}", event.getDragboard().getHtml());
-    log.info("Got imagefrom dragtype {}", event.getDragboard().getImage());
-    log.info("Got string from dragtype {}", event.getDragboard().getString());
-    log.info("Got url from dragtype {}", event.getDragboard().getUrl());
-    log.info("Got rtf from dragtype {}", event.getDragboard().getRtf());
+    Dragboard dragboard = event.getDragboard();
+    if (dragboard.hasFiles()) {
+      fileViewController.addFiles(dragboard.getFiles());
+    }
   }
 
   @FXML
