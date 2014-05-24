@@ -63,7 +63,7 @@ public class ActivityLinkTest {
   @After
   public void tearDown() throws Exception {
     controller.stop(activityA);
-    controller.stop(ActivityB.class.getName());
+    controller.stop(ActivityB.class);
     ActivityContext.stopAll();
   }
 

@@ -34,9 +34,7 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.Deque;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
@@ -56,6 +54,7 @@ public class ActivityController {
   protected Instance<Navigator> navigator;
 
   protected final Deque<Activity> activities = new LinkedList<>();
+  protected final Map<String, Activity> registeredActivities = new HashMap<>();
   protected final ReentrantLock lock = new ReentrantLock(true);
 
   private ListenableFuture<?> dataSourceFuture;
@@ -145,6 +144,7 @@ public class ActivityController {
 
       reload();
       activities.add(activity);
+      registeredActivities.put(id, activity);
       log.info("Started activity {}", id);
     } finally {
       lock.unlock();
@@ -198,31 +198,29 @@ public class ActivityController {
     }
   }
 
-  public void stopCurrentResumeLast() {
-    stop(getCurrentActivity().getClass().getName());
-  }
-
   public Activity getCurrentActivity() {
     return activities.getLast();
   }
 
-  public void stop(Class<? extends Activity> activity) {
-    stop(activity.getName());
-  }
-
-  public void stop(Activity activity) {
+  public void stop(Class<? extends Activity> activityClass) {
     lock.lock();
     try {
+      Activity activity = registeredActivities.get(activityClass.getName());
       activity.waitForInitialization();
       waitForDataSourceLoading();
-      String id = activity.getClass().getName();
+      String id = activityClass.getName();
       stop(id);
     } finally {
       lock.unlock();
     }
   }
 
-  public void stop(String id) {
+  public void stop(Activity activity) {
+    stop(activity.getClass());
+
+  }
+
+  protected void stop(String id) {
     context.stopActivity(id);
   }
 
