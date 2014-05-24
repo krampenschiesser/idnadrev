@@ -58,6 +58,9 @@ public class CollectThoughtTest {
     controller.waitForDataSourceLoading();
 
     addThought = activity.getCurrentController();
+    FXPlatform.invokeLater(() -> {
+      Clipboard.getSystemClipboard().clear();
+    });
   }
 
 
@@ -68,17 +71,23 @@ public class CollectThoughtTest {
 
   @Test
   public void testClipboard2LineString() throws Exception {
-    String clipboardText = "title\ndescription";
+    String clipboardText = "title\nclipboard";
     copy2Clipboard(clipboardText);
 
     assertEquals(clipboardText, addThought.description.getText());
     assertEquals("title", addThought.name.getText());
     assertTrue(addThought.name.isFocused());
+
+    FXPlatform.invokeLater(() -> {
+      Clipboard.getSystemClipboard().clear();
+      addThought.name.setText(null);
+      addThought.description.setText(null);
+    });
   }
 
   @Test
   public void testClipboardSingleLineString() throws Exception {
-    String clipboardText = "description";
+    String clipboardText = "singleClip";
     copy2Clipboard(clipboardText);
 
     assertEquals(clipboardText, addThought.description.getText());
@@ -99,6 +108,7 @@ public class CollectThoughtTest {
   @Test
   public void testSaveThought() throws Exception {
     FXPlatform.invokeLater(() -> {
+      Clipboard.getSystemClipboard().clear();
       addThought.name.setText("name");
       addThought.description.setText("description");
 
@@ -111,8 +121,5 @@ public class CollectThoughtTest {
     Thought thought = thoughts.get(0);
     assertEquals("name", thought.getName());
     assertEquals("description", thought.getDescription());
-
-    assertNull(addThought.description.getText());
-    assertNull(addThought.name.getText());
   }
 }
