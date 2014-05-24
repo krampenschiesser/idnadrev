@@ -15,9 +15,6 @@
  */
 package de.ks.beagle.thought.collect.file;
 
-import de.ks.reflection.PropertyPath;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.StringBinding;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -84,8 +81,6 @@ public class FileThoughtViewController implements Initializable {
     fileList.setItems(files);
 
     ReadOnlyObjectProperty<File> selection = fileList.getSelectionModel().selectedItemProperty();
-    String path = PropertyPath.property(File.class, (f) -> f.getName());
-    StringBinding stringBinding = Bindings.selectString(selection, path);
-    fileNameLabel.textProperty().bind(stringBinding);
+    selection.addListener((p, o, n) -> fileNameLabel.setText(n.getName()));
   }
 }
