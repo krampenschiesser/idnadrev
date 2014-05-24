@@ -99,6 +99,7 @@ public class PropertyPath<T> {
     return (T) callBack(root);
   }
 
+  @SuppressWarnings("unchecked")
   protected Object callBack(Class<?> clazz) {
     if (Modifier.isFinal(clazz.getModifiers())) {
       return null;
