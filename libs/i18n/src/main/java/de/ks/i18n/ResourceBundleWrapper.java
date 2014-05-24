@@ -20,7 +20,11 @@ package de.ks.i18n;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -36,8 +40,18 @@ class ResourceBundleWrapper extends ResourceBundle {
   private static final Logger log = LoggerFactory.getLogger(ResourceBundleWrapper.class);
   private final ResourceBundle bundle;
   private final String path;
+  private final File missingKeyFile;
 
   public ResourceBundleWrapper(ResourceBundle bundle, String path) {
+    File missing = null;
+    try {
+      missing = Files.createTempFile("missing", ".properties").toFile();
+      missing.deleteOnExit();
+    } catch (IOException e) {
+      log.error("Could not create tempfile for missing properties", e);
+      missing = null;
+    }
+    this.missingKeyFile = missing;
     this.bundle = bundle;
     this.path = path;
   }
@@ -51,7 +65,7 @@ class ResourceBundleWrapper extends ResourceBundle {
     }
     boolean isContained = bundle.containsKey(key);
     if (!isContained) {
-      log.warn("Key \"{}\" not found in properties file:{}", key, path);
+      log.warn("Key \"{}\" not found in properties missingKeyFile:{}", key, path);
       return true;
     }
     return true;
@@ -86,7 +100,19 @@ class ResourceBundleWrapper extends ResourceBundle {
         retval = retval + ending;
       }
       if (retval == null) {
-        log.warn("Key \"{}\" not found in properties file:{}", key, path);
+        log.warn("Key \"{}\" not found in properties:{}", key, path);
+
+        try (FileWriter writer = new FileWriter(missingKeyFile, true)) {
+          StringBuilder builder = new StringBuilder(key);
+          int indexOf = key.lastIndexOf(".");
+          if (indexOf > 0) {
+            builder.append(" = ").append(key.substring(indexOf + 1));
+          } else {
+            builder.append(" = ").append(key);
+          }
+          builder.append("\n");
+          writer.append(builder.toString());
+        }
         return "?" + key + "?";
       }
       return retval;
@@ -114,5 +140,9 @@ class ResourceBundleWrapper extends ResourceBundle {
   @Override
   public Locale getLocale() {
     return bundle.getLocale();
+  }
+
+  public File getMissingKeyFile() {
+    return missingKeyFile;
   }
 }

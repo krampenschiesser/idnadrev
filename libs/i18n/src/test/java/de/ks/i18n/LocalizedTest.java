@@ -16,7 +16,9 @@
 
 package de.ks.i18n;
 
+import com.google.common.base.Charsets;
 import com.google.common.eventbus.Subscribe;
+import com.google.common.io.Files;
 import de.ks.LauncherRunner;
 import de.ks.eventsystem.bus.EventBus;
 import de.ks.i18n.event.LanguageChangedEvent;
@@ -25,7 +27,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.enterprise.inject.spi.CDI;
+import java.io.File;
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -82,6 +87,23 @@ public class LocalizedTest {
     } finally {
       eventBus.unregister(this);
     }
+  }
+
+  @Test
+  public void testMissingKeys() throws Exception {
+    Localized.get("doesNot.Exist.Dots");
+    Localized.get("doesNotExistNoDots");
+
+    File missingKeyFile = Localized.getBundle().getMissingKeyFile();
+    List<String> missing = Files.readLines(missingKeyFile, Charsets.UTF_8);
+    List<String> extracted = missing.stream().filter((s) -> s.startsWith("doesNot")).collect(Collectors.toList());
+    assertEquals(2, extracted.size());
+
+    String property = extracted.stream().filter((s) -> s.startsWith("doesNot.")).findFirst().get();
+    assertEquals("doesNot.Exist.Dots = Dots", property);
+
+    property = extracted.stream().filter((s) -> s.startsWith("doesNotE")).findFirst().get();
+    assertEquals("doesNotExistNoDots = doesNotExistNoDots", property);
   }
 
   @Subscribe

@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class Localized {
   protected static final AtomicBoolean initialized = new AtomicBoolean(false);
-  protected static volatile ResourceBundle bundle;
+  protected static volatile ResourceBundleWrapper bundle;
   public static final String BASENAME = "de.ks.i18n.Translation";
 
   /**
@@ -56,7 +56,7 @@ public class Localized {
   /**
    * @return the currently used bundle to use for eg. JavaFX loaders etc.
    */
-  public static ResourceBundle getBundle() {
+  public static ResourceBundleWrapper getBundle() {
     if (!initialized.get()) {
       initialize();
     }
