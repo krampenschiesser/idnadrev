@@ -22,12 +22,11 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.*;
 
 public class JavaFXService extends Service {
   private static final Logger log = LoggerFactory.getLogger(JavaFXService.class);
+  public static final String IS_DEBUGGING = "is.debugging";
   private String[] args;
   private Stage stage;
   private final CyclicBarrier barrier = new CyclicBarrier(2);
@@ -40,19 +39,28 @@ public class JavaFXService extends Service {
 
   @Override
   protected void doStart() {
+    log.info("Starting {}", getClass().getSimpleName());
     executorService.submit(() -> Application.launch(App.class, args));
     waitForJavaFXThread();
   }
 
   private void waitForJavaFXThread() {
+    int timeout = 10;
     try {
-      barrier.await();
+      if (System.getProperties().containsKey(IS_DEBUGGING)) {
+        barrier.await();
+      } else {
+        barrier.await(timeout, TimeUnit.SECONDS);
+      }
     } catch (InterruptedException e) {
       log.error("Got interrupted ", e);
       throw new RuntimeException(e);
     } catch (BrokenBarrierException e) {
       log.error("Barrier broken ", e);
       throw new RuntimeException(e);
+    } catch (TimeoutException t) {
+      log.error("Could not start javafx application after {} seconds", timeout);
+      throw new RuntimeException(t);
     }
   }
 
@@ -68,7 +76,6 @@ public class JavaFXService extends Service {
 
   public void setStage(Stage stage) {
     this.stage = stage;
-    stage.getScene().getWindow().hide();
     waitForJavaFXThread();
   }
 
