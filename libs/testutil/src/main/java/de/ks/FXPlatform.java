@@ -35,4 +35,13 @@ public class FXPlatform {
       throw new RuntimeException(e);
     }
   }
+
+  public static void waitForFX() {
+    invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        //noop
+      }
+    });
+  }
 }
