@@ -46,7 +46,7 @@ public class App extends Application {
   @Override
   public void start(Stage stage) throws Exception {
     try {
-
+      log.info("Starting application " + getClass().getName());
       Instance<MainWindow> select = CDI.current().select(MainWindow.class);
       if (select.isUnsatisfied()) {
         stage.setTitle(Localized.get("warning.general"));
