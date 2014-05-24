@@ -12,3 +12,4 @@ out/
 **/**/**/db
 /index.html
 /.nb-gradle/profiles/private/
+*.log
