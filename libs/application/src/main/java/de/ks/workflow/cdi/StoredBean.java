@@ -47,6 +47,7 @@ class StoredBean {
     return (T) instance;
   }
 
+  @SuppressWarnings("unchecked")
   public void destroy() {
     bean.destroy(instance, creationalContext);
   }
