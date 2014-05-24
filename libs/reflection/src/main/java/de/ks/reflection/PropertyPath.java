@@ -16,6 +16,7 @@
 
 package de.ks.reflection;
 
+import com.google.common.primitives.Primitives;
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.Proxy;
 import javassist.util.proxy.ProxyFactory;
@@ -110,6 +111,7 @@ public class PropertyPath<T> {
     ((Proxy) retval).setHandler(new MethodHandler() {
       @Override
       public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws Throwable {
+
         String methodName = thisMethod.getName();
         switch (methodName) {
           case "finalize":
@@ -133,6 +135,23 @@ public class PropertyPath<T> {
         }
 
         Class<?> returnType = thisMethod.getReturnType();
+        if (boolean.class.equals(Primitives.unwrap(returnType))) {
+          return false;
+        } else if (int.class.equals(Primitives.unwrap(returnType))) {
+          return 42;
+        } else if (long.class.equals(Primitives.unwrap(returnType))) {
+          return 42;
+        } else if (short.class.equals(Primitives.unwrap(returnType))) {
+          return 42;
+        } else if (char.class.equals(Primitives.unwrap(returnType))) {
+          return 42;
+        } else if (byte.class.equals(Primitives.unwrap(returnType))) {
+          return 4;
+        } else if (float.class.equals(Primitives.unwrap(returnType))) {
+          return 42F;
+        } else if (double.class.equals(Primitives.unwrap(returnType))) {
+          return 42D;
+        }
         if (returnType.equals(Void.TYPE)) {
           return null;
         } else if (isSetter()) {
