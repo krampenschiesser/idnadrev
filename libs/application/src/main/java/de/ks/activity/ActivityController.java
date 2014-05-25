@@ -17,15 +17,14 @@
 package de.ks.activity;
 
 
-import com.google.common.util.concurrent.ListenableFuture;
 import de.ks.activity.callback.*;
 import de.ks.activity.context.ActivityContext;
 import de.ks.activity.context.ActivityStore;
+import de.ks.activity.executor.ActivityExecutor;
 import de.ks.activity.link.ViewLink;
 import de.ks.application.Navigator;
 import de.ks.application.fxml.DefaultLoader;
 import de.ks.datasource.DataSource;
-import de.ks.executor.ExecutorService;
 import javafx.scene.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +34,8 @@ import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
@@ -49,7 +50,7 @@ public class ActivityController {
   @Inject
   protected ActivityStore store;
   @Inject
-  protected ExecutorService executorService;
+  protected ActivityExecutor executor;
   @Inject
   protected Instance<Navigator> navigator;
 
@@ -57,7 +58,7 @@ public class ActivityController {
   protected final Map<String, Activity> registeredActivities = new HashMap<>();
   protected final ReentrantLock lock = new ReentrantLock(true);
 
-  private ListenableFuture<?> dataSourceFuture;
+  private Future<?> dataSourceFuture;
   private DataSourceLoadingTask<Object> loadingTask;
 
   public void resumePreviousActivity() {
@@ -99,7 +100,7 @@ public class ActivityController {
   public void reload() {
     DataSource dataSource = store.getDatasource();
     loadingTask = new DataSourceLoadingTask<>(dataSource);
-    dataSourceFuture = executorService.submit(loadingTask);
+    dataSourceFuture = executor.getActivityExecutorService(getCurrentActivityId()).submit(loadingTask);
   }
 
   public <T extends Activity> T start(Class<T> activityClass) {
@@ -127,13 +128,15 @@ public class ActivityController {
       activity.setReturnConverter(returnConverter);
       String id = activity.getClass().getName();
       context.startActivity(id);
+      executor.startOrResume(id);
+
       log.info("Starting activity {}", id);
       DataSource dataSource = CDI.current().select(activity.getDataSource()).get();
       dataSource.setLoadingHint(dataSourceHint);
       store.setDatasource(dataSource);
 
       if (loadControllers) {
-        DefaultLoader<Node, Object> loader = new DefaultLoader<>(activity.getInitialController());
+        DefaultLoader<Node, Object> loader = new DefaultLoader<>(activity.getInitialController(), executor.getActivityExecutorService(id));
         addCallbacks(loader, activity);
         activity.getPreloads().put(activity.getInitialController(), loader);
       }
@@ -142,9 +145,9 @@ public class ActivityController {
         loadNextControllers(activity);
       }
 
-      reload();
       activities.add(activity);
       registeredActivities.put(id, activity);
+      reload();
       log.info("Started activity {}", id);
     } finally {
       lock.unlock();
@@ -179,7 +182,7 @@ public class ActivityController {
 
   private void loadController(Activity activity, Class<?> controller) {
     if (!activity.getPreloads().containsKey(controller)) {
-      DefaultLoader<Node, Object> loader = new DefaultLoader<>(controller);
+      DefaultLoader<Node, Object> loader = new DefaultLoader<>(controller, executor.getActivityExecutorService(activity.getId()));
       activity.getPreloads().put(controller, loader);
       addCallbacks(loader, activity);
     }
@@ -202,6 +205,10 @@ public class ActivityController {
     return activities.getLast();
   }
 
+  public String getCurrentActivityId() {
+    return activities.getLast().getId();
+  }
+
   public void stop(Class<? extends Activity> activityClass) {
     lock.lock();
     try {
@@ -209,6 +216,7 @@ public class ActivityController {
       activity.waitForInitialization();
       waitForDataSourceLoading();
       String id = activityClass.getName();
+      executor.shutdown(id);
       stop(id);
     } finally {
       lock.unlock();
@@ -224,5 +232,7 @@ public class ActivityController {
     context.stopActivity(id);
   }
 
-
+  public ExecutorService getCurrentExecutorService() {
+    return executor.getActivityExecutorService(getCurrentActivityId());
+  }
 }
