@@ -68,7 +68,7 @@ public class ActivityTest extends AbstractActivityTest {
 
   @Test
   public void testInitializeViewLinks() throws Exception {
-    DefaultLoader<StackPane, ActivityHome> loader = new DefaultLoader<>(ActivityHome.class);
+    DefaultLoader<StackPane, ActivityHome> loader = new DefaultLoader<>(ActivityHome.class, activityController.getCurrentExecutorService());
     InitializeViewLinks viewLinks = new InitializeViewLinks(activity, activity.getViewLinks(), activityController);
     viewLinks.accept(loader.getController(), loader.getView());
 
@@ -82,7 +82,7 @@ public class ActivityTest extends AbstractActivityTest {
   @Test
   public void testInitializeTaskLinks() throws Exception {
     activityController.start(activity);
-    DefaultLoader<StackPane, DetailController> loader = new DefaultLoader<>(DetailController.class);
+    DefaultLoader<StackPane, DetailController> loader = new DefaultLoader<>(DetailController.class, activityController.getCurrentExecutorService());
     InitializeTaskLinks taskLinks = new InitializeTaskLinks(activity.getTaskLinks(), activity, activityController);
     taskLinks.accept(loader.getController(), loader.getView());
 

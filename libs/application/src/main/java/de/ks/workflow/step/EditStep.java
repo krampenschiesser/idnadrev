@@ -70,7 +70,7 @@ public class EditStep extends InteractiveStep<GridPane> {
 
   @PostConstruct
   public void initialize() {
-    DefaultLoader<StackPane, EditStepGrid> loader = new DefaultLoader<>(EditStep.class.getResource("EditStepGrid.fxml"));
+    DefaultLoader<StackPane, EditStepGrid> loader = new DefaultLoader<>(EditStep.class.getResource("EditStepGrid.fxml"), null);
     Class<?> modelClass = workflowState.getModelClass();
     List<Field> fields = getFieldsToConfigure(modelClass);
     LinkedHashMap<Field, AbstractEditor> editors = getEditors(fields);

@@ -90,7 +90,7 @@ public abstract class Workflow<M, V extends Node, C> implements NodeProvider<V> 
 
   public DefaultLoader<V, C> getLoader() {
     if (loader == null) {
-      loader = new DefaultLoader<>(getViewDefinition());
+      loader = new DefaultLoader<>(getViewDefinition(), null);
     }
     return loader;
   }

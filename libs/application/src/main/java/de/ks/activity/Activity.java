@@ -201,4 +201,8 @@ public class Activity {//TODO extract ativityConfig containing all the with* met
   public Function getReturnConverter() {
     return returnConverter;
   }
+
+  public String getId() {
+    return getClass().getName();
+  }
 }

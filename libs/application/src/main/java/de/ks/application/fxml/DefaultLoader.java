@@ -17,7 +17,7 @@
 package de.ks.application.fxml;
 
 
-import de.ks.executor.ExecutorService;
+import de.ks.executor.JavaFXExecutorService;
 import de.ks.i18n.Localized;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
@@ -40,16 +41,30 @@ import java.util.function.Supplier;
  */
 public class DefaultLoader<V extends Node, C> {
   private static final Logger log = LoggerFactory.getLogger(DefaultLoader.class);
-  private final ExecutorService service = CDI.current().select(ExecutorService.class).get();
+  private final ExecutorService service;
   private final URL fxmlFile;
   private CompletableFuture<FXMLLoader> loaderFuture;
   private CompletableFuture<Void> allCallbacks;
 
   public DefaultLoader(Class<?> modelController) {
-    this(modelController.getResource(modelController.getSimpleName() + ".fxml"));
+    this(modelController, null);
   }
 
   public DefaultLoader(URL fxmlFile) {
+    this(fxmlFile, null);
+  }
+
+  public DefaultLoader(Class<?> modelController, ExecutorService executor) {
+    this(modelController.getResource(modelController.getSimpleName() + ".fxml"), executor);
+  }
+
+  public DefaultLoader(URL fxmlFile, ExecutorService executor) {
+    if (executor == null) {
+      service = CDI.current().select(de.ks.executor.ExecutorService.class).get();
+    } else {
+      service = executor;
+    }
+
     this.fxmlFile = fxmlFile;
     if (fxmlFile == null) {
       log.error("FXML file not found, is null!");
@@ -70,7 +85,7 @@ public class DefaultLoader<V extends Node, C> {
     loaderFuture = CompletableFuture.supplyAsync(supplier, service).exceptionally((t) -> {
       if (t.getCause() instanceof RuntimeException && t.getCause().getCause() instanceof LoadException) {
         log.info("Last load of {} failed, will try again in JavaFX Thread", fxmlFile);
-        return service.invokeInJavaFXThread(() -> supplier.get());
+        return new JavaFXExecutorService().invokeInJavaFXThread(() -> supplier.get());
       }
       throw new RuntimeException(t);
     });
