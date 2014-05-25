@@ -30,16 +30,18 @@ public class SuspendablePooledExecutorService extends ThreadPoolExecutor {
   private static final Logger log = LoggerFactory.getLogger(SuspendablePooledExecutorService.class);
 
   public static final int COMPLETABLE_FUTURES_OFFSET = 10;//some currently running tasks may specify a thenRun
+  private final String name;
   protected volatile boolean suspended = false;
   protected final ReentrantLock lock = new ReentrantLock();
   private final ArrayList<Runnable> suspendedTasks = new ArrayList<>();
 
-  public SuspendablePooledExecutorService() {
-    this(0, Runtime.getRuntime().availableProcessors() * 4);
+  public SuspendablePooledExecutorService(String name) {
+    this(name, 0, Runtime.getRuntime().availableProcessors() * 4);
   }
 
-  public SuspendablePooledExecutorService(int corePoolSize, int maximumPoolSize) {
-    super(corePoolSize, maximumPoolSize, 1, TimeUnit.MINUTES, new LinkedBlockingDeque<>(), new ThreadFactoryBuilder().setDaemon(true).build());
+  public SuspendablePooledExecutorService(String name, int corePoolSize, int maximumPoolSize) {
+    super(corePoolSize, maximumPoolSize, 1, TimeUnit.MINUTES, new LinkedBlockingDeque<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat(name + "-%d").build());
+    this.name = name;
   }
 
   public void suspend() {
@@ -96,5 +98,9 @@ public class SuspendablePooledExecutorService extends ThreadPoolExecutor {
 
   public boolean isSuspended() {
     return suspended;
+  }
+
+  public String getName() {
+    return name;
   }
 }

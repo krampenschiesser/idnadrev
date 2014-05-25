@@ -17,6 +17,8 @@ package de.ks.executor;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -26,13 +28,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class SuspendablePooledExecutorServiceTest {
-
+  private static final Logger log = LoggerFactory.getLogger(SuspendablePooledExecutorServiceTest.class);
   private SuspendablePooledExecutorService executor;
   private static final LongAdder adder = new LongAdder();
+  int count;
 
   @Before
   public void setUp() throws Exception {
-    executor = new SuspendablePooledExecutorService(2, 2);
+    executor = new SuspendablePooledExecutorService("test", 2, 2);
     adder.reset();
   }
 
@@ -61,9 +64,12 @@ public class SuspendablePooledExecutorServiceTest {
 
   @Test
   public void testCompletionChain() throws Exception {
-    CompletableFuture.runAsync(createSleepingRunnable(300), executor)//
-            .thenRun(createSleepingRunnable(100))//
-            .thenRunAsync(createSleepingRunnable(100), executor);
+    Runnable first = createSleepingRunnable(300);
+    Runnable second = createSleepingRunnable(100);
+    Runnable third = createSleepingRunnable(100);
+    CompletableFuture.runAsync(first, executor)//
+            .thenRun(second)//
+            .thenRunAsync(third, executor);
     assertEquals(1, executor.getActiveCount());
 
 
@@ -83,12 +89,39 @@ public class SuspendablePooledExecutorServiceTest {
     assertEquals(3, adder.sum());
   }
 
+  @Test
+  public void testShutdown() throws Exception {
+    Runnable first = createSleepingRunnable(300);
+    Runnable second = createSleepingRunnable(100);
+    Runnable third = createSleepingRunnable(100);
+    CompletableFuture.runAsync(first, executor)//
+            .thenRun(second)//
+            .thenRunAsync(third, executor);
+    assertEquals(1, executor.getActiveCount());
+
+    executor.shutdownNow();
+
+    executor.awaitTermination(1, TimeUnit.SECONDS);
+    assertEquals(1, adder.sum());
+    // actually the first runnable got interrupted,
+    // and although the thread is interrupted the second runnable is successfully executed,
+    // althought the executor is shutting down
+    // hope this behaviour is changing in the future? seems like a bug.
+    // so actually it should be either
+    // assertEquals(0, adder.sum()); or
+    // assertEquals(2, adder.sum());
+  }
+
   Runnable createSleepingRunnable(int time) {
+    final int id = ++count;
     return () -> {
       try {
+        log.info("Running     {}", id);
         TimeUnit.MILLISECONDS.sleep(time);
         adder.increment();
+        log.info("Done with   {}", id);
       } catch (InterruptedException e) {
+        log.info("Interrupted {}", id);
         //
       }
     };
