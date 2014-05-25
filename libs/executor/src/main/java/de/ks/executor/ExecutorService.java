@@ -37,6 +37,8 @@ import java.util.concurrent.*;
  */
 @Vetoed
 public class ExecutorService implements ListeningScheduledExecutorService {
+  //TODO stop using ListenningScheduledExecutorService -> completableFuture
+  //TODO simplify it make CDI injectionpoints depend on java.util...ExecutorService
   private static final Logger log = LoggerFactory.getLogger(ExecutorService.class);
   static final ExecutorService instance = new ExecutorService();
 
