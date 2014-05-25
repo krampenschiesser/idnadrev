@@ -15,6 +15,7 @@
  */
 package de.ks.beagle.thought.collect.file;
 
+import de.ks.activity.context.ActivityStore;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -26,6 +27,7 @@ import javafx.scene.control.ListView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.net.URL;
 import java.util.List;
@@ -34,6 +36,17 @@ import java.util.ResourceBundle;
 public class FileThoughtViewController implements Initializable {
   private static final Logger log = LoggerFactory.getLogger(FileThoughtViewController.class);
   protected final ObservableList<File> files = FXCollections.observableArrayList();
+
+  @Inject
+  ActivityStore store;
+
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    fileList.setItems(files);
+
+    ReadOnlyObjectProperty<File> selection = fileList.getSelectionModel().selectedItemProperty();
+    selection.addListener((p, o, n) -> fileNameLabel.setText(n.getName()));
+  }
 
   @FXML
   private Label fileNameLabel;
@@ -74,13 +87,5 @@ public class FileThoughtViewController implements Initializable {
   @FXML
   void addNewFile(ActionEvent event) {
 
-  }
-
-  @Override
-  public void initialize(URL location, ResourceBundle resources) {
-    fileList.setItems(files);
-
-    ReadOnlyObjectProperty<File> selection = fileList.getSelectionModel().selectedItemProperty();
-    selection.addListener((p, o, n) -> fileNameLabel.setText(n.getName()));
   }
 }

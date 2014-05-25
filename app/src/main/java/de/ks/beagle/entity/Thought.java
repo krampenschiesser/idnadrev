@@ -17,7 +17,6 @@
 package de.ks.beagle.entity;
 
 import de.ks.beagle.thought.ThoughtOptions;
-import de.ks.editor.Detailed;
 import de.ks.option.Options;
 import de.ks.persistence.entity.NamedPersistentObject;
 
@@ -39,7 +38,6 @@ public class Thought extends NamedPersistentObject<Thought> implements FileConta
   private static final long serialVersionUID = 1L;
 
   @Column(length = Integer.MAX_VALUE)
-  @Detailed
   protected String description;
   protected LocalDate postponedDate;
 

@@ -21,8 +21,6 @@ import de.ks.eventsystem.bus.EventBus;
 import de.ks.menu.MenuExtension;
 import de.ks.menu.MenuItemDescriptor;
 import de.ks.menu.event.MenuItemClickedEvent;
-import de.ks.workflow.Workflow;
-import de.ks.workflow.cdi.WorkflowContext;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import org.slf4j.Logger;
@@ -45,9 +43,6 @@ public abstract class AbstractPresenter<T> {
   @SuppressWarnings("unchecked")
   public EventHandler<ActionEvent> createDefaultActionHandler(MenuItemDescriptor item) {
     return event -> {
-      if (Workflow.class.isAssignableFrom(item.getTarget())) {
-        WorkflowContext.start((Class<? extends Workflow>) item.getTarget());
-      }
       log.debug("Sending event for item {}", item.getTarget().getSimpleName());
       bus.post(new MenuItemClickedEvent(item));
     };
