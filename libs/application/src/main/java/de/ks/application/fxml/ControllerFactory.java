@@ -17,6 +17,7 @@
 package de.ks.application.fxml;
 
 
+import de.ks.eventsystem.bus.EventBus;
 import javafx.util.Callback;
 
 import javax.enterprise.inject.spi.BeanManager;
@@ -36,6 +37,9 @@ public class ControllerFactory implements Callback<Class<?>, Object> {
       }
     }
 
-    return CDI.current().select(clazz).get();
+    Object instance = CDI.current().select(clazz).get();
+    EventBus eventBus = CDI.current().select(EventBus.class).get();
+    eventBus.register(instance);
+    return instance;
   }
 }
