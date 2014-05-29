@@ -63,7 +63,10 @@ public class PersistentWork {
   }
 
   public static void deleteAllOf(Class<?> clazz) {
-    run((em) -> em.createQuery("delete from " + clazz.getName()).executeUpdate());
+    run((em) -> {
+      int deletedLines = em.createQuery("delete from " + clazz.getName()).executeUpdate();
+      log.debug("Deleted {} from {}", deletedLines, clazz.getSimpleName());
+    });
   }
 
   public static <T> List<T> from(Class<T> clazz) {
