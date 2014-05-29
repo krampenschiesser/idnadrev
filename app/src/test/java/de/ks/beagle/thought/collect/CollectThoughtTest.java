@@ -76,7 +76,7 @@ public class CollectThoughtTest {
 
     assertEquals(clipboardText, addThought.description.getText());
     assertEquals("title", addThought.name.getText());
-    assertTrue(addThought.name.isFocused());
+    assertTrue(addThought.save.isFocused());
 
     FXPlatform.invokeLater(() -> {
       Clipboard.getSystemClipboard().clear();
