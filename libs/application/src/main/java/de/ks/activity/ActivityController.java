@@ -25,6 +25,9 @@ import de.ks.activity.link.ViewLink;
 import de.ks.application.Navigator;
 import de.ks.application.fxml.DefaultLoader;
 import de.ks.datasource.DataSource;
+import de.ks.eventsystem.bus.EventBus;
+import de.ks.executor.JavaFXExecutorService;
+import de.ks.executor.SuspendablePooledExecutorService;
 import javafx.scene.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +37,8 @@ import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
@@ -53,13 +56,13 @@ public class ActivityController {
   protected ActivityExecutor executor;
   @Inject
   protected Instance<Navigator> navigator;
+  @Inject
+  protected JavaFXExecutorService javafxExecutor;
 
   protected final Deque<Activity> activities = new LinkedList<>();
   protected final Map<String, Activity> registeredActivities = new HashMap<>();
   protected final ReentrantLock lock = new ReentrantLock(true);
-
-  private Future<?> dataSourceFuture;
-  private DataSourceLoadingTask<Object> loadingTask;
+  private CompletableFuture<?> finishingFutures;
 
   public void resumePreviousActivity() {
     resumePreviousActivity(null);
@@ -87,6 +90,7 @@ public class ActivityController {
   private void resume(Activity activity, Object dataSourceHint) {
     String id = activity.getClass().getName();
     context.startActivity(id);
+    executor.startOrResume(id);
     log.info("Resuming activity {}", id);
     DataSource dataSource = CDI.current().select(activity.getDataSource()).get();
     dataSource.setLoadingHint(dataSourceHint);
@@ -99,8 +103,22 @@ public class ActivityController {
   @SuppressWarnings("unchecked")
   public void reload() {
     DataSource dataSource = store.getDatasource();
-    loadingTask = new DataSourceLoadingTask<>(dataSource);
-    dataSourceFuture = executor.getActivityExecutorService(getCurrentActivityId()).submit(loadingTask);
+    SuspendablePooledExecutorService executorService = executor.getActivityExecutorService(getCurrentActivityId());
+
+    CompletableFuture<Object> load = CompletableFuture.supplyAsync(() -> dataSource.loadModel(), executorService);
+    finishingFutures = load.thenApplyAsync((value) -> {
+      log.debug("Loaded model '{}'", value);
+      CDI.current().select(ActivityStore.class).get().setModel(value);
+      return value;
+    }, javafxExecutor).thenAcceptAsync((value) -> {
+      EventBus eventBus = CDI.current().select(EventBus.class).get();
+      eventBus.post(new ActivityLoadFinishedEvent(value));
+    }, javafxExecutor);
+
+    load.exceptionally((t) -> {
+      log.error("Could not load DataSource {} for activity {}", dataSource, getCurrentActivityId(), t);
+      return null;
+    });
   }
 
   public <T extends Activity> T start(Class<T> activityClass) {
@@ -192,10 +210,7 @@ public class ActivityController {
   public void waitForDataSourceLoading() {
     lock.lock();
     try {
-      dataSourceFuture.get();
-      loadingTask.await();
-    } catch (Exception e) {
-      throw new RuntimeException(e);
+      finishingFutures.join();
     } finally {
       lock.unlock();
     }
@@ -212,10 +227,15 @@ public class ActivityController {
   public void stop(Class<? extends Activity> activityClass) {
     lock.lock();
     try {
-      Activity activity = registeredActivities.get(activityClass.getName());
+      String activityId = activityClass.getName();
+      Activity activity = registeredActivities.get(activityId);
+      if (activity == null) {
+        log.warn("Could not stop unregistered activity {}", activityId);
+        return;
+      }
       activity.waitForInitialization();
       waitForDataSourceLoading();
-      String id = activityClass.getName();
+      String id = activityId;
       executor.shutdown(id);
       stop(id);
     } finally {
