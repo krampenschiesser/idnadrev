@@ -38,7 +38,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
@@ -252,7 +251,7 @@ public class ActivityController {
     context.stopActivity(id);
   }
 
-  public ExecutorService getCurrentExecutorService() {
+  public SuspendablePooledExecutorService getCurrentExecutorService() {
     return executor.getActivityExecutorService(getCurrentActivityId());
   }
 }
