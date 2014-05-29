@@ -17,6 +17,8 @@
 package de.ks.beagle.thought.collect;
 
 
+import com.google.common.eventbus.Subscribe;
+import de.ks.activity.ActivityLoadFinishedEvent;
 import de.ks.activity.ModelBound;
 import de.ks.beagle.entity.Thought;
 import de.ks.beagle.thought.collect.file.FileThoughtViewController;
@@ -94,5 +96,10 @@ public class AddThought implements Initializable {
     log.trace("Drag detected from source {}", source);
     event.acceptTransferModes(TransferMode.ANY);
     event.consume();
+  }
+
+  @Subscribe
+  public void onRefresh(ActivityLoadFinishedEvent event) {
+    this.name.requestFocus();
   }
 }

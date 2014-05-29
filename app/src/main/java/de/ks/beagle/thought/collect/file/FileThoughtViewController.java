@@ -15,7 +15,8 @@
  */
 package de.ks.beagle.thought.collect.file;
 
-import de.ks.activity.context.ActivityStore;
+import com.google.common.eventbus.Subscribe;
+import de.ks.activity.ActivityLoadFinishedEvent;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -27,7 +28,6 @@ import javafx.scene.control.ListView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.net.URL;
 import java.util.List;
@@ -37,8 +37,6 @@ public class FileThoughtViewController implements Initializable {
   private static final Logger log = LoggerFactory.getLogger(FileThoughtViewController.class);
   protected final ObservableList<File> files = FXCollections.observableArrayList();
 
-  @Inject
-  ActivityStore store;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -87,5 +85,10 @@ public class FileThoughtViewController implements Initializable {
   @FXML
   void addNewFile(ActionEvent event) {
 
+  }
+
+  @Subscribe
+  public void onRefresh(ActivityLoadFinishedEvent event) {
+    files.clear();
   }
 }
