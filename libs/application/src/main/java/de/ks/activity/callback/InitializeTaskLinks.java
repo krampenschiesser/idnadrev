@@ -22,7 +22,6 @@ import de.ks.activity.ActivityController;
 import de.ks.activity.context.ActivityStore;
 import de.ks.activity.link.TaskLink;
 import de.ks.application.fxml.LoaderCallback;
-import de.ks.executor.ExecutorService;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -42,7 +41,6 @@ public class InitializeTaskLinks extends LoaderCallback {
   private final List<TaskLink> taskLinks;
   private final Activity activity;
   private final ActivityController activityController;
-  private final ExecutorService service = CDI.current().select(ExecutorService.class).get();
 
   public InitializeTaskLinks(List<TaskLink> taskLinks, Activity activity, ActivityController activityController) {
     this.taskLinks = taskLinks;
@@ -68,7 +66,7 @@ public class InitializeTaskLinks extends LoaderCallback {
                   }
           );
         }
-        service.submit(task);
+        activityController.getCurrentExecutorService().submit(task);
       };
       addHandlerToNode(node, taskLink.getId(), handler);
       log.debug("done with task-link {} for controller {}", taskLink.getId(), controller);
