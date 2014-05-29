@@ -17,6 +17,7 @@ package de.ks.beagle.thought.collect;
 
 import de.ks.FXPlatform;
 import de.ks.LauncherRunner;
+import de.ks.TempFileRule;
 import de.ks.activity.ActivityController;
 import de.ks.beagle.entity.Thought;
 import de.ks.launch.JavaFXService;
@@ -24,17 +25,20 @@ import de.ks.launch.Launcher;
 import de.ks.persistence.PersistentWork;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
+import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
 import javafx.stage.Stage;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
@@ -43,6 +47,8 @@ import static org.junit.Assert.*;
 @RunWith(LauncherRunner.class)
 public class CollectThoughtTest {
   private static final Logger log = LoggerFactory.getLogger(CollectThoughtTest.class);
+  @Rule
+  public TempFileRule testFiles = new TempFileRule(2);
   private Scene scene;
   @Inject
   ActivityController controller;
@@ -51,6 +57,10 @@ public class CollectThoughtTest {
 
   @Before
   public void setUp() throws Exception {
+    FXPlatform.waitForFX();
+    PersistentWork.deleteAllOf(de.ks.beagle.entity.File.class);
+    PersistentWork.deleteAllOf(Thought.class);
+
     JavaFXService service = Launcher.instance.getService(JavaFXService.class);
     Stage stage = service.getStage();
     scene = stage.getScene();
@@ -66,8 +76,10 @@ public class CollectThoughtTest {
 
   @After
   public void tearDown() throws Exception {
+    FXPlatform.waitForFX();
     controller.stop(ThoughtActivity.class);
   }
+
 
   @Test
   public void testClipboard2LineString() throws Exception {
@@ -114,6 +126,7 @@ public class CollectThoughtTest {
 
       addThought.save.getOnAction().handle(new ActionEvent());
     });
+    controller.getCurrentExecutorService().waitForAllTasksDone();
 
     List<Thought> thoughts = PersistentWork.from(Thought.class);
     assertEquals(1, thoughts.size());
@@ -121,5 +134,78 @@ public class CollectThoughtTest {
     Thought thought = thoughts.get(0);
     assertEquals("name", thought.getName());
     assertEquals("description", thought.getDescription());
+  }
+
+  @Test
+  public void testFilesInClipBoard() throws Exception {
+    HashMap<DataFormat, Object> content = new HashMap<>();
+    content.put(DataFormat.FILES, testFiles.getFiles());
+    StringBuilder plainText = testFiles.getFiles().stream().collect(StringBuilder::new, //
+            (s, file) -> s.append(file.getAbsolutePath()).append("\n"),//
+            (s, s2) -> s.append(s2));
+    content.put(DataFormat.PLAIN_TEXT, plainText.toString());
+
+    FXPlatform.invokeLater(() -> {
+      Clipboard clipboard = Clipboard.getSystemClipboard();
+      clipboard.clear();
+      clipboard.setContent(content);
+
+      addThought.processClipboard(clipboard);
+    });
+
+    assertFalse(addThought.name.textProperty().isEmpty().get());
+    assertFalse(addThought.description.textProperty().isEmpty().get());
+    assertEquals(2, addThought.fileViewController.getFiles().size());
+
+    FXPlatform.invokeLater(() -> {
+      addThought.save.getOnAction().handle(new ActionEvent());
+    });
+    controller.getCurrentExecutorService().waitForAllTasksDone();
+
+
+    List<Thought> thoughts = PersistentWork.from(Thought.class, thought -> thought.getFiles().size());
+    assertEquals(1, thoughts.size());
+
+    Thought thought = thoughts.get(0);
+    assertEquals(2, thought.getFiles().size());
+  }
+
+  @Test
+  public void testFilesInClipBoardWithRemove() throws Exception {
+    HashMap<DataFormat, Object> content = new HashMap<>();
+    content.put(DataFormat.FILES, testFiles.getFiles());
+    StringBuilder plainText = testFiles.getFiles().stream().collect(StringBuilder::new, //
+            (s, file) -> s.append(file.getAbsolutePath()).append("\n"),//
+            (s, s2) -> s.append(s2));
+    content.put(DataFormat.PLAIN_TEXT, plainText.toString());
+
+    FXPlatform.invokeLater(() -> {
+      Clipboard clipboard = Clipboard.getSystemClipboard();
+      clipboard.clear();
+      clipboard.setContent(content);
+
+      addThought.processClipboard(clipboard);
+    });
+
+    assertFalse(addThought.name.textProperty().isEmpty().get());
+    assertFalse(addThought.description.textProperty().isEmpty().get());
+    assertEquals(2, addThought.fileViewController.getFiles().size());
+
+
+    FXPlatform.invokeLater(() -> {
+      MultipleSelectionModel<File> selectionModel = addThought.fileViewController.getFileList().getSelectionModel();
+      selectionModel.clearSelection();
+      selectionModel.select(0);
+      addThought.fileViewController.removeFile(null);
+      addThought.save.getOnAction().handle(new ActionEvent());
+    });
+    controller.getCurrentExecutorService().waitForAllTasksDone();
+
+
+    List<Thought> thoughts = PersistentWork.from(Thought.class, thought -> thought.getFiles().size());
+    assertEquals(1, thoughts.size());
+
+    Thought thought = thoughts.get(0);
+    assertEquals(1, thought.getFiles().size());
   }
 }
