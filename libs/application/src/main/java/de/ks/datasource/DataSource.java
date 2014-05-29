@@ -16,16 +16,10 @@
 
 package de.ks.datasource;
 
-import java.util.concurrent.Callable;
-
 /**
  *
  */
-public interface DataSource<M> extends Callable<M> {
-  default M call() throws Exception {
-    return loadModel();
-  }
-
+public interface DataSource<M> {
   M loadModel();
 
   void saveModel(M model);
