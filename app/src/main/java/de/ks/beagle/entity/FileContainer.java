@@ -24,6 +24,8 @@ public interface FileContainer {
 
   void addFile(File file);
 
+  void removeFile(File file);
+
   default void addFile(String fileName) throws IOException {
     addFile(new java.io.File(fileName));
   }
@@ -32,4 +34,14 @@ public interface FileContainer {
     File noteFile = File.fromFile(file);
     addFile(noteFile);
   }
+
+  default void removeFile(String fileName) throws IOException {
+    removeFile(new java.io.File(fileName));
+  }
+
+  default void removeFile(java.io.File file) throws IOException {
+    File noteFile = File.fromFile(file);
+    removeFile(noteFile);
+  }
+
 }

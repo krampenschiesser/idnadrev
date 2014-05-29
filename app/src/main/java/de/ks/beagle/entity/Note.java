@@ -101,4 +101,10 @@ public class Note extends NamedPersistentObject<Note> implements FileContainer {
     file.setNote(this);
   }
 
+  @Override
+  public void removeFile(File file) {
+    this.files.remove(file);
+    file.setNote(null);
+  }
+
 }

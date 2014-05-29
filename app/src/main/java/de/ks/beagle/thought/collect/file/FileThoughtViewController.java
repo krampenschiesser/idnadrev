@@ -18,10 +18,13 @@ package de.ks.beagle.thought.collect.file;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import de.ks.activity.ActivityLoadFinishedEvent;
+import de.ks.activity.context.ActivityStore;
+import de.ks.beagle.entity.Thought;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -31,6 +34,7 @@ import javafx.stage.FileChooser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -52,6 +56,9 @@ public class FileThoughtViewController implements Initializable {
   @FXML
   private ListView<File> fileList;
 
+  @Inject
+  ActivityStore store;
+
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     fileList.setItems(files);
@@ -68,6 +75,26 @@ public class FileThoughtViewController implements Initializable {
 
     BooleanBinding isDirectory = Bindings.createBooleanBinding(() -> selection.get() != null && selection.get().isDirectory(), selection);
     edit.disableProperty().bind(isDirectory);
+
+    files.addListener((ListChangeListener<File>) change -> {
+      Thought thought = store.getModel();
+      while (change.next()) {
+        change.getAddedSubList().forEach(file -> {
+          try {
+            thought.addFile(file);
+          } catch (IOException e) {
+            log.error("Could not add file {}", file, e);
+          }
+        });
+        change.getRemoved().forEach((file) -> {
+          try {
+            thought.removeFile(file);
+          } catch (IOException e) {
+            log.error("Could not remove file {}", file, e);
+          }
+        });
+      }
+    });
   }
 
 
@@ -87,6 +114,10 @@ public class FileThoughtViewController implements Initializable {
 
   public ObservableList<File> getFiles() {
     return files;
+  }
+
+  public ListView<File> getFileList() {
+    return fileList;
   }
 
   @FXML
@@ -144,7 +175,7 @@ public class FileThoughtViewController implements Initializable {
   }
 
   @FXML
-  void removeFile(ActionEvent event) {
+  public void removeFile(ActionEvent event) {
     ObservableList<File> selectedItems = fileList.getSelectionModel().getSelectedItems();
     files.removeAll(selectedItems);
   }

@@ -78,6 +78,12 @@ public class Thought extends NamedPersistentObject<Thought> implements FileConta
     file.setThought(this);
   }
 
+  @Override
+  public void removeFile(File file) {
+    this.files.remove(file);
+    file.setThought(null);
+  }
+
   public void postPone() {
     ThoughtOptions thoughtOptions = Options.get(ThoughtOptions.class);
     int daysToPostpone = thoughtOptions.getDaysToPostpone();
