@@ -67,10 +67,14 @@ public class PersistentWork {
   }
 
   public static <T> List<T> from(Class<T> clazz) {
-    return from(clazz, null);
+    return from(clazz, null, null);
   }
 
-  public static <T> List<T> from(Class<T> clazz, BiConsumer<Root<T>, CriteriaQuery<T>> consumer) {
+  public static <T> List<T> from(Class<T> clazz, Consumer<T> resultWalker) {
+    return from(clazz, null, resultWalker);
+  }
+
+  public static <T> List<T> from(Class<T> clazz, BiConsumer<Root<T>, CriteriaQuery<T>> consumer, Consumer<T> resultWalker) {
     return read((em) -> {
       CriteriaQuery<T> query = (CriteriaQuery<T>) em.getCriteriaBuilder().createQuery(clazz);
 
@@ -81,7 +85,11 @@ public class PersistentWork {
         consumer.accept(root, query);
       }
 
-      return em.createQuery(query).getResultList();
+      List<T> resultList = em.createQuery(query).getResultList();
+      if (resultWalker != null) {
+        resultList.forEach(resultWalker);
+      }
+      return resultList;
     });
   }
 
