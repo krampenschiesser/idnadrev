@@ -57,7 +57,7 @@ public class AddThought implements Initializable {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-
+    save.disableProperty().bind(name.textProperty().isEmpty());
   }
 
   @FXML
