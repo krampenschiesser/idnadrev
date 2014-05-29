@@ -25,7 +25,8 @@
     <children>
         <Label text="%thought.name" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
         <Label text="%thought.description" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-        <TextField fx:id="name" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <TextField fx:id="name" onAction="#saveThought" prefWidth="200.0" GridPane.columnIndex="1"
+                   GridPane.rowIndex="1"/>
         <TextArea fx:id="description" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1"
                   GridPane.rowIndex="2"/>
         <Button fx:id="save" defaultButton="true" mnemonicParsing="false" text="%default.save" GridPane.columnIndex="1"

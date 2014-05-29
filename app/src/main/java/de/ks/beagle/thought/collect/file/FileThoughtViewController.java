@@ -26,10 +26,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.MultipleSelectionModel;
+import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,8 +34,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -61,6 +57,7 @@ public class FileThoughtViewController implements Initializable {
     fileList.setItems(files);
 
     MultipleSelectionModel<File> selectionModel = fileList.getSelectionModel();
+    selectionModel.setSelectionMode(SelectionMode.MULTIPLE);
 
     ReadOnlyObjectProperty<File> selection = selectionModel.selectedItemProperty();
     selection.addListener((p, o, n) -> {
@@ -77,6 +74,15 @@ public class FileThoughtViewController implements Initializable {
   public void addFiles(List<File> additionalFiles) {
     additionalFiles.removeAll(files);
     files.addAll(additionalFiles);
+
+    if (!additionalFiles.isEmpty()) {
+      Collections.sort(files);
+      Collections.sort(additionalFiles);
+      File lastFile = additionalFiles.get(additionalFiles.size() - 1);
+      fileList.scrollTo(lastFile);
+      fileList.getSelectionModel().clearSelection();
+      fileList.getSelectionModel().select(lastFile);
+    }
   }
 
   public ObservableList<File> getFiles() {
@@ -85,43 +91,8 @@ public class FileThoughtViewController implements Initializable {
 
   @FXML
   void open(ActionEvent event) {
-    File item = fileList.getSelectionModel().getSelectedItem();
-    if (item == null) {
-      return;
-    }
-    executor.submit(() -> {
-      try {
-        log.info("Opening {}", item);
-        desktop.open(item);
-      } catch (IOException e) {
-        log.error("Could not open {}", item, e);
-      }
-    });
-  }
-
-  @FXML
-  void edit(ActionEvent event) {
-    File item = fileList.getSelectionModel().getSelectedItem();
-    if (item == null) {
-      return;
-    }
-    executor.submit(() -> {
-      try {
-        log.info("Editing {}", item);
-        desktop.edit(item);
-      } catch (IOException e) {
-        log.error("Could not open {}", item, e);
-      }
-    });
-  }
-
-  @FXML
-  void openFolder(ActionEvent event) {
-    File item = fileList.getSelectionModel().getSelectedItem();
-    if (item == null) {
-      return;
-    }
-    if (item.isDirectory()) {
+    ObservableList<File> items = fileList.getSelectionModel().getSelectedItems();
+    for (File item : items) {
       executor.submit(() -> {
         try {
           log.info("Opening {}", item);
@@ -130,15 +101,43 @@ public class FileThoughtViewController implements Initializable {
           log.error("Could not open {}", item, e);
         }
       });
-    } else {
-      File parentFile = item.getParentFile();
+    }
+  }
 
+  @FXML
+  void edit(ActionEvent event) {
+    ObservableList<File> items = fileList.getSelectionModel().getSelectedItems();
+    for (File item : items) {
       executor.submit(() -> {
         try {
-          log.info("Opening {}", parentFile);
-          desktop.open(parentFile);
+          log.info("Editing {}", item);
+          desktop.edit(item);
         } catch (IOException e) {
-          log.error("Could not open {}", parentFile, e);
+          log.error("Could not open {}", item, e);
+        }
+      });
+    }
+  }
+
+  @FXML
+  void openFolder(ActionEvent event) {
+    TreeSet<File> files = new TreeSet<>();
+
+    ObservableList<File> items = fileList.getSelectionModel().getSelectedItems();
+    for (File item : items) {
+      if (item.isDirectory()) {
+        files.add(item);
+      } else {
+        files.add(item.getParentFile());
+      }
+    }
+    for (File file : files) {
+      executor.submit(() -> {
+        try {
+          log.info("Opening {}", file);
+          desktop.open(file);
+        } catch (IOException e) {
+          log.error("Could not open {}", file, e);
         }
       });
     }
@@ -155,7 +154,7 @@ public class FileThoughtViewController implements Initializable {
     FileChooser fileChooser = new FileChooser();
     File file = fileChooser.showOpenDialog(edit.getScene().getWindow());
     if (file != null) {
-      files.add(file);
+      addFiles(Arrays.asList(file));
     }
   }
 
@@ -163,4 +162,5 @@ public class FileThoughtViewController implements Initializable {
   public void onRefresh(ActivityLoadFinishedEvent event) {
     files.clear();
   }
+
 }
