@@ -193,16 +193,18 @@ public class Task extends NamedPersistentObject<Task> {
     return workType;
   }
 
-  public void setWorkType(WorkType workType) {
+  public Task setWorkType(WorkType workType) {
     this.workType = workType;
+    return this;
   }
 
   public boolean isProject() {
     return project;
   }
 
-  public void setProject(boolean project) {
+  public Task setProject(boolean project) {
     this.project = project;
+    return this;
   }
 
   public Task addNote(Note note) {
