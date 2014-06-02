@@ -166,6 +166,12 @@ public class ReflectionUtil {
 
   @SuppressWarnings("unchecked")
   public static <T> T newInstance(Class<T> clazz) {
+    return newInstance(clazz, true);
+  }
+
+  @SuppressWarnings("unchecked")
+  public static <T> T newInstance(Class<T> clazz, boolean useObjenesis) {
+    Exception caught = null;
     try {
       Constructor<?>[] constructors = clazz.getDeclaredConstructors();
       for (Constructor<?> constructor : constructors) {
@@ -176,7 +182,12 @@ public class ReflectionUtil {
       }
     } catch (Exception e) {
       log.trace("Could not create a new instance of {} by using the default constructor.", clazz.getName(), e);
+      if (useObjenesis) {
+        return new ObjenesisStd().newInstance(clazz);
+      } else {
+        throw new RuntimeException(e);
+      }
     }
-    return new ObjenesisStd().newInstance(clazz);
+    throw new IllegalStateException("Cannot get here!");
   }
 }
