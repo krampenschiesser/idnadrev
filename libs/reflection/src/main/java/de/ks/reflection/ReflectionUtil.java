@@ -182,12 +182,12 @@ public class ReflectionUtil {
       }
     } catch (Exception e) {
       log.trace("Could not create a new instance of {} by using the default constructor.", clazz.getName(), e);
-      if (useObjenesis) {
-        return new ObjenesisStd().newInstance(clazz);
-      } else {
-        throw new RuntimeException(e);
-      }
+      caught = e;
     }
-    throw new IllegalStateException("Cannot get here!");
+    if (useObjenesis) {
+      return new ObjenesisStd().newInstance(clazz);
+    } else {
+      throw new RuntimeException(caught);
+    }
   }
 }
