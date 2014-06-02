@@ -15,6 +15,7 @@
  */
 package de.ks.beagle.selection;
 
+import com.google.common.base.Ascii;
 import de.ks.activity.ActivityController;
 import de.ks.executor.JavaFXExecutorService;
 import de.ks.executor.SuspendablePooledExecutorService;
@@ -83,8 +84,10 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
       }
     });
     tableView.setOnKeyTyped((event) -> {
+      String character = event.getCharacter();
       KeyCode code = event.getCode();
-      if (code == KeyCode.ENTER) {
+      String esc = String.valueOf((char) Ascii.ESC);
+      if (code == KeyCode.ENTER || code == KeyCode.ESCAPE || character.equals("\n") || character.equals("\r") || character.equals(esc)) {
         submit();
       }
     });
