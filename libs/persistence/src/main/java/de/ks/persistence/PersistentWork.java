@@ -58,7 +58,7 @@ public class PersistentWork {
     return new PersistentWork(function).run();
   }
 
-
+  @SuppressWarnings("unchecked")
   public static <T> void persist(T... t) {
     persist(Arrays.asList(t));
   }
