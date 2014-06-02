@@ -18,16 +18,25 @@ package de.ks.application.fxml;
 
 
 import de.ks.eventsystem.bus.EventBus;
+import de.ks.reflection.ReflectionUtil;
 import javafx.util.Callback;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.CDI;
+import javax.inject.Inject;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.util.List;
 
 /**
  *
  */
 public class ControllerFactory implements Callback<Class<?>, Object> {
+  private static final Logger log = LoggerFactory.getLogger(ControllerFactory.class);
+
   @Override
   public Object call(Class<?> clazz) {
     BeanManager beanManager = CDI.current().getBeanManager();
@@ -37,9 +46,20 @@ public class ControllerFactory implements Callback<Class<?>, Object> {
       }
     }
 
-    Object instance = CDI.current().select(clazz).get();
+    Object object;
+    Instance<?> instance = CDI.current().select(clazz);
+    if (instance.isUnsatisfied()) {
+      List<Field> injectedFields = ReflectionUtil.getAllFields(clazz, (f) -> f.isAnnotationPresent(Inject.class));
+      if (!injectedFields.isEmpty()) {
+        throw new IllegalArgumentException("Unable to instanitate class that defines injected fields but is no bean.");
+      } else {
+        return ReflectionUtil.newInstance(clazz, false);
+      }
+    } else {
+      object = instance.get();
+    }
     EventBus eventBus = CDI.current().select(EventBus.class).get();
-    eventBus.register(instance);
-    return instance;
+    eventBus.register(object);
+    return object;
   }
 }
