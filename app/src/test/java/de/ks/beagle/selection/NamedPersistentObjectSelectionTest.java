@@ -69,7 +69,33 @@ public class NamedPersistentObjectSelectionTest {
   }
 
   @Test
-  public void testFilteringForO() throws Exception {
+  public void testFilterWildcards() throws Exception {
+    selection.getInput().setText("e");
+    List<Thought> thoughts = selection.readEntities();
+    assertEquals(0, thoughts.size());
+
+    selection.getInput().setText("*e");
+    thoughts = selection.readEntities();
+    assertEquals(3, thoughts.size());
+
+    selection.getInput().setText("*es");
+    thoughts = selection.readEntities();
+    assertEquals(2, thoughts.size());
+
+    selection.getInput().setText("*s?1");
+    thoughts = selection.readEntities();
+    assertEquals(1, thoughts.size());
+    assertEquals("test1", thoughts.get(0).getName());
+
+    selection.getInput().setText("*s?2");
+    thoughts = selection.readEntities();
+    assertEquals(1, thoughts.size());
+    assertEquals("test2", thoughts.get(0).getName());
+
+  }
+
+  @Test
+  public void testFilteringForOther() throws Exception {
     selection.getInput().setText("other");
     List<Thought> thoughts = selection.readEntities();
     assertEquals(1, thoughts.size());

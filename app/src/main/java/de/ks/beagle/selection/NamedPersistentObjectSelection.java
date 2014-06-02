@@ -72,6 +72,7 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
       T value = param.getValue();
       return new SimpleStringProperty(value.getName());
     });
+    column.prefWidthProperty().bind(tableView.widthProperty());
     tableView.getColumns().add(column);
     tableView.setItems(FXCollections.observableArrayList());
 
@@ -134,7 +135,7 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
 
   protected List<T> readEntities() {
     String nameProperty = PropertyPath.property(NamedPersistentObject.class, (o) -> o.getName());
-    String name = input.textProperty().getValueSafe() + "%";
+    String name = (input.textProperty().getValueSafe() + "%").replaceAll("\\*", "%").replaceAll("\\?", "_");
     return PersistentWork.from(entityClass, (root, query, builder) -> {
       Predicate like = builder.like(root.get(nameProperty), name);
       if (filter != null) {
