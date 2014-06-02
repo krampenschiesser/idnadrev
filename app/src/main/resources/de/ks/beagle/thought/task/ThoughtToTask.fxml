@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.StackPane?>
+<TabPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"
+         tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+    <tabs>
+        <Tab text="%thought.totask.main.title">
+            <content>
+                <StackPane prefHeight="150.0" prefWidth="200.0">
+                    <children>
+                        <fx:include fx:id="mainInfo" source="MainTaskInfo.fxml"/>
+                    </children>
+                </StackPane>
+            </content>
+        </Tab>
+        <Tab text="%thought.totask.schedule.title">
+            <content>
+                <StackPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"/>
+            </content>
+        </Tab>
+    </tabs>
+</TabPane>

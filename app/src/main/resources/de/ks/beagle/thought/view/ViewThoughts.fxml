@@ -5,9 +5,8 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<StackPane id="StackPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity"
-           minWidth="-Infinity" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="de.ks.beagle.thought.view.ViewThoughts">
+<StackPane id="StackPane" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8"
+           xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.beagle.thought.view.ViewThoughts">
     <children>
         <VBox prefHeight="-1.0" prefWidth="-1.0" spacing="5.0">
             <children>
