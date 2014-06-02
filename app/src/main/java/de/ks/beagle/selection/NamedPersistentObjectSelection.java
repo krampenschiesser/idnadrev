@@ -46,6 +46,7 @@ import javax.enterprise.inject.spi.CDI;
 import javax.persistence.criteria.Predicate;
 import java.net.URL;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 
@@ -135,9 +136,13 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
 
   protected List<T> readEntities() {
     String nameProperty = PropertyPath.property(NamedPersistentObject.class, (o) -> o.getName());
-    String name = (input.textProperty().getValueSafe() + "%").replaceAll("\\*", "%").replaceAll("\\?", "_");
+    String name = (input.textProperty().getValueSafe() + "%")//
+            .replaceAll("\\*", "%")//
+            .replaceAll("\\?", "_")//
+            .toLowerCase(Locale.getDefault());
+
     return PersistentWork.from(entityClass, (root, query, builder) -> {
-      Predicate like = builder.like(root.get(nameProperty), name);
+      Predicate like = builder.like(builder.lower(root.get(nameProperty)), name);
       if (filter != null) {
         filter.accept(root, query, builder);
         query.where(query.getRestriction(), like);

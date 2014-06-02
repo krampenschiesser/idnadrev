@@ -95,6 +95,14 @@ public class NamedPersistentObjectSelectionTest {
   }
 
   @Test
+  public void testCaseInsensitive() throws Exception {
+    selection.getInput().setText("TE");
+    List<Thought> thoughts = selection.readEntities();
+    assertEquals(2, thoughts.size());
+
+  }
+
+  @Test
   public void testFilteringForOther() throws Exception {
     selection.getInput().setText("other");
     List<Thought> thoughts = selection.readEntities();
