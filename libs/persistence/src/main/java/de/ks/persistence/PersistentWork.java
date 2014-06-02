@@ -25,9 +25,9 @@ import javax.enterprise.inject.spi.CDI;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -58,8 +58,13 @@ public class PersistentWork {
     return new PersistentWork(function).run();
   }
 
-  public static <T> void persist(T t) {
-    run((em) -> em.persist(t));
+
+  public static <T> void persist(T... t) {
+    persist(Arrays.asList(t));
+  }
+
+  public static <T> void persist(List<T> all) {
+    run((em) -> all.forEach((t) -> em.persist(t)));
   }
 
   public static void deleteAllOf(Class<?> clazz) {
@@ -77,7 +82,7 @@ public class PersistentWork {
     return from(clazz, null, resultWalker);
   }
 
-  public static <T> List<T> from(Class<T> clazz, BiConsumer<Root<T>, CriteriaQuery<T>> consumer, Consumer<T> resultWalker) {
+  public static <T> List<T> from(Class<T> clazz, QueryConsumer<T> consumer, Consumer<T> resultWalker) {
     return read((em) -> {
       CriteriaQuery<T> query = (CriteriaQuery<T>) em.getCriteriaBuilder().createQuery(clazz);
 
@@ -85,7 +90,7 @@ public class PersistentWork {
       query.select(root);
 
       if (consumer != null) {
-        consumer.accept(root, query);
+        consumer.accept(root, query, em.getCriteriaBuilder());
       }
 
       List<T> resultList = em.createQuery(query).getResultList();
