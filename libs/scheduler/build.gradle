@@ -20,6 +20,8 @@ dependencies {
     compile project(":libs:executor")
     compile "$jpa2api"
 
-    testRuntime "org.apache.bval:bval-jsr303:$bval"
     testCompile project(":libs:testutil")
+
+    testRuntime "org.hibernate:hibernate-validator:$hibernateValidation"
+    testRuntime "com.sun.el:el-ri:1.0"
 }

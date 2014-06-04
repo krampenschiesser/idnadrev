@@ -18,5 +18,6 @@ dependencies {
     compile project(":libs:i18n")
     compile project(":libs:eventsystem")
 
-    testRuntime "org.apache.bval:bval-jsr303:$bval"
+    testRuntime "org.hibernate:hibernate-validator:$hibernateValidation"
+    testRuntime "com.sun.el:el-ri:1.0"
 }

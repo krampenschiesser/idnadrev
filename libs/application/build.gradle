@@ -34,5 +34,7 @@ dependencies {
 
 
     testCompile project(":libs:testutil")
-    testRuntime "org.apache.bval:bval-jsr303:$bval"
+
+    testRuntime "org.hibernate:hibernate-validator:$hibernateValidation"
+    testRuntime "com.sun.el:el-ri:1.0"
 }
