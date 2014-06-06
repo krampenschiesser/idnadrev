@@ -106,6 +106,16 @@ public class LocalizedTest {
     assertEquals("doesNotExistNoDots = doesNotExistNoDots", property);
   }
 
+  @Test
+  public void testNullParameter() throws Exception {
+    Localized.get("doesNot.Exist.Dots", null);
+  }
+
+  @Test
+  public void testNullParameterArray() throws Exception {
+    Localized.get("doesNot.Exist.Dots", null, null);
+  }
+
   @Subscribe
   public void onLanguageChange(LanguageChangedEvent event) {
     this.event = event;

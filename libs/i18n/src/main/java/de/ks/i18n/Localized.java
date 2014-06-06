@@ -16,7 +16,6 @@
 
 package de.ks.i18n;
 
-
 import de.ks.eventsystem.bus.EventBus;
 import de.ks.i18n.event.LanguageChangedEvent;
 
@@ -80,12 +79,19 @@ public class Localized {
    */
   public static String get(String key, Object... args) {
     String string = getBundle().getString(key);
-
-    for (int i = 0; i < args.length; i++) {
-      Object arg = args[i];
-      string = string.replace("{" + i + "}", arg.toString());
+    if (args == null) {
+      return string;
+    } else {
+      for (int i = 0; i < args.length; i++) {
+        Object arg = args[i];
+        if (arg == null) {
+          string = string.replace("{" + i + "}", "null");
+        } else {
+          string = string.replace("{" + i + "}", arg.toString());
+        }
+      }
+      return string;
     }
-    return string;
   }
 
   public static String get(Field field) {
