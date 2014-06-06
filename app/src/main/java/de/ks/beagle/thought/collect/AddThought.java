@@ -16,12 +16,12 @@
 
 package de.ks.beagle.thought.collect;
 
-
 import com.google.common.eventbus.Subscribe;
 import de.ks.activity.ActivityLoadFinishedEvent;
 import de.ks.activity.ModelBound;
 import de.ks.beagle.entity.Thought;
 import de.ks.beagle.thought.collect.file.FileThoughtViewController;
+import de.ks.validation.ValidationRegistry;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -35,6 +35,7 @@ import javafx.scene.layout.GridPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -58,10 +59,12 @@ public class AddThought implements Initializable {
   protected FileThoughtViewController fileViewController;
   @FXML
   protected GridPane fileView;
+  @Inject
+  ValidationRegistry validationRegistry;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    save.disableProperty().bind(name.textProperty().isEmpty());
+    bindValidation();
     fileViewController.getFiles().addListener((ListChangeListener<File>) change -> {
       ObservableList<? extends File> list = change.getList();
       if (list.size() == 1) {
@@ -73,6 +76,10 @@ public class AddThought implements Initializable {
         }
       }
     });
+  }
+
+  private void bindValidation() {
+    save.disableProperty().bind(validationRegistry.getValidationSupport().invalidProperty());
   }
 
   @FXML
