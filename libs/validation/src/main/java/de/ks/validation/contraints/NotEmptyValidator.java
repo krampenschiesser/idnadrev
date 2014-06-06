@@ -29,7 +29,7 @@ public class NotEmptyValidator implements ConstraintValidator<NotEmpty, Object> 
 
   public boolean isValid(Object value, ConstraintValidatorContext context) {
     if (value == null) {
-      return true;
+      return false;
     }
     if (value.getClass().isArray()) {
       return Array.getLength(value) > 0;
