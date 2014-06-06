@@ -18,6 +18,7 @@ package de.ks.binding;
 import com.google.common.primitives.Primitives;
 import de.ks.javafx.converter.LastValueConverter;
 import de.ks.reflection.ReflectionUtil;
+import de.ks.validation.ValidationRegistry;
 import javafx.beans.property.Property;
 import javafx.beans.property.StringProperty;
 import javafx.beans.property.adapter.*;
@@ -37,6 +38,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
@@ -49,6 +51,8 @@ public class Binding {
   private final Map<String, Pair<Class<?>, Node>> propertyCandidates = new HashMap<>();
   private final Map<String, JavaBeanProperty<?>> properties = new HashMap<>();
   private final Set<Pair<JavaBeanProperty<?>, Property<?>>> bindings = new HashSet<>();
+  @Inject
+  ValidationRegistry validationRegistry;
 
   public void addBoundProperty(String name, Class<?> modelClass, Node node) {
     this.propertyCandidates.put(name, Pair.of(modelClass, node));
@@ -99,6 +103,7 @@ public class Binding {
       Class<?> fieldType = field.getType();
       JavaBeanProperty<?> property = getProperty(name, fieldType, object);
       if (property != null) {
+        validationRegistry.addProperty(property, node);
         this.properties.put(name, property);
         bindNode(node, property, fieldType);
       }
@@ -186,7 +191,6 @@ public class Binding {
     return null;
   }
 
-
   private void bindNode(Node node, JavaBeanProperty<?> property, Class<?> fieldType) {
     if (node instanceof TextInputControl) {
       TextInputControl textInputControl = (TextInputControl) node;
@@ -212,7 +216,6 @@ public class Binding {
     }
     bindings.add(Pair.of(property, stringProperty));
   }
-
 
   private StringConverter getStringConverter(Class<?> type) {
     type = Primitives.wrap(type);

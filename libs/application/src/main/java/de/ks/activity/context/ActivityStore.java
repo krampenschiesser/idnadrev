@@ -16,10 +16,12 @@
 
 package de.ks.activity.context;
 
-
 import de.ks.binding.Binding;
 import de.ks.datasource.DataSource;
 import javafx.beans.property.SimpleObjectProperty;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
 /**
  *
@@ -27,10 +29,12 @@ import javafx.beans.property.SimpleObjectProperty;
 @ActivityScoped
 public class ActivityStore {
   private final SimpleObjectProperty<Object> model = new SimpleObjectProperty<>();
-  private final Binding binding = new Binding();
+  @Inject
+  private Binding binding;
   private DataSource<?> datasource;
 
-  public ActivityStore() {
+  @PostConstruct
+  public void initialize() {
     model.addListener(binding::bindChangedModel);
   }
 
@@ -43,11 +47,9 @@ public class ActivityStore {
     this.model.set(model);
   }
 
-
   public SimpleObjectProperty<?> getModelProperty() {
     return model;
   }
-
 
   public Binding getBinding() {
     return binding;
