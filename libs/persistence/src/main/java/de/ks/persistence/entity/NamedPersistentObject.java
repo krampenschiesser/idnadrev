@@ -16,18 +16,15 @@
 
 package de.ks.persistence.entity;
 
-
 import de.ks.validation.contraints.NotEmpty;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @MappedSuperclass
 public abstract class NamedPersistentObject<T extends NamedPersistentObject<T>> extends AbstractPersistentObject<T> {
   private static final long serialVersionUID = 1L;
-  @NotNull
   @NotEmpty
   @Column(nullable = false, unique = true, length = 4096)
   @Size(max = 4096)
