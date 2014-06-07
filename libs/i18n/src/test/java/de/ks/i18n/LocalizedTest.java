@@ -108,7 +108,7 @@ public class LocalizedTest {
 
   @Test
   public void testNullParameter() throws Exception {
-    Localized.get("doesNot.Exist.Dots", null);
+    Localized.get("doesNot.Exist.Dots", (Object[]) null);
   }
 
   @Test
