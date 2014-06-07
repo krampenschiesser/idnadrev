@@ -84,7 +84,9 @@ public class AddThought implements Initializable {
 
   @FXML
   void saveThought(ActionEvent e) {
-    save.getOnAction().handle(e);
+    if (!save.isDisabled()) {
+      save.getOnAction().handle(e);
+    }
   }
 
   @FXML
