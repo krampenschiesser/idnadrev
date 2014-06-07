@@ -16,27 +16,26 @@
 
 package de.ks.activity.callback;
 
-import de.ks.activity.Activity;
+import de.ks.activity.ActivityCfg;
 import de.ks.activity.ModelBound;
 import de.ks.activity.context.ActivityStore;
-import de.ks.application.fxml.LoaderCallback;
+import de.ks.activity.initialization.LoaderCallback;
 import de.ks.reflection.ReflectionUtil;
 import javafx.scene.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.enterprise.inject.spi.CDI;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
 public class InitializeModelBindings extends LoaderCallback {
   private static final Logger log = LoggerFactory.getLogger(InitializeModelBindings.class);
-  private final Activity activity;
-  private final ActivityStore store;
+  private final ActivityCfg activityCfg;
 
-  public InitializeModelBindings(Activity activity, ActivityStore store) {
-    this.activity = activity;
-    this.store = store;
+  public InitializeModelBindings(ActivityCfg activityCfg) {
+    this.activityCfg = activityCfg;
   }
 
   @Override
@@ -60,8 +59,14 @@ public class InitializeModelBindings extends LoaderCallback {
       if (found != null) {
         log.debug("Found node {} for property '{}' for model class '{}' in {}", found, name, modelClass.getSimpleName(), node);
 
-        store.getBinding().addBoundProperty(name, modelClass, found);
+        ActivityStore activityStore = CDI.current().select(ActivityStore.class).get();
+        activityStore.getBinding().addBoundProperty(name, modelClass, found);
       }
     }
+  }
+
+  @Override
+  public void doInFXThread(Object controller, Node node) {
+
   }
 }

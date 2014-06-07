@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-package de.ks.application.fxml;
-
+package de.ks.activity.initialization;
 
 import de.ks.reflection.ReflectionUtil;
 import javafx.event.ActionEvent;
@@ -26,12 +25,11 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.function.BiConsumer;
 
 /**
  *
  */
-public abstract class LoaderCallback implements BiConsumer<Object, Node> {
+public abstract class LoaderCallback {
   private static final Logger log = LoggerFactory.getLogger(LoaderCallback.class);
 
   protected void addHandlerToNode(Node node, String id, EventHandler<ActionEvent> handler) {
@@ -51,5 +49,9 @@ public abstract class LoaderCallback implements BiConsumer<Object, Node> {
       log.error("Could execute loader callback", e);
     }
   }
+
+  public abstract void accept(Object controller, Node node);
+
+  public abstract void doInFXThread(Object controller, Node node);
 
 }

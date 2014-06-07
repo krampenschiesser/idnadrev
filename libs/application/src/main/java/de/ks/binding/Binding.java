@@ -19,6 +19,7 @@ import com.google.common.primitives.Primitives;
 import de.ks.javafx.converter.LastValueConverter;
 import de.ks.reflection.ReflectionUtil;
 import de.ks.validation.ValidationRegistry;
+import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.StringProperty;
 import javafx.beans.property.adapter.*;
@@ -77,9 +78,11 @@ public class Binding {
   }
 
   public void fireValueChangedEvent() {
-    for (JavaBeanProperty<?> property : properties.values()) {
-      property.fireValueChangedEvent();
-    }
+    Platform.runLater(() -> {
+      for (JavaBeanProperty<?> property : properties.values()) {
+        property.fireValueChangedEvent();
+      }
+    });
   }
 
   public void bind(Object object) {

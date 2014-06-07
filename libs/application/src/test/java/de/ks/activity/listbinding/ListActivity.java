@@ -15,9 +15,9 @@
  */
 package de.ks.activity.listbinding;
 
-import de.ks.activity.Activity;
+import de.ks.activity.ActivityCfg;
 
-public class ListActivity extends Activity {
+public class ListActivity extends ActivityCfg {
   public ListActivity() {
     super(DummyDetailItemDataSource.class, SimpleListView.class);
   }

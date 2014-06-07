@@ -16,8 +16,7 @@
 
 package de.ks.activity.context;
 
-
-import de.ks.activity.Activity;
+import de.ks.activity.ActivityCfg;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,7 +26,7 @@ public class ActivityHolder {
   protected final String id;
   protected final Map<Class<?>, StoredBean> objectStore = new ConcurrentHashMap<>();
   protected final AtomicInteger count = new AtomicInteger(0);
-  protected Activity activity;
+  protected ActivityCfg activityCfg;
 
   public ActivityHolder(String id) {
     this.id = id;

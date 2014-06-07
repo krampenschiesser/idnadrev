@@ -16,14 +16,12 @@
 
 package de.ks.activity;
 
-
-import de.ks.activity.callback.*;
 import de.ks.activity.context.ActivityContext;
 import de.ks.activity.context.ActivityStore;
 import de.ks.activity.executor.ActivityExecutor;
+import de.ks.activity.initialization.ActivityInitialization;
 import de.ks.activity.link.ViewLink;
 import de.ks.application.Navigator;
-import de.ks.application.fxml.DefaultLoader;
 import de.ks.datasource.DataSource;
 import de.ks.eventsystem.bus.EventBus;
 import de.ks.executor.JavaFXExecutorService;
@@ -57,9 +55,11 @@ public class ActivityController {
   protected Instance<Navigator> navigator;
   @Inject
   protected JavaFXExecutorService javafxExecutor;
+  @Inject
+  protected ActivityInitialization initialization;
 
-  protected final Deque<Activity> activities = new LinkedList<>();
-  protected final Map<String, Activity> registeredActivities = new HashMap<>();
+  protected final Deque<ActivityCfg> activities = new LinkedList<>();
+  protected final Map<String, ActivityCfg> registeredActivities = new HashMap<>();
   protected final ReentrantLock lock = new ReentrantLock(true);
   private CompletableFuture<?> finishingFutures;
 
@@ -70,10 +70,10 @@ public class ActivityController {
   public void resumePreviousActivity(Object hint) {
     lock.lock();
     try {
-      Iterator<Activity> activityIterator = activities.descendingIterator();
-      Activity current = activityIterator.next();
+      Iterator<ActivityCfg> activityIterator = activities.descendingIterator();
+      ActivityCfg current = activityIterator.next();
       if (activityIterator.hasNext()) {
-        Activity previous = activityIterator.next();
+        ActivityCfg previous = activityIterator.next();
         log.info("Resuming previous activity {}, current={}", previous.getClass().getName(), current.getClass().getName());
         stop(current);
         resume(previous, hint);
@@ -86,15 +86,15 @@ public class ActivityController {
     }
   }
 
-  private void resume(Activity activity, Object dataSourceHint) {
-    String id = activity.getClass().getName();
+  private void resume(ActivityCfg activityCfg, Object dataSourceHint) {
+    String id = activityCfg.getClass().getName();
     context.startActivity(id);
     executor.startOrResume(id);
     log.info("Resuming activity {}", id);
-    DataSource dataSource = CDI.current().select(activity.getDataSource()).get();
+    DataSource dataSource = CDI.current().select(activityCfg.getDataSource()).get();
     dataSource.setLoadingHint(dataSourceHint);
     store.setDatasource(dataSource);
-    select(activity, activity.getInitialController(), Navigator.MAIN_AREA);
+    select(activityCfg, activityCfg.getInitialController(), Navigator.MAIN_AREA);
     reload();
     log.info("Resumed activity {} with hint", id, dataSourceHint);
   }
@@ -120,91 +120,60 @@ public class ActivityController {
     });
   }
 
-  public <T extends Activity> T start(Class<T> activityClass) {
+  public <T extends ActivityCfg> T start(Class<T> activityClass) {
     return start(activityClass, null, null);
   }
 
-  public <T extends Activity> T start(Class<T> activityClass, Function toConverter, Function returnConverter) {
+  public <T extends ActivityCfg> T start(Class<T> activityClass, Function toConverter, Function returnConverter) {
     T activity = CDI.current().select(activityClass).get();
-    start(activity, toConverter, returnConverter, true);
+    start(activity, toConverter, returnConverter);
     return activity;
   }
 
-  public void start(Activity activity) {
-    start(activity, null, null, true);
+  public void start(ActivityCfg activityCfg) {
+    start(activityCfg, null, null);
   }
 
   @SuppressWarnings("unchecked")
-  public void start(Activity activity, Function toConverter, Function returnConverter, boolean loadControllers) {
+  public void start(ActivityCfg activityCfg, Function toConverter, Function returnConverter) {
     lock.lock();
     try {
       Object dataSourceHint = null;
       if (context.hasCurrentActivity() && toConverter != null) {
         dataSourceHint = toConverter.apply(store.getModel());
       }
-      activity.setReturnConverter(returnConverter);
-      String id = activity.getClass().getName();
+      activityCfg.setReturnConverter(returnConverter);
+      String id = activityCfg.getClass().getName();
       context.startActivity(id);
       executor.startOrResume(id);
+      activities.add(activityCfg);
+      registeredActivities.put(id, activityCfg);
 
       log.info("Starting activity {}", id);
-      DataSource dataSource = CDI.current().select(activity.getDataSource()).get();
+      DataSource dataSource = CDI.current().select(activityCfg.getDataSource()).get();
       dataSource.setLoadingHint(dataSourceHint);
       store.setDatasource(dataSource);
 
-      if (loadControllers) {
-        DefaultLoader<Node, Object> loader = new DefaultLoader<>(activity.getInitialController(), executor.getActivityExecutorService(id));
-        addCallbacks(loader, activity);
-        activity.getPreloads().put(activity.getInitialController(), loader);
-      }
-      select(activity, activity.getInitialController(), Navigator.MAIN_AREA);
-      if (loadControllers) {
-        loadNextControllers(activity);
-      }
+      initialization.loadActivity(activityCfg);
+      select(activityCfg, activityCfg.getInitialController(), Navigator.MAIN_AREA);
 
-      activities.add(activity);
-      registeredActivities.put(id, activity);
       reload();
       log.info("Started activity {}", id);
     } finally {
       lock.unlock();
     }
+
   }
 
-  private void addCallbacks(DefaultLoader<Node, Object> loader, Activity activity) {
-    loader.addCallback(new InitializeViewLinks(activity, activity.getViewLinks(), this));
-    loader.addCallback(new InitializeActivityLinks(activity.getActivityLinks(), this));
-    loader.addCallback(new InitializeTaskLinks(activity.getTaskLinks(), activity, this));
-    loader.addCallback(new InitializeModelBindings(activity, store));
-    loader.addCallback(new InitializeListBindings(activity, store));
+  public void select(ActivityCfg activityCfg, ViewLink link) {
+    select(activityCfg, link.getTargetController(), link.getPresentationArea());
   }
 
-
-  public void select(Activity activity, ViewLink link) {
-    select(activity, link.getTargetController(), link.getPresentationArea());
+  public void select(ActivityCfg activityCfg, Class<?> targetController, String presentationArea) {
+    Node view = initialization.getViewForController(targetController);
+    navigator.get().present(presentationArea, view);
+    activityCfg.setCurrentController(targetController);
   }
-
-  public void select(Activity activity, Class<?> targetController, String presentationArea) {
-    DefaultLoader<Node, Object> loader = activity.getPreloads().get(targetController);
-    navigator.get().present(presentationArea, loader.getView());
-    activity.setCurrentController(targetController);
-  }
-
-  protected void loadNextControllers(Activity activity) {
-    for (ViewLink next : activity.getViewLinks()) {
-      loadController(activity, next.getSourceController());
-      loadController(activity, next.getTargetController());
-    }
-  }
-
-  private void loadController(Activity activity, Class<?> controller) {
-    if (!activity.getPreloads().containsKey(controller)) {
-      DefaultLoader<Node, Object> loader = new DefaultLoader<>(controller, executor.getActivityExecutorService(activity.getId()));
-      activity.getPreloads().put(controller, loader);
-      addCallbacks(loader, activity);
-    }
-  }
-
 
   public void waitForDataSourceLoading() {
     lock.lock();
@@ -215,7 +184,7 @@ public class ActivityController {
     }
   }
 
-  public Activity getCurrentActivity() {
+  public ActivityCfg getCurrentActivity() {
     return activities.getLast();
   }
 
@@ -223,16 +192,15 @@ public class ActivityController {
     return activities.getLast().getId();
   }
 
-  public void stop(Class<? extends Activity> activityClass) {
+  public void stop(Class<? extends ActivityCfg> activityClass) {
     lock.lock();
     try {
       String activityId = activityClass.getName();
-      Activity activity = registeredActivities.get(activityId);
-      if (activity == null) {
+      ActivityCfg activityCfg = registeredActivities.get(activityId);
+      if (activityCfg == null) {
         log.warn("Could not stop unregistered activity {}", activityId);
         return;
       }
-      activity.waitForInitialization();
       waitForDataSourceLoading();
       String id = activityId;
       executor.shutdown(id);
@@ -242,8 +210,8 @@ public class ActivityController {
     }
   }
 
-  public void stop(Activity activity) {
-    stop(activity.getClass());
+  public void stop(ActivityCfg activityCfg) {
+    stop(activityCfg.getClass());
 
   }
 
@@ -253,5 +221,30 @@ public class ActivityController {
 
   public SuspendablePooledExecutorService getCurrentExecutorService() {
     return executor.getActivityExecutorService(getCurrentActivityId());
+  }
+
+  public JavaFXExecutorService getJavaFXExecutor() {
+    return javafxExecutor;
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T extends Node> T getCurrentNode() {
+    Class<?> currentController = getCurrentActivity().getCurrentController();
+    return getNodeForController(currentController);
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T extends Node> T getNodeForController(Class<?> controller) {
+    return (T) initialization.getViewForController(controller);
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T> T getCurrentController() {
+    return (T) getControllerInstance(getCurrentActivity().getCurrentController());
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T> T getControllerInstance(Class<?> controller) {
+    return (T) initialization.getControllerInstance(controller);
   }
 }

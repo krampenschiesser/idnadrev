@@ -17,7 +17,7 @@ package de.ks.activity.listbinding;
 
 import de.ks.JunitMatchers;
 import de.ks.LauncherRunner;
-import de.ks.activity.Activity;
+import de.ks.activity.ActivityCfg;
 import de.ks.activity.ActivityController;
 import de.ks.activity.DetailItem;
 import de.ks.activity.context.ActivityContext;
@@ -41,26 +41,25 @@ public class ListBindingTest {
   protected Navigator navigator;
   @Inject
   protected ActivityController activityController;
-  protected Activity activity;
+  protected ActivityCfg activityCfg;
 
   @Before
   public void setUp() throws Exception {
     navigator = Navigator.registerWithBorderPane(Launcher.instance.getService(JavaFXService.class).getStage());
-    activity = new ListActivity();
-    activityController.start(activity);
+    activityCfg = new ListActivity();
+    activityController.start(activityCfg);
     activityController.waitForDataSourceLoading();
   }
 
   @After
   public void tearDown() throws Exception {
-    activityController.stop(activity);
+    activityController.stop(activityCfg);
     ActivityContext.stopAll();
   }
 
-
   @Test
   public void testBindListDataSource() throws Exception {
-    StackPane pane = activity.getView(SimpleListView.class);
+    StackPane pane = activityController.getCurrentNode();
     @SuppressWarnings("unchecked") TableView<DetailItem> tableView = (TableView<DetailItem>) pane.getChildren().get(0);
     assertTrue(JunitMatchers.withRetry(() -> 2 == tableView.getItems().size()));
     assertEquals(2, tableView.getColumns().size());

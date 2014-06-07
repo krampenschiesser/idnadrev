@@ -16,24 +16,17 @@
 
 package de.ks.application.fxml;
 
-
-import de.ks.executor.JavaFXExecutorService;
 import de.ks.i18n.Localized;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
-import javafx.fxml.LoadException;
 import javafx.scene.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.inject.spi.CDI;
 import java.io.IOException;
 import java.net.URL;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.function.BiConsumer;
-import java.util.function.Supplier;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @param <V> the view
@@ -41,98 +34,60 @@ import java.util.function.Supplier;
  */
 public class DefaultLoader<V extends Node, C> {
   private static final Logger log = LoggerFactory.getLogger(DefaultLoader.class);
-  private final ExecutorService service;
   private final URL fxmlFile;
   private CompletableFuture<FXMLLoader> loaderFuture;
   private CompletableFuture<Void> allCallbacks;
+  private FXMLLoader loader;
+  protected final AtomicBoolean loaded = new AtomicBoolean(false);
 
   public DefaultLoader(Class<?> modelController) {
-    this(modelController, null);
+    this(modelController.getResource(modelController.getSimpleName() + ".fxml"));
   }
 
   public DefaultLoader(URL fxmlFile) {
-    this(fxmlFile, null);
-  }
-
-  public DefaultLoader(Class<?> modelController, ExecutorService executor) {
-    this(modelController.getResource(modelController.getSimpleName() + ".fxml"), executor);
-  }
-
-  public DefaultLoader(URL fxmlFile, ExecutorService executor) {
-    if (executor == null) {
-      service = CDI.current().select(de.ks.executor.ExecutorService.class).get();
-    } else {
-      service = executor;
-    }
-
     this.fxmlFile = fxmlFile;
     if (fxmlFile == null) {
       log.error("FXML file not found, is null!");
       throw new IllegalArgumentException("FXML file not found, is null!");
     }
-
-    Supplier<FXMLLoader> supplier = () -> {
-      try {
-        FXMLLoader loader = new FXMLLoader(fxmlFile, Localized.getBundle(), new JavaFXBuilderFactory(), new ControllerFactory());
-        log.debug("Loading fxml file {}", fxmlFile);
-        loader.load();
-        return loader;
-      } catch (IOException e) {
-        log.error("Could not load fxml file {}", fxmlFile, e);
-        throw new RuntimeException(e);
-      }
-    };
-    loaderFuture = CompletableFuture.supplyAsync(supplier, service).exceptionally((t) -> {
-      if (t.getCause() instanceof RuntimeException && t.getCause().getCause() instanceof LoadException) {
-        log.info("Last load of {} failed, will try again in JavaFX Thread", fxmlFile);
-        return new JavaFXExecutorService().invokeInJavaFXThread(() -> supplier.get());
-      }
-      throw new RuntimeException(t);
-    });
+    loader = new FXMLLoader(fxmlFile, Localized.getBundle(), new JavaFXBuilderFactory(), new ControllerFactory());
   }
 
-  public void addCallback(BiConsumer<Object, Node> callback) {
-    CompletableFuture<Object> controllerFuture = loaderFuture.thenApply(FXMLLoader::getController);
-    CompletableFuture<Node> nodeFuture = loaderFuture.thenApply(FXMLLoader::getRoot);
-
-    CompletableFuture<Void> asyncCall = controllerFuture.thenAcceptBothAsync(nodeFuture, callback, service);
-    asyncCall.thenRun(() -> log.trace("Done with {} for {}", callback, this.fxmlFile));
-    if (allCallbacks == null) {
-      allCallbacks = asyncCall;
-    } else {
-      allCallbacks = CompletableFuture.allOf(allCallbacks, asyncCall);
+  public FXMLLoader load() {
+    try {
+      if (loaded.compareAndSet(false, true)) {
+        log.debug("Loading fxml file {}", fxmlFile);
+        loader.load();
+        loaded.set(true);
+      }
+    } catch (IOException e) {
+      log.error("Could not load fxml file {}", fxmlFile, e);
+      throw new RuntimeException(e);
     }
+    return loader;
   }
 
   public V getView() {
-    waitForLoading();
     return getLoader().getRoot();
   }
 
   private FXMLLoader getLoader() {
-    try {
-      return loaderFuture.get();
-    } catch (InterruptedException | ExecutionException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  public void waitForLoading() {
-    if (allCallbacks == null) {
-      log.trace("Waiting simple fxml loading");
-      loaderFuture.join();
-    } else {
-      log.trace("Waiting for all callbacks {}", allCallbacks);
-      allCallbacks.join();
-    }
-  }
-
-  public boolean isLoaded() {
-    return allCallbacks.isDone();
+    load();
+    return loader;
   }
 
   public C getController() {
-    waitForLoading();
     return getLoader().getController();
+  }
+
+  public URL getFxmlFile() {
+    return fxmlFile;
+  }
+
+  @Override
+  public String toString() {
+    return "DefaultLoader{" +
+            "fxmlFile=" + fxmlFile +
+            '}';
   }
 }

@@ -67,7 +67,7 @@ public class CollectThoughtTest {
     ThoughtActivity activity = controller.start(ThoughtActivity.class);
     controller.waitForDataSourceLoading();
 
-    addThought = activity.getCurrentController();
+    addThought = controller.getCurrentController();
     FXPlatform.invokeLater(() -> {
       Clipboard.getSystemClipboard().clear();
     });

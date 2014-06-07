@@ -16,12 +16,11 @@
 
 package de.ks.activity.callback;
 
-
-import de.ks.activity.Activity;
+import de.ks.activity.ActivityCfg;
 import de.ks.activity.ActivityController;
 import de.ks.activity.context.ActivityStore;
+import de.ks.activity.initialization.LoaderCallback;
 import de.ks.activity.link.TaskLink;
-import de.ks.application.fxml.LoaderCallback;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -39,13 +38,11 @@ import java.util.function.Function;
 public class InitializeTaskLinks extends LoaderCallback {
   private static final Logger log = LoggerFactory.getLogger(InitializeTaskLinks.class);
   private final List<TaskLink> taskLinks;
-  private final Activity activity;
-  private final ActivityController activityController;
+  private final ActivityCfg activityCfg;
 
-  public InitializeTaskLinks(List<TaskLink> taskLinks, Activity activity, ActivityController activityController) {
-    this.taskLinks = taskLinks;
-    this.activity = activity;
-    this.activityController = activityController;
+  public InitializeTaskLinks(ActivityCfg activityCfg) {
+    this.taskLinks = activityCfg.getTaskLinks();
+    this.activityCfg = activityCfg;
   }
 
   @Override
@@ -53,23 +50,29 @@ public class InitializeTaskLinks extends LoaderCallback {
     log.debug("initializing task-links for controller {}", controller);
     taskLinks.stream().filter(taskLink -> taskLink.getSourceController().equals(controller.getClass())).forEach(taskLink -> {
       EventHandler<ActionEvent> handler = (actionEvent) -> {
-        Task<?> task = CDI.current().select(taskLink.getTask()).get();
+        CDI<Object> cdi = CDI.current();
+        Task<?> task = cdi.select(taskLink.getTask()).get();
+        ActivityController activityController = cdi.select(ActivityController.class).get();
         if (taskLink.isEnd()) {
-          Function returnConverter = activity.getReturnConverter();
+          Function returnConverter = activityCfg.getReturnConverter();
           task.setOnSucceeded((e) -> {
-                    if (returnConverter != null) {
-                      @SuppressWarnings("unchecked") Object hint = returnConverter.apply(CDI.current().select(ActivityStore.class).get().getModel());
-                      activityController.resumePreviousActivity(hint);
-                    } else {
-                      activityController.resumePreviousActivity();
-                    }
-                  }
-          );
+            if (returnConverter != null) {
+              @SuppressWarnings("unchecked") Object hint = returnConverter.apply(cdi.select(ActivityStore.class).get().getModel());
+              activityController.resumePreviousActivity(hint);
+            } else {
+              activityController.resumePreviousActivity();
+            }
+          });
         }
         activityController.getCurrentExecutorService().submit(task);
       };
       addHandlerToNode(node, taskLink.getId(), handler);
       log.debug("done with task-link {} for controller {}", taskLink.getId(), controller);
     });
+  }
+
+  @Override
+  public void doInFXThread(Object controller, Node node) {
+
   }
 }

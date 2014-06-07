@@ -15,9 +15,9 @@
  */
 package de.ks.activity.activitylink;
 
-import de.ks.activity.Activity;
+import de.ks.activity.ActivityCfg;
 
-public class ActivityB extends Activity {
+public class ActivityB extends ActivityCfg {
   public ActivityB() {
     super(ActivityBDS.class, ActivityBController.class);
 

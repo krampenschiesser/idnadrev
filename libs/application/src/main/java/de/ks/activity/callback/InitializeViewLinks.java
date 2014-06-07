@@ -16,17 +16,17 @@
 
 package de.ks.activity.callback;
 
-
-import de.ks.activity.Activity;
+import de.ks.activity.ActivityCfg;
 import de.ks.activity.ActivityController;
+import de.ks.activity.initialization.LoaderCallback;
 import de.ks.activity.link.ViewLink;
-import de.ks.application.fxml.LoaderCallback;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.enterprise.inject.spi.CDI;
 import java.util.List;
 
 /**
@@ -34,14 +34,12 @@ import java.util.List;
  */
 public class InitializeViewLinks extends LoaderCallback {
   private static final Logger log = LoggerFactory.getLogger(InitializeViewLinks.class);
-  private final Activity activity;
+  private final ActivityCfg activityCfg;
   private final List<ViewLink> viewLinks;
-  private final ActivityController activityController;
 
-  public InitializeViewLinks(Activity activity, List<ViewLink> viewLinks, ActivityController activityController) {
-    this.activity = activity;
-    this.viewLinks = viewLinks;
-    this.activityController = activityController;
+  public InitializeViewLinks(ActivityCfg activityCfg) {
+    this.activityCfg = activityCfg;
+    this.viewLinks = activityCfg.getViewLinks();
   }
 
   @Override
@@ -51,12 +49,18 @@ public class InitializeViewLinks extends LoaderCallback {
       EventHandler<ActionEvent> handler = new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent actionEvent) {
-          activityController.select(activity, viewLink);
+          ActivityController activityController = CDI.current().select(ActivityController.class).get();
+          activityController.select(activityCfg, viewLink);
         }
       };
       addHandlerToNode(node, viewLink.getId(), handler);
       log.debug("done with view-link {} for controller {}", viewLink.getId(), controller);
     });
+
+  }
+
+  @Override
+  public void doInFXThread(Object controller, Node node) {
 
   }
 }

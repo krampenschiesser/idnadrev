@@ -22,6 +22,10 @@ dependencies {
     compile project(":libs:eventsystem")
 
     compile "org.controlsfx:controlsfx:$controlsFX"
+    compile("org.asciidoctor:asciidoctor-java-integration:$asciidocJavaIntegration") {
+        transitive = false;
+    }
+    compile "net.sourceforge.plantuml:plantuml:$plantuml"
 
     compile "com.fasterxml.jackson.core:jackson-databind:$jackson"
     compile "org.apache.deltaspike.cdictrl:deltaspike-cdictrl-api:$deltaspike"

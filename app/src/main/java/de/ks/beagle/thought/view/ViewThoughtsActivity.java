@@ -15,7 +15,7 @@
  */
 package de.ks.beagle.thought.view;
 
-import de.ks.activity.Activity;
+import de.ks.activity.ActivityCfg;
 import de.ks.activity.ActivityController;
 import de.ks.application.Navigator;
 import de.ks.menu.MenuItem;
@@ -23,7 +23,7 @@ import de.ks.menu.MenuItem;
 import javax.inject.Inject;
 
 @MenuItem("/main/activity")
-public class ViewThoughtsActivity extends Activity {
+public class ViewThoughtsActivity extends ActivityCfg {
   @Inject
   public ViewThoughtsActivity(ActivityController activityController, Navigator navigator) {
     super(DummyThoughtsDataSource.class, ViewThoughts.class);

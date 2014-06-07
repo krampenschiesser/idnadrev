@@ -15,8 +15,9 @@
  */
 package de.ks.activity.activitylink;
 
+import de.ks.FXPlatform;
 import de.ks.LauncherRunner;
-import de.ks.activity.Activity;
+import de.ks.activity.ActivityCfg;
 import de.ks.activity.ActivityController;
 import de.ks.activity.context.ActivityContext;
 import de.ks.activity.context.ActivityStore;
@@ -48,35 +49,36 @@ public class ActivityLinkTest {
   ActivityController controller;
   @Inject
   ActivityStore store;
-  private Activity activityA;
+  private ActivityCfg activityCfgA;
 
   @Before
   public void setUp() throws Exception {
     Navigator.registerWithBorderPane(Launcher.instance.getService(JavaFXService.class).getStage());
 
-    activityA = new Activity(ActivityADS.class, ActivityAController.class);
+    activityCfgA = new ActivityCfg(ActivityADS.class, ActivityAController.class);
 
-    activityA.withActivity(ActivityAController.class, STANDARD_HINT, ActivityB.class, (ActivityAModel m) -> new ActivityBModel(m.getId()));
-    activityA.withActivityAndReturn(ActivityAController.class, RETURN_HINT, ActivityB.class, (ActivityAModel m) -> new ActivityBModel(m.getId() + "Hello"), (ActivityBModel m2) -> new ActivityAModel(m2.getDescription() + " Sauerland"));
+    activityCfgA.withActivity(ActivityAController.class, STANDARD_HINT, ActivityB.class, (ActivityAModel m) -> new ActivityBModel(m.getId()));
+    activityCfgA.withActivityAndReturn(ActivityAController.class, RETURN_HINT, ActivityB.class, (ActivityAModel m) -> new ActivityBModel(m.getId() + "Hello"), (ActivityBModel m2) -> new ActivityAModel(m2.getDescription() + " Sauerland"));
   }
 
   @After
   public void tearDown() throws Exception {
-    controller.stop(activityA);
+    controller.stop(activityCfgA);
     controller.stop(ActivityB.class);
     ActivityContext.stopAll();
   }
 
   @Test
   public void testStandardHint() throws Exception {
-    controller.start(activityA);
+    controller.start(activityCfgA);
     controller.waitForDataSourceLoading();
 
     ActivityAModel model = store.getModel();
     model.setId("bla");
     store.getBinding().fireValueChangedEvent();
+    FXPlatform.waitForFX();
 
-    Node currentNode = activityA.getCurrentNode();
+    Node currentNode = controller.getCurrentNode();
     Label idLabel = (Label) currentNode.lookup("#id");
     assertEquals("bla", idLabel.getText());
 
@@ -94,14 +96,15 @@ public class ActivityLinkTest {
 
   @Test
   public void testReturnHint() throws Exception {
-    controller.start(activityA);
+    controller.start(activityCfgA);
     controller.waitForDataSourceLoading();
 
     ActivityAModel model = store.getModel();
     model.setId("bla");
     store.getBinding().fireValueChangedEvent();
+    FXPlatform.waitForFX();
 
-    Node activityANode = activityA.getCurrentNode();
+    Node activityANode = controller.getCurrentNode();
     Label idLabel = (Label) activityANode.lookup("#id");
     assertEquals("bla", idLabel.getText());
 

@@ -16,7 +16,6 @@
 
 package de.ks.activity;
 
-
 import de.ks.LauncherRunner;
 import de.ks.activity.context.ActivityContext;
 import de.ks.application.Navigator;
@@ -36,23 +35,23 @@ public abstract class AbstractActivityTest {
   protected Navigator navigator;
   @Inject
   protected ActivityController activityController;
-  protected Activity activity;
+  protected ActivityCfg activityCfg;
 
   @Before
   public void setUp() throws Exception {
     JavaFXService service = Launcher.instance.getService(JavaFXService.class);
     navigator = Navigator.registerWithBorderPane(service.getStage());
 
-    activity = new Activity(DummyTestDataSource.class, ActivityHome.class);
-    activity.withLink(ActivityHome.class, "showDetails", Navigator.RIGHT_AREA, DetailController.class);
-    activity.withLink(ActivityHome.class, "switchView", OtherController.class);
-    activity.withLink(OtherController.class, "back", ActivityHome.class);
-    activity.withTask(DetailController.class, "pressMe", ActivityAction.class);
+    activityCfg = new ActivityCfg(DummyTestDataSource.class, ActivityHome.class);
+    activityCfg.withLink(ActivityHome.class, "showDetails", Navigator.RIGHT_AREA, DetailController.class);
+    activityCfg.withLink(ActivityHome.class, "switchView", OtherController.class);
+    activityCfg.withLink(OtherController.class, "back", ActivityHome.class);
+    activityCfg.withTask(DetailController.class, "pressMe", ActivityAction.class);
   }
 
   @After
   public void tearDown() throws Exception {
-    activityController.stop(activity);
+    activityController.stop(activityCfg);
     ActivityContext.stopAll();
 
   }

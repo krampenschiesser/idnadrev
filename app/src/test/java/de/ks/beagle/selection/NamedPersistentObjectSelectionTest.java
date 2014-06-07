@@ -18,6 +18,7 @@ package de.ks.beagle.selection;
 import de.ks.FXPlatform;
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityController;
+import de.ks.activity.context.ActivityContext;
 import de.ks.application.fxml.DefaultLoader;
 import de.ks.beagle.entity.Thought;
 import de.ks.executor.SuspendablePooledExecutorService;
@@ -44,11 +45,12 @@ public class NamedPersistentObjectSelectionTest {
 
   @Before
   public void setUp() throws Exception {
+//    ActivityContext.start("test");
     PersistentWork.deleteAllOf(Thought.class);
     PersistentWork.persist(new Thought("test1"), new Thought("test2").setDescription("bla"), new Thought("other"));
 
     executorService = new SuspendablePooledExecutorService("test");
-    DefaultLoader<Node, NamedPersistentObjectSelection<Thought>> loader = new DefaultLoader<>(NamedPersistentObjectSelection.class, executorService);
+    DefaultLoader<Node, NamedPersistentObjectSelection<Thought>> loader = new DefaultLoader<>(NamedPersistentObjectSelection.class);
     selection = loader.getController();
 
     selection.from(Thought.class);
@@ -56,6 +58,7 @@ public class NamedPersistentObjectSelectionTest {
 
   @After
   public void tearDown() throws Exception {
+    ActivityContext.stop("test");
     executorService.shutdownNow();
     executorService.waitForAllTasksDone();
   }

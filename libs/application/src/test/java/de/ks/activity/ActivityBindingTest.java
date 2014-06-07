@@ -16,6 +16,7 @@
 
 package de.ks.activity;
 
+import de.ks.FXPlatform;
 import de.ks.activity.context.ActivityStore;
 import de.ks.application.PresentationArea;
 import de.ks.executor.ExecutorService;
@@ -42,9 +43,15 @@ public class ActivityBindingTest extends AbstractActivityTest {
   @Inject
   protected ExecutorService executorService;
 
+  @Override
+  public void setUp() throws Exception {
+    super.setUp();
+    activityController.start(activityCfg);
+    activityController.waitForDataSourceLoading();
+  }
+
   @Test
   public void testActivityStore() throws Exception {
-    activityController.start(activity);
     PresentationArea mainArea = navigator.getMainArea();
     Node currentNode = mainArea.getCurrentNode();
     assertNotNull(currentNode);
@@ -62,15 +69,14 @@ public class ActivityBindingTest extends AbstractActivityTest {
 
   @Test
   public void testBindings() throws Exception {
-    activityController.start(activity);
-
-    activity.waitForInitialization();
-    Node view = activity.getView(ActivityHome.class);
+    Node view = activityController.getCurrentNode();
 
     ActivityModel model = new ActivityModel();
     model.setId(42);
     model.setName("Hello Sauerland");
     store.setModel(model);
+    FXPlatform.waitForFX();
+    assertSame(model, store.getModelProperty().get());
 
     TextField idInput = (TextField) view.lookup("#id");
     TextField nameInput = (TextField) view.lookup("#name");
@@ -80,6 +86,9 @@ public class ActivityBindingTest extends AbstractActivityTest {
 
     model.setId(13);
     store.getBinding().fireValueChangedEvent();
+    FXPlatform.waitForFX();
+
+
     assertEquals("13", idInput.getText());
 
     idInput.setText("78");
@@ -91,15 +100,13 @@ public class ActivityBindingTest extends AbstractActivityTest {
 
   @Test
   public void testRebinding() throws Exception {
-    activityController.start(activity);
-    activity.waitForInitialization();
-
-    Node view = activity.getView(ActivityHome.class);
+    Node view = activityController.getCurrentNode();
 
     ActivityModel model = new ActivityModel();
     model.setId(42);
     model.setName("Hello Sauerland");
     store.setModel(model);
+    FXPlatform.waitForFX();
 
     TextField idInput = (TextField) view.lookup("#id");
     TextField nameInput = (TextField) view.lookup("#name");
@@ -109,6 +116,7 @@ public class ActivityBindingTest extends AbstractActivityTest {
 
     ActivityModel nextModel = new ActivityModel().setId(13).setName("Steak");
     store.setModel(nextModel);
+    FXPlatform.waitForFX();
 
     assertEquals("13", idInput.getText());
     assertEquals(nextModel.getName(), nameInput.getText());
@@ -121,9 +129,6 @@ public class ActivityBindingTest extends AbstractActivityTest {
 
   @Test
   public void testBindTable() throws Exception {
-    activityController.start(activity);
-    activity.waitForInitialization();
-
     ActivityModel model = new ActivityModel();
     model.setId(42);
     model.setName("Hello Sauerland");
@@ -135,7 +140,9 @@ public class ActivityBindingTest extends AbstractActivityTest {
     }
 
     store.setModel(model);
-    Pane detailView = activity.getView(DetailController.class);
+    FXPlatform.waitForFX();
+
+    Pane detailView = activityController.getNodeForController(DetailController.class);
     @SuppressWarnings("unchecked") TableView<DetailItem> table = (TableView<DetailItem>) detailView.lookup("#detailItems");
     assertNotNull(table);
 

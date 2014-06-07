@@ -16,7 +16,6 @@
 
 package de.ks.activity;
 
-
 import de.ks.activity.callback.InitializeTaskLinks;
 import de.ks.activity.callback.InitializeViewLinks;
 import de.ks.application.Navigator;
@@ -36,7 +35,7 @@ import static org.junit.Assert.*;
 public class ActivityTest extends AbstractActivityTest {
   @Test
   public void testViewLinkNavigation() throws Exception {
-    activityController.start(activity);
+    activityController.start(activityCfg);
     PresentationArea mainArea = navigator.getMainArea();
     Node currentNode = mainArea.getCurrentNode();
     assertNotNull(currentNode);
@@ -68,8 +67,9 @@ public class ActivityTest extends AbstractActivityTest {
 
   @Test
   public void testInitializeViewLinks() throws Exception {
-    DefaultLoader<StackPane, ActivityHome> loader = new DefaultLoader<>(ActivityHome.class, activityController.getCurrentExecutorService());
-    InitializeViewLinks viewLinks = new InitializeViewLinks(activity, activity.getViewLinks(), activityController);
+    activityController.start(activityCfg);
+    DefaultLoader<StackPane, ActivityHome> loader = new DefaultLoader<>(ActivityHome.class);
+    InitializeViewLinks viewLinks = new InitializeViewLinks(activityCfg);
     viewLinks.accept(loader.getController(), loader.getView());
 
     Button button = (Button) loader.getView().lookup("#showDetails");
@@ -81,9 +81,9 @@ public class ActivityTest extends AbstractActivityTest {
 
   @Test
   public void testInitializeTaskLinks() throws Exception {
-    activityController.start(activity);
-    DefaultLoader<StackPane, DetailController> loader = new DefaultLoader<>(DetailController.class, activityController.getCurrentExecutorService());
-    InitializeTaskLinks taskLinks = new InitializeTaskLinks(activity.getTaskLinks(), activity, activityController);
+    activityController.start(activityCfg);
+    DefaultLoader<StackPane, DetailController> loader = new DefaultLoader<>(DetailController.class);
+    InitializeTaskLinks taskLinks = new InitializeTaskLinks(activityCfg);
     taskLinks.accept(loader.getController(), loader.getView());
 
     Button button = (Button) loader.getView().lookup("#pressMe");
@@ -91,11 +91,5 @@ public class ActivityTest extends AbstractActivityTest {
     button.getOnAction().handle(new ActionEvent());
 
     assertTrue(withRetry(() -> CDI.current().select(ActivityAction.class).get().isExecuted()));
-  }
-
-  @Test
-  public void testActivityLinks() throws Exception {
-
-
   }
 }

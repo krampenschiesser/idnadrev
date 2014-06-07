@@ -16,7 +16,6 @@
 
 package de.ks.activity.context;
 
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -153,11 +152,17 @@ public class ActivityContext implements Context {
     lock.writeLock().lock();
     try {
       currentActivity = id;
-      ActivityHolder holder = new ActivityHolder(id);
-      this.activities.put(id, holder);
+      if (activities.containsKey(id)) {
+        log.debug("Resuming activity {}", id);
+        return activities.get(id);
+      } else {
+        ActivityHolder holder = new ActivityHolder(id);
+        this.activities.put(id, holder);
 
-      log.debug("Started activity {}", holder.getId());
-      return holder;
+        log.debug("Started activity {}", holder.getId());
+        return holder;
+      }
+
     } finally {
       lock.writeLock().unlock();
     }
@@ -226,7 +231,6 @@ public class ActivityContext implements Context {
     }
     return activities.get(currentActivity);
   }
-
 
   public String getCurrentActivity() {
     return currentActivity;

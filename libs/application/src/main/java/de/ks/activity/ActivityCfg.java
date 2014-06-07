@@ -16,40 +16,34 @@
 
 package de.ks.activity;
 
-
 import de.ks.activity.link.ActivityLink;
 import de.ks.activity.link.TaskLink;
 import de.ks.activity.link.ViewLink;
 import de.ks.application.Navigator;
-import de.ks.application.fxml.DefaultLoader;
 import de.ks.datasource.DataSource;
 import javafx.concurrent.Task;
-import javafx.scene.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 
 /**
  *
  */
-public class Activity {//TODO extract ativityConfig containing all the with* methods and collections
-  private static final Logger log = LoggerFactory.getLogger(Activity.class);
-  private final Class<? extends DataSource<?>> dataSource;
-  private final Class<?> initialController;
+public class ActivityCfg {
+  private static final Logger log = LoggerFactory.getLogger(ActivityCfg.class);
+  protected final Class<? extends DataSource<?>> dataSource;
+  protected final Class<?> initialController;
   protected final List<ViewLink> viewLinks = new ArrayList<>();
   protected final List<TaskLink> taskLinks = new ArrayList<>();
   protected final List<ActivityLink> activityLinks = new ArrayList<>();
 
-  protected final Map<Class<?>, DefaultLoader<Node, Object>> preloads = new HashMap<>();
+  protected Function returnConverter;
   private Class<?> currentController;
-  private Function returnConverter;
 
-  public Activity(Class<? extends DataSource<?>> dataSource, Class<?> initialController) {
+  public ActivityCfg(Class<? extends DataSource<?>> dataSource, Class<?> initialController) {
     this.dataSource = dataSource;
     this.initialController = initialController;
   }
@@ -62,17 +56,17 @@ public class Activity {//TODO extract ativityConfig containing all the with* met
    * @param targetController
    * @return
    */
-  public Activity withLink(Class<?> sourceController, String id, Class<?> targetController) {
+  public ActivityCfg withLink(Class<?> sourceController, String id, Class<?> targetController) {
     return withLink(sourceController, id, Navigator.MAIN_AREA, targetController);
   }
 
-  public Activity withLink(Class<?> sourceController, String id, String presentationArea, Class<?> targetController) {
+  public ActivityCfg withLink(Class<?> sourceController, String id, String presentationArea, Class<?> targetController) {
     ViewLink viewLink = ViewLink.from(sourceController).with(id).to(targetController).in(presentationArea).build();
     viewLinks.add(viewLink);
     return this;
   }
 
-  public Activity withTask(String id, Class<? extends Task<?>> task) {
+  public ActivityCfg withTask(String id, Class<? extends Task<?>> task) {
     return withTask(getInitialController(), id, task);
   }
 
@@ -84,17 +78,17 @@ public class Activity {//TODO extract ativityConfig containing all the with* met
    * @param task
    * @return
    */
-  public Activity withTask(Class<?> sourceController, String id, Class<? extends Task<?>> task) {
+  public ActivityCfg withTask(Class<?> sourceController, String id, Class<? extends Task<?>> task) {
     TaskLink taskLink = TaskLink.from(sourceController).with(id).execute(task).build();
     taskLinks.add(taskLink);
     return this;
   }
 
-  public Activity withEnd(String id, Class<? extends Task<?>> task) {
+  public ActivityCfg withEnd(String id, Class<? extends Task<?>> task) {
     return withEnd(getInitialController(), id, task);
   }
 
-  public Activity withEnd(Class<?> sourceController, String id, Class<? extends Task<?>> task) {
+  public ActivityCfg withEnd(Class<?> sourceController, String id, Class<? extends Task<?>> task) {
     TaskLink taskLink = TaskLink.from(sourceController).with(id).execute(task).endActivity().build();
     taskLinks.add(taskLink);
     return this;
@@ -108,19 +102,19 @@ public class Activity {//TODO extract ativityConfig containing all the with* met
    * @param next
    * @return
    */
-  public Activity withActivity(Class<?> sourceController, String id, Class<? extends Activity> next) {
+  public ActivityCfg withActivity(Class<?> sourceController, String id, Class<? extends ActivityCfg> next) {
     ActivityLink activityLink = ActivityLink.from(sourceController).with(id).start(next).build();
     activityLinks.add(activityLink);
     return this;
   }
 
-  public <T, R> Activity withActivity(Class<?> sourceController, String id, Class<? extends Activity> next, Function<T, R> toConverter) {
+  public <T, R> ActivityCfg withActivity(Class<?> sourceController, String id, Class<? extends ActivityCfg> next, Function<T, R> toConverter) {
     ActivityLink activityLink = ActivityLink.from(sourceController).with(id).start(next).toConverter(toConverter).build();
     activityLinks.add(activityLink);
     return this;
   }
 
-  public <T, R> Activity withActivityAndReturn(Class<?> sourceController, String id, Class<? extends Activity> next, Function<T, R> toConverter, Function<R, T> returnConverter) {
+  public <T, R> ActivityCfg withActivityAndReturn(Class<?> sourceController, String id, Class<? extends ActivityCfg> next, Function<T, R> toConverter, Function<R, T> returnConverter) {
     ActivityLink activityLink = ActivityLink.from(sourceController).with(id).start(next).toConverter(toConverter).returnConverter(returnConverter).build();
     activityLinks.add(activityLink);
     return this;
@@ -129,7 +123,6 @@ public class Activity {//TODO extract ativityConfig containing all the with* met
   public Class<?> getInitialController() {
     return initialController;
   }
-
 
   public List<ViewLink> getViewLinks() {
     return viewLinks;
@@ -147,53 +140,6 @@ public class Activity {//TODO extract ativityConfig containing all the with* met
     return dataSource;
   }
 
-  public boolean isInitialized() {
-    for (DefaultLoader<Node, Object> loader : preloads.values()) {
-      if (!loader.isLoaded()) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  public void waitForInitialization() {
-    for (DefaultLoader<Node, Object> loader : preloads.values()) {
-      loader.waitForLoading();
-    }
-  }
-
-  @SuppressWarnings("unchecked")
-  public <T> T getController(Class<T> controllerClass) {
-    return (T) preloads.get(controllerClass).getController();
-  }
-
-  @SuppressWarnings("unchecked")
-  public <T> T getCurrentController() {
-    return getController((Class<T>) getCurrentControllerClass());
-  }
-
-  @SuppressWarnings("unchecked")
-  public <V> V getView(Class<?> controllerClass) {
-    return (V) preloads.get(controllerClass).getView();
-  }
-
-  public Map<Class<?>, DefaultLoader<Node, Object>> getPreloads() {
-    return preloads;
-  }
-
-  public void setCurrentController(Class<?> currentController) {
-    this.currentController = currentController;
-  }
-
-  public Class<?> getCurrentControllerClass() {
-    return currentController;
-  }
-
-  @SuppressWarnings("unchecked")
-  public <N extends Node> N getCurrentNode() {
-    return (N) preloads.get(getCurrentControllerClass()).getView();
-  }
-
   public void setReturnConverter(Function returnConverter) {
     this.returnConverter = returnConverter;
   }
@@ -204,5 +150,13 @@ public class Activity {//TODO extract ativityConfig containing all the with* met
 
   public String getId() {
     return getClass().getName();
+  }
+
+  public void setCurrentController(Class<?> currentController) {
+    this.currentController = currentController;
+  }
+
+  public Class<?> getCurrentController() {
+    return currentController;
   }
 }

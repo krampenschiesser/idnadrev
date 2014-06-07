@@ -16,9 +16,8 @@
 
 package de.ks.menu.sink;
 
-
 import de.ks.NodeProvider;
-import de.ks.activity.Activity;
+import de.ks.activity.ActivityCfg;
 import de.ks.activity.ActivityController;
 import de.ks.application.Navigator;
 import de.ks.eventsystem.bus.EventBus;
@@ -61,8 +60,8 @@ public class ContentSink extends AbstractSink<ContentSink> {
       NodeProvider nodeProvider = (NodeProvider) menuItem;
       navigator.presentInMain(nodeProvider.getNode());
       //pane.getChildren().add(nodeProvider.getNode());
-    } else if (menuItem instanceof Activity) {
-      executorService.submit(() -> controller.start((Activity) menuItem));
+    } else if (menuItem instanceof ActivityCfg) {
+      executorService.submit(() -> controller.start((ActivityCfg) menuItem));
     } else {
       log.error("Could not handle MenuItemClickedEvent because {} is not a {}", menuItem.getClass(), Node.class.getName());
     }

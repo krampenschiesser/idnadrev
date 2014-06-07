@@ -16,22 +16,22 @@
 
 package de.ks.activity.callback;
 
+import de.ks.activity.ActivityCfg;
 import de.ks.activity.ActivityController;
+import de.ks.activity.initialization.LoaderCallback;
 import de.ks.activity.link.ActivityLink;
-import de.ks.application.fxml.LoaderCallback;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 
+import javax.enterprise.inject.spi.CDI;
 import java.util.List;
 
 public class InitializeActivityLinks extends LoaderCallback {
   private final List<ActivityLink> activityLinks;
-  private final ActivityController activityController;
 
-  public InitializeActivityLinks(List<ActivityLink> activityLinks, ActivityController activityController) {
-    this.activityLinks = activityLinks;
-    this.activityController = activityController;
+  public InitializeActivityLinks(ActivityCfg activityCfg) {
+    this.activityLinks = activityCfg.getActivityLinks();
   }
 
   @Override
@@ -40,10 +40,16 @@ public class InitializeActivityLinks extends LoaderCallback {
       EventHandler<ActionEvent> handler = new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent actionEvent) {
+          ActivityController activityController = CDI.current().select(ActivityController.class).get();
           activityController.start(activityLink.getNextActivity(), activityLink.getToConverter(), activityLink.getReturnConverter());
         }
       };
       addHandlerToNode(node, activityLink.getId(), handler);
     });
+  }
+
+  @Override
+  public void doInFXThread(Object controller, Node node) {
+
   }
 }

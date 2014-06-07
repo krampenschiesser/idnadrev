@@ -16,27 +16,26 @@
 
 package de.ks.activity.callback;
 
-import de.ks.activity.Activity;
+import de.ks.activity.ActivityCfg;
 import de.ks.activity.ListBound;
 import de.ks.activity.context.ActivityStore;
-import de.ks.application.fxml.LoaderCallback;
+import de.ks.activity.initialization.LoaderCallback;
 import de.ks.reflection.ReflectionUtil;
 import javafx.scene.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.enterprise.inject.spi.CDI;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
 public class InitializeListBindings extends LoaderCallback {
   private static final Logger log = LoggerFactory.getLogger(InitializeListBindings.class);
-  private final Activity activity;
-  private final ActivityStore store;
+  private final ActivityCfg activityCfg;
 
-  public InitializeListBindings(Activity activity, ActivityStore store) {
-    this.activity = activity;
-    this.store = store;
+  public InitializeListBindings(ActivityCfg activityCfg) {
+    this.activityCfg = activityCfg;
   }
 
   @Override
@@ -52,15 +51,14 @@ public class InitializeListBindings extends LoaderCallback {
     String property = modelBound.property();
     Class<?> modelClass = modelBound.value();
 
+    ActivityStore store = CDI.current().select(ActivityStore.class).get();
+
     if (property.equals("this")) {
       Node table = node.lookup("#_this");
       log.debug("Found node {} for property '{}' for model class '{}' in {}", table, property, modelClass.getSimpleName(), node);
       store.getBinding().addBoundProperty(property, List.class, table);
       return;
-//      List<TableView> tables = ((Parent) node).getChildrenUnmodifiable().stream()//
-//              .filter((n) -> n instanceof TableView).map((n) -> (TableView) n).collect(Collectors.toList());
     }
-
 
     List<Field> allFields = ReflectionUtil.getAllFields(modelClass, (f) -> !Modifier.isStatic(f.getModifiers()));
     for (Field field : allFields) {
@@ -72,5 +70,10 @@ public class InitializeListBindings extends LoaderCallback {
         store.getBinding().addBoundProperty(name, modelClass, found);
       }
     }
+  }
+
+  @Override
+  public void doInFXThread(Object controller, Node node) {
+
   }
 }

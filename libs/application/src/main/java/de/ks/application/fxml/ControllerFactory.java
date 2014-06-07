@@ -16,7 +16,8 @@
 
 package de.ks.application.fxml;
 
-
+import de.ks.activity.context.ActivityContext;
+import de.ks.activity.initialization.ActivityInitialization;
 import de.ks.eventsystem.bus.EventBus;
 import de.ks.reflection.ReflectionUtil;
 import javafx.util.Callback;
@@ -53,13 +54,27 @@ public class ControllerFactory implements Callback<Class<?>, Object> {
       if (!injectedFields.isEmpty()) {
         throw new IllegalArgumentException("Unable to instanitate class that defines injected fields but is no bean.");
       } else {
-        return ReflectionUtil.newInstance(clazz, false);
+        Object newInstance = ReflectionUtil.newInstance(clazz, false);
+        registerLoadedController(newInstance);
+        return newInstance;
       }
     } else {
       object = instance.get();
     }
     EventBus eventBus = CDI.current().select(EventBus.class).get();
     eventBus.register(object);
+
+    registerLoadedController(object);
     return object;
+  }
+
+  protected void registerLoadedController(Object object) {
+    CDI<Object> cdi = CDI.current();
+
+    ActivityContext context = cdi.select(ActivityContext.class).get();
+    if (context.hasCurrentActivity()) {
+      Instance<ActivityInitialization> initializationInstance = cdi.select(ActivityInitialization.class);
+      initializationInstance.get().addControllerToInitialize(object);
+    }
   }
 }

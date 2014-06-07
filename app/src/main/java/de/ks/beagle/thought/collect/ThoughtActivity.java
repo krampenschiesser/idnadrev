@@ -16,14 +16,13 @@
 
 package de.ks.beagle.thought.collect;
 
-
-import de.ks.activity.Activity;
+import de.ks.activity.ActivityCfg;
 import de.ks.menu.MenuItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @MenuItem("/main/activity")
-public class ThoughtActivity extends Activity {
+public class ThoughtActivity extends ActivityCfg {
   private static final Logger log = LoggerFactory.getLogger(ThoughtActivity.class);
 
   public ThoughtActivity() {

@@ -15,11 +15,11 @@
  */
 package de.ks.beagle.thought.task;
 
-import de.ks.activity.Activity;
+import de.ks.activity.ActivityCfg;
 import de.ks.menu.MenuItem;
 
 @MenuItem("/main/activity")
-public class ThoughtToTaskActivity extends Activity {
+public class ThoughtToTaskActivity extends ActivityCfg {
   public ThoughtToTaskActivity() {
     super(ThoughtToTaskDS.class, ThoughtToTask.class);
   }

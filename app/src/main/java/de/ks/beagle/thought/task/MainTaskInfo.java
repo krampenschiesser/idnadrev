@@ -15,6 +15,7 @@
  */
 package de.ks.beagle.thought.task;
 
+import de.ks.activity.ModelBound;
 import de.ks.beagle.entity.Context;
 import de.ks.beagle.entity.Tag;
 import de.ks.beagle.entity.Task;
@@ -30,6 +31,7 @@ import javafx.scene.control.TextField;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+@ModelBound(Task.class)
 public class MainTaskInfo implements Initializable {
   @FXML
   protected NamedPersistentObjectSelection<Task> parentProjectController;

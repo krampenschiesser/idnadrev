@@ -16,8 +16,7 @@
 
 package de.ks.activity.link;
 
-
-import de.ks.activity.Activity;
+import de.ks.activity.ActivityCfg;
 
 import java.util.function.Function;
 
@@ -28,7 +27,7 @@ public class ActivityLink {
   public static class ActivityLinkBuilder {
     private final Class<?> sourceController;
     private String id;
-    private Class<? extends Activity> nextActivity;
+    private Class<? extends ActivityCfg> nextActivity;
     private Function toConverter;
     private Function returnConverter;
 
@@ -41,7 +40,7 @@ public class ActivityLink {
       return this;
     }
 
-    public ActivityLinkBuilder start(Class<? extends Activity> next) {
+    public ActivityLinkBuilder start(Class<? extends ActivityCfg> next) {
       this.nextActivity = next;
       return this;
     }
@@ -67,11 +66,11 @@ public class ActivityLink {
 
   protected final Class<?> sourceController;
   protected final String id;
-  protected final Class<? extends Activity> nextActivity;
+  protected final Class<? extends ActivityCfg> nextActivity;
   protected final Function toConverter;
   protected final Function returnConverter;
 
-  private ActivityLink(Class<?> sourceController, String id, Class<? extends Activity> nextActivity, Function toConverter, Function returnConverter) {
+  private ActivityLink(Class<?> sourceController, String id, Class<? extends ActivityCfg> nextActivity, Function toConverter, Function returnConverter) {
     this.sourceController = sourceController;
     this.id = id;
     this.nextActivity = nextActivity;
@@ -87,7 +86,7 @@ public class ActivityLink {
     return id;
   }
 
-  public Class<? extends Activity> getNextActivity() {
+  public Class<? extends ActivityCfg> getNextActivity() {
     return nextActivity;
   }
 
