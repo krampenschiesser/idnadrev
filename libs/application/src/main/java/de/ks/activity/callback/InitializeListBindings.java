@@ -54,7 +54,7 @@ public class InitializeListBindings extends LoaderCallback {
     ActivityStore store = CDI.current().select(ActivityStore.class).get();
 
     if (property.equals("this")) {
-      Node table = node.lookup("#_this");
+      Node table = getChildNodeWithId(node, "_this");
       log.debug("Found node {} for property '{}' for model class '{}' in {}", table, property, modelClass.getSimpleName(), node);
       store.getBinding().addBoundProperty(property, List.class, table);
       return;

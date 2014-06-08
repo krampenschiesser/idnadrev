@@ -29,6 +29,7 @@ import javax.enterprise.inject.spi.CDI;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
+import java.util.Set;
 
 public class InitializeModelBindings extends LoaderCallback {
   private static final Logger log = LoggerFactory.getLogger(InitializeModelBindings.class);
@@ -45,6 +46,7 @@ public class InitializeModelBindings extends LoaderCallback {
       return;
     }
     if (!controller.getClass().isAnnotationPresent(ModelBound.class)) {
+      log.trace("Ignoring controller {} it has no @{} annotation.", controller.getClass(), ModelBound.class.getSimpleName());
       return;
     }
     ModelBound modelBound = controller.getClass().getAnnotation(ModelBound.class);
@@ -55,12 +57,16 @@ public class InitializeModelBindings extends LoaderCallback {
     List<Field> allFields = ReflectionUtil.getAllFields(modelClass, (f) -> !Modifier.isStatic(f.getModifiers()));
     for (Field field : allFields) {
       String name = field.getName();
-      Node found = node.lookup("#" + name);
+      Node found = getChildNodeWithId(node, name);
       if (found != null) {
         log.debug("Found node {} for property '{}' for model class '{}' in {}", found, name, modelClass.getSimpleName(), node);
 
         ActivityStore activityStore = CDI.current().select(ActivityStore.class).get();
         activityStore.getBinding().addBoundProperty(name, modelClass, found);
+      } else {
+        log.debug("Did not find {} in {}", field.getName(), node);
+        Set<Node> allPossibleNodes = getAllIdNodes(node);
+        allPossibleNodes.forEach((n) -> log.debug("\t\tGot available node {} with id {}", n.getClass().getSimpleName(), n.getId()));
       }
     }
   }
