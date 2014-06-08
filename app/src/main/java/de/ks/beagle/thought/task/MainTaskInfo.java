@@ -15,12 +15,16 @@
  */
 package de.ks.beagle.thought.task;
 
+import com.google.common.eventbus.Subscribe;
+import de.ks.activity.ActivityLoadFinishedEvent;
 import de.ks.activity.ModelBound;
 import de.ks.beagle.entity.Context;
 import de.ks.beagle.entity.Tag;
 import de.ks.beagle.entity.Task;
 import de.ks.beagle.entity.WorkType;
 import de.ks.beagle.selection.NamedPersistentObjectSelection;
+import de.ks.eventsystem.bus.HandlingThread;
+import de.ks.eventsystem.bus.Threading;
 import de.ks.reflection.PropertyPath;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -61,5 +65,11 @@ public class MainTaskInfo implements Initializable {
     contextController.from(Context.class);
     workTypeController.from(WorkType.class);
     tagAddController.from(Tag.class);
+  }
+
+  @Subscribe
+  @Threading(HandlingThread.JavaFX)
+  public void onRefresh(ActivityLoadFinishedEvent event) {
+    this.name.requestFocus();
   }
 }
