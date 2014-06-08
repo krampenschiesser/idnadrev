@@ -16,14 +16,16 @@
 
 package de.ks.persistence;
 
-
 import de.ks.executor.ExecutorService;
+import de.ks.persistence.entity.NamedPersistentObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.spi.CDI;
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.Arrays;
 import java.util.List;
@@ -72,6 +74,18 @@ public class PersistentWork {
       int deletedLines = em.createQuery("delete from " + clazz.getName()).executeUpdate();
       log.debug("Deleted {} from {}", deletedLines, clazz.getSimpleName());
     });
+  }
+
+  public static <T extends NamedPersistentObject<T>> T forName(Class<T> clazz, String name) {
+    List<T> results = from(clazz, (Root<T> root, CriteriaQuery<T> query, CriteriaBuilder builder) -> {
+      Predicate equal = builder.equal(builder.lower(root.get("name")), name.toLowerCase());
+      query.where(equal);
+    }, null);
+    if (results.size() != 1) {
+      return null;
+    } else {
+      return results.get(0);
+    }
   }
 
   public static <T> List<T> from(Class<T> clazz) {
