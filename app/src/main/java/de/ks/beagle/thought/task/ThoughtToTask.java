@@ -15,11 +15,8 @@
  */
 package de.ks.beagle.thought.task;
 
-import de.ks.activity.ModelBound;
-import de.ks.beagle.entity.Task;
 import javafx.fxml.FXML;
 
-@ModelBound(Task.class)
 public class ThoughtToTask {
   @FXML
   MainTaskInfo mainInfoController;
