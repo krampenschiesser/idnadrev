@@ -15,6 +15,7 @@
  */
 package de.ks.validation;
 
+import javafx.application.Platform;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -72,7 +73,15 @@ public class CustomValidationDecoration extends AbstractValidationDecoration {
 
     Control target = message.getTarget();
     Point2D point2D = target.localToScreen(target.getLayoutBounds().getMinX(), target.getLayoutBounds().getMaxY());
-    tooltip.show(target, point2D.getX(), point2D.getY());
+    if (point2D == null) {
+      Platform.runLater(() -> {
+        Point2D point = target.localToScreen(target.getLayoutBounds().getMinX(), target.getLayoutBounds().getMaxY());
+        tooltip.show(target, point.getX(), point.getY());
+      });
+    } else {
+      tooltip.show(target, point2D.getX(), point2D.getY());
+    }
+
     label.parentProperty().addListener((p, o, n) -> {
       if (n == null) {
         tooltip.hide();
