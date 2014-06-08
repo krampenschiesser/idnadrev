@@ -25,6 +25,8 @@ import de.ks.persistence.PersistentWork;
 import de.ks.persistence.QueryConsumer;
 import de.ks.persistence.entity.NamedPersistentObject;
 import de.ks.reflection.PropertyPath;
+import de.ks.validation.FXValidators;
+import de.ks.validation.ValidationRegistry;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -100,15 +102,18 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
         input.setText(n.getName());
       }
     });
+
   }
 
   public void from(Class<T> namedEntity) {
-    this.entityClass = namedEntity;
+    from(namedEntity, null);
   }
 
   public void from(Class<T> namedEntity, QueryConsumer<T> consumer) {
     this.entityClass = namedEntity;
     this.filter = consumer;
+    ValidationRegistry validationRegistry = CDI.current().select(ValidationRegistry.class).get();
+    validationRegistry.getValidationSupport().registerValidator(input, FXValidators.createNamedEntityValidator(entityClass));
   }
 
   @FXML
