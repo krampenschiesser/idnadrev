@@ -21,6 +21,8 @@ import de.ks.activity.ActivityLoadFinishedEvent;
 import de.ks.activity.ModelBound;
 import de.ks.beagle.entity.Thought;
 import de.ks.beagle.thought.collect.file.FileThoughtViewController;
+import de.ks.eventsystem.bus.HandlingThread;
+import de.ks.eventsystem.bus.Threading;
 import de.ks.validation.ValidationRegistry;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -136,6 +138,7 @@ public class AddThought implements Initializable {
   }
 
   @Subscribe
+  @Threading(HandlingThread.JavaFX)
   public void onRefresh(ActivityLoadFinishedEvent event) {
     this.name.requestFocus();
   }
