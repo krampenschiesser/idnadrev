@@ -21,7 +21,6 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,26 +32,18 @@ import static org.junit.Assert.assertSame;
 
 @RunWith(LauncherRunner.class)//remove this, it just ensures an initialized toolkit/application
 public class TabTest {
-  private TextField nodeWithId;
-  private StackPane content;
-  private TabPane tabPane;
-
-  @Before
-  public void setUp() throws Exception {
-    tabPane = new TabPane();
-    Tab tab1 = new Tab("tab1");
-    tabPane.getTabs().add(tab1);
-
-    content = new StackPane();
-    nodeWithId = new TextField();
-    nodeWithId.setId("test");
-    content.getChildren().add(nodeWithId);
-    tab1.setContent(content);
-  }
-
   @Ignore
   @Test
   public void testLookup() throws Exception {
+    TabPane tabPane = new TabPane();
+    Tab tab1 = new Tab("tab1");
+    tabPane.getTabs().add(tab1);
+
+    StackPane content = new StackPane();
+    TextField nodeWithId = new TextField();
+    nodeWithId.setId("test");
+    content.getChildren().add(nodeWithId);
+    tab1.setContent(content);
     assertSame(nodeWithId, content.lookup("#test"));
     Set<Node> idNodes = tabPane.lookupAll("#test");
     assertEquals(1, idNodes.size());
