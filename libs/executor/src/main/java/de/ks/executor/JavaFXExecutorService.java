@@ -58,7 +58,11 @@ public class JavaFXExecutorService extends AbstractExecutorService {
 
   @Override
   public void execute(Runnable command) {
-    Platform.runLater(command);
+    if (Platform.isFxApplicationThread()) {
+      command.run();
+    } else {
+      Platform.runLater(command);
+    }
   }
 
   public <T> T invokeInJavaFXThread(Callable<T> callable) {
