@@ -77,15 +77,29 @@ public class PersistentWork {
   }
 
   public static <T extends NamedPersistentObject<T>> T forName(Class<T> clazz, String name) {
-    List<T> results = from(clazz, (Root<T> root, CriteriaQuery<T> query, CriteriaBuilder builder) -> {
-      Predicate equal = builder.equal(builder.lower(root.get("name")), name.toLowerCase());
-      query.where(equal);
-    }, null);
+    List<T> results = forName(clazz, name, false);
     if (results.size() != 1) {
       return null;
     } else {
       return results.get(0);
     }
+  }
+
+  public static <T extends NamedPersistentObject<T>> List<T> forNameLike(Class<T> clazz, String name) {
+    return forName(clazz, name, true);
+  }
+
+  private static <T extends NamedPersistentObject<T>> List<T> forName(Class<T> clazz, String name, boolean like) {
+    List<T> results = from(clazz, (Root<T> root, CriteriaQuery<T> query, CriteriaBuilder builder) -> {
+      Predicate restriction;
+      if (like) {
+        restriction = builder.like(builder.lower(root.get("name")), name.toLowerCase() + "%");
+      } else {
+        restriction = builder.equal(builder.lower(root.get("name")), name.toLowerCase());
+      }
+      query.where(restriction);
+    }, null);
+    return results;
   }
 
   public static <T> List<T> from(Class<T> clazz) {
