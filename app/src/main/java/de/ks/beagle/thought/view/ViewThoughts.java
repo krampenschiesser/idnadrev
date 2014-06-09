@@ -53,22 +53,10 @@ public class ViewThoughts implements Initializable {
 
     _this.setRowFactory((view) -> {
       TableRow<Thought> thoughtTableRow = new TableRow<Thought>();
-      thoughtTableRow.setMaxHeight(50);
-      thoughtTableRow.setPrefHeight(50);
+      thoughtTableRow.setMaxHeight(25);
+      thoughtTableRow.setPrefHeight(25);
       return thoughtTableRow;
     });
-//    column.setCellFactory(param -> {
-//      TableCell<Thought, String> cell = new TableCell<>();
-//      Text text = new Text();
-//      cell.setGraphic(text);
-//      cell.setPrefHeight(50);
-//      cell.setMaxHeight(50);
-//
-//      text.wrappingWidthProperty().bind(cell.widthProperty());
-//      text.textProperty().bind(cell.itemProperty());
-//
-//      return cell;
-//    });
   }
 
   public void postPone() {
@@ -81,5 +69,9 @@ public class ViewThoughts implements Initializable {
                 controller.reload();
               });
     }
+  }
+
+  public Thought getSelectedThought() {
+    return _this.getSelectionModel().getSelectedItem();
   }
 }

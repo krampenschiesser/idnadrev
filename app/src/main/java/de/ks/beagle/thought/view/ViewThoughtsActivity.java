@@ -18,14 +18,19 @@ package de.ks.beagle.thought.view;
 import de.ks.activity.ActivityCfg;
 import de.ks.activity.ActivityController;
 import de.ks.application.Navigator;
+import de.ks.beagle.thought.task.ThoughtToTaskActivity;
 import de.ks.menu.MenuItem;
 
+import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 
 @MenuItem("/main/activity")
 public class ViewThoughtsActivity extends ActivityCfg {
   @Inject
   public ViewThoughtsActivity(ActivityController activityController, Navigator navigator) {
-    super(DummyThoughtsDataSource.class, ViewThoughts.class);
+    super(ViewThoughtsDS.class, ViewThoughts.class);
+    withActivityAndReturn(ViewThoughts.class, "toTask", ThoughtToTaskActivity.class,//
+            (o) -> CDI.current().select(ActivityController.class).get().getControllerInstance(ViewThoughts.class).getSelectedThought(),//
+            (o) -> null);
   }
 }

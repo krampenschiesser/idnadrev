@@ -24,8 +24,8 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DummyThoughtsDataSource implements ListDataSource<Thought> {
-  private static final Logger log = LoggerFactory.getLogger(DummyThoughtsDataSource.class);
+public class ViewThoughtsDS implements ListDataSource<Thought> {
+  private static final Logger log = LoggerFactory.getLogger(ViewThoughtsDS.class);
 
   @Override
   public List<Thought> loadModel() {
@@ -38,6 +38,6 @@ public class DummyThoughtsDataSource implements ListDataSource<Thought> {
 
   @Override
   public void saveModel(List<Thought> model) {
-    log.info("Saving model '{}'", model);
+    log.info("noop for'{}'", model);
   }
 }
