@@ -24,7 +24,7 @@ public enum HandlingThread {
    */
   Sync,
   /**
-   * Execute asynchronously in the default {@link java.util.concurrent.ForkJoinPool#commonPool()}
+   * Execute asynchronously in the default de.ks.executor.ExecutorService
    */
   Async,
   /**
