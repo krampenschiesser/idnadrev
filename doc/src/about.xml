@@ -18,9 +18,9 @@
 <chapter>
     <title>General information</title>
     <section>
-        <title>About beagle</title>
+        <title>About idnadrev</title>
         <para>
-            Project beagle is a task, information and life management system aimed for personal use.
+            Project idnadrev is a task, information and life management system aimed for personal use.
             There will be a
             <emphasis>PC(java)</emphasis>
             and a feature reduced
@@ -73,7 +73,8 @@
     <section>
         <title>Task</title>
         <para>
-            A task is the central item of beagle. It can be a child of another task which makes its parent to a project.
+            A task is the central item of idnadrev. It can be a child of another task which makes its parent to a
+            project.
             It can be recurring, scheduled, delegated, the typical stuff.
             They can be grouped by location and topic.
             There is a time tracking method that gives you feedback on the time estimated and spend.

@@ -64,4 +64,8 @@ allprojects {
     clean.doLast {
         file('.').listFiles().findAll { it.name.endsWith('.log') }.collect { println("deleting $it"); it.delete() }
     }
+
+    task cleanlog {
+        file('.').listFiles().findAll { it.name.endsWith('.log') }.collect { println("deleting $it"); it.delete() }
+    }
 }

@@ -29,9 +29,9 @@
         Please refer to the gradle documentation for further information on how to use gradle.
         Basic hint:
         <screen>
-            ~/beagle:$ gradle tasks #overview
-            ~/beagle:$ gradle build #compile test and build
-            ~/beagle:$ gradle reference #documentation
+            ~/idnadrev:$ gradle tasks #overview
+            ~/idnadrev:$ gradle build #compile test and build
+            ~/idnadrev:$ gradle reference #documentation
         </screen>
 
     </para>

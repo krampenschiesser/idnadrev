@@ -15,10 +15,10 @@
  */
 package de.ks.launch;
 
-import de.ks.beagle.entity.Context;
-import de.ks.beagle.entity.Task;
-import de.ks.beagle.entity.Thought;
-import de.ks.beagle.entity.WorkType;
+import de.ks.idnadrev.entity.Context;
+import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.entity.Thought;
+import de.ks.idnadrev.entity.WorkType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

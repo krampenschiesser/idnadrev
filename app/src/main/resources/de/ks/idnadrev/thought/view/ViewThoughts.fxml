@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?scenebuilder-preview-i18n-resource ../../../i18n/Translation_en.properties?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<StackPane id="StackPane" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8"
+           xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.idnadrev.thought.view.ViewThoughts">
+    <children>
+        <VBox prefHeight="-1.0" prefWidth="-1.0" spacing="5.0">
+            <children>
+                <Label styleClass="title" stylesheets="@../../idnadrev.css" text="%main.thought.overview"/>
+                <TableView fx:id="_this" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="SOMETIMES">
+                    <columns>
+                        <TableColumn id="name" fx:id="name" maxWidth="5000.0" minWidth="10.0" prefWidth="222.0"
+                                     text="%de.ks.persistence.entity.NamedPersistentObject.name"/>
+                        <TableColumn id="description" fx:id="description" maxWidth="5000.0" minWidth="10.0"
+                                     prefWidth="400.0" text="%de.ks.idnadrev.entity.Thought.description"/>
+                    </columns>
+                </TableView>
+                <GridPane VBox.vgrow="NEVER">
+                    <children>
+                        <Button mnemonicParsing="false" onAction="#postPone" text="%thought.transform.later"
+                                GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                        <Button mnemonicParsing="false" text="%thought.transform.info" GridPane.columnIndex="1"
+                                GridPane.rowIndex="0"/>
+                        <Button mnemonicParsing="false" text="%thought.transform.project" GridPane.columnIndex="2"
+                                GridPane.rowIndex="0"/>
+                        <Button fx:id="toTask" mnemonicParsing="false" text="%thought.transform.action"
+                                GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+                    </children>
+                    <columnConstraints>
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                    </rowConstraints>
+                </GridPane>
+            </children>
+            <padding>
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+            </padding>
+        </VBox>
+    </children>
+</StackPane>
