@@ -244,7 +244,7 @@ public class ActivityController {
   }
 
   @SuppressWarnings("unchecked")
-  public <T> T getControllerInstance(Class<?> controller) {
+  public <T> T getControllerInstance(Class<T> controller) {
     return (T) initialization.getControllerInstance(controller);
   }
 }
