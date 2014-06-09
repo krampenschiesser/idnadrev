@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 
 import static de.ks.persistence.PersistentWork.persist;
 
-
 public class DummyData extends Service {
   private static final Logger log = LoggerFactory.getLogger(DummyData.class);
   public static final String CREATE_DUMMYDATA = "create.dummydata";
@@ -53,6 +52,7 @@ public class DummyData extends Service {
       backpack.addChild(sew);
 
       persist(physical, mental, hiking, backpack, sketch, sew);
+      persist(new Context("Work"), new Context("Studying"), new Context("Music"));
     }
   }
 
