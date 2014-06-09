@@ -36,9 +36,9 @@ public class NamedEntityValidator implements Validator<String> {
     } else if (name.trim().isEmpty()) {
       return null;
     } else {
-      NamedPersistentObject found = PersistentWork.forName(entityClass, name);
+      NamedPersistentObject found = PersistentWork.forName(entityClass, name.trim());
       if (found == null) {
-        String validationMsg = Localized.get("validation.namedEntity.notFound", name);
+        String validationMsg = Localized.get("validation.namedEntity.notFound", name.trim());
         return ValidationResult.fromError(control, validationMsg);
       }
       return null;
