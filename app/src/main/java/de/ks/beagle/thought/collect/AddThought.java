@@ -94,7 +94,7 @@ public class AddThought implements Initializable {
   @FXML
   void onMouseEntered(MouseEvent event) {
     Clipboard clipboard = Clipboard.getSystemClipboard();
-    log.info("Mouse entered {}", clipboard.hasString() ? "Clipboard has string" : "Clipboard has no string");
+    log.trace("Mouse entered {}", clipboard.hasString() ? "Clipboard has string" : "Clipboard has no string");
     processClipboard(clipboard);
   }
 
