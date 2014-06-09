@@ -1,6 +1,5 @@
 /*
- * Copyright [2014] [Christian Loehnert, krampenschiesser@freenet.de]
- *
+ * Copyright [2014] [Christian Loehnert, krampenschiesser@gmail.com]
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -69,10 +68,8 @@ public class Daemon {
         }
       }
 
-
     }
   }
-
 
   /**
    * Registers a schedule directly. Now further start or schedule needed.
@@ -89,7 +86,6 @@ public class Daemon {
     EventBus eventBus = CDI.current().select(EventBus.class).get();
     eventBus.post(new ScheduleTriggeredEvent(userData));
   }
-
 
   //Test purpose
   void mockTime(LocalDateTime time) {

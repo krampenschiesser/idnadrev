@@ -1,6 +1,5 @@
 /*
- * Copyright [2014] [Christian Loehnert, krampenschiesser@freenet.de]
- *
+ * Copyright [2014] [Christian Loehnert, krampenschiesser@gmail.com]
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +15,6 @@
 
 package de.ks.menu;
 
-
 /**
  *
  */
@@ -25,7 +23,6 @@ public class MenuItemDescriptor implements Comparable<MenuItemDescriptor> {
   protected final String menuItemPath;
   protected final String imagePath;
   protected final Class<?> target;
-
 
   public MenuItemDescriptor(MenuItem menu, Class<?> target) {
     this(menu.value(), menu.image(), target);
@@ -41,7 +38,6 @@ public class MenuItemDescriptor implements Comparable<MenuItemDescriptor> {
     this.imagePath = imagePath;
     this.target = target;
   }
-
 
   @Override
   public int compareTo(MenuItemDescriptor o) {

@@ -1,6 +1,5 @@
 /*
- * Copyright [${YEAR}] [Christian Loehnert]
- *
+ * Copyright [2014] [Christian Loehnert, krampenschiesser@gmail.com]
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,7 +14,6 @@
  */
 
 package de.ks.menu.sink;
-
 
 import de.ks.LauncherRunner;
 import de.ks.application.Navigator;
@@ -83,8 +81,7 @@ public class ContentSinkTest {
 
     bus.postAndWait(//
             new MenuItemClickedEvent(//
-                    new MenuItemDescriptor(About.MENUPATH, About.class))
-    );
+                    new MenuItemDescriptor(About.MENUPATH, About.class)));
 
     assertNotNull(pane.getChildren());
 

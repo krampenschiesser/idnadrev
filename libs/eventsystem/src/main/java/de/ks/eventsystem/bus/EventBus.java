@@ -1,6 +1,5 @@
 /*
- * Copyright [2014] [Christian Loehnert, krampenschiesser@freenet.de]
- *
+ * Copyright [2014] [Christian Loehnert, krampenschiesser@gmail.com]
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,7 +14,6 @@
  */
 
 package de.ks.eventsystem.bus;
-
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.eventbus.DeadEvent;
@@ -66,7 +64,6 @@ public class EventBus {
     }
     return this;
   }
-
 
   public EventBus unregister(Object handler) {
     @SuppressWarnings("unchecked") List<Method> methods = ReflectionUtil.getAllMethods(handler.getClass(),//

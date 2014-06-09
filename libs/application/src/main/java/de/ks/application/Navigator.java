@@ -1,6 +1,5 @@
 /*
- * Copyright [2014] [Christian Loehnert, krampenschiesser@freenet.de]
- *
+ * Copyright [2014] [Christian Loehnert, krampenschiesser@gmail.com]
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,7 +14,6 @@
  */
 
 package de.ks.application;
-
 
 import com.google.common.collect.MapMaker;
 import de.ks.executor.ExecutorService;
@@ -106,7 +104,6 @@ public class Navigator {
     return navigator;
   }
 
-
   public static final String MAIN_AREA = "main";
   public static final String LEFT_AREA = "left";
   public static final String RIGHT_AREA = "right";
@@ -116,7 +113,6 @@ public class Navigator {
   protected final ObservableMap<String, PresentationArea> presentationAreas = FXCollections.observableHashMap();
   protected final Map<String, Deque<Class<?>>> histories = new HashMap<>();
   protected final ExecutorService executorService = CDI.current().select(ExecutorService.class).get();
-
 
   private Navigator(Pane mainArea) {
     addPresentationArea(MAIN_AREA, mainArea);

@@ -1,6 +1,5 @@
 /*
- * Copyright [2014] [Christian Loehnert, krampenschiesser@freenet.de]
- *
+ * Copyright [2014] [Christian Loehnert, krampenschiesser@gmail.com]
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,7 +30,6 @@ public @interface MenuItem {
    * The name of the menu
    */
   @Nonbinding String value();
-
 
   /**
    * An optional path to an item image.

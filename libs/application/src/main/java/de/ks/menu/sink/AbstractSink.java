@@ -1,6 +1,5 @@
 /*
- * Copyright [2014] [Christian Loehnert, krampenschiesser@freenet.de]
- *
+ * Copyright [2014] [Christian Loehnert, krampenschiesser@gmail.com]
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,7 +14,6 @@
  */
 
 package de.ks.menu.sink;
-
 
 import com.google.common.eventbus.Subscribe;
 import de.ks.activity.ActivityController;
@@ -72,7 +70,6 @@ public abstract class AbstractSink<T extends AbstractSink> {
   public void deregister() {
     bus.unregister(this);
   }
-
 
   @Subscribe
   @Threading(HandlingThread.JavaFX)
