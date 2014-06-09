@@ -17,15 +17,35 @@
 package de.ks.beagle.thought.task;
 
 import de.ks.beagle.entity.Task;
+import de.ks.beagle.entity.Thought;
 import de.ks.datasource.NewInstanceDataSource;
 
 public class ThoughtToTaskDS extends NewInstanceDataSource<Task> {
+  private Thought fromThought;
+
   public ThoughtToTaskDS() {
     super(Task.class);
   }
 
   @Override
+  public Task loadModel() {
+    Task task = super.loadModel();
+    if (fromThought != null) {
+      task.setName(fromThought.getName());
+      task.setDescription(fromThought.getDescription());
+    }
+    return task;
+  }
+
+  @Override
   public void saveModel(Task model) {
 
+  }
+
+  @Override
+  public void setLoadingHint(Object dataSourceHint) {
+    if (dataSourceHint instanceof Thought) {
+      this.fromThought = (Thought) dataSourceHint;
+    }
   }
 }
