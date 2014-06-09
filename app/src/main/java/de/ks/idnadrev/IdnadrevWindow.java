@@ -67,6 +67,6 @@ public class IdnadrevWindow extends MainWindow {
 
   @Override
   public String getApplicationTitle() {
-    return "Beagle Version 0.3";
+    return "Idnadrev Version 0.3";
   }
 }
