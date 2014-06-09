@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.validation;
+package de.ks.validation.validators;
 
 import de.ks.i18n.Localized;
 import de.ks.persistence.PersistentWork;
@@ -33,7 +33,7 @@ public class NamedEntityValidator implements Validator<String> {
   public ValidationResult apply(Control control, String name) {
     if (name == null) {
       return null;
-    } else if (name.isEmpty()) {
+    } else if (name.trim().isEmpty()) {
       return null;
     } else {
       NamedPersistentObject found = PersistentWork.forName(entityClass, name);

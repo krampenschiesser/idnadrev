@@ -16,6 +16,9 @@
 package de.ks.validation;
 
 import de.ks.persistence.entity.NamedPersistentObject;
+import de.ks.validation.validators.BeanValidationValidator;
+import de.ks.validation.validators.DurationValidator;
+import de.ks.validation.validators.NamedEntityValidator;
 import org.controlsfx.validation.Validator;
 
 import javax.enterprise.inject.spi.CDI;
@@ -23,6 +26,10 @@ import javax.enterprise.inject.spi.CDI;
 public class FXValidators {
   public static Validator<String> createNamedEntityValidator(Class<? extends NamedPersistentObject> clazz) {
     return new NamedEntityValidator(clazz);
+  }
+
+  public static Validator<String> createDurationValidator() {
+    return new DurationValidator();
   }
 
   public static Validator<Object> createBeanValidationValidator(Class<?> modelClass, String propertyName) {

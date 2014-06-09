@@ -17,6 +17,7 @@ package de.ks.validation;
 
 import de.ks.activity.context.ActivityScoped;
 import de.ks.activity.context.ActivityStore;
+import de.ks.validation.validators.BeanValidationValidator;
 import javafx.beans.property.adapter.JavaBeanProperty;
 import javafx.scene.Node;
 import javafx.scene.control.Control;
