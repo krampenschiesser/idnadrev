@@ -26,12 +26,15 @@ import de.ks.beagle.selection.NamedPersistentObjectSelection;
 import de.ks.eventsystem.bus.HandlingThread;
 import de.ks.eventsystem.bus.Threading;
 import de.ks.reflection.PropertyPath;
+import de.ks.validation.FXValidators;
+import de.ks.validation.ValidationRegistry;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
+import javax.inject.Inject;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -52,6 +55,11 @@ public class MainTaskInfo implements Initializable {
   protected CheckBox project;
   @FXML
   protected TextArea description;
+  @FXML
+  protected TextField estimatedTimeDuration;
+
+  @Inject
+  ValidationRegistry validationRegistry;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -65,6 +73,8 @@ public class MainTaskInfo implements Initializable {
     contextController.from(Context.class);
     workTypeController.from(WorkType.class);
     tagAddController.from(Tag.class);
+
+    validationRegistry.getValidationSupport().registerValidator(estimatedTimeDuration, FXValidators.createDurationValidator());
   }
 
   @Subscribe

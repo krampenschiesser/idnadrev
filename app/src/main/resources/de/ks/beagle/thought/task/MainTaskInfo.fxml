@@ -78,7 +78,7 @@
         </StackPane>
 
         <Label text="%task.estimatedTime" GridPane.rowIndex="7"/>
-        <TextField GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+        <TextField fx:id="estimatedTimeDuration" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
 
         <Label text="%description" GridPane.rowIndex="8"/>
         <TextArea fx:id="description" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
