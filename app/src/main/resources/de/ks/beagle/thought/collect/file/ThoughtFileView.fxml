@@ -38,10 +38,10 @@
                 GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="3"/>
         <Button mnemonicParsing="false" onAction="#openFolder" prefWidth="100.0" text="%open.folder"
                 GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="3"/>
-        <Button mnemonicParsing="false" onAction="#removeFile" prefWidth="100.0" text="%remove" GridPane.columnIndex="2"
-                GridPane.halignment="CENTER" GridPane.rowIndex="4"/>
         <Button mnemonicParsing="false" onAction="#addNewFile" prefWidth="100.0" text="%add.new"
                 GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4"/>
+        <Button mnemonicParsing="false" onAction="#removeFile" prefWidth="100.0" text="%remove" GridPane.columnIndex="2"
+                GridPane.halignment="CENTER" GridPane.rowIndex="4"/>
         <Label fx:id="folderName" text="%file.selection.nofileselected" GridPane.columnIndex="1"
                GridPane.columnSpan="2147483647"/>
     </children>
