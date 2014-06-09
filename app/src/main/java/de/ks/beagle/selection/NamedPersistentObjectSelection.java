@@ -27,6 +27,7 @@ import de.ks.persistence.entity.NamedPersistentObject;
 import de.ks.reflection.PropertyPath;
 import de.ks.validation.FXValidators;
 import de.ks.validation.ValidationRegistry;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -41,8 +42,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
+import org.controlsfx.dialog.Dialog;
 
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.CDI;
@@ -64,9 +64,11 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
   protected TableView<T> tableView;
 
   protected SimpleObjectProperty<T> selectedValue = new SimpleObjectProperty<>();
-  protected Stage stage;
+  //  protected Stage stage;
   protected ActivityController controller = CDI.current().select(ActivityController.class).get();
   protected QueryConsumer<T> filter;
+  private Dialog dialog;
+  private CustomAutoCompletionBinding autoCompletion;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -113,7 +115,10 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
     this.entityClass = namedEntity;
     this.filter = consumer;
     ValidationRegistry validationRegistry = CDI.current().select(ValidationRegistry.class).get();
-    validationRegistry.getValidationSupport().registerValidator(input, FXValidators.createNamedEntityValidator(entityClass));
+    Platform.runLater(() -> {
+      validationRegistry.getValidationSupport().registerValidator(input, FXValidators.createNamedEntityValidator(entityClass));
+      autoCompletion = new CustomAutoCompletionBinding(input, new NamedPersistentObjectAutoCompletion(entityClass));
+    });
   }
 
   @FXML
@@ -130,10 +135,13 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
       scene.getStylesheets().add(sheet);
     });
 
-    stage = new Stage();
-    stage.initModality(Modality.APPLICATION_MODAL);
-    stage.setScene(scene);
-    stage.show();
+    dialog = new Dialog(this.browse, Localized.get("select.namedEntity." + entityClass.getSimpleName()));
+    dialog.setContent(tableView);
+    dialog.show();
+//    stage = new Stage();
+//    stage.initModality(Modality.APPLICATION_MODAL);
+//    stage.setScene(scene);
+//    stage.show();
     tableView.requestFocus();
   }
 
@@ -169,6 +177,8 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
   }
 
   protected void submit() {
-    stage.hide();
+    dialog.hide();
+    autoCompletion.hidePopup();
   }
+
 }
