@@ -8,6 +8,8 @@
 Idnadrev is a task management and knowledge application
 that helps to organize your ideas, projects and any kind of information.
 It is also a test project for an activity based JavaFX dialog framework.
+I am currently working on the API and slowly moving forward to get the first version running.
+So this is active development and nothing to use, yet.
 
 == Building ==
 
