@@ -1,0 +1,25 @@
+= Beagle documentation =
+:Author:    Christian Löhnert
+:Email:     krampenschiesser@gmail.com
+
+
+== About ==
+
+Idnadrev is a task management and knowledge application
+that helps to organize your ideas, projects and any kind of information.
+It is also a test project for an activity based JavaFX dialog framework.
+
+== Building ==
+
+Building idnadrev is based on http://www.gradle.org/[gradle].
+If you don't have gradle installed, no worries.
+Use the provided gradle wrapper *gradlew*
+[source,shell]
+----
+$ ./gradlew help
+$ ./gradlew build
+----
+
+== License ==
+
+Idnadrev is licensed under the http://apache.org/licenses/LICENSE-2.0[Apache 2.0 license].
