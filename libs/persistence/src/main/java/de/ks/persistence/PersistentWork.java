@@ -60,12 +60,20 @@ public class PersistentWork {
   }
 
   @SuppressWarnings("unchecked")
+  public static <T> void merge(T... t) {
+    merge(Arrays.asList(t));
+  }
+
+  public static <T> void merge(List<T> all) {
+    run((em) -> all.forEach(em::merge));
+  }
+
   public static <T> void persist(T... t) {
     persist(Arrays.asList(t));
   }
 
   public static <T> void persist(List<T> all) {
-    run((em) -> all.forEach((t) -> em.persist(t)));
+    run((em) -> all.forEach(em::persist));
   }
 
   public static void deleteAllOf(Class<?> clazz) {
