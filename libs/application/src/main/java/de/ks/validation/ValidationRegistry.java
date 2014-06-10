@@ -21,6 +21,8 @@ import javafx.beans.property.adapter.JavaBeanProperty;
 import javafx.scene.Node;
 import javafx.scene.control.Control;
 import org.controlsfx.validation.ValidationSupport;
+import org.controlsfx.validation.decoration.CompoundValidationDecoration;
+import org.controlsfx.validation.decoration.StyleClassValidationDecoration;
 import org.controlsfx.validation.decoration.ValidationDecoration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,10 +46,10 @@ public class ValidationRegistry {
 
   public ValidationRegistry() {
     ValidationDecoration iconDecorator = new CustomValidationDecoration();
-//    ValidationDecoration cssDecorator = new StyleClassValidationDecoration();
-//    ValidationDecoration compoundDecorator = new CompoundValidationDecoration(cssDecorator, iconDecorator);
-//    validationSupport.setValidationDecorator(compoundDecorator);
-    validationSupport.setValidationDecorator(iconDecorator);
+    ValidationDecoration cssDecorator = new StyleClassValidationDecoration();
+    ValidationDecoration compoundDecorator = new CompoundValidationDecoration(cssDecorator, iconDecorator);
+    validationSupport.setValidationDecorator(compoundDecorator);
+//    validationSupport.setValidationDecorator(iconDecorator);
   }
 
   public void addProperty(JavaBeanProperty<?> property, Node node) {
