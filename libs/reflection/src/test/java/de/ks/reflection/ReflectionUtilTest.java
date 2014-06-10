@@ -48,12 +48,12 @@ public class ReflectionUtilTest {
     childPath.<Child>build().protectedChildMethod();
     assertEquals(childPath.getLastMethod(), methods.get(3));
 
-    parentPath.<Child>build().parentMethod();
+    parentPath.<Parent>build().parentMethod();
     assertEquals(parentPath.getLastMethod(), methods.get(4));
 
     assertEquals(ReflectionUtil.getMethod(Parent.class, "privateParentMethod"), methods.get(5));
 
-    parentPath.<Child>build().protectedParentMethod();
+    parentPath.<Parent>build().protectedParentMethod();
     assertEquals(parentPath.getLastMethod(), methods.get(6));
   }
 
