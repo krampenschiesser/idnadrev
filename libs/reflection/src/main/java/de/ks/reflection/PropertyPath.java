@@ -28,20 +28,22 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
-public class PropertyPath<T> {
+public class PropertyPath {
   private static final ObjenesisStd objenesis = new ObjenesisStd();
 
   public static <T> String methodName(Class<T> clazz, Consumer<T> consumer) {
-    PropertyPath<T> path = new PropertyPath<>(clazz);
+    PropertyPath path = new PropertyPath(clazz);
     consumer.accept(path.build());
     return path.getLastMethodName();
   }
 
   public static <T> String property(Class<T> clazz, Consumer<T> consumer) {
-    PropertyPath<T> path = new PropertyPath<>(clazz);
+    PropertyPath path = new PropertyPath(clazz);
     consumer.accept(path.build());
     if (path.getPropertyPath().isEmpty()) {
       String methodName = path.getLastMethodName();
@@ -65,13 +67,19 @@ public class PropertyPath<T> {
     }
   }
 
-  public static <T> PropertyPath<T> of(Class<T> clazz) {
-    return new PropertyPath<>(clazz);
+  public static <T> PropertyPath of(Class<T> clazz, Consumer<T> consumer) {
+    PropertyPath path = new PropertyPath(clazz);
+    consumer.accept(path.build());
+    return path;
+  }
+
+  public static <T> PropertyPath of(Class<T> clazz) {
+    return new PropertyPath(clazz);
   }
 
   private static final Logger log = LoggerFactory.getLogger(PropertyPath.class);
 
-  protected Class<T> root;
+  protected Class<?> root;
   protected List<Method> methodPath = new ArrayList<>(25);
   protected List<String> stringPath = new ArrayList<>(25);
   protected List<String> fieldPath = new ArrayList<>(25);
@@ -81,12 +89,12 @@ public class PropertyPath<T> {
   protected Class<?> returnType;
   protected Field field;
 
-  public PropertyPath(Class<T> root) {
+  public PropertyPath(Class<?> root) {
     this.root = root;
   }
 
   @SuppressWarnings("unchecked")
-  public T build() {
+  public <T> T build() {
     stringPath.clear();
     fieldPath.clear();
     setter = false;
@@ -169,8 +177,9 @@ public class PropertyPath<T> {
     return log;
   }
 
-  public Class<T> getRoot() {
-    return root;
+  @SuppressWarnings("unchecked")
+  public <T> Class<T> getRoot() {
+    return (Class<T>) root;
   }
 
   public Class<?>[] getParameterTypes() {
@@ -193,7 +202,7 @@ public class PropertyPath<T> {
     return stringPath.size() == fieldPath.size();
   }
 
-  public void setValue(T source, Object value) {
+  public void setValue(Object source, Object value) {
     if (!isSetter()) {
       log.error("Declared path [{}]is no setter", this);
     }
@@ -211,14 +220,30 @@ public class PropertyPath<T> {
       }
     }
     try {
-      lastMethod.invoke(instance, value);
+      String methodName = lastMethod.getName().toLowerCase();
+
+      boolean isBooleanGetter = methodName.startsWith("is");
+      boolean isSimpleGetter = methodName.startsWith("get");
+
+      if (lastMethod.getParameterTypes().length == 0 && isBooleanGetter || isSimpleGetter) {
+        int index = isBooleanGetter ? 2 : 3;
+        Class<?> declaringClass = lastMethod.getDeclaringClass();
+        Optional<Method> methodOptional = Arrays.asList(declaringClass.getDeclaredMethods()).stream()//
+                .filter((m) -> m.getName().startsWith("set") && m.getName().toLowerCase().endsWith(methodName.substring(index)))//
+                .findFirst();
+        if (methodOptional.isPresent()) {
+          methodOptional.get().invoke(instance, value);
+        }
+      } else {
+        lastMethod.invoke(instance, value);
+      }
     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
       log.error("Could not invoke setter on path {}: ", this, e);
     }
   }
 
   @SuppressWarnings("unchecked")
-  public <U> U getValue(T source) {
+  public <U> U getValue(Object source) {
     if (!isGetter()) {
       log.error("Declared path [{}]is no getter", this);
       return null;
@@ -238,7 +263,7 @@ public class PropertyPath<T> {
     return (U) instance;
   }
 
-  public void walk(T source) {
+  public void walk(Object source) {
     Object instance = source;
     for (Method method : methodPath) {
       if (instance == null) {
@@ -365,7 +390,7 @@ public class PropertyPath<T> {
     if (!(obj instanceof PropertyPath)) {
       return false;
     }
-    PropertyPath<?> other = (PropertyPath<?>) obj;
+    PropertyPath other = (PropertyPath) obj;
     if (methodPath == null) {
       if (other.methodPath != null) {
         return false;

@@ -31,29 +31,29 @@ public class ReflectionUtilTest {
 
   @Test
   public void testGetAllMethods() throws Exception {
-    PropertyPath<Parent> parentPath = PropertyPath.of(Parent.class);
-    PropertyPath<Child> childPath = PropertyPath.of(Child.class);
+    PropertyPath parentPath = PropertyPath.of(Parent.class);
+    PropertyPath childPath = PropertyPath.of(Child.class);
 
     List<Method> methods = ReflectionUtil.getAllMethods(Child.class);
     assertEquals(7, methods.size());
 
 
-    childPath.build().childMethod();
+    childPath.<Child>build().childMethod();
     assertEquals(childPath.getLastMethod(), methods.get(0));
 
     assertEquals(ReflectionUtil.getMethod(Child.class, "overriden"), methods.get(1));
 
     assertEquals(ReflectionUtil.getMethod(Child.class, "privateChildMethod"), methods.get(2));
 
-    childPath.build().protectedChildMethod();
+    childPath.<Child>build().protectedChildMethod();
     assertEquals(childPath.getLastMethod(), methods.get(3));
 
-    parentPath.build().parentMethod();
+    parentPath.<Child>build().parentMethod();
     assertEquals(parentPath.getLastMethod(), methods.get(4));
 
     assertEquals(ReflectionUtil.getMethod(Parent.class, "privateParentMethod"), methods.get(5));
 
-    parentPath.build().protectedParentMethod();
+    parentPath.<Child>build().protectedParentMethod();
     assertEquals(parentPath.getLastMethod(), methods.get(6));
   }
 

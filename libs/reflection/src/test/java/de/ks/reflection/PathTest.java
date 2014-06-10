@@ -27,7 +27,7 @@ import static org.junit.Assert.assertTrue;
  *
  */
 public class PathTest {
-  private PropertyPath<PathObject> path;
+  private PropertyPath path;
 
   @Before
   public void setup() {
@@ -36,35 +36,35 @@ public class PathTest {
 
   @Test
   public void testSetter() {
-    path.build().setContext(null);
+    path.<PathObject>build().setContext(null);
     assertTrue(path.isSetter());
     assertTrue(path.isFieldAvailable());
   }
 
   @Test
   public void testGetter() {
-    path.build().getContext();
+    path.<PathObject>build().getContext();
     assertTrue(path.isGetter());
     assertTrue(path.isFieldAvailable());
   }
 
   @Test
   public void testSubSetter() {
-    path.build().getContext().setName(null);
+    path.<PathObject>build().getContext().setName(null);
     assertTrue(path.isSetter());
     assertTrue(path.isFieldAvailable());
   }
 
   @Test
   public void testSubGetter() {
-    path.build().getContext().getName();
+    path.<PathObject>build().getContext().getName();
     assertTrue(path.isGetter());
     assertTrue(path.isFieldAvailable());
   }
 
   @Test
   public void testGetGetterValue() {
-    path.build().getContext();
+    path.<PathObject>build().getContext();
     PathObject task = new PathObject("test");
 
     PathContext context = new PathContext();
@@ -76,7 +76,7 @@ public class PathTest {
 
   @Test
   public void testGetSubGetterValue() {
-    path.build().getContext().getName();
+    path.<PathObject>build().getContext().getName();
     PathObject task = new PathObject("test");
 
     task.setContext(new PathContext().setName("hello"));
@@ -87,7 +87,7 @@ public class PathTest {
 
   @Test
   public void testSetValue() {
-    path.build().setName("dummy");
+    path.<PathObject>build().setName("dummy");
     PathObject task = new PathObject("test");
     path.setValue(task, "sauerland");
 
@@ -96,7 +96,7 @@ public class PathTest {
 
   @Test
   public void testSetSubValue() {
-    path.build().getContext().setName("dummy");
+    path.<PathObject>build().getContext().setName("dummy");
 
     PathObject task = new PathObject("test");
     task.setContext(new PathContext().setName("hello"));
@@ -112,7 +112,7 @@ public class PathTest {
     PathObject task = new PathObject("test");
     task.setContext(new PathContext().setName("hello"));
 
-    path.build().getContext().setName("dummy");
+    path.<PathObject>build().getContext().setName("dummy");
     path.walk(task);
   }
 
@@ -124,5 +124,13 @@ public class PathTest {
   @Test
   public void testPropertyName() throws Exception {
     assertEquals("name", PropertyPath.property(File.class, (f) -> f.getName()));
+  }
+
+  @Test
+  public void testSetValueFromGetter() throws Exception {
+    PropertyPath propertyPath = PropertyPath.of(PathObject.class, (p) -> p.getName());
+    PathObject pathObject = new PathObject("test");
+    propertyPath.setValue(pathObject, "Sauerland");
+    assertEquals("Sauerland", pathObject.getName());
   }
 }
