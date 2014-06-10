@@ -46,7 +46,7 @@ public class ActivityBindingTest extends AbstractActivityTest {
   public void setUp() throws Exception {
     super.setUp();
     activityController.start(activityCfg);
-    activityController.waitForDataSourceLoading();
+    activityController.waitForDataSource();
   }
 
   @Test

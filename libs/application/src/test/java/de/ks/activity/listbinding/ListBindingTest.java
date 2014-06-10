@@ -47,7 +47,7 @@ public class ListBindingTest {
     navigator = Navigator.registerWithBorderPane(Launcher.instance.getService(JavaFXService.class).getStage());
     activityCfg = new ListActivity();
     activityController.start(activityCfg);
-    activityController.waitForDataSourceLoading();
+    activityController.waitForDataSource();
   }
 
   @After

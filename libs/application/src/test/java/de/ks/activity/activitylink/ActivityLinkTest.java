@@ -70,7 +70,7 @@ public class ActivityLinkTest {
   @Test
   public void testStandardHint() throws Exception {
     controller.start(activityCfgA);
-    controller.waitForDataSourceLoading();
+    controller.waitForDataSource();
 
     ActivityAModel model = store.getModel();
     model.setId("bla");
@@ -88,7 +88,7 @@ public class ActivityLinkTest {
     assertNotNull(onAction);
     onAction.handle(new ActionEvent());
     Node activityBNode = Navigator.getCurrentNavigator().getMainArea().getCurrentNode();
-    controller.waitForDataSourceLoading();
+    controller.waitForDataSource();
     TextField descriptionInput = (TextField) activityBNode.lookup("#description");
     assertEquals("bla", descriptionInput.getText());
   }
@@ -96,7 +96,7 @@ public class ActivityLinkTest {
   @Test
   public void testReturnHint() throws Exception {
     controller.start(activityCfgA);
-    controller.waitForDataSourceLoading();
+    controller.waitForDataSource();
 
     ActivityAModel model = store.getModel();
     model.setId("bla");
@@ -114,7 +114,7 @@ public class ActivityLinkTest {
     assertNotNull(onAction);
     onAction.handle(new ActionEvent());
     Node activityBNode = Navigator.getCurrentNavigator().getMainArea().getCurrentNode();
-    controller.waitForDataSourceLoading();
+    controller.waitForDataSource();
     TextField descriptionInput = (TextField) activityBNode.lookup("#description");
     assertEquals("bla" + "Hello", descriptionInput.getText());
 
@@ -125,7 +125,7 @@ public class ActivityLinkTest {
     finishAction.handle(new ActionEvent());
     Thread.sleep(300);
     waitForJavaFXThread();
-    controller.waitForDataSourceLoading();
+    controller.waitForDataSource();
 
     Node topNode = Navigator.getCurrentNavigator().getMainArea().getCurrentNode();
     assertNotEquals(activityBNode, topNode);

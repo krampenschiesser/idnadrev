@@ -64,7 +64,7 @@ public class CollectThoughtTest {
     Stage stage = service.getStage();
     scene = stage.getScene();
     ThoughtActivity activity = controller.start(ThoughtActivity.class);
-    controller.waitForDataSourceLoading();
+    controller.waitForDataSource();
 
     addThought = controller.getCurrentController();
     FXPlatform.invokeLater(() -> {
