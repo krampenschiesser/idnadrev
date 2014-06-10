@@ -98,27 +98,6 @@ public class ActivityController {
     log.info("Resumed activity {} with hint", id, dataSourceHint);
   }
 
-  @SuppressWarnings("unchecked")
-  public void reload() {
-    DataSource dataSource = store.getDatasource();
-    SuspendablePooledExecutorService executorService = executor.getActivityExecutorService(getCurrentActivityId());
-
-    CompletableFuture<Object> load = CompletableFuture.supplyAsync(() -> dataSource.loadModel(), executorService);
-    finishingFutures = load.thenApplyAsync((value) -> {
-      log.debug("Loaded model '{}'", value);
-      CDI.current().select(ActivityStore.class).get().setModel(value);
-      return value;
-    }, javafxExecutor).thenAcceptAsync((value) -> {
-      EventBus eventBus = CDI.current().select(EventBus.class).get();
-      eventBus.post(new ActivityLoadFinishedEvent(value));
-    }, javafxExecutor);
-
-    load.exceptionally((t) -> {
-      log.error("Could not load DataSource {} for activity {}", dataSource, getCurrentActivityId(), t);
-      return null;
-    });
-  }
-
   public <T extends ActivityCfg> T start(Class<T> activityClass) {
     return start(activityClass, null, null);
   }
@@ -174,7 +153,7 @@ public class ActivityController {
     activityCfg.setCurrentController(targetController);
   }
 
-  public void waitForDataSourceLoading() {
+  public void waitForDataSource() {
     lock.lock();
     try {
       finishingFutures.join();
@@ -200,7 +179,7 @@ public class ActivityController {
         log.warn("Could not stop unregistered activity {}", activityId);
         return;
       }
-      waitForDataSourceLoading();
+      waitForDataSource();
       String id = activityId;
       executor.shutdown(id);
       stop(id);
@@ -245,5 +224,49 @@ public class ActivityController {
   @SuppressWarnings("unchecked")
   public <T> T getControllerInstance(Class<T> controller) {
     return (T) initialization.getControllerInstance(controller);
+  }
+
+  @SuppressWarnings("unchecked")
+  public void save() {
+    waitForDataSource();
+    DataSource dataSource = store.getDatasource();
+    SuspendablePooledExecutorService executorService = executor.getActivityExecutorService(getCurrentActivityId());
+
+    Object model = store.getModel();
+    CompletableFuture<Object> save = CompletableFuture.supplyAsync(() -> {
+      store.getBinding().applyControllerContent(model);
+      dataSource.saveModel(model);
+      return model;
+    }, executorService);
+    finishingFutures = save.thenApplyAsync((value) -> {
+      log.debug("Saved model '{}'", value);
+      return value;
+    });
+
+    save.exceptionally((t) -> {
+      log.error("Could not save model {} DataSource {} for activity {}", model, dataSource, getCurrentActivityId(), t);
+      return null;
+    });
+  }
+
+  @SuppressWarnings("unchecked")
+  public void reload() {
+    DataSource dataSource = store.getDatasource();
+    SuspendablePooledExecutorService executorService = executor.getActivityExecutorService(getCurrentActivityId());
+
+    CompletableFuture<Object> load = CompletableFuture.supplyAsync(() -> dataSource.loadModel(), executorService);
+    finishingFutures = load.thenApplyAsync((value) -> {
+      log.debug("Loaded model '{}'", value);
+      CDI.current().select(ActivityStore.class).get().setModel(value);
+      return value;
+    }, javafxExecutor).thenAcceptAsync((value) -> {
+      EventBus eventBus = CDI.current().select(EventBus.class).get();
+      eventBus.post(new ActivityLoadFinishedEvent(value));
+    }, javafxExecutor);
+
+    load.exceptionally((t) -> {
+      log.error("Could not load DataSource {} for activity {}", dataSource, getCurrentActivityId(), t);
+      return null;
+    });
   }
 }

@@ -16,10 +16,12 @@ package de.ks.binding;
 
 import com.google.common.primitives.Primitives;
 import de.ks.javafx.converter.LastValueConverter;
+import de.ks.reflection.PropertyPath;
 import de.ks.reflection.ReflectionUtil;
 import de.ks.validation.ValidationRegistry;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.property.adapter.*;
 import javafx.beans.value.ObservableValue;
@@ -44,6 +46,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class Binding {
@@ -51,6 +54,8 @@ public class Binding {
   private final Map<String, Pair<Class<?>, Node>> propertyCandidates = new HashMap<>();
   private final Map<String, JavaBeanProperty<?>> properties = new HashMap<>();
   private final Set<Pair<JavaBeanProperty<?>, Property<?>>> bindings = new HashSet<>();
+  private final Map<PropertyPath, Property<?>> customProperties = new HashMap<>();
+
   @Inject
   ValidationRegistry validationRegistry;
 
@@ -65,6 +70,19 @@ public class Binding {
       unbind(oldValue);
       bind(newValue);
     }
+    customProperties.entrySet().forEach(entry -> {
+      Object value = entry.getKey().getValue(newValue);
+      @SuppressWarnings("unchecked") Property<Object> property = (Property<Object>) entry.getValue();
+      property.setValue(value);
+    });
+  }
+
+  public void applyControllerContent(Object model) {
+    customProperties.entrySet().forEach(entry -> {
+      @SuppressWarnings("unchecked") Property<Object> property = (Property<Object>) entry.getValue();
+      Object value = property.getValue();
+      entry.getKey().setValue(model, value);
+    });
   }
 
   @SuppressWarnings("unchecked")
@@ -258,5 +276,15 @@ public class Binding {
       log.error("Could not resolve {} of {}", name, object.getClass());
       return null;
     }
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T extends Object> StringProperty getStringProperty(Class<T> clazz, Consumer<T> propertyResolution) {
+    PropertyPath path = PropertyPath.of(clazz, propertyResolution);
+    if (!customProperties.containsKey(path)) {
+      SimpleStringProperty property = new SimpleStringProperty();
+      customProperties.put(path, property);
+    }
+    return (StringProperty) customProperties.get(path);
   }
 }
