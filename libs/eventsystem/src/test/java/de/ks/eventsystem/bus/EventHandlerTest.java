@@ -33,11 +33,11 @@ import static org.junit.Assert.assertTrue;
 public class EventHandlerTest {
   @Test
   public void testEventHandling() throws Exception {
-    PropertyPath<Handler> path = PropertyPath.of(Handler.class);
-    path.build().validConsumingHandler(null);
+    PropertyPath path = PropertyPath.of(Handler.class);
+    path.<Handler>build().validConsumingHandler(null);
     Method consumingMethod = path.getLastMethod();
 
-    path.build().validNonConsumingHandler(null);
+    path.<Handler>build().validNonConsumingHandler(null);
     Method nonConsumingMethod = path.getLastMethod();
 
     Method validMethod = ReflectionUtil.getMethod(Handler.class, "validHandler");
