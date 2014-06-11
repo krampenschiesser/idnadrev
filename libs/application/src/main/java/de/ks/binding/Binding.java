@@ -20,13 +20,13 @@ import de.ks.reflection.PropertyPath;
 import de.ks.reflection.ReflectionUtil;
 import de.ks.validation.ValidationRegistry;
 import javafx.application.Platform;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.beans.property.adapter.*;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
+import javafx.collections.ObservableSet;
 import javafx.scene.Node;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.TableColumn;
@@ -46,7 +46,8 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
-import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class Binding {
@@ -55,6 +56,7 @@ public class Binding {
   private final Map<String, JavaBeanProperty<?>> properties = new HashMap<>();
   private final Set<Pair<JavaBeanProperty<?>, Property<?>>> bindings = new HashSet<>();
   private final Map<PropertyPath, Property<?>> customProperties = new HashMap<>();
+  private final Map<Property<?>, Pair<Function, Function>> customPropertiesConverters = new HashMap<>();
 
   @Inject
   ValidationRegistry validationRegistry;
@@ -70,9 +72,18 @@ public class Binding {
       unbind(oldValue);
       bind(newValue);
     }
+    applyModelToCustomProperties(newValue);
+  }
+
+  @SuppressWarnings("unchecked")
+  protected void applyModelToCustomProperties(Object model) {
     customProperties.entrySet().forEach(entry -> {
-      Object value = entry.getKey().getValue(newValue);
+      Object value = entry.getKey().getValue(model);
       @SuppressWarnings("unchecked") Property<Object> property = (Property<Object>) entry.getValue();
+      Pair<Function, Function> converter = customPropertiesConverters.get(property);
+      if (converter != null && value != null) {
+        value = converter.getKey().apply(value);
+      }
       property.setValue(value);
     });
   }
@@ -278,13 +289,58 @@ public class Binding {
     }
   }
 
+  public <T extends Object> StringProperty getStringProperty(Class<T> clazz, Function<T, String> propertyResolution) {
+    return addProperty(clazz, propertyResolution, SimpleStringProperty::new, null, null);
+  }
+
+  public <T extends Object> BooleanProperty getBooleanProperty(Class<T> clazz, Function<T, Boolean> propertyResolution) {
+    return addProperty(clazz, propertyResolution, SimpleBooleanProperty::new, null, null);
+  }
+
+  public <T extends Object> IntegerProperty getIntegerProperty(Class<T> clazz, Function<T, Integer> propertyResolution) {
+    return addProperty(clazz, propertyResolution, SimpleIntegerProperty::new, null, null);
+  }
+
+  public <T extends Object> LongProperty getLongProperty(Class<T> clazz, Function<T, Long> propertyResolution) {
+    return addProperty(clazz, propertyResolution, SimpleLongProperty::new, null, null);
+  }
+
+  public <T extends Object> FloatProperty getFloatProperty(Class<T> clazz, Function<T, Float> propertyResolution) {
+    return addProperty(clazz, propertyResolution, SimpleFloatProperty::new, null, null);
+  }
+
+  public <T extends Object> DoubleProperty getDoubleProperty(Class<T> clazz, Function<T, Double> propertyResolution) {
+    return addProperty(clazz, propertyResolution, SimpleDoubleProperty::new, null, null);
+  }
+
+  public <T extends Object, V> ObjectProperty<V> getObjectProperty(Class<T> clazz, Function<T, V> propertyResolution) {
+    return addProperty(clazz, propertyResolution, SimpleObjectProperty::new, null, null);
+  }
+
+  public <T extends Object, V> ListProperty<V> getListProperty(Class<T> clazz, Function<T, List<V>> propertyResolution) {
+    return addProperty(clazz, propertyResolution, SimpleListProperty::new, FXCollections::observableList, (ObservableList<V> l) -> l);
+  }
+
+  public <T extends Object, V> SetProperty<V> getSetProperty(Class<T> clazz, Function<T, Set<V>> propertyResolution) {
+    return addProperty(clazz, propertyResolution, SimpleSetProperty::new, FXCollections::observableSet, (ObservableSet<V> l) -> l);
+  }
+
+  public <T extends Object, K, V> MapProperty<K, V> getMapProperty(Class<T> clazz, Function<T, Map<K, V>> propertyResolution) {
+    return addProperty(clazz, propertyResolution, SimpleMapProperty::new, FXCollections::observableMap, (ObservableMap<K, V> m) -> m);
+  }
+
   @SuppressWarnings("unchecked")
-  public <T extends Object> StringProperty getStringProperty(Class<T> clazz, Consumer<T> propertyResolution) {
-    PropertyPath path = PropertyPath.of(clazz, propertyResolution);
+  protected <T extends Property, V, K, O> T addProperty(Class<V> clazz, Function<V, K> function, Supplier<T> supplier, Function<K, O> model2Controller, Function<O, K> controller2Model) {
+    PropertyPath path = PropertyPath.ofTypeSafe(clazz, function);
     if (!customProperties.containsKey(path)) {
-      SimpleStringProperty property = new SimpleStringProperty();
-      customProperties.put(path, property);
+      T value = supplier.get();
+      customProperties.put(path, value);
+      if (model2Controller != null && controller2Model != null) {
+        customPropertiesConverters.put(value, Pair.of(model2Controller, controller2Model));
+      } else if (model2Controller != null || controller2Model != null) {
+        throw new IllegalArgumentException("Please specify both converters");
+      }
     }
-    return (StringProperty) customProperties.get(path);
+    return (T) customProperties.get(path);
   }
 }

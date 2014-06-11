@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class PropertyPath {
   private static final ObjenesisStd objenesis = new ObjenesisStd();
@@ -70,6 +71,12 @@ public class PropertyPath {
   public static <T> PropertyPath of(Class<T> clazz, Consumer<T> consumer) {
     PropertyPath path = new PropertyPath(clazz);
     consumer.accept(path.build());
+    return path;
+  }
+
+  public static <T> PropertyPath ofTypeSafe(Class<T> clazz, Function<T, ?> function) {
+    PropertyPath path = new PropertyPath(clazz);
+    function.apply(path.build());
     return path;
   }
 
@@ -164,6 +171,8 @@ public class PropertyPath {
           return null;
         } else if (isSetter()) {
           return null;
+        } else if (returnType.getPackage().getName().startsWith("java")) {//sadly, sadly, sadly javassist move java classes to new packages which are then incompatible...
+          return null;
         } else {
           return callBack(thisMethod.getReturnType());
         }
@@ -232,9 +241,12 @@ public class PropertyPath {
                 .filter((m) -> m.getName().startsWith("set") && m.getName().toLowerCase().endsWith(methodName.substring(index)))//
                 .findFirst();
         if (methodOptional.isPresent()) {
-          methodOptional.get().invoke(instance, value);
+          Method method = methodOptional.get();
+          method.setAccessible(true);
+          method.invoke(instance, value);
         }
       } else {
+        lastMethod.setAccessible(true);
         lastMethod.invoke(instance, value);
       }
     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
@@ -254,6 +266,7 @@ public class PropertyPath {
         return null;
       }
       try {
+        method.setAccessible(true);
         instance = method.invoke(instance);
       } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
         log.error("Could not follow path {}: ", this, e);
