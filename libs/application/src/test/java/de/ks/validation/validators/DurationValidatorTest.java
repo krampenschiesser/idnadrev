@@ -20,8 +20,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import java.time.Duration;
+
+import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
 public class DurationValidatorTest {
@@ -62,7 +63,30 @@ public class DurationValidatorTest {
     assertNull(validator.apply(control, "13  hours  "));
     assertNull(validator.apply(control, "93:13"));
     assertNull(validator.apply(control, "3:03"));
+  }
 
+  @Test
+  public void testProperty() throws Exception {
+    validator.apply(control, "   ");
+    assertNull(validator.getDuration());
+    validator.apply(control, "13m");
+    assertEquals(Duration.ofMinutes(13), validator.getDuration());
+    validator.apply(control, "13min");
+    assertEquals(Duration.ofMinutes(13), validator.getDuration());
+    validator.apply(control, "13  min  ");
+    assertEquals(Duration.ofMinutes(13), validator.getDuration());
+    validator.apply(control, "0:13");
+    assertEquals(Duration.ofMinutes(13), validator.getDuration());
+    validator.apply(control, "13h");
+    assertEquals(Duration.ofMinutes(13 * 60), validator.getDuration());
+    validator.apply(control, "13hours");
+    assertEquals(Duration.ofMinutes(13 * 60), validator.getDuration());
+    validator.apply(control, "13  hours  ");
+    assertEquals(Duration.ofMinutes(13 * 60), validator.getDuration());
+    validator.apply(control, "93:13");
+    assertEquals(Duration.ofMinutes(93 * 60 + 13), validator.getDuration());
+    validator.apply(control, "3:03");
+    assertEquals(Duration.ofMinutes(3 * 60 + 3), validator.getDuration());
   }
 }
 

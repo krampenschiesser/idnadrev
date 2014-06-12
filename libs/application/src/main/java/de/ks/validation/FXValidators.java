@@ -27,7 +27,7 @@ public class FXValidators {
     return new NamedEntityValidator(clazz);
   }
 
-  public static Validator<String> createDurationValidator() {
+  public static DurationValidator createDurationValidator() {
     return new DurationValidator();
   }
 
