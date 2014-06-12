@@ -106,18 +106,26 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
 
   }
 
-  public void from(Class<T> namedEntity) {
+  public NamedPersistentObjectSelection<T> from(Class<T> namedEntity) {
     from(namedEntity, null);
+    return this;
   }
 
-  public void from(Class<T> namedEntity, QueryConsumer<T> consumer) {
+  public NamedPersistentObjectSelection<T> from(Class<T> namedEntity, QueryConsumer<T> filter) {
     this.entityClass = namedEntity;
-    this.filter = consumer;
+    this.filter = filter;
+    Platform.runLater(() -> {
+      autoCompletion = new CustomAutoCompletionBinding(input, new NamedPersistentObjectAutoCompletion(entityClass));
+    });
+    return this;
+  }
+
+  public NamedPersistentObjectSelection<T> enableValidation() {
     ValidationRegistry validationRegistry = CDI.current().select(ValidationRegistry.class).get();
     Platform.runLater(() -> {
       validationRegistry.getValidationSupport().registerValidator(input, FXValidators.createNamedEntityValidator(entityClass));
-      autoCompletion = new CustomAutoCompletionBinding(input, new NamedPersistentObjectAutoCompletion(entityClass));
     });
+    return this;
   }
 
   @FXML
