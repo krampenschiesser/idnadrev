@@ -76,10 +76,12 @@ public class PersistentWork {
     run((em) -> all.forEach(em::persist));
   }
 
-  public static void deleteAllOf(Class<?> clazz) {
+  public static void deleteAllOf(Class<?>... classes) {
     run((em) -> {
-      int deletedLines = em.createQuery("delete from " + clazz.getName()).executeUpdate();
-      log.debug("Deleted {} from {}", deletedLines, clazz.getSimpleName());
+      for (Class<?> clazz : classes) {
+        int deletedLines = em.createQuery("delete from " + clazz.getName()).executeUpdate();
+        log.debug("Deleted {} from {}", deletedLines, clazz.getSimpleName());
+      }
     });
   }
 
@@ -136,12 +138,11 @@ public class PersistentWork {
     });
   }
 
-  protected EntityManager em;
+  protected static final ThreadLocal<EntityManager> localEM = new ThreadLocal<>();
   protected Consumer<EntityManager> consumer;
   protected Function<EntityManager, ?> function;
 
   private PersistentWork() {
-    em = CDI.current().select(EntityManager.class).get();
   }
 
   private PersistentWork(Consumer<EntityManager> consumer) {
@@ -156,31 +157,40 @@ public class PersistentWork {
 
   @SuppressWarnings("unchecked")
   protected <T> T run() {
-    if (!em.getTransaction().isActive()) {
-      em.clear();
-      em.getTransaction().begin();
-      try {
-        Object retval = execute();
-        em.getTransaction().commit();
-        return (T) retval;
-      } catch (Exception e) {
-        log.error("Error occured during commit phase:", e);
-        em.getTransaction().rollback();
-        throw e;
-      } finally {
+    if (localEM.get() != null) {
+      Object retval = execute();
+      return (T) retval;
+    } else {
+      localEM.set(CDI.current().select(EntityManager.class).get());
+
+      EntityManager em = localEM.get();
+      if (!em.getTransaction().isActive()) {
         em.clear();
-        em.close();
+        em.getTransaction().begin();
+        try {
+          Object retval = execute();
+          em.getTransaction().commit();
+          return (T) retval;
+        } catch (Exception e) {
+          log.error("Error occured during commit phase:", e);
+          em.getTransaction().rollback();
+          throw e;
+        } finally {
+          em.clear();
+          em.close();
+          localEM.set(null);
+        }
       }
+      return null;
     }
-    return null;
   }
 
   protected Object execute() {
     if (consumer != null) {
-      consumer.accept(em);
+      consumer.accept(localEM.get());
       return null;
     } else if (function != null) {
-      return function.apply(em);
+      return function.apply(localEM.get());
     }
     return null;
   }
