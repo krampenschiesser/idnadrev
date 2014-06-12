@@ -15,15 +15,18 @@
 
 package de.ks.idnadrev.entity;
 
+import de.ks.persistence.converter.DurationConverter;
 import de.ks.persistence.converter.LocalDateConverter;
 import de.ks.persistence.converter.LocalDateTimeConverter;
 import de.ks.persistence.converter.LocalTimeConverter;
-import de.ks.persistence.converter.PeriodConverter;
 import de.ks.persistence.entity.NamedPersistentObject;
 import de.ks.scheduler.Schedule;
 
 import javax.persistence.*;
-import java.time.*;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
@@ -55,8 +58,8 @@ public class Task extends NamedPersistentObject<Task> {
   protected LocalDateTime finishTime;
 
   @Column(columnDefinition = "VARCHAR(250)")
-  @Convert(converter = PeriodConverter.class)
-  protected Period estimatedTime;
+  @Convert(converter = DurationConverter.class)
+  protected Duration estimatedTime;
 
   @Column(columnDefinition = "VARCHAR(250)")
   @Convert(converter = LocalDateConverter.class)
@@ -224,11 +227,11 @@ public class Task extends NamedPersistentObject<Task> {
     return this;
   }
 
-  public Period getEstimatedTime() {
+  public Duration getEstimatedTime() {
     return estimatedTime;
   }
 
-  public void setEstimatedTime(Period estimatedTime) {
+  public void setEstimatedTime(Duration estimatedTime) {
     this.estimatedTime = estimatedTime;
   }
 
