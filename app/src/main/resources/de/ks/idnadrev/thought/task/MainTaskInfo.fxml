@@ -38,6 +38,7 @@
         <RowConstraints minHeight="10.0" valignment="TOP" vgrow="SOMETIMES"/>
         <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER"/>
         <RowConstraints minHeight="10.0" valignment="TOP" vgrow="NEVER"/>
+        <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="TOP" vgrow="NEVER"/>
     </rowConstraints>
     <children>
         <Label styleClass="title" stylesheets="@../../idnadrev.css" text="%thought.totask.main.title"
@@ -96,6 +97,8 @@
                 <fx:include source="../../tag/TagInfo.fxml"/>
             </children>
         </FlowPane>
+        <Button defaultButton="true" mnemonicParsing="false" onAction="#save" text="%save" GridPane.columnIndex="1"
+                GridPane.rowIndex="11"/>
 
     </children>
     <padding>

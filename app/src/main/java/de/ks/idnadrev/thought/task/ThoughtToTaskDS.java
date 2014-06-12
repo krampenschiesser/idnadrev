@@ -15,12 +15,27 @@
 
 package de.ks.idnadrev.thought.task;
 
+import de.ks.activity.ActivityController;
 import de.ks.datasource.NewInstanceDataSource;
+import de.ks.idnadrev.entity.Context;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.Thought;
+import de.ks.idnadrev.entity.WorkType;
+import de.ks.persistence.PersistentWork;
+import de.ks.persistence.entity.NamedPersistentObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 public class ThoughtToTaskDS extends NewInstanceDataSource<Task> {
+  private static final Logger log = LoggerFactory.getLogger(ThoughtToTaskDS.class);
+
   private Thought fromThought;
+  @Inject
+  ActivityController controller;
 
   public ThoughtToTaskDS() {
     super(Task.class);
@@ -38,7 +53,27 @@ public class ThoughtToTaskDS extends NewInstanceDataSource<Task> {
 
   @Override
   public void saveModel(Task model) {
+    PersistentWork.run((em) -> {
+      MainTaskInfo mainTaskInfo = controller.getControllerInstance(MainTaskInfo.class);
 
+      String contextName = mainTaskInfo.contextController.getInput().textProperty().getValueSafe().trim();
+      setToOne(model, Context.class, contextName, model::setContext);
+
+      String workType = mainTaskInfo.workTypeController.getInput().textProperty().getValueSafe().trim();
+      setToOne(model, WorkType.class, workType, model::setWorkType);
+
+      model.setEstimatedTime(mainTaskInfo.getEstimatedDuration());
+      em.persist(model);
+    });
+  }
+
+  private <T extends NamedPersistentObject<T>> void setToOne(Task model, Class<T> clazz, String contextName, Consumer<T> consumer) {
+    if (!contextName.isEmpty()) {
+      Optional<T> first = PersistentWork.forNameLike(clazz, contextName).stream().findFirst();
+      if (first.isPresent()) {
+        consumer.accept(first.get());
+      }
+    }
   }
 
   @Override
