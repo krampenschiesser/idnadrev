@@ -13,6 +13,10 @@
  * limitations under the License.
  */
 
+task wrapper(type: Wrapper) {
+    gradleVersion = "1.12"
+}
+
 allprojects {
     apply plugin: "java"
     version = "$version"
