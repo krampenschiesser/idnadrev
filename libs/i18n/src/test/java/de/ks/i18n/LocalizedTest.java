@@ -94,6 +94,7 @@ public class LocalizedTest {
     Localized.get("doesNotExistNoDots");
 
     File missingKeyFile = Localized.getBundle().getMissingKeyFile();
+    assertNotNull(missingKeyFile);
     List<String> missing = Files.readLines(missingKeyFile, Charsets.UTF_8);
     List<String> extracted = missing.stream().filter((s) -> s.startsWith("doesNot")).collect(Collectors.toList());
     assertEquals(2, extracted.size());

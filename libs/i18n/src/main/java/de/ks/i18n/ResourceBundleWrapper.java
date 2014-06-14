@@ -44,9 +44,10 @@ class ResourceBundleWrapper extends ResourceBundle {
     File missing = null;
     try {
       missing = new File(pathname);
-      if (!missing.exists()) {
-        missing.createNewFile();
+      if (missing.exists()) {
+        missing.delete();
       }
+      missing.createNewFile();
     } catch (IOException e) {
       log.error("Could not create tempfile {} for missing properties", pathname, e);
       missing = null;
