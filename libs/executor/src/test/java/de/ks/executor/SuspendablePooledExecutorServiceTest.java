@@ -55,7 +55,7 @@ public class SuspendablePooledExecutorServiceTest {
     executor.resume();
     TimeUnit.MILLISECONDS.sleep(100);
     assertEquals(1, executor.getActiveCount());
-    executor.waitForAllTasksDone();
+    executor.waitForAllTasksDoneAndDrain();
     assertEquals(0, executor.getActiveCount());
     assertEquals(0, executor.getQueue().size());
     assertEquals(3, adder.sum());

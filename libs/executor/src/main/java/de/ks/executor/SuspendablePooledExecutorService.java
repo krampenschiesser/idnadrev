@@ -52,7 +52,7 @@ public class SuspendablePooledExecutorService extends ThreadPoolExecutor {
       suspendedTasks.clear();
       drainTasks();
     }
-    waitForAllTasksDone();
+    waitForAllTasksDoneAndDrain();
   }
 
   protected void drainTasks() {
@@ -62,9 +62,19 @@ public class SuspendablePooledExecutorService extends ThreadPoolExecutor {
     }
   }
 
-  public void waitForAllTasksDone() {
+  public void waitForAllTasksDoneAndDrain() {
     while (getActiveCount() > 0 || !getQueue().isEmpty()) {
       drainTasks();
+      try {
+        TimeUnit.MILLISECONDS.sleep(100);
+      } catch (InterruptedException e) {
+        log.trace("Got interrupted while waiting for tasks.", e);
+      }
+    }
+  }
+
+  public void waitForAllTasksDone() {
+    while (getActiveCount() > 0 || !getQueue().isEmpty()) {
       try {
         TimeUnit.MILLISECONDS.sleep(100);
       } catch (InterruptedException e) {

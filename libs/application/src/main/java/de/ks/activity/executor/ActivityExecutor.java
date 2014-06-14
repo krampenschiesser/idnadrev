@@ -58,7 +58,7 @@ public class ActivityExecutor {
     SuspendablePooledExecutorService service = getActivityExecutorService(id);
     log.debug("Shutting down executor service {}", service.getName());
     service.shutdownNow();
-    service.waitForAllTasksDone();
+    service.waitForAllTasksDoneAndDrain();
   }
 
   public void shutdownAll() {
