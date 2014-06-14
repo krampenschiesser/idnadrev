@@ -21,14 +21,16 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class JavaFXService extends Service {
   private static final Logger log = LoggerFactory.getLogger(JavaFXService.class);
   public static final String IS_DEBUGGING = "is.debugging";
   private String[] args;
   private Stage stage;
-  private final CyclicBarrier barrier = new CyclicBarrier(2);
+  private final CountDownLatch latch = new CountDownLatch(1);
 
   @Override
   public void initialize(ExecutorService executorService, String[] args) {
@@ -47,26 +49,27 @@ public class JavaFXService extends Service {
     int timeout = 10;
     try {
       if (System.getProperties().containsKey(IS_DEBUGGING)) {
-        barrier.await();
+        latch.await();
       } else {
-        barrier.await(timeout, TimeUnit.SECONDS);
+        boolean started = latch.await(timeout, TimeUnit.SECONDS);
+        if (!started) {
+          throw new RuntimeException("Could not start FX application.");
+        }
       }
     } catch (InterruptedException e) {
-      log.error("Got interrupted ", e);
-      throw new RuntimeException(e);
-    } catch (BrokenBarrierException e) {
-      log.error("Barrier broken ", e);
-      throw new RuntimeException(e);
-    } catch (TimeoutException t) {
-      log.error("Could not start javafx application after {} seconds", timeout);
-      throw new RuntimeException(t);
+      log.error("Got interrupted while waiting for FX application to start.", e);
     }
   }
 
   @Override
   protected void doStop() {
+    int timeout = 10;
     Platform.exit();
-    barrier.reset();
+    try {
+      latch.await(timeout, TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+      log.error("Got interrupted while waiting for FX application to stop.", e);
+    }
   }
 
   public Stage getStage() {
@@ -75,7 +78,7 @@ public class JavaFXService extends Service {
 
   public void setStage(Stage stage) {
     this.stage = stage;
-    waitForJavaFXThread();
+    latch.countDown();
   }
 
   @Override
