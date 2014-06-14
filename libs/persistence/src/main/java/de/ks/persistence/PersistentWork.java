@@ -76,6 +76,10 @@ public class PersistentWork {
     run((em) -> all.forEach(em::persist));
   }
 
+  public static <T> T byId(Class<T> clazz, Long id) {
+    return read((em) -> em.find(clazz, id));
+  }
+
   public static void deleteAllOf(Class<?>... classes) {
     run((em) -> {
       for (Class<?> clazz : classes) {
