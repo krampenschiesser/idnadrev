@@ -12,12 +12,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.thought.task;
+package de.ks.idnadrev.task.create;
 
 import com.google.common.eventbus.Subscribe;
 import de.ks.activity.ActivityController;
 import de.ks.activity.ActivityLoadFinishedEvent;
 import de.ks.activity.ModelBound;
+import de.ks.activity.context.ActivityStore;
+import de.ks.application.fxml.DefaultLoader;
 import de.ks.eventsystem.bus.HandlingThread;
 import de.ks.eventsystem.bus.Threading;
 import de.ks.idnadrev.entity.Context;
@@ -25,20 +27,32 @@ import de.ks.idnadrev.entity.Tag;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.WorkType;
 import de.ks.idnadrev.selection.NamedPersistentObjectSelection;
+import de.ks.idnadrev.tag.TagInfo;
 import de.ks.reflection.PropertyPath;
 import de.ks.validation.FXValidators;
 import de.ks.validation.ValidationRegistry;
 import de.ks.validation.validators.DurationValidator;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
+import javafx.util.Callback;
+import org.controlsfx.control.textfield.AutoCompletionBinding;
+import org.controlsfx.control.textfield.TextFields;
 
 import javax.inject.Inject;
 import java.net.URL;
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
 
 @ModelBound(Task.class)
 public class MainTaskInfo implements Initializable {
@@ -59,11 +73,17 @@ public class MainTaskInfo implements Initializable {
   protected TextArea description;
   @FXML
   protected TextField estimatedTimeDuration;
+  @FXML
+  protected FlowPane tagPane;
+  @FXML
+  protected Button saveButton;
 
   @Inject
   ValidationRegistry validationRegistry;
   @Inject
   ActivityController controller;
+  @Inject
+  ActivityStore store;
   private DurationValidator durationValidator;
 
   @Override
@@ -81,7 +101,41 @@ public class MainTaskInfo implements Initializable {
     tagAddController.from(Tag.class);
 
     durationValidator = FXValidators.createDurationValidator();
+
+    Platform.runLater(() -> TextFields.bindAutoCompletion(estimatedTimeDuration, getEstimatedTimeAutoCompletion()));
     validationRegistry.getValidationSupport().registerValidator(estimatedTimeDuration, durationValidator);
+
+    project.selectedProperty().bind(store.getBinding().getBooleanProperty(Task.class, (t) -> t.isProject()).not());
+
+    tagAddController.setOnAction(e -> addTag(tagAddController.getInput().getText()));
+    saveButton.disableProperty().bind(validationRegistry.getValidationSupport().invalidProperty());
+  }
+
+  private Callback<AutoCompletionBinding.ISuggestionRequest, Collection<String>> getEstimatedTimeAutoCompletion() {
+    return param -> {
+      try {
+        String userText = param.getUserText().trim();
+        Integer.parseInt(userText);
+        return Arrays.asList(userText + "min", userText + "hours");
+      } catch (NumberFormatException e) {
+        return Collections.emptyList();
+      }
+    };
+  }
+
+  private void addTag(String tag) {
+    CompletableFuture.supplyAsync(() -> {
+      DefaultLoader<GridPane, TagInfo> loader = new DefaultLoader<>(TagInfo.class);
+      loader.load();
+      return loader;
+    }, controller.getCurrentExecutorService()).thenAcceptAsync((loader) -> {
+      TagInfo ctrller = loader.getController();
+      ctrller.getName().setText(tag);
+      GridPane view = loader.getView();
+      view.setId(tag);
+      ctrller.getRemove().setOnAction((e) -> tagPane.getChildren().remove(view));
+      tagPane.getChildren().add(view);
+    }, controller.getJavaFXExecutor());
   }
 
   @Subscribe
@@ -98,4 +152,5 @@ public class MainTaskInfo implements Initializable {
   public Duration getEstimatedDuration() {
     return durationValidator.getDuration();
   }
+
 }

@@ -12,14 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.thought.task;
+package de.ks.idnadrev.task.create;
 
-import de.ks.activity.ActivityCfg;
-import de.ks.menu.MenuItem;
+import javafx.fxml.FXML;
 
-@MenuItem(order = 2, value = "/main/task")
-public class ThoughtToTaskActivity extends ActivityCfg {
-  public ThoughtToTaskActivity() {
-    super(ThoughtToTaskDS.class, ThoughtToTask.class);
-  }
+public class ThoughtToTask {
+  @FXML
+  MainTaskInfo mainInfoController;
 }

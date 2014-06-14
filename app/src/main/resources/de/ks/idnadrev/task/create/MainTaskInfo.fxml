@@ -21,7 +21,7 @@
 <?import javafx.scene.layout.*?>
 <GridPane hgap="5.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity"
           minWidth="-Infinity" vgap="5.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="de.ks.idnadrev.thought.task.MainTaskInfo">
+          fx:controller="de.ks.idnadrev.task.create.MainTaskInfo">
     <columnConstraints>
         <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="10.0"/>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
@@ -90,15 +90,9 @@
             </children>
         </StackPane>
 
-        <FlowPane hgap="5.0" vgap="5.0" GridPane.columnIndex="1" GridPane.rowIndex="10">
-            <children>
-                <fx:include source="../../tag/TagInfo.fxml"/>
-                <fx:include source="../../tag/TagInfo.fxml"/>
-                <fx:include source="../../tag/TagInfo.fxml"/>
-            </children>
-        </FlowPane>
-        <Button defaultButton="true" mnemonicParsing="false" onAction="#save" text="%save" GridPane.columnIndex="1"
-                GridPane.rowIndex="11"/>
+        <FlowPane fx:id="tagPane" hgap="5.0" vgap="5.0" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
+        <Button fx:id="saveButton" defaultButton="true" mnemonicParsing="false" onAction="#save" text="%save"
+                GridPane.columnIndex="1" GridPane.rowIndex="11"/>
 
     </children>
     <padding>

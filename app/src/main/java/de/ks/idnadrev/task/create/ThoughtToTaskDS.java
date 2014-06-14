@@ -13,14 +13,11 @@
  * limitations under the License.
  */
 
-package de.ks.idnadrev.thought.task;
+package de.ks.idnadrev.task.create;
 
 import de.ks.activity.ActivityController;
 import de.ks.datasource.NewInstanceDataSource;
-import de.ks.idnadrev.entity.Context;
-import de.ks.idnadrev.entity.Task;
-import de.ks.idnadrev.entity.Thought;
-import de.ks.idnadrev.entity.WorkType;
+import de.ks.idnadrev.entity.*;
 import de.ks.persistence.PersistentWork;
 import de.ks.persistence.entity.NamedPersistentObject;
 import org.slf4j.Logger;
@@ -48,6 +45,7 @@ public class ThoughtToTaskDS extends NewInstanceDataSource<Task> {
       task.setName(fromThought.getName());
       task.setDescription(fromThought.getDescription());
     }
+    task.setProject(false);
     return task;
   }
 
@@ -63,6 +61,12 @@ public class ThoughtToTaskDS extends NewInstanceDataSource<Task> {
       setToOne(model, WorkType.class, workType, model::setWorkType);
 
       model.setEstimatedTime(mainTaskInfo.getEstimatedDuration());
+
+      mainTaskInfo.tagPane.getChildren().stream().map(c -> new Tag(c.getId())).forEach(tag -> {
+        Tag readTag = PersistentWork.forName(Tag.class, tag.getName());
+        readTag = readTag == null ? tag : readTag;
+        model.addTag(readTag);
+      });
       em.persist(model);
     });
   }

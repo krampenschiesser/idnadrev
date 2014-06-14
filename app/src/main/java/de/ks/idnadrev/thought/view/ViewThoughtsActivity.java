@@ -17,7 +17,7 @@ package de.ks.idnadrev.thought.view;
 import de.ks.activity.ActivityCfg;
 import de.ks.activity.ActivityController;
 import de.ks.application.Navigator;
-import de.ks.idnadrev.thought.task.ThoughtToTaskActivity;
+import de.ks.idnadrev.task.create.ThoughtToTaskActivity;
 import de.ks.menu.MenuItem;
 
 import javax.enterprise.inject.spi.CDI;

@@ -12,12 +12,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.thought.task;
+package de.ks.idnadrev.task.create;
 
 import de.ks.FXPlatform;
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityController;
 import de.ks.idnadrev.entity.Context;
+import de.ks.idnadrev.entity.Tag;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.WorkType;
 import de.ks.persistence.PersistentWork;
@@ -84,5 +85,34 @@ public class ThoughtToTaskTest {
     Duration estimatedTime = task.getEstimatedTime();
     assertNotNull(estimatedTime);
     assertEquals(Duration.ofMinutes(15), estimatedTime);
+  }
+
+  @Test
+  public void testTags() throws Exception {
+    PersistentWork.persist(new Tag("tag1"));
+
+    FXPlatform.invokeLater(() -> {
+      controller.name.setText("name");
+
+      controller.tagAddController.getInput().setText("tag1");
+      controller.tagAddController.getOnAction().handle(null);
+    });
+    activityController.getCurrentExecutorService().waitForAllTasksDone();
+    FXPlatform.invokeLater(() -> {
+      controller.tagAddController.getInput().setText("tag2");
+      controller.tagAddController.getOnAction().handle(null);
+    });
+    activityController.getCurrentExecutorService().waitForAllTasksDone();
+
+    FXPlatform.invokeLater(() -> {
+      controller.save();
+    });
+    activityController.waitForDataSource();
+
+    List<Task> tasks = PersistentWork.from(Task.class, (t) -> {
+      t.getTags().toString();
+    });
+    Task task = tasks.get(0);
+    assertEquals(2, task.getTags().size());
   }
 }
