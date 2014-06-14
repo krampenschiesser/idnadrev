@@ -59,7 +59,7 @@ public class NamedPersistentObjectSelectionTest {
   public void tearDown() throws Exception {
     ActivityContext.stop("test");
     executorService.shutdownNow();
-    executorService.waitForAllTasksDone();
+    executorService.waitForAllTasksDoneAndDrain();
   }
 
   @Test
@@ -137,7 +137,7 @@ public class NamedPersistentObjectSelectionTest {
     selection.controller = mock;
 
     FXPlatform.invokeLater(() -> selection.showBrowser());
-    executorService.waitForAllTasksDone();
+    executorService.waitForAllTasksDoneAndDrain();
     ObservableList<Thought> items = selection.tableView.getItems();
     FXPlatform.waitForFX();
     assertEquals(3, items.size());
