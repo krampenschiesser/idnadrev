@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.nio.file.Files;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -40,12 +39,16 @@ class ResourceBundleWrapper extends ResourceBundle {
   private final File missingKeyFile;
 
   public ResourceBundleWrapper(ResourceBundle bundle, String path) {
+    String tempDir = System.getProperty("java.io.tmpdir");
+    String pathname = tempDir + File.separator + "idnadrev_missing_keys.properties";
     File missing = null;
     try {
-      missing = Files.createTempFile("missing", ".properties").toFile();
-      missing.deleteOnExit();
+      missing = new File(pathname);
+      if (!missing.exists()) {
+        missing.createNewFile();
+      }
     } catch (IOException e) {
-      log.error("Could not create tempfile for missing properties", e);
+      log.error("Could not create tempfile {} for missing properties", pathname, e);
       missing = null;
     }
     this.missingKeyFile = missing;
@@ -99,17 +102,7 @@ class ResourceBundleWrapper extends ResourceBundle {
       if (retval == null) {
         log.warn("Key \"{}\" not found in properties:{}", key, path);
 
-        try (FileWriter writer = new FileWriter(missingKeyFile, true)) {
-          StringBuilder builder = new StringBuilder(key);
-          int indexOf = key.lastIndexOf(".");
-          if (indexOf > 0) {
-            builder.append(" = ").append(key.substring(indexOf + 1));
-          } else {
-            builder.append(" = ").append(key);
-          }
-          builder.append("\n");
-          writer.append(builder.toString());
-        }
+        appendToMissingKeyFile(key);
         return "?" + key + "?";
       }
       return retval;
@@ -117,6 +110,23 @@ class ResourceBundleWrapper extends ResourceBundle {
       log.error("Could not invoke delegate method.", e);
     }
     return null;
+  }
+
+  protected void appendToMissingKeyFile(String key) throws IOException {
+    if (missingKeyFile == null) {
+      return;
+    }
+    try (FileWriter writer = new FileWriter(missingKeyFile, true)) {
+      StringBuilder builder = new StringBuilder(key);
+      int indexOf = key.lastIndexOf(".");
+      if (indexOf > 0) {
+        builder.append(" = ").append(key.substring(indexOf + 1));
+      } else {
+        builder.append(" = ").append(key);
+      }
+      builder.append("\n");
+      writer.append(builder.toString());
+    }
   }
 
   @Override
