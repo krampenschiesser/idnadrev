@@ -45,6 +45,7 @@ public class LauncherTest {
   @Test
   public void testStartServices() throws Exception {
     launcher.startAll();
+    Thread.sleep(50);
     TestService serviceA = (TestService) launcher.getServices().get(0);
     TestService serviceB = (TestService) launcher.getServices().get(1);
     assertEquals(ServiceRuntimeState.STARTING, serviceA.getState());
