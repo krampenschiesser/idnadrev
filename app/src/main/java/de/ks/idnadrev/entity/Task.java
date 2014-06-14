@@ -41,6 +41,8 @@ import java.util.TreeSet;
 @Entity
 public class Task extends NamedPersistentObject<Task> {
   private static final long serialVersionUID = 1L;
+  private static final String TASK_TAG_JOINTABLE = "task_tag";
+  ;
 
   @Column(length = 4048)
   protected String description;
@@ -89,6 +91,10 @@ public class Task extends NamedPersistentObject<Task> {
   protected WorkType workType;
 
   protected boolean project;
+
+  @ManyToMany(cascade = CascadeType.PERSIST)
+  @JoinTable(name = TASK_TAG_JOINTABLE)
+  protected Set<Tag> tags = new HashSet<>();
 
   protected Task() {
 
@@ -233,6 +239,18 @@ public class Task extends NamedPersistentObject<Task> {
 
   public void setEstimatedTime(Duration estimatedTime) {
     this.estimatedTime = estimatedTime;
+  }
+
+  public Set<Tag> getTags() {
+    return tags;
+  }
+
+  public void addTag(Tag tag) {
+    tags.add(tag);
+  }
+
+  public void addTag(String tag) {
+    tags.add(new Tag(tag));
   }
 
   @Override
