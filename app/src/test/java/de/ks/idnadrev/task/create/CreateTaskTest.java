@@ -17,10 +17,7 @@ package de.ks.idnadrev.task.create;
 import de.ks.FXPlatform;
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityController;
-import de.ks.idnadrev.entity.Context;
-import de.ks.idnadrev.entity.Tag;
-import de.ks.idnadrev.entity.Task;
-import de.ks.idnadrev.entity.WorkType;
+import de.ks.idnadrev.entity.*;
 import de.ks.persistence.PersistentWork;
 import org.junit.After;
 import org.junit.Before;
@@ -35,26 +32,26 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(LauncherRunner.class)
-public class ThoughtToTaskTest {
+public class CreateTaskTest {
   @Inject
   ActivityController activityController;
   private MainTaskInfo controller;
-  private ThoughtToTask thoughtToTask;
+  private CreateTask createTask;
 
   @Before
   public void setUp() throws Exception {
-    PersistentWork.deleteAllOf(Context.class, WorkType.class, Task.class);
+    PersistentWork.deleteAllOf(WorkUnit.class, Context.class, WorkType.class, Task.class, Tag.class);
     PersistentWork.persist(new Context("context"), new WorkType("physical"));
 
-    activityController.start(ThoughtToTaskActivity.class);
+    activityController.start(CreateTaskActivity.class);
     activityController.waitForDataSource();
-    thoughtToTask = activityController.<ThoughtToTask>getCurrentController();
-    controller = thoughtToTask.mainInfoController;
+    createTask = activityController.<CreateTask>getCurrentController();
+    controller = createTask.mainInfoController;
   }
 
   @After
   public void tearDown() throws Exception {
-    activityController.stop(ThoughtToTaskActivity.class);
+    activityController.stop(CreateTaskActivity.class);
   }
 
   @Test

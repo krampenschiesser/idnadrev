@@ -41,7 +41,7 @@
         <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="TOP" vgrow="NEVER"/>
     </rowConstraints>
     <children>
-        <Label styleClass="title" stylesheets="@../../idnadrev.css" text="%thought.totask.main.title"
+        <Label styleClass="title" stylesheets="@../../idnadrev.css" text="%task.create.main.title"
                GridPane.columnSpan="2147483647" GridPane.halignment="LEFT"/>
         <Separator prefWidth="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="1">
             <effect>

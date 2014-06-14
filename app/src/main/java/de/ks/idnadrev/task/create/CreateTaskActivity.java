@@ -14,9 +14,12 @@
  */
 package de.ks.idnadrev.task.create;
 
-import javafx.fxml.FXML;
+import de.ks.activity.ActivityCfg;
+import de.ks.menu.MenuItem;
 
-public class ThoughtToTask {
-  @FXML
-  MainTaskInfo mainInfoController;
+@MenuItem(order = 2, value = "/main/task")
+public class CreateTaskActivity extends ActivityCfg {
+  public CreateTaskActivity() {
+    super(CreateTaskDS.class, CreateTask.class);
+  }
 }

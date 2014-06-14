@@ -27,14 +27,14 @@ import javax.inject.Inject;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public class ThoughtToTaskDS extends NewInstanceDataSource<Task> {
-  private static final Logger log = LoggerFactory.getLogger(ThoughtToTaskDS.class);
+public class CreateTaskDS extends NewInstanceDataSource<Task> {
+  private static final Logger log = LoggerFactory.getLogger(CreateTaskDS.class);
 
   private Thought fromThought;
   @Inject
   ActivityController controller;
 
-  public ThoughtToTaskDS() {
+  public CreateTaskDS() {
     super(Task.class);
   }
 
