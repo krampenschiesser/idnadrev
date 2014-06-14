@@ -31,6 +31,8 @@ public class CreateTaskDS extends NewInstanceDataSource<Task> {
   private static final Logger log = LoggerFactory.getLogger(CreateTaskDS.class);
 
   private Thought fromThought;
+  private Task fromTask;
+
   @Inject
   ActivityController controller;
 
@@ -40,13 +42,18 @@ public class CreateTaskDS extends NewInstanceDataSource<Task> {
 
   @Override
   public Task loadModel() {
-    Task task = super.loadModel();
-    if (fromThought != null) {
-      task.setName(fromThought.getName());
-      task.setDescription(fromThought.getDescription());
+    if (fromTask != null) {
+      return PersistentWork.byId(Task.class, fromTask.getId());
+    } else {
+      Task task = super.loadModel();
+      if (fromThought != null) {
+        task.setName(fromThought.getName());
+        task.setDescription(fromThought.getDescription());
+      }
+      task.setProject(false);
+
+      return task;
     }
-    task.setProject(false);
-    return task;
   }
 
   @Override
@@ -84,6 +91,9 @@ public class CreateTaskDS extends NewInstanceDataSource<Task> {
   public void setLoadingHint(Object dataSourceHint) {
     if (dataSourceHint instanceof Thought) {
       this.fromThought = (Thought) dataSourceHint;
+    }
+    if (dataSourceHint instanceof Task) {
+      this.fromTask = (Task) dataSourceHint;
     }
   }
 }
