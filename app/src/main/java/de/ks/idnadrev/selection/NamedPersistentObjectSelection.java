@@ -31,6 +31,8 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
@@ -39,6 +41,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import org.controlsfx.dialog.Dialog;
@@ -68,6 +71,7 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
   protected QueryConsumer<T> filter;
   private Dialog dialog;
   private CustomAutoCompletionBinding autoCompletion;
+  private EventHandler<ActionEvent> onAction;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -101,6 +105,9 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
     selectedValue.addListener((p, o, n) -> {
       if (n != null) {
         input.setText(n.getName());
+        if (onAction != null) {
+          onAction.handle(new ActionEvent());
+        }
       }
     });
 
@@ -188,4 +195,23 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
     autoCompletion.hidePopup();
   }
 
+  @FXML
+  void onKeyPressed(KeyEvent event) {
+    KeyCode code = event.getCode();
+    if (code == KeyCode.ENTER) {
+      if (onAction != null) {
+        event.consume();
+        onAction.handle(new ActionEvent());
+        input.clear();
+      }
+    }
+  }
+
+  public void setOnAction(EventHandler<ActionEvent> handler) {
+    this.onAction = handler;
+  }
+
+  public EventHandler<ActionEvent> getOnAction() {
+    return onAction;
+  }
 }
