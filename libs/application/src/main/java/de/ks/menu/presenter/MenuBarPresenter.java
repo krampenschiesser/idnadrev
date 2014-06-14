@@ -24,10 +24,10 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -35,21 +35,26 @@ import java.util.stream.Collectors;
  */
 public class MenuBarPresenter extends AbstractPresenter<MenuBar> {
   Map<String, Menu> menus = new TreeMap<>();
+  List<String> menuNames = new ArrayList<>();
+  MenuBar menuBar = null;
 
   @Override
   public MenuBar getMenu(String menuPath) {
-    for (MenuItemDescriptor item : this.menuExtension.getMenuEntries(menuPath)) {
-      String currentItemMenuPath = item.getMenuPath();
-      Menu menu = getOrCreateMenu(currentItemMenuPath);
+    if (menuBar == null) {
+      for (MenuItemDescriptor item : this.menuExtension.getMenuEntries(menuPath)) {
+        String currentItemMenuPath = item.getMenuPath();
+        menuNames.add(currentItemMenuPath);
+        Menu menu = getOrCreateMenu(currentItemMenuPath);
 
-      MenuItem menuItem = createMenuItem(item);
-      menu.getItems().add(menuItem);
+        MenuItem menuItem = createMenuItem(item);
+        menu.getItems().add(menuItem);
+      }
+
+      List<Menu> rootMenus = createMenuTreeStructure();
+
+      menuBar = new MenuBar();
+      menuBar.getMenus().addAll(rootMenus);
     }
-
-    List<Menu> rootMenus = createMenuTreeStructure();
-
-    MenuBar menuBar = new MenuBar();
-    menuBar.getMenus().addAll(rootMenus);
     return menuBar;
   }
 
@@ -77,8 +82,7 @@ public class MenuBarPresenter extends AbstractPresenter<MenuBar> {
   }
 
   protected List<Menu> createMenuTreeStructure() {
-    TreeSet<String> rootMenus = new TreeSet<>();
-    TreeSet<String> menuNames = new TreeSet<>(menus.keySet());
+    List<String> rootMenus = new ArrayList<>();
 
     for (String menuName : menuNames) {
       String seperator = de.ks.menu.MenuItem.SEPERATOR;
@@ -92,7 +96,10 @@ public class MenuBarPresenter extends AbstractPresenter<MenuBar> {
           lastMenu.getItems().add(currentMenu);
         }
         if (i == 1) {
-          rootMenus.add(seperator + menuPath[0] + seperator + menuPath[1]);
+          String rootName = seperator + menuPath[0] + seperator + menuPath[1];
+          if (!rootMenus.contains(rootName)) {
+            rootMenus.add(rootName);
+          }
         }
         lastMenu = currentMenu;
       }

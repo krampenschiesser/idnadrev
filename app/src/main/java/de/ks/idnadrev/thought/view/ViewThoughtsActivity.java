@@ -23,7 +23,7 @@ import de.ks.menu.MenuItem;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 
-@MenuItem("/main/activity")
+@MenuItem(order = 0, value = "/main/thought")
 public class ViewThoughtsActivity extends ActivityCfg {
   @Inject
   public ViewThoughtsActivity(ActivityController activityController, Navigator navigator) {

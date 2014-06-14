@@ -17,7 +17,7 @@ package de.ks.idnadrev.thought.task;
 import de.ks.activity.ActivityCfg;
 import de.ks.menu.MenuItem;
 
-@MenuItem("/main/activity")
+@MenuItem(order = 2, value = "/main/task")
 public class ThoughtToTaskActivity extends ActivityCfg {
   public ThoughtToTaskActivity() {
     super(ThoughtToTaskDS.class, ThoughtToTask.class);

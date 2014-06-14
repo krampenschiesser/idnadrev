@@ -26,6 +26,7 @@ import de.ks.menu.mainmenu.About;
 import de.ks.menu.mainmenu.Keymap;
 import de.ks.menu.mainmenu.Open;
 import de.ks.menu.mainmenu.Save;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -58,13 +59,14 @@ public class MenuBarPresenterTest {
   @Test
   public void testGetMenu() throws Exception {
     MenuBar menu = presenter.getMenu("/main");
-    assertEquals(2, menu.getMenus().size());
+    ObservableList<Menu> childMenus = menu.getMenus();
+    assertEquals(2, childMenus.size());
 
-    Menu fileMenu = menu.getMenus().sorted().get(0);
+    Menu fileMenu = childMenus.get(1);
     assertEquals(Localized.get(getTranslationKey(Open.MENUPATH)), fileMenu.getText());
     assertFalse(fileMenu.getText().contains("/"));
 
-    Menu optionsMenu = menu.getMenus().sorted().get(1);
+    Menu optionsMenu = childMenus.get(0);
     assertEquals(Localized.get(getTranslationKey(About.MENUPATH)), optionsMenu.getText());
 
     assertEquals(2, fileMenu.getItems().size());

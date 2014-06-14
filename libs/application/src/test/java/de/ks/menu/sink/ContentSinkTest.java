@@ -81,7 +81,7 @@ public class ContentSinkTest {
 
     bus.postAndWait(//
             new MenuItemClickedEvent(//
-                    new MenuItemDescriptor(About.MENUPATH, About.class)));
+                    new MenuItemDescriptor(About.MENUPATH, 1, About.class)));
 
     assertNotNull(pane.getChildren());
 

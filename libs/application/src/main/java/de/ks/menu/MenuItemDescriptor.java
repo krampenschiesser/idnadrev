@@ -15,6 +15,8 @@
 
 package de.ks.menu;
 
+import org.apache.commons.lang3.builder.CompareToBuilder;
+
 /**
  *
  */
@@ -23,25 +25,27 @@ public class MenuItemDescriptor implements Comparable<MenuItemDescriptor> {
   protected final String menuItemPath;
   protected final String imagePath;
   protected final Class<?> target;
+  protected final int order;
 
   public MenuItemDescriptor(MenuItem menu, Class<?> target) {
-    this(menu.value(), menu.image(), target);
+    this(menu.value(), menu.order(), menu.image(), target);
   }
 
-  public MenuItemDescriptor(String menuPath, Class<?> target) {
-    this(menuPath, null, target);
+  public MenuItemDescriptor(String menuPath, int order, Class<?> target) {
+    this(menuPath, order, null, target);
   }
 
-  public MenuItemDescriptor(String menuPath, String imagePath, Class<?> target) {
+  public MenuItemDescriptor(String menuPath, int order, String imagePath, Class<?> target) {
     this.menuPath = menuPath;
     this.menuItemPath = menuPath + "/" + target.getSimpleName().toLowerCase();
     this.imagePath = imagePath;
     this.target = target;
+    this.order = order;
   }
 
   @Override
   public int compareTo(MenuItemDescriptor o) {
-    return menuItemPath.compareTo(o.menuItemPath);
+    return new CompareToBuilder().append(order, o.getOrder()).append(menuItemPath, o.getMenuItemPath()).toComparison();
   }
 
   public String getMenuPath() {
@@ -62,6 +66,10 @@ public class MenuItemDescriptor implements Comparable<MenuItemDescriptor> {
 
   public Class<?> getTarget() {
     return target;
+  }
+
+  public int getOrder() {
+    return order;
   }
 
   @Override

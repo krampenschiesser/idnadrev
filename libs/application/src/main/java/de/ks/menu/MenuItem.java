@@ -35,4 +35,6 @@ public @interface MenuItem {
    * An optional path to an item image.
    */
   @Nonbinding String image() default "";
+
+  @Nonbinding int order() default 100;
 }

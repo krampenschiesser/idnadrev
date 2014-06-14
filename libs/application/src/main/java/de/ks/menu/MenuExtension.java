@@ -45,7 +45,7 @@ public class MenuExtension implements Extension {
   }
 
   public List<MenuItemDescriptor> getMenuEntries(String menuPath) {
-    return menuEntries.values().parallelStream()//
+    return menuEntries.values().stream()//
             .filter((MenuItemDescriptor item) -> item.getMenuItemPath().startsWith(menuPath))//
             .sorted()//
             .collect(Collectors.toList());
