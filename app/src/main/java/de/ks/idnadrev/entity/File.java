@@ -30,7 +30,7 @@ import java.io.IOException;
  */
 
 @Entity
-public class File extends NamedPersistentObject<File> {
+public class File extends NamedPersistentObject<File> {//TODO use file storage path and md5 checksum
   private static final Logger log = LoggerFactory.getLogger(File.class);
   private static final long serialVersionUID = 1L;
 
