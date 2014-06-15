@@ -68,9 +68,8 @@ public class WorkUnit extends AbstractPersistentObject<WorkUnit> implements Comp
     return end;
   }
 
-  public int getSpentMinutes() {
-    long millis = getSpentMillis();
-    return (int) (millis / 1000 / 60);
+  public long getSpentMinutes() {
+    return getDuration().toMinutes();
   }
 
   public Duration getDuration() {
