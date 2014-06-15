@@ -42,7 +42,6 @@ import java.util.TreeSet;
 public class Task extends NamedPersistentObject<Task> {
   private static final long serialVersionUID = 1L;
   private static final String TASK_TAG_JOINTABLE = "task_tag";
-  ;
 
   @Column(length = 4048)
   protected String description;
