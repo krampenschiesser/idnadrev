@@ -74,33 +74,35 @@ public class ActivityInitialization {
     JavaFXExecutorService javaFXExecutor = controller.getJavaFXExecutor();
 
     if (!preloads.containsKey(controllerClass)) {
-      DefaultLoader<Node, Object> loader = new DefaultLoader<>(controllerClass);
-      Supplier<DefaultLoader<Node, Object>> supplier = () -> {
-
-        loader.load();
-        Node view = loader.getView();
-
-        currentlyLoadedControllers.get().forEach((c) -> {
-          assert c != null;
-          assert view != null;
-          log.debug("Registering controller {} with node {}", c, view);
-          controllers.put(c.getClass(), Pair.of(c, view));
-        });
-        currentlyLoadedControllers.get().clear();
-        return loader;
-      };
-
-      CompletableFuture<DefaultLoader<Node, Object>> loaderFuture = CompletableFuture.supplyAsync(supplier, executorService).exceptionally((t) -> {
+      CompletableFuture<DefaultLoader<Node, Object>> loaderFuture = CompletableFuture.supplyAsync(getDefaultLoaderSupplier(controllerClass), executorService).exceptionally((t) -> {
         if (t.getCause() instanceof RuntimeException && t.getCause().getCause() instanceof LoadException) {
           currentlyLoadedControllers.get().clear();
-          log.info("Last load of {} failed, will try again in JavaFX Thread", loader.getFxmlFile());
-          return javaFXExecutor.invokeInJavaFXThread(() -> supplier.get());
+          log.info("Last load of {} failed, will try again in JavaFX Thread", new DefaultLoader<>(controllerClass).getFxmlFile());
+          return javaFXExecutor.invokeInJavaFXThread(() -> getDefaultLoaderSupplier(controllerClass).get());
         }
         throw new RuntimeException(t);
       });
 
       preloads.put(controllerClass, loaderFuture);
     }
+  }
+
+  private Supplier<DefaultLoader<Node, Object>> getDefaultLoaderSupplier(Class<?> controllerClass) {
+    return () -> {
+      DefaultLoader<Node, Object> loader = new DefaultLoader<>(controllerClass);
+
+      loader.load();
+      Node view = loader.getView();
+
+      currentlyLoadedControllers.get().forEach((c) -> {
+        assert c != null;
+        assert view != null;
+        log.debug("Registering controller {} with node {}", c, view);
+        controllers.put(c.getClass(), Pair.of(c, view));
+      });
+      currentlyLoadedControllers.get().clear();
+      return loader;
+    };
   }
 
   public ActivityInitialization addCallback(LoaderCallback callback) {
