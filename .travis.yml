@@ -1,6 +1,6 @@
 language: java
 jdk:
-  - oraclejdk8
+  - oraclejdk8u20
 
 install:
   - TERM=dumb ./gradlew --info assemble
