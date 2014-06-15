@@ -14,5 +14,14 @@
  */
 package de.ks.idnadrev.task.view;
 
+import javafx.fxml.FXML;
+import javafx.scene.control.TreeTableColumn;
+
 public class TaskOverview {
+
+  @FXML
+  private TreeTableColumn<?, ?> creationTime;
+
+  @FXML
+  private TreeTableColumn<?, ?> name;
 }
