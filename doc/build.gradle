@@ -28,3 +28,14 @@ buildscript {
 
 apply plugin: 'asciidoctor'
 
+asciidoctor {
+    options = [
+            eruby     : 'erubis',
+            attributes: [
+                    'source-highlighter': 'coderay',
+                    toc                 : '',
+                    idprefix            : '',
+                    idseparator         : '-'
+            ]
+    ]
+}
