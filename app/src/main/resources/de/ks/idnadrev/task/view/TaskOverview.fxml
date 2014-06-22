@@ -46,6 +46,7 @@
                 <RowConstraints minHeight="25.0" vgrow="SOMETIMES"/>
                 <RowConstraints minHeight="25.0" vgrow="SOMETIMES"/>
                 <RowConstraints minHeight="25.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="25.0" vgrow="SOMETIMES"/>
                 <RowConstraints minHeight="25.0" prefHeight="30.0" vgrow="SOMETIMES"/>
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS"/>
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS"/>
@@ -66,7 +67,7 @@
                 <Label text="%task.tags" GridPane.rowIndex="6"/>
                 <FlowPane fx:id="tagPane" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
                 <WebView fx:id="description" blendMode="DARKEN" focusTraversable="false" prefHeight="-1.0"
-                         prefWidth="-1.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="10" GridPane.rowSpan="6"/>
+                         prefWidth="-1.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="11" GridPane.rowSpan="6"/>
                 <Label text="%task.estimatedTime" GridPane.rowIndex="7"/>
                 <Label text="%task.spendTime" GridPane.rowIndex="8"/>
                 <Label fx:id="estimatedTime" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
@@ -92,11 +93,18 @@
                              GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4"/>
                 <ProgressBar fx:id="funFactor" maxWidth="1.7976931348623157E308" progress="0.75"
                              GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5"/>
-                <Separator prefWidth="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="9">
+                <Separator prefWidth="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="10">
                     <effect>
                         <DropShadow/>
                     </effect>
                 </Separator>
+                <HBox spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="9">
+                    <children>
+                        <Button fx:id="start" defaultButton="true" mnemonicParsing="false" onAction="#startWork"
+                                text="%task.startwork" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
+                        <Button mnemonicParsing="false" onAction="#finishTask" text="%task.finish"/>
+                    </children>
+                </HBox>
             </children>
         </GridPane>
     </children>

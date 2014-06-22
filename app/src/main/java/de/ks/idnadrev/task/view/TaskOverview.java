@@ -49,6 +49,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class TaskOverview implements Initializable {
   private static final Logger log = LoggerFactory.getLogger(TaskOverview.class);
+  public static final String NEGATIVE_FUN_FACTOR = "negativeFunFactor";
   @FXML
   protected TreeTableView<Task> tasksView;
   @FXML
@@ -75,6 +76,8 @@ public class TaskOverview implements Initializable {
   protected FlowPane tagPane;
   @FXML
   protected WebView description;
+  @FXML
+  protected Button start;
 
   @Inject
   ActivityStore store;
@@ -109,8 +112,16 @@ public class TaskOverview implements Initializable {
       parentProject.setText(task.getParent() != null ? task.getParent().getName() : null);
       physicalEffort.setProgress(task.getPhysicalEffort().getAmount() / 10D);
       mentalEffort.setProgress(task.getMentalEffort().getAmount() / 10D);
-      funFactor.setProgress(task.getFunFactor().getAmount() / 20D);
+
+      if (task.getFunFactor().getAmount() < 0) {
+        funFactor.getStyleClass().add(NEGATIVE_FUN_FACTOR);
+      } else {
+        funFactor.getStyleClass().remove(NEGATIVE_FUN_FACTOR);
+      }
+      funFactor.setProgress(Math.abs(task.getFunFactor().getAmount()) / 5D);
+
       task.getTags().forEach((tag) -> tagPane.getChildren().add(new Label(tag.getName())));
+
       String asciiDoc = renderedDescription.get(task.getId());
       if (asciiDoc != null) {
         description.getEngine().loadContent(asciiDoc);
@@ -159,42 +170,48 @@ public class TaskOverview implements Initializable {
 
   }
 
+  @FXML
+  void startWork() {
+
+  }
+
+  @FXML
+  void finishTask() {
+
+  }
+
   @Subscribe
   @Threading(HandlingThread.JavaFX)
   public void afterLoad(ActivityLoadFinishedEvent event) {
-    if (event.getModel() instanceof List) {
+    List<Task> loaded = event.getModel();
+    tasks.clear();
+    tasks.addAll(loaded);
+    TreeItem<Task> root = buildTreeStructure(loaded);
+    tasksView.setRoot(root);
+    Platform.runLater(() -> {
+      if (!root.getChildren().isEmpty()) {
+        root.setExpanded(true);
+        tasksView.getSelectionModel().select(root.getChildren().get(0));
+      }
+    });
 
-
-      List<Task> loaded = event.getModel();
-      tasks.clear();
-      tasks.addAll(loaded);
-      TreeItem<Task> root = buildTreeStructure(loaded);
-      tasksView.setRoot(root);
-      Platform.runLater(() -> {
-        if (!root.getChildren().isEmpty()) {
-          root.setExpanded(true);
-          tasksView.getSelectionModel().select(root.getChildren().get(0));
-        }
-      });
-
-      tasks.forEach(task -> {
-        CompletableFuture.supplyAsync(() -> Pair.of(task, parser.parse(task.getDescription())), controller.getCurrentExecutorService())//
-                .thenApply(pair -> {
-                  Task currentTask = pair.getKey();
-                  String asciiDocHtml = pair.getValue();
-                  renderedDescription.put(currentTask.getId(), asciiDocHtml);
-                  return pair;
-                })//
-                .thenAcceptAsync(pair -> {
-                  Task currentTask = pair.getKey();
-                  String asciiDocHtml = pair.getValue();
-                  TreeItem<Task> selectedItem = tasksView.getSelectionModel().getSelectedItem();
-                  if (selectedItem != null && selectedItem.getValue().equals(currentTask)) {
-                    description.getEngine().loadContent(asciiDocHtml);
-                  }
-                }, controller.getJavaFXExecutor());
-      });
-    }
+    tasks.forEach(task -> {
+      CompletableFuture.supplyAsync(() -> Pair.of(task, parser.parse(task.getDescription())), controller.getCurrentExecutorService())//
+              .thenApply(pair -> {
+                Task currentTask = pair.getKey();
+                String asciiDocHtml = pair.getValue();
+                renderedDescription.put(currentTask.getId(), asciiDocHtml);
+                return pair;
+              })//
+              .thenAcceptAsync(pair -> {
+                Task currentTask = pair.getKey();
+                String asciiDocHtml = pair.getValue();
+                TreeItem<Task> selectedItem = tasksView.getSelectionModel().getSelectedItem();
+                if (selectedItem != null && selectedItem.getValue().equals(currentTask)) {
+                  description.getEngine().loadContent(asciiDocHtml);
+                }
+              }, controller.getJavaFXExecutor());
+    });
   }
 
   protected TreeItem<Task> buildTreeStructure(List<Task> loaded) {
