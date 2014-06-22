@@ -15,16 +15,17 @@
 package de.ks.activity;
 
 public class ActivityLoadFinishedEvent {
-  private final Object value;
+  private final Object model;
   private final long time;
 
-  public ActivityLoadFinishedEvent(Object value) {
-    this.value = value;
+  public ActivityLoadFinishedEvent(Object model) {
+    this.model = model;
     this.time = System.currentTimeMillis();
   }
 
-  public Object getValue() {
-    return value;
+  @SuppressWarnings("unchecked")
+  public <T> T getModel() {
+    return (T) model;
   }
 
   public long getTime() {
