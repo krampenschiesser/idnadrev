@@ -41,6 +41,7 @@ public class AsciiDocParserText {
   public void setUp() throws Exception {
     asciiDocSimple = "= Simple test document =\n" +
             ":linkcss:\n" +
+            ":Revision: 42\n" +
             ":Author:    Hiker trash\n" +
             "\n" +
             "\n" +

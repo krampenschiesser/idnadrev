@@ -18,6 +18,7 @@ import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import org.asciidoctor.*;
 
+import javax.enterprise.inject.Vetoed;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -26,6 +27,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
+@Vetoed
 public class AsciiDocParser {
   private final Asciidoctor asciidoctor = Asciidoctor.Factory.create();
   private final Options options;
@@ -38,7 +40,7 @@ public class AsciiDocParser {
 
   public AsciiDocParser() {
     Attributes attributes = AttributesBuilder.attributes()//
-            .experimental(true).tableOfContents(true).sourceHighlighter("coderay").get();
+            .experimental(true).sourceHighlighter("coderay").get();
     options = OptionsBuilder.options().headerFooter(true).attributes(attributes).get();
   }
 
