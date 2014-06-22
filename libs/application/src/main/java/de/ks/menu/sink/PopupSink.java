@@ -44,7 +44,7 @@ public class PopupSink extends AbstractSink<PopupSink> {
   }
 
   protected void showMenuItem(Object menuItem, MenuItemDescriptor item) {
-    Stage stage = createStage(item.getMenuItemPath());
+    Stage stage = createStage(item.getTranslationPath());
     if (menuItem instanceof Parent) {
       stage.setScene(new Scene((Parent) menuItem));
     } else if (menuItem instanceof Node) {

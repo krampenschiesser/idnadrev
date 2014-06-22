@@ -82,6 +82,6 @@ public class PopupSinkTest {
     Label label = (Label) root.getChildrenUnmodifiable().get(0);
     assertEquals("hello world", label.getText());
 
-    assertEquals(Localized.get(About.ITEMPATH), stage.getTitle());
+    assertEquals(Localized.get(About.ITEMPATH.replaceAll("/", ".").substring(1)), stage.getTitle());
   }
 }
