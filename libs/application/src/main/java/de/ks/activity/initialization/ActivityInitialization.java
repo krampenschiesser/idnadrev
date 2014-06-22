@@ -36,6 +36,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @ActivityScoped
 public class ActivityInitialization {
@@ -159,5 +160,9 @@ public class ActivityInitialization {
       throw new IllegalArgumentException("Controller " + targetController + " is not registered. Registered are " + controllers.keySet());
     }
     return controllers.get(targetController).getLeft();
+  }
+
+  public Collection<Object> getControllers() {
+    return controllers.values().stream().map(pair -> pair.getKey()).collect(Collectors.toList());
   }
 }

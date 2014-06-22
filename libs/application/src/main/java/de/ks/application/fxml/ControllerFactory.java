@@ -17,7 +17,6 @@ package de.ks.application.fxml;
 
 import de.ks.activity.context.ActivityContext;
 import de.ks.activity.initialization.ActivityInitialization;
-import de.ks.eventsystem.bus.EventBus;
 import de.ks.reflection.ReflectionUtil;
 import javafx.util.Callback;
 import org.slf4j.Logger;
@@ -60,8 +59,6 @@ public class ControllerFactory implements Callback<Class<?>, Object> {
     } else {
       object = instance.get();
     }
-    EventBus eventBus = CDI.current().select(EventBus.class).get();
-    eventBus.register(object);
 
     registerLoadedController(object);
     return object;

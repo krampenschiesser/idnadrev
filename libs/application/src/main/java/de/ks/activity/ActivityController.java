@@ -56,6 +56,8 @@ public class ActivityController {
   protected JavaFXExecutorService javafxExecutor;
   @Inject
   protected ActivityInitialization initialization;
+  @Inject
+  protected EventBus eventBus;
 
   protected final Deque<ActivityCfg> activities = new LinkedList<>();
   protected final Map<String, ActivityCfg> registeredActivities = new HashMap<>();
@@ -93,6 +95,9 @@ public class ActivityController {
     DataSource dataSource = CDI.current().select(activityCfg.getDataSource()).get();
     dataSource.setLoadingHint(dataSourceHint);
     store.setDatasource(dataSource);
+
+    initialization.getControllers().forEach((controller) -> eventBus.register(controller));
+
     select(activityCfg, activityCfg.getInitialController(), Navigator.MAIN_AREA);
     reload();
     log.info("Resumed activity {} with hint", id, dataSourceHint);
@@ -122,6 +127,11 @@ public class ActivityController {
       }
       activityCfg.setReturnConverter(returnConverter);
       String id = activityCfg.getClass().getName();
+
+      if (context.hasCurrentActivity()) {
+        initialization.getControllers().forEach((controller) -> eventBus.unregister(controller));
+      }
+
       context.startActivity(id);
       executor.startOrResume(id);
       activities.add(activityCfg);
@@ -133,8 +143,9 @@ public class ActivityController {
       store.setDatasource(dataSource);
 
       initialization.loadActivity(activityCfg);
-      select(activityCfg, activityCfg.getInitialController(), Navigator.MAIN_AREA);
+      initialization.getControllers().forEach((controller) -> eventBus.register(controller));
 
+      select(activityCfg, activityCfg.getInitialController(), Navigator.MAIN_AREA);
       reload();
       log.info("Started activity {}", id);
     } finally {
@@ -182,6 +193,9 @@ public class ActivityController {
       waitForDataSource();
       String id = activityId;
       executor.shutdown(id);
+      if (context.hasCurrentActivity()) {
+        initialization.getControllers().forEach((controller) -> eventBus.unregister(controller));
+      }
       stop(id);
     } finally {
       lock.unlock();
