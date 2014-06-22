@@ -14,7 +14,7 @@
  */
 package de.ks.text;
 
-import de.ks.launch.AscciiDocService;
+import de.ks.launch.AsciiDocService;
 import de.ks.launch.Launcher;
 
 import javax.enterprise.inject.Produces;
@@ -22,6 +22,6 @@ import javax.enterprise.inject.Produces;
 public class AsciiDocProducer {
   @Produces
   public AsciiDocParser getParser() {
-    return Launcher.instance.getService(AscciiDocService.class).getAsciiDocParser();
+    return Launcher.instance.getService(AsciiDocService.class).getAsciiDocParser();
   }
 }
