@@ -17,7 +17,10 @@ package de.ks.idnadrev.task.create;
 
 import de.ks.activity.ActivityController;
 import de.ks.datasource.NewInstanceDataSource;
-import de.ks.idnadrev.entity.*;
+import de.ks.idnadrev.entity.Context;
+import de.ks.idnadrev.entity.Tag;
+import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.entity.Thought;
 import de.ks.persistence.PersistentWork;
 import de.ks.persistence.entity.NamedPersistentObject;
 import org.slf4j.Logger;
@@ -63,9 +66,6 @@ public class CreateTaskDS extends NewInstanceDataSource<Task> {
 
       String contextName = mainTaskInfo.contextController.getInput().textProperty().getValueSafe().trim();
       setToOne(model, Context.class, contextName, model::setContext);
-
-      String workType = mainTaskInfo.workTypeController.getInput().textProperty().getValueSafe().trim();
-      setToOne(model, WorkType.class, workType, model::setWorkType);
 
       model.setEstimatedTime(mainTaskInfo.getEstimatedDuration());
 

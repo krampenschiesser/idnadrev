@@ -38,14 +38,13 @@ import static org.junit.Assert.*;
  */
 @RunWith(LauncherRunner.class)
 public class PersistEntitiesTest {
-  private List<Class<? extends AbstractPersistentObject<?>>> allEntityClasses = Arrays.asList(Category.class, Context.class, File.class, Note.class, Tag.class, Thought.class, WorkUnit.class, Task.class, WorkType.class);
+  private List<Class<? extends AbstractPersistentObject<?>>> allEntityClasses = Arrays.asList(Category.class, Context.class, File.class, Note.class, Tag.class, Thought.class, WorkUnit.class, Task.class);
 
   private List<NamedPersistentObject> simpleEntities = new ArrayList<NamedPersistentObject>() {{
     add(new Category("myCategory"));
     add(new Context("myContext"));
     add(new Tag("myTag"));
     add(new Thought("myThought"));
-    add(new WorkType("myWork"));
   }};
 
   @Before

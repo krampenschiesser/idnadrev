@@ -25,7 +25,6 @@ import de.ks.eventsystem.bus.Threading;
 import de.ks.idnadrev.entity.Context;
 import de.ks.idnadrev.entity.Tag;
 import de.ks.idnadrev.entity.Task;
-import de.ks.idnadrev.entity.WorkType;
 import de.ks.idnadrev.selection.NamedPersistentObjectSelection;
 import de.ks.idnadrev.tag.TagInfo;
 import de.ks.reflection.PropertyPath;
@@ -35,10 +34,7 @@ import de.ks.validation.validators.DurationValidator;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.util.Callback;
@@ -61,8 +57,6 @@ public class MainTaskInfo implements Initializable {
   @FXML
   protected NamedPersistentObjectSelection<Context> contextController;
   @FXML
-  protected NamedPersistentObjectSelection<WorkType> workTypeController;
-  @FXML
   protected NamedPersistentObjectSelection<Tag> tagAddController;
 
   @FXML
@@ -77,6 +71,12 @@ public class MainTaskInfo implements Initializable {
   protected FlowPane tagPane;
   @FXML
   protected Button saveButton;
+  @FXML
+  protected Slider funFactor;
+  @FXML
+  protected Slider mentalEffort;
+  @FXML
+  protected Slider physicalEffort;
 
   @Inject
   ValidationRegistry validationRegistry;
@@ -97,7 +97,6 @@ public class MainTaskInfo implements Initializable {
     }).enableValidation();
 
     contextController.from(Context.class).enableValidation();
-    workTypeController.from(WorkType.class).enableValidation();
     tagAddController.from(Tag.class);
 
     durationValidator = FXValidators.createDurationValidator();
@@ -109,6 +108,10 @@ public class MainTaskInfo implements Initializable {
 
     tagAddController.setOnAction(e -> addTag(tagAddController.getInput().getText()));
     saveButton.disableProperty().bind(validationRegistry.getValidationSupport().invalidProperty());
+
+    physicalEffort.valueProperty().bindBidirectional(store.getBinding().getIntegerProperty(Task.class, (t) -> t.getPhysicalEffort().getAmount()));
+    mentalEffort.valueProperty().bindBidirectional(store.getBinding().getIntegerProperty(Task.class, (t) -> t.getMentalEffort().getAmount()));
+    funFactor.valueProperty().bindBidirectional(store.getBinding().getIntegerProperty(Task.class, (t) -> t.getFunFactor().getAmount()));
   }
 
   private Callback<AutoCompletionBinding.ISuggestionRequest, Collection<String>> getEstimatedTimeAutoCompletion() {

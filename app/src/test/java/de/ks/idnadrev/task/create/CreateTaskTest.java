@@ -17,7 +17,10 @@ package de.ks.idnadrev.task.create;
 import de.ks.FXPlatform;
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityController;
-import de.ks.idnadrev.entity.*;
+import de.ks.idnadrev.entity.Context;
+import de.ks.idnadrev.entity.Tag;
+import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.entity.WorkUnit;
 import de.ks.persistence.PersistentWork;
 import org.junit.After;
 import org.junit.Before;
@@ -40,8 +43,8 @@ public class CreateTaskTest {
 
   @Before
   public void setUp() throws Exception {
-    PersistentWork.deleteAllOf(WorkUnit.class, Context.class, WorkType.class, Task.class, Tag.class);
-    PersistentWork.persist(new Context("context"), new WorkType("physical"));
+    PersistentWork.deleteAllOf(WorkUnit.class, Context.class, Task.class, Tag.class);
+    PersistentWork.persist(new Context("context"));
 
     activityController.start(CreateTaskActivity.class);
     activityController.waitForDataSource();
@@ -59,8 +62,10 @@ public class CreateTaskTest {
     FXPlatform.invokeLater(() -> {
       controller.name.setText("name");
       controller.contextController.getInput().setText("context");
-      controller.workTypeController.getInput().setText("Physical");//upper case wanted
       controller.estimatedTimeDuration.setText("15min");
+      controller.funFactor.valueProperty().set(3);
+      controller.mentalEffort.valueProperty().set(10);
+      controller.physicalEffort.valueProperty().set(7);
     });
     FXPlatform.invokeLater(() -> {
       controller.save();
@@ -69,15 +74,15 @@ public class CreateTaskTest {
 
     List<Task> tasks = PersistentWork.from(Task.class, (t) -> {
       t.getContext().getName();
-      t.getWorkType().getName();
     });
     assertEquals(1, tasks.size());
     Task task = tasks.get(0);
     assertEquals("name", task.getName());
     assertNotNull(task.getContext());
     assertEquals("context", task.getContext().getName());
-    assertNotNull(task.getWorkType());
-    assertEquals("physical", task.getWorkType().getName());
+    assertEquals(7, task.getPhysicalEffort().getAmount());
+    assertEquals(3, task.getFunFactor().getAmount());
+    assertEquals(10, task.getMentalEffort().getAmount());
 
     Duration estimatedTime = task.getEstimatedTime();
     assertNotNull(estimatedTime);

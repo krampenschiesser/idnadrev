@@ -35,6 +35,8 @@
         <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER"/>
         <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER"/>
         <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="NEVER"/>
+        <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="NEVER"/>
+        <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="NEVER"/>
         <RowConstraints minHeight="10.0" valignment="TOP" vgrow="SOMETIMES"/>
         <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER"/>
         <RowConstraints minHeight="10.0" valignment="TOP" vgrow="NEVER"/>
@@ -70,29 +72,37 @@
             </children>
         </StackPane>
 
-        <Label text="%task.workType" GridPane.rowIndex="6"/>
-        <StackPane GridPane.columnIndex="1" GridPane.rowIndex="6" GridPane.valignment="TOP" GridPane.vgrow="NEVER">
-            <children>
-                <fx:include fx:id="workType" source="../../selection/NamedPersistentObjectSelection.fxml"/>
-            </children>
-        </StackPane>
+        <Label text="%task.physicalEffort" GridPane.rowIndex="6"/>
+        <Slider fx:id="physicalEffort" blockIncrement="1.0" majorTickUnit="1.0" max="10.0" minorTickCount="0"
+                showTickLabels="true" showTickMarks="true" snapToTicks="true" GridPane.columnIndex="1"
+                GridPane.rowIndex="6"/>
 
-        <Label text="%task.estimatedTime" GridPane.rowIndex="7"/>
-        <TextField fx:id="estimatedTimeDuration" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+        <Label text="%task.mentalEffort" GridPane.rowIndex="7"/>
+        <Slider fx:id="mentalEffort" blockIncrement="1.0" majorTickUnit="1.0" max="10.0" minorTickCount="0"
+                showTickLabels="true" showTickMarks="true" snapToTicks="true" GridPane.columnIndex="1"
+                GridPane.rowIndex="7"/>
 
-        <Label text="%description" GridPane.rowIndex="8"/>
-        <TextArea fx:id="description" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
+        <Label text="%task.funFactor" GridPane.rowIndex="8"/>
+        <Slider fx:id="funFactor" blockIncrement="1.0" majorTickUnit="1.0" max="5.0" min="-5.0" minorTickCount="0"
+                showTickLabels="true" showTickMarks="true" snapToTicks="true" GridPane.columnIndex="1"
+                GridPane.rowIndex="8"/>
 
-        <Label text="%tags" GridPane.rowIndex="9"/>
-        <StackPane GridPane.columnIndex="1" GridPane.rowIndex="9" GridPane.valignment="TOP" GridPane.vgrow="NEVER">
+        <Label text="%task.estimatedTime" GridPane.rowIndex="9"/>
+        <TextField fx:id="estimatedTimeDuration" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
+
+        <Label text="%description" GridPane.rowIndex="10"/>
+        <TextArea fx:id="description" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
+
+        <Label text="%tags" GridPane.rowIndex="11"/>
+        <StackPane GridPane.columnIndex="1" GridPane.rowIndex="11" GridPane.valignment="TOP" GridPane.vgrow="NEVER">
             <children>
                 <fx:include fx:id="tagAdd" source="../../selection/NamedPersistentObjectSelection.fxml"/>
             </children>
         </StackPane>
 
-        <FlowPane fx:id="tagPane" hgap="5.0" vgap="5.0" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
+        <FlowPane fx:id="tagPane" hgap="5.0" vgap="5.0" GridPane.columnIndex="1" GridPane.rowIndex="12"/>
         <Button fx:id="saveButton" defaultButton="true" mnemonicParsing="false" onAction="#save" text="%save"
-                GridPane.columnIndex="1" GridPane.rowIndex="11"/>
+                GridPane.columnIndex="1" GridPane.rowIndex="13"/>
 
     </children>
     <padding>

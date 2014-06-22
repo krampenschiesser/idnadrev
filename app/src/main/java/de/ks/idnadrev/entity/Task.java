@@ -86,8 +86,12 @@ public class Task extends NamedPersistentObject<Task> {
   @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
   protected Context context;
 
-  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-  protected WorkType workType;
+  @Embedded
+  protected final Effort physicalEffort = new Effort(Effort.EffortType.PHSYICAL);
+  @Embedded
+  protected final Effort mentalEffort = new Effort(Effort.EffortType.MENTAL);
+  @Embedded
+  protected final Effort funFactor = new Effort(Effort.EffortType.FUN);
 
   protected boolean project;
 
@@ -96,7 +100,7 @@ public class Task extends NamedPersistentObject<Task> {
   protected Set<Tag> tags = new HashSet<>();
 
   protected Task() {
-
+    this.creationTime = LocalDateTime.now();
   }
 
   public Task(String name) {
@@ -121,8 +125,9 @@ public class Task extends NamedPersistentObject<Task> {
     }
   }
 
-  public void setDescription(String description) {
+  public Task setDescription(String description) {
     this.description = description;
+    return this;
   }
 
   public long getSpentMinutes() {
@@ -194,13 +199,16 @@ public class Task extends NamedPersistentObject<Task> {
     return this;
   }
 
-  public WorkType getWorkType() {
-    return workType;
+  public Effort getPhysicalEffort() {
+    return physicalEffort;
   }
 
-  public Task setWorkType(WorkType workType) {
-    this.workType = workType;
-    return this;
+  public Effort getMentalEffort() {
+    return mentalEffort;
+  }
+
+  public Effort getFunFactor() {
+    return funFactor;
   }
 
   public boolean isProject() {
@@ -229,15 +237,21 @@ public class Task extends NamedPersistentObject<Task> {
   public Task addChild(Task child) {
     getChildren().add(child);
     child.setParent(this);
+    this.setProject(true);
     return this;
   }
 
   public Duration getEstimatedTime() {
-    return estimatedTime;
+    if (estimatedTime == null) {
+      return Duration.ofMinutes(0);
+    } else {
+      return estimatedTime;
+    }
   }
 
-  public void setEstimatedTime(Duration estimatedTime) {
+  public Task setEstimatedTime(Duration estimatedTime) {
     this.estimatedTime = estimatedTime;
+    return this;
   }
 
   public Set<Tag> getTags() {
@@ -250,6 +264,21 @@ public class Task extends NamedPersistentObject<Task> {
 
   public void addTag(String tag) {
     tags.add(new Tag(tag));
+  }
+
+  public Duration getTotalEstimatedTime() {
+    Duration duration = estimatedTime;
+    for (Task task : getChildren()) {
+      Duration childDuration = task.getTotalEstimatedTime();
+      if (childDuration != null) {
+        if (duration == null) {
+          duration = childDuration;
+        } else {
+          duration = duration.plus(childDuration);
+        }
+      }
+    }
+    return duration;
   }
 
   @Override
