@@ -17,23 +17,28 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.web.WebView?>
 <HBox spacing="5.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="de.ks.idnadrev.task.view.TaskOverview">
     <children>
-        <TreeTableView>
+        <TreeTableView fx:id="tasksView">
             <columns>
-                <TreeTableColumn fx:id="name" prefWidth="271.0" text="%task.name"/>
-                <TreeTableColumn fx:id="creationTime" minWidth="0.0" prefWidth="181.0" text="%task.creationTime"/>
+                <TreeTableColumn fx:id="taskViewNameColumn" prefWidth="271.0" text="%task.name"/>
+                <TreeTableColumn fx:id="taskViewCreationTimeColumn" minWidth="0.0" prefWidth="181.0"
+                                 text="%task.creationTime"/>
             </columns>
         </TreeTableView>
         <GridPane hgap="5.0" vgap="5.0" HBox.hgrow="SOMETIMES">
             <columnConstraints>
-                <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0"/>
+                <ColumnConstraints halignment="LEFT" hgrow="NEVER" minWidth="10.0"/>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+                <ColumnConstraints hgrow="ALWAYS" minWidth="10.0"/>
             </columnConstraints>
             <rowConstraints>
+                <RowConstraints minHeight="25.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="25.0" vgrow="SOMETIMES"/>
                 <RowConstraints minHeight="25.0" vgrow="SOMETIMES"/>
                 <RowConstraints minHeight="25.0" vgrow="SOMETIMES"/>
                 <RowConstraints minHeight="25.0" vgrow="SOMETIMES"/>
@@ -53,32 +58,45 @@
                 <Label text="%task.name"/>
                 <Label text="%task.context" GridPane.rowIndex="2"/>
                 <Label text="%task.parent" GridPane.rowIndex="1"/>
-                <Hyperlink text="Hyperlink" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                <Label text="Label" GridPane.columnIndex="1"/>
-                <Label text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                <Label text="%task.worktype" GridPane.rowIndex="3"/>
-                <Label text="Label" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-                <Label text="%task.tags" GridPane.rowIndex="4"/>
-                <FlowPane prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
-                <Label text="%task.description" GridPane.rowIndex="7"/>
-                <WebView prefHeight="-1.0" prefWidth="-1.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="8"
-                         GridPane.rowSpan="6"/>
-                <Label text="%task.estimatedTime" GridPane.rowIndex="5"/>
-                <Label text="%task.spendTime" GridPane.rowIndex="6"/>
-                <Label text="Label" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
-                <GridPane GridPane.columnIndex="1" GridPane.rowIndex="6">
+                <Hyperlink fx:id="parentProject" onAction="#selectParentProject" text="Hyperlink"
+                           GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                <Label fx:id="name" text="Label" GridPane.columnIndex="1"/>
+                <Label fx:id="context" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                <Label text="%task.physicalEffort" GridPane.rowIndex="3"/>
+                <Label text="%task.tags" GridPane.rowIndex="6"/>
+                <FlowPane fx:id="tagPane" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                <WebView fx:id="description" blendMode="DARKEN" focusTraversable="false" prefHeight="-1.0"
+                         prefWidth="-1.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="10" GridPane.rowSpan="6"/>
+                <Label text="%task.estimatedTime" GridPane.rowIndex="7"/>
+                <Label text="%task.spendTime" GridPane.rowIndex="8"/>
+                <Label fx:id="estimatedTime" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+                <GridPane GridPane.columnIndex="1" GridPane.rowIndex="8">
                     <columnConstraints>
-                        <ColumnConstraints hgrow="NEVER" minWidth="10.0" prefWidth="150.0"/>
-                        <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0"/>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="150.0"/>
+                        <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0"/>
                     </columnConstraints>
                     <rowConstraints>
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
                     </rowConstraints>
                     <children>
-                        <Button mnemonicParsing="false" text="%task.overview.showTimeUnits" GridPane.columnIndex="1"/>
-                        <Label text="Label"/>
+                        <Button mnemonicParsing="false" onAction="#showTimeUnits" text="%task.overview.showTimeUnits"
+                                GridPane.columnIndex="1"/>
+                        <Label fx:id="spentTime" text="Label"/>
                     </children>
                 </GridPane>
+                <ProgressBar fx:id="physicalEffort" maxWidth="1.7976931348623157E308" progress="0.75"
+                             GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3"/>
+                <Label text="%task.mentalEffort" GridPane.rowIndex="4"/>
+                <Label text="%task.funFactor" GridPane.rowIndex="5"/>
+                <ProgressBar fx:id="mentalEffort" maxWidth="1.7976931348623157E308" progress="0.75"
+                             GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4"/>
+                <ProgressBar fx:id="funFactor" maxWidth="1.7976931348623157E308" progress="0.75"
+                             GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5"/>
+                <Separator prefWidth="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="9">
+                    <effect>
+                        <DropShadow/>
+                    </effect>
+                </Separator>
             </children>
         </GridPane>
     </children>

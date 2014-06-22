@@ -14,17 +14,42 @@
  */
 package de.ks.idnadrev.task.view;
 
-import de.ks.datasource.DataSource;
+import de.ks.datasource.ListDataSource;
 import de.ks.idnadrev.entity.Task;
+import de.ks.persistence.PersistentWork;
+import de.ks.reflection.PropertyPath;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class ViewTasksDS implements DataSource<Task> {
+import java.util.List;
+
+public class ViewTasksDS implements ListDataSource<Task> {
   @Override
-  public Task loadModel() {
-    return null;
+  public List<Task> loadModel() {
+    return PersistentWork.from(Task.class, (root, query, builder) -> {
+      String finishTime = PropertyPath.property(Task.class, (t) -> t.getFinishTime());
+      query.where(root.get(finishTime).isNull());
+    }, this::loadChildren);
+  }
+
+  private static final Logger log = LoggerFactory.getLogger(ViewTasksDS.class);
+
+  protected void loadChildren(Task task) {
+    task.getName();
+    log.info("{},->{}", task.getName(), task.getId());
+    if (task.getParent() != null) {
+      task.getParent().getName();
+    }
+    if (task.getContext() != null) {
+      task.getContext().getName();
+    }
+    task.getChildren().forEach(this::loadChildren);
+    task.getTags().forEach(tag -> tag.getName());
+    task.getWorkUnits().forEach(workUnit -> workUnit.getDuration());
   }
 
   @Override
-  public void saveModel(Task model) {
-
+  public void saveModel(List<Task> model) {
+    //noop
   }
 }
