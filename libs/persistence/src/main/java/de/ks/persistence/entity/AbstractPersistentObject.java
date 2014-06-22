@@ -39,11 +39,11 @@ public abstract class AbstractPersistentObject<T extends AbstractPersistentObjec
 
   }
 
-  public Long getId() {
+  public long getId() {
     return id;
   }
 
-  public Long getVersion() {
+  public long getVersion() {
     return version;
   }
 }
