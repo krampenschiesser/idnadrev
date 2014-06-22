@@ -20,6 +20,7 @@ import de.ks.activity.callback.*;
 import de.ks.activity.context.ActivityScoped;
 import de.ks.activity.link.ViewLink;
 import de.ks.application.fxml.DefaultLoader;
+import de.ks.eventsystem.bus.EventBus;
 import de.ks.executor.JavaFXExecutorService;
 import de.ks.executor.SuspendablePooledExecutorService;
 import javafx.fxml.LoadException;
@@ -29,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.profiler.Profiler;
 
+import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -76,6 +78,8 @@ public class ActivityInitialization {
     if (!preloads.containsKey(controllerClass)) {
       CompletableFuture<DefaultLoader<Node, Object>> loaderFuture = CompletableFuture.supplyAsync(getDefaultLoaderSupplier(controllerClass), executorService).exceptionally((t) -> {
         if (t.getCause() instanceof RuntimeException && t.getCause().getCause() instanceof LoadException) {
+          EventBus eventBus = CDI.current().select(EventBus.class).get();
+          currentlyLoadedControllers.get().forEach(c -> eventBus.unregister(c));
           currentlyLoadedControllers.get().clear();
           log.info("Last load of {} failed, will try again in JavaFX Thread", new DefaultLoader<>(controllerClass).getFxmlFile());
           return javaFXExecutor.invokeInJavaFXThread(() -> getDefaultLoaderSupplier(controllerClass).get());
@@ -152,7 +156,7 @@ public class ActivityInitialization {
 
   public Object getControllerInstance(Class<?> targetController) {
     if (!controllers.containsKey(targetController)) {
-      throw new IllegalArgumentException("Controller " + targetController.getClass() + " is not registered. Registered are " + controllers.keySet());
+      throw new IllegalArgumentException("Controller " + targetController + " is not registered. Registered are " + controllers.keySet());
     }
     return controllers.get(targetController).getLeft();
   }
