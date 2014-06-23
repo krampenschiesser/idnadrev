@@ -1,4 +1,4 @@
-= Beagle documentation =
+= Idnadrev documentation =
 :Author:    Christian Löhnert
 :Email:     krampenschiesser@gmail.com
 
