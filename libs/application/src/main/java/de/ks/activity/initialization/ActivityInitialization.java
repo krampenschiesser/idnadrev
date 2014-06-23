@@ -35,6 +35,7 @@ import javax.inject.Inject;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -72,9 +73,18 @@ public class ActivityInitialization {
     }
   }
 
+  private boolean shouldLoadInFXThread(Class<?> clazz) {
+    return clazz.isAnnotationPresent(LoadInFXThread.class);
+  }
+
   private void loadController(Class<?> controllerClass) {
-    SuspendablePooledExecutorService executorService = controller.getCurrentExecutorService();
     JavaFXExecutorService javaFXExecutor = controller.getJavaFXExecutor();
+    ExecutorService executorService;
+    if (shouldLoadInFXThread(controllerClass)) {
+      executorService = javaFXExecutor;
+    } else {
+      executorService = controller.getCurrentExecutorService();
+    }
 
     if (!preloads.containsKey(controllerClass)) {
       CompletableFuture<DefaultLoader<Node, Object>> loaderFuture = CompletableFuture.supplyAsync(getDefaultLoaderSupplier(controllerClass), executorService).exceptionally((t) -> {
