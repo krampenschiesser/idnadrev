@@ -18,12 +18,15 @@ import com.google.common.eventbus.Subscribe;
 import de.ks.activity.ActivityController;
 import de.ks.activity.ActivityLoadFinishedEvent;
 import de.ks.activity.context.ActivityStore;
+import de.ks.activity.initialization.LoadInFXThread;
 import de.ks.eventsystem.bus.HandlingThread;
 import de.ks.eventsystem.bus.Threading;
 import de.ks.i18n.Localized;
 import de.ks.idnadrev.entity.Task;
+import de.ks.persistence.PersistentWork;
 import de.ks.text.AsciiDocParser;
 import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -47,6 +50,7 @@ import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
+@LoadInFXThread
 public class TaskOverview implements Initializable {
   private static final Logger log = LoggerFactory.getLogger(TaskOverview.class);
   public static final String NEGATIVE_FUN_FACTOR = "negativeFunFactor";
@@ -78,6 +82,10 @@ public class TaskOverview implements Initializable {
   protected WebView description;
   @FXML
   protected Button start;
+  @FXML
+  protected Button finish;
+  @FXML
+  protected Button show;
 
   @Inject
   ActivityStore store;
@@ -92,7 +100,8 @@ public class TaskOverview implements Initializable {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    tasksView.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> applyTask(n));
+    ReadOnlyObjectProperty<TreeItem<Task>> selectedItemProperty = tasksView.getSelectionModel().selectedItemProperty();
+    selectedItemProperty.addListener((p, o, n) -> applyTask(n));
     taskViewNameColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getValue().getName()));
     taskViewCreationTimeColumn.setCellValueFactory(param -> {
       TreeItem<Task> treeItem = param.getValue();
@@ -100,6 +109,9 @@ public class TaskOverview implements Initializable {
       LocalDateTime creationTime = task.getCreationTime();
       return new SimpleStringProperty(creationTime.toString());
     });
+    start.disableProperty().bind(selectedItemProperty.isNull());
+    finish.disableProperty().bind(selectedItemProperty.isNull());
+    show.disableProperty().bind(selectedItemProperty.isNull());
   }
 
   protected void applyTask(TreeItem<Task> taskTreeItem) {
@@ -177,7 +189,14 @@ public class TaskOverview implements Initializable {
 
   @FXML
   void finishTask() {
-
+    TreeItem<Task> selectedItem = tasksView.getSelectionModel().getSelectedItem();
+    if (selectedItem != null) {
+      PersistentWork.run(em -> {
+        Task task = PersistentWork.byId(Task.class, selectedItem.getValue().getId());
+        task.setFinished(true);
+      });
+      controller.reload();
+    }
   }
 
   @Subscribe

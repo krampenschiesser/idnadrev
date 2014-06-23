@@ -80,8 +80,8 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
                     </rowConstraints>
                     <children>
-                        <Button mnemonicParsing="false" onAction="#showTimeUnits" text="%task.overview.showTimeUnits"
-                                GridPane.columnIndex="1"/>
+                        <Button fx:id="show" mnemonicParsing="false" onAction="#showTimeUnits"
+                                text="%task.overview.showTimeUnits" GridPane.columnIndex="1"/>
                         <Label fx:id="spentTime" text="Label"/>
                     </children>
                 </GridPane>
@@ -102,7 +102,7 @@
                     <children>
                         <Button fx:id="start" defaultButton="true" mnemonicParsing="false" onAction="#startWork"
                                 text="%task.startwork" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
-                        <Button mnemonicParsing="false" onAction="#finishTask" text="%task.finish"/>
+                        <Button fx:id="finish" mnemonicParsing="false" onAction="#finishTask" text="%task.finish"/>
                     </children>
                 </HBox>
             </children>

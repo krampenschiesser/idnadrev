@@ -14,6 +14,7 @@
  */
 package de.ks.idnadrev.task.view;
 
+import de.ks.FXPlatform;
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityController;
 import de.ks.idnadrev.entity.Context;
@@ -77,5 +78,19 @@ public class TaskOverViewTest {
     assertEquals("project1", root.getChildren().get(1).getValue().getName());
 
     assertEquals(5, root.getChildren().get(1).getChildren().size());
+  }
+
+  @Test
+  public void testFinishTask() throws Exception {
+    FXPlatform.waitForFX();
+    int originalCount = controller.tasks.size();
+    Task task = controller.tasksView.getSelectionModel().getSelectedItem().getValue();
+    assertNotNull(task);
+
+    controller.finishTask();
+    activityController.waitForDataSource();
+
+
+    assertEquals(originalCount - 1, controller.tasks.size());
   }
 }
