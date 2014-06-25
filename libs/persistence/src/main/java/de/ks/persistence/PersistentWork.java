@@ -15,7 +15,6 @@
 
 package de.ks.persistence;
 
-import de.ks.executor.ExecutorService;
 import de.ks.persistence.entity.NamedPersistentObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +28,7 @@ import javax.persistence.criteria.Root;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -41,12 +41,20 @@ public class PersistentWork {
 
   public static CompletableFuture<Void> runAsync(Consumer<EntityManager> consumer) {
     ExecutorService executorService = CDI.current().select(ExecutorService.class).get();
+    return runAsync(consumer, executorService);
+  }
+
+  public static CompletableFuture<Void> runAsync(Consumer<EntityManager> consumer, ExecutorService executorService) {
     CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(() -> run(consumer), executorService);
     return completableFuture;
   }
 
   public static <T> CompletableFuture<T> readAsync(Function<EntityManager, T> function) {
     ExecutorService executorService = CDI.current().select(ExecutorService.class).get();
+    return readAsync(function, executorService);
+  }
+
+  public static <T> CompletableFuture<T> readAsync(Function<EntityManager, T> function, ExecutorService executorService) {
     CompletableFuture<T> completableFuture = CompletableFuture.supplyAsync(() -> read(function), executorService);
     return completableFuture;
   }
