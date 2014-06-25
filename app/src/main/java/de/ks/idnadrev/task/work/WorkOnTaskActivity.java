@@ -15,10 +15,9 @@
 package de.ks.idnadrev.task.work;
 
 import de.ks.activity.ActivityCfg;
-import de.ks.datasource.DataSource;
 
 public class WorkOnTaskActivity extends ActivityCfg {
-  public WorkOnTaskActivity(Class<? extends DataSource<?>> dataSource, Class<?> initialController) {
+  public WorkOnTaskActivity() {
     super(WorkOnTaskDS.class, WorkOnTask.class);
   }
 }

@@ -14,8 +14,18 @@
  */
 package de.ks.idnadrev.task.work;
 
+import com.google.common.eventbus.Subscribe;
 import de.ks.activity.ActivityController;
+import de.ks.activity.ActivityLoadFinishedEvent;
+import de.ks.activity.ModelBound;
+import de.ks.activity.context.ActivityStore;
 import de.ks.activity.initialization.LoadInFXThread;
+import de.ks.eventsystem.bus.HandlingThread;
+import de.ks.eventsystem.bus.Threading;
+import de.ks.executor.SuspendablePooledExecutorService;
+import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.entity.WorkUnit;
+import de.ks.persistence.PersistentWork;
 import de.ks.text.AsciiDocParser;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -26,8 +36,10 @@ import javafx.scene.web.WebView;
 import javax.inject.Inject;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
 
 @LoadInFXThread
+@ModelBound(Task.class)
 public class WorkOnTask implements Initializable {
   @FXML
   protected Label estimatedTime;
@@ -43,10 +55,45 @@ public class WorkOnTask implements Initializable {
   @Inject
   protected ActivityController controller;
   @Inject
+  protected ActivityStore store;
+  @Inject
   protected AsciiDocParser parser;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
 
+  }
+
+  @FXML
+  void stopWork() {
+    PersistentWork.run(em -> {
+      Task task = store.getModel();
+      task = PersistentWork.byId(Task.class, task.getId());
+      task.getWorkUnits().last().stop();
+    });
+    controller.resumePreviousActivity();
+  }
+
+  @FXML
+  void finishTask() {
+
+  }
+
+  @Subscribe
+  @Threading(HandlingThread.JavaFX)
+  public void afterLoad(ActivityLoadFinishedEvent event) {
+    Task task = event.getModel();
+    description.getEngine().loadContent(task.getDescription());
+
+    SuspendablePooledExecutorService executorService = controller.getCurrentExecutorService();
+
+    CompletableFuture.supplyAsync(() -> parser.parse(task.getDescription()), executorService)//
+            .thenAcceptAsync(html -> description.getEngine().loadContent(html), controller.getJavaFXExecutor());
+
+    PersistentWork.runAsync(em -> {
+      Task reloaded = PersistentWork.byId(Task.class, task.getId());
+      WorkUnit workUnit = new WorkUnit(reloaded);
+      em.persist(workUnit);
+    }, executorService);
   }
 }

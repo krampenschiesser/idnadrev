@@ -15,7 +15,6 @@
   ~ limitations under the License.
   -->
 
-
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.web.WebView?>
@@ -40,9 +39,10 @@
         <Label text="%task.name" GridPane.columnSpan="2147483647"/>
         <Label text="%task.description" GridPane.columnSpan="2147483647" GridPane.rowIndex="2"/>
         <Label fx:id="name" text="Label" GridPane.columnSpan="2147483647" GridPane.rowIndex="1"/>
-        <Button defaultButton="true" mnemonicParsing="false" text="%task.stop" GridPane.rowIndex="4"/>
-        <Button mnemonicParsing="false" text="%task.finish" GridPane.columnIndex="3" GridPane.halignment="RIGHT"
+        <Button defaultButton="true" mnemonicParsing="false" onAction="#stopWork" text="%task.stop"
                 GridPane.rowIndex="4"/>
+        <Button mnemonicParsing="false" onAction="#finishTask" text="%task.finish" GridPane.columnIndex="3"
+                GridPane.halignment="RIGHT" GridPane.rowIndex="4"/>
         <Button disable="true" mnemonicParsing="false" text="%task.addnote" GridPane.columnIndex="1"
                 GridPane.rowIndex="4"/>
         <ProgressBar fx:id="estimatedTimeBar" maxWidth="1.7976931348623157E308" progress="0.0" GridPane.columnIndex="2"
