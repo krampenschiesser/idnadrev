@@ -59,7 +59,7 @@ public class ActivityStore {
   }
 
   @SuppressWarnings("unchecked")
-  public <M> DataSource<M> getDatasource() {
-    return (DataSource<M>) datasource;
+  public <M, D extends DataSource<M>> D getDatasource() {
+    return (D) datasource;
   }
 }
