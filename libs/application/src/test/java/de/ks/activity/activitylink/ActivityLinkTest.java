@@ -23,7 +23,6 @@ import de.ks.activity.context.ActivityStore;
 import de.ks.application.Navigator;
 import de.ks.launch.JavaFXService;
 import de.ks.launch.Launcher;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -34,14 +33,16 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.util.concurrent.CountDownLatch;
 
 import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
 public class ActivityLinkTest {
+  private static final Logger log = LoggerFactory.getLogger(ActivityLinkTest.class);
   public static final String STANDARD_HINT = "withStandardHint";
   public static final String RETURN_HINT = "withReturnHint";
   @Inject
@@ -124,7 +125,7 @@ public class ActivityLinkTest {
 
     finishAction.handle(new ActionEvent());
     Thread.sleep(300);
-    waitForJavaFXThread();
+    FXPlatform.waitForFX();
     controller.waitForDataSource();
 
     Node topNode = Navigator.getCurrentNavigator().getMainArea().getCurrentNode();
@@ -132,9 +133,27 @@ public class ActivityLinkTest {
     assertEquals(activityANode, topNode);
   }
 
-  public void waitForJavaFXThread() throws InterruptedException {
-    CountDownLatch latch = new CountDownLatch(1);
-    Platform.runLater(() -> latch.countDown());
-    latch.await();
+  @Test
+  public void testMultipleReturn() throws Exception {
+    controller.start(activityCfgA);
+    controller.waitForDataSource();
+
+    for (int i = 0; i < 20; i++) {
+      log.info("###Executing iteration {}", i + 1);
+      Node activityANode = controller.getCurrentNode();
+      Button returnHintButton = (Button) activityANode.lookup("#" + RETURN_HINT);
+      EventHandler<ActionEvent> onAction = returnHintButton.getOnAction();
+      FXPlatform.invokeLater(() -> onAction.handle(new ActionEvent()));
+
+      controller.waitForDataSource();
+      Node activityBNode = Navigator.getCurrentNavigator().getMainArea().getCurrentNode();
+      Button finishButton = (Button) activityBNode.lookup("#finish");
+      EventHandler<ActionEvent> finishAction = finishButton.getOnAction();
+      FXPlatform.invokeLater(() -> finishAction.handle(new ActionEvent()));
+      controller.getCurrentExecutorService().waitForAllTasksDone();
+      controller.waitForDataSource();
+      FXPlatform.waitForFX();
+    }
   }
+
 }
