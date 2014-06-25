@@ -196,6 +196,7 @@ public class ActivityController {
       if (context.hasCurrentActivity()) {
         initialization.getControllers().forEach((controller) -> eventBus.unregister(controller));
       }
+      activities.removeLastOccurrence(activityCfg);
       stop(id);
     } finally {
       lock.unlock();
