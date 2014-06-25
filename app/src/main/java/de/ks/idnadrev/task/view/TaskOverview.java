@@ -23,10 +23,12 @@ import de.ks.eventsystem.bus.HandlingThread;
 import de.ks.eventsystem.bus.Threading;
 import de.ks.i18n.Localized;
 import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.task.work.WorkOnTaskActivity;
 import de.ks.persistence.PersistentWork;
 import de.ks.text.AsciiDocParser;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -97,6 +99,7 @@ public class TaskOverview implements Initializable {
   protected ObservableList<Task> tasks = FXCollections.observableArrayList();
   protected final ConcurrentHashMap<Long, String> renderedDescription = new ConcurrentHashMap<>();
   private Map<Task, TreeItem<Task>> task2TreeItem = new HashMap<>();
+  private final SimpleBooleanProperty disable = new SimpleBooleanProperty(false);
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -109,15 +112,20 @@ public class TaskOverview implements Initializable {
       LocalDateTime creationTime = task.getCreationTime();
       return new SimpleStringProperty(creationTime.toString());
     });
-    start.disableProperty().bind(selectedItemProperty.isNull());
-    finish.disableProperty().bind(selectedItemProperty.isNull());
-    show.disableProperty().bind(selectedItemProperty.isNull());
+
+    start.disableProperty().bind(disable);
+    finish.disableProperty().bind(disable);
+    show.disableProperty().bind(disable);
   }
 
   protected void applyTask(TreeItem<Task> taskTreeItem) {
+    disable.set(true);
     clear();
     if (taskTreeItem != null) {
       Task task = taskTreeItem.getValue();
+      if (task.getId() >= 0) {
+        disable.set(false);
+      }
       name.setText(task.getName());
       context.setText(task.getContext() != null ? task.getContext().getName() : "");
       estimatedTime.setText(parseDuration(task.isProject() ? task.getTotalEstimatedTime() : task.getEstimatedTime()));
@@ -184,7 +192,7 @@ public class TaskOverview implements Initializable {
 
   @FXML
   void startWork() {
-
+    controller.start(WorkOnTaskActivity.class, t -> tasksView.getSelectionModel().getSelectedItem().getValue(), t -> t);
   }
 
   @FXML
@@ -202,6 +210,9 @@ public class TaskOverview implements Initializable {
   @Subscribe
   @Threading(HandlingThread.JavaFX)
   public void afterLoad(ActivityLoadFinishedEvent event) {
+    @SuppressWarnings("unchecked") ViewTasksDS datasource = store.getDatasource();
+    Task taskToSelect = datasource.getTaskToSelect();
+
     List<Task> loaded = event.getModel();
     tasks.clear();
     tasks.addAll(loaded);
@@ -210,7 +221,11 @@ public class TaskOverview implements Initializable {
     Platform.runLater(() -> {
       if (!root.getChildren().isEmpty()) {
         root.setExpanded(true);
-        tasksView.getSelectionModel().select(root.getChildren().get(0));
+        if (taskToSelect != null && task2TreeItem.containsKey(taskToSelect)) {
+          tasksView.getSelectionModel().select(task2TreeItem.get(taskToSelect));
+        } else {
+          tasksView.getSelectionModel().select(root.getChildren().get(0));
+        }
       }
     });
 
@@ -236,7 +251,7 @@ public class TaskOverview implements Initializable {
   protected TreeItem<Task> buildTreeStructure(List<Task> loaded) {
     TreeItem<Task> root = new TreeItem<>(new Task(Localized.get("all")) {
       {
-        id = 0L;
+        id = -1L;
       }
     });
     task2TreeItem = new HashMap<>(loaded.size());

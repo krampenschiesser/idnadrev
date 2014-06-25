@@ -24,6 +24,9 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 public class ViewTasksDS implements ListDataSource<Task> {
+  private static final Logger log = LoggerFactory.getLogger(ViewTasksDS.class);
+  private Task taskToSelect;
+
   @Override
   public List<Task> loadModel() {
     return PersistentWork.from(Task.class, (root, query, builder) -> {
@@ -32,11 +35,8 @@ public class ViewTasksDS implements ListDataSource<Task> {
     }, this::loadChildren);
   }
 
-  private static final Logger log = LoggerFactory.getLogger(ViewTasksDS.class);
-
   protected void loadChildren(Task task) {
     task.getName();
-    log.info("{},->{}", task.getName(), task.getId());
     if (task.getParent() != null) {
       task.getParent().getName();
     }
@@ -51,5 +51,16 @@ public class ViewTasksDS implements ListDataSource<Task> {
   @Override
   public void saveModel(List<Task> model) {
     //noop
+  }
+
+  @Override
+  public void setLoadingHint(Object dataSourceHint) {
+    if (dataSourceHint instanceof Task) {
+      this.taskToSelect = (Task) dataSourceHint;
+    }
+  }
+
+  public Task getTaskToSelect() {
+    return taskToSelect;
   }
 }
