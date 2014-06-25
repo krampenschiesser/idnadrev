@@ -57,7 +57,9 @@ public class WorkUnit extends AbstractPersistentObject<WorkUnit> implements Comp
   }
 
   public void stop() {
-    end = LocalDateTime.now();
+    if (end == null) {
+      end = LocalDateTime.now();
+    }
   }
 
   public LocalDateTime getStart() {
