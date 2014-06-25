@@ -43,6 +43,7 @@ public class App extends Application {
 
   @Override
   public void start(Stage stage) throws Exception {
+    Thread.currentThread().setUncaughtExceptionHandler(CDI.current().select(FXApplicationExceptionHandler.class).get());
     try {
       log.info("Starting application " + getClass().getName());
       Instance<MainWindow> select = CDI.current().select(MainWindow.class);
