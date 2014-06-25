@@ -54,6 +54,8 @@ allprojects {
         testCompile("org.mockito:mockito-core:$mockito") {
             exclude module: "objenesis"
         }
+        testCompile "org.hamcrest:hamcrest-all:$hamcrest"
+
         testRuntime "ch.qos.logback:logback-core:$logback"
         testRuntime "ch.qos.logback:logback-classic:$logback"
     }
