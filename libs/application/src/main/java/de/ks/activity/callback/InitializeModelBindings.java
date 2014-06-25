@@ -65,7 +65,7 @@ public class InitializeModelBindings extends LoaderCallback {
       } else {
         log.debug("Did not find {} in {}", field.getName(), node);
         Set<Node> allPossibleNodes = getAllIdNodes(node);
-        allPossibleNodes.forEach((n) -> log.debug("\t\tGot available node {} with id {}", n.getClass().getSimpleName(), n.getId()));
+        allPossibleNodes.forEach((n) -> log.trace("\t\tGot available node {} with id {}", n.getClass().getSimpleName(), n.getId()));
       }
     }
   }
