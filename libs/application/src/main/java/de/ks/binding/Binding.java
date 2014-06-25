@@ -242,10 +242,11 @@ public class Binding {
     if (converter != null) {
       LastValueConverter wrappedConverter = new LastValueConverter(converter, property);
       stringProperty.bindBidirectional(property, wrappedConverter);
-    } else {
+      bindings.add(Pair.of(property, stringProperty));
+    } else if (property instanceof StringProperty) {
       stringProperty.bindBidirectional((Property<String>) property);
+      bindings.add(Pair.of(property, stringProperty));
     }
-    bindings.add(Pair.of(property, stringProperty));
   }
 
   private StringConverter getStringConverter(Class<?> type) {
