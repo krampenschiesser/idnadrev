@@ -17,10 +17,13 @@ package de.ks.launch;
 import de.ks.idnadrev.entity.Context;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.Thought;
+import de.ks.idnadrev.entity.WorkUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -59,15 +62,18 @@ public class DummyData extends Service {
       backpack.addChild(sew);
 
       Task task = new Task("Do some stuff").setContext(hiking).setEstimatedTime(Duration.ofMinutes(12));
+      WorkUnit workUnit = new WorkUnit(task);
+      workUnit.setStart(LocalDateTime.now().minus(5, ChronoUnit.MINUTES));
+      workUnit.stop();
       tasks.add(task);
-      Task asciiDocSample = new Task("AsciiDocSample", asciiDocString);
+      Task asciiDocSample = new Task("AsciiDocSample", asciiDocString).setEstimatedTime(Duration.ofMinutes(1));
       tasks.add(asciiDocSample);
 
       tasks.forEach((t) -> t.getPhysicalEffort().setAmount(ThreadLocalRandom.current().nextInt(0, 10)));
       tasks.forEach((t) -> t.getMentalEffort().setAmount(ThreadLocalRandom.current().nextInt(0, 10)));
       tasks.forEach((t) -> t.getFunFactor().setAmount(ThreadLocalRandom.current().nextInt(-5, 5)));
 
-      persist(hiking, backpack, sketch, sew, task, asciiDocSample);
+      persist(hiking, backpack, sketch, sew, task, workUnit, asciiDocSample);
       persist(new Context("Work"), new Context("Studying"), new Context("Music"));
 
     }
