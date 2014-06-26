@@ -29,13 +29,20 @@ import java.util.regex.Pattern;
 
 @Vetoed
 public class AsciiDocParser {
-  private final Asciidoctor asciidoctor = Asciidoctor.Factory.create();
-  private final Options options;
+  protected static final String mathJax = "   <script type=\"text/x-mathjax-config\">\n" +
+          "    MathJax.Hub.Config({\n" +
+          "    asciimath2jax: {\n" +
+          "    delimiters: [['`','`'], ['$$','$$'], ['||','||']]\n" +
+          "    }\n" +
+          "    });\n" +
+          "    </script>\n<script type=\"text/javascript\"\n" +
+          "  src=\"http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=AM_HTMLorMML-full\">\n" +
+          "</script>";
   private static final Pattern footerPattern = Pattern.compile("<div id=\"footer\">\n<div id=\"footer-text\">\n" +
           ".*\n" +
           "</div>\n</div>");
-  private static final Pattern ascciiDocCssPattern = Pattern.compile("<link rel=\"stylesheet\" href=\"./asciidoctor.css\">");
-  private static final Pattern coderayCssPattern = Pattern.compile("<link rel=\"stylesheet\" href=\"./asciidoctor-coderay.css\">");
+  private final Asciidoctor asciidoctor = Asciidoctor.Factory.create();
+  private final Options options;
   private final Map<String, String> cssCache = new ConcurrentHashMap<>();
 
   public AsciiDocParser() {
@@ -48,6 +55,18 @@ public class AsciiDocParser {
     String render = asciidoctor.render(input, options);
     render = inlineCss(render);
     render = removeFooter(render);
+    render = addMathJax(render);
+    return render;
+  }
+
+  private String addMathJax(String render) {
+    int index = render.lastIndexOf("</head>");
+    if (index > 0) {
+      String first = render.substring(0, index);
+      String last = render.substring(index);
+
+      return first + mathJax + last;
+    }
     return render;
   }
 
@@ -58,6 +77,7 @@ public class AsciiDocParser {
   protected String inlineCss(String input) {
     String asciidoc = getCssString("asciidoctor.css");
     String coderay = getCssString("asciidoctor-coderay.css");
+
     input = input.replace("<link rel=\"stylesheet\" href=\"./asciidoctor.css\">", asciidoc);
     input = input.replace("<link rel=\"stylesheet\" href=\"./asciidoctor-coderay.css\">", coderay);
     return input;

@@ -76,6 +76,7 @@ public class AsciiDocParserText {
     assertThat(html, containsString("<html"));
     assertThat(html, not(containsString("<link rel=\"stylesheet\" href=\"./asciidoctor.css\">")));
     assertThat(html, not(containsString("<div id=\"footer-text\">")));
+    assertThat(html, containsString(AsciiDocParser.mathJax));
   }
 
   @Ignore
