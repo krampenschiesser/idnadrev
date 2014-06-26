@@ -281,9 +281,24 @@ public class Task extends NamedPersistentObject<Task> {
     return duration;
   }
 
+  public Duration getTotalWorkDuration() {
+    if (getWorkUnits().isEmpty()) {
+      return Duration.ofMillis(0);
+    }
+    Duration totalTime = getWorkUnits().stream().reduce(Duration.ofMillis(0), (duration, workunit) -> workunit.getDuration().plus(duration), (dur1, dur2) -> dur1.plus(dur2));
+    Duration took;
+    if (getWorkUnits().last().getEnd() == null) {
+      LocalDateTime start = getWorkUnits().last().getStart();
+      Duration lastDuration = Duration.between(start, LocalDateTime.now());
+      took = totalTime.plus(lastDuration);
+    } else {
+      took = totalTime;
+    }
+    return took;
+  }
+
   @Override
   public String toString() {
     return "Task [name=" + name + ", finishTime=" + finishTime + "]";
   }
-
 }

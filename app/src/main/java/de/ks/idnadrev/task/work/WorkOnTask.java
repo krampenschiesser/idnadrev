@@ -39,7 +39,6 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.net.URL;
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledFuture;
@@ -173,11 +172,7 @@ public class WorkOnTask implements Initializable {
         q.where(b.equal(r.get("id"), task.getId()));
       }, (t) -> t.getWorkUnits().forEach(u -> u.getStart())).get(0);
 
-      Duration totalTime = reloaded.getWorkUnits().stream().reduce(Duration.ofMillis(0), (duration, workunit) -> workunit.getDuration().plus(duration), (dur1, dur2) -> dur1.plus(dur2));
-
-      LocalDateTime start = reloaded.getWorkUnits().last().getStart();
-      Duration lastDuration = Duration.between(start, LocalDateTime.now());
-      Duration took = totalTime.plus(lastDuration);
+      Duration took = reloaded.getTotalWorkDuration();
 
       if (took.compareTo(estimatedTime) < 0) {
         double progress = 100D / Math.max(estimatedTime.toMillis(), 1) * took.toMillis() / 100D;

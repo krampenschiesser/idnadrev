@@ -129,6 +129,7 @@ public class TaskOverview implements Initializable {
       name.setText(task.getName());
       context.setText(task.getContext() != null ? task.getContext().getName() : "");
       estimatedTime.setText(parseDuration(task.isProject() ? task.getTotalEstimatedTime() : task.getEstimatedTime()));
+      spentTime.setText(parseDuration(task.getTotalWorkDuration()));
       parentProject.setText(task.getParent() != null ? task.getParent().getName() : null);
       physicalEffort.setProgress(task.getPhysicalEffort().getAmount() / 10D);
       mentalEffort.setProgress(task.getMentalEffort().getAmount() / 10D);
