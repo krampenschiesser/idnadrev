@@ -31,6 +31,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -46,14 +49,18 @@ public class WorkOnTaskTest {
   public void setUp() throws Exception {
     PersistentWork.deleteAllOf(WorkUnit.class, Task.class, Context.class, Tag.class);
     Context context = new Context("context");
-    Task project1 = new Task("project1").setProject(true);
-    project1.setContext(context);
-    PersistentWork.persist(context, project1);
+    Task task = new Task("task").setProject(true);
+    task.setContext(context);
+    WorkUnit workUnit = new WorkUnit(task);
+    workUnit.setStart(LocalDateTime.now().minus(7, ChronoUnit.MINUTES));
+    workUnit.stop();
+    task.setEstimatedTime(Duration.ofMinutes(10));
+    PersistentWork.persist(context, task, workUnit);
 
     activityController.start(ViewTasksActvity.class);
     activityController.waitForDataSource();
     FXPlatform.waitForFX();
-    activityController.start(WorkOnTaskActivity.class, t -> project1, null);
+    activityController.start(WorkOnTaskActivity.class, t -> task, null);
     activityController.waitForDataSource();
     controller = activityController.getControllerInstance(WorkOnTask.class);
   }
@@ -71,7 +78,13 @@ public class WorkOnTaskTest {
     List<Task> tasks = PersistentWork.from(Task.class, t -> t.getWorkUnits().forEach(u -> u.getDuration()));
     assertEquals(1, tasks.size());
     Task task = tasks.get(0);
-    assertEquals(1, task.getWorkUnits().size());
-    assertThat(task.getWorkUnits().first().getSpentMillis(), Matchers.greaterThan(100L));
+    assertEquals(2, task.getWorkUnits().size());
+    assertThat(task.getWorkUnits().last().getSpentMillis(), Matchers.greaterThan(100L));
+  }
+
+  @Test
+  public void testExistingWorkUnits() throws Exception {
+    FXPlatform.waitForFX();
+    assertThat(controller.estimatedTimeBar.getProgress(), Matchers.greaterThan(0.69));
   }
 }

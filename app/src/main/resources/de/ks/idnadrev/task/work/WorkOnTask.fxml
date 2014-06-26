@@ -18,8 +18,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.web.WebView?>
-<GridPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="de.ks.idnadrev.task.work.WorkOnTask">
+<GridPane hgap="5.0" prefHeight="600.0" prefWidth="800.0" vgap="5.0" xmlns="http://javafx.com/javafx/8"
+          xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.idnadrev.task.work.WorkOnTask">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
         <ColumnConstraints hgrow="ALWAYS" minWidth="10.0"/>
@@ -34,11 +34,24 @@
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
     </rowConstraints>
     <children>
-        <WebView fx:id="description" blendMode="DARKEN" focusTraversable="false" prefHeight="-1.0" prefWidth="-1.0"
-                 GridPane.columnSpan="2147483647" GridPane.rowIndex="3"/>
-        <Label text="%task.name" GridPane.columnSpan="2147483647"/>
-        <Label text="%task.description" GridPane.columnSpan="2147483647" GridPane.rowIndex="2"/>
-        <Label fx:id="name" text="Label" GridPane.columnSpan="2147483647" GridPane.rowIndex="1"/>
+        <TabPane fx:id="tabView" GridPane.columnSpan="2147483647" GridPane.rowIndex="3">
+            <tabs>
+                <Tab fx:id="editTab" closable="false" text="%edit">
+                    <content>
+                        <TextArea fx:id="description" prefHeight="200.0" prefWidth="200.0"/>
+                    </content>
+                </Tab>
+                <Tab fx:id="previewTab" closable="false" text="%preview">
+                    <content>
+                        <WebView fx:id="descriptionView" focusTraversable="false" prefHeight="-1.0" prefWidth="-1.0"
+                                 GridPane.columnSpan="2147483647" GridPane.rowIndex="3"/>
+                    </content>
+                </Tab>
+            </tabs>
+        </TabPane>
+        <Label text="%task.name:" GridPane.columnSpan="2147483647"/>
+        <Label text="%task.description:" GridPane.columnSpan="2147483647" GridPane.rowIndex="2"/>
+        <Label fx:id="name" styleClass="title" text="Label" GridPane.columnSpan="2147483647" GridPane.rowIndex="1"/>
         <Button defaultButton="true" mnemonicParsing="false" onAction="#stopWork" text="%task.stop"
                 GridPane.rowIndex="4"/>
         <Button mnemonicParsing="false" onAction="#finishTask" text="%task.finish" GridPane.columnIndex="3"
@@ -47,9 +60,9 @@
                 GridPane.rowIndex="4"/>
         <ProgressBar fx:id="estimatedTimeBar" maxWidth="1.7976931348623157E308" progress="0.0" GridPane.columnIndex="2"
                      GridPane.columnSpan="2147483647"/>
-        <Label text="%task.estimatedTime" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
-        <Label fx:id="estimatedTime" text="0:15" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
-        <Label text="%task.overTime" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
-        <Label fx:id="overTime" text="0:00" GridPane.columnIndex="3" GridPane.rowIndex="2"/>
+        <Label text="%task.estimatedTime:" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+        <Label fx:id="estimatedTime" styleClass="title" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+        <Label text="%task.overTime:" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+        <Label fx:id="overTime" styleClass="title" GridPane.columnIndex="3" GridPane.rowIndex="2"/>
     </children>
 </GridPane>
