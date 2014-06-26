@@ -14,17 +14,19 @@
  */
 package de.ks.executor;
 
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class SuspendablePooledExecutorServiceTest {
   private static final Logger log = LoggerFactory.getLogger(SuspendablePooledExecutorServiceTest.class);
@@ -40,6 +42,7 @@ public class SuspendablePooledExecutorServiceTest {
 
   @Test
   public void testSuspendResume() throws Exception {
+    log.info("testSuspendResume");
     executor.submit(createSleepingRunnable(300));
     executor.submit(createSleepingRunnable(300));
     executor.submit(createSleepingRunnable(300));
@@ -63,19 +66,23 @@ public class SuspendablePooledExecutorServiceTest {
 
   @Test
   public void testCompletionChain() throws Exception {
+    executor.invokeAll(Arrays.<Callable<String>>asList(() -> "", () -> "", () -> "", () -> ""));
+
+    log.info("testCompletionChain");
     Runnable first = createSleepingRunnable(300);
     Runnable second = createSleepingRunnable(100);
     Runnable third = createSleepingRunnable(100);
     CompletableFuture.runAsync(first, executor)//
             .thenRun(second)//
             .thenRunAsync(third, executor);
+    Thread.sleep(10);
     assertEquals(1, executor.getActiveCount());
 
 
     long start = System.currentTimeMillis();
     executor.suspend();
     long stop = System.currentTimeMillis();
-    assertTrue(stop - start >= 400);
+    assertThat(stop - start, Matchers.greaterThan(400L));
 
     assertEquals(1, executor.getSuspendedTasks().size());
     assertEquals(2, adder.sum());
@@ -90,6 +97,7 @@ public class SuspendablePooledExecutorServiceTest {
 
   @Test
   public void testShutdown() throws Exception {
+    log.info("testShutdown");
     Runnable first = createSleepingRunnable(300);
     Runnable second = createSleepingRunnable(100);
     Runnable third = createSleepingRunnable(100);

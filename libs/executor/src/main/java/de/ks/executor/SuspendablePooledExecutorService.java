@@ -20,12 +20,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class SuspendablePooledExecutorService extends ThreadPoolExecutor {
+public class SuspendablePooledExecutorService extends ScheduledThreadPoolExecutor {
   private static final Logger log = LoggerFactory.getLogger(SuspendablePooledExecutorService.class);
 
   public static final int COMPLETABLE_FUTURES_OFFSET = 10;//some currently running tasks may specify a thenRun
@@ -39,7 +38,9 @@ public class SuspendablePooledExecutorService extends ThreadPoolExecutor {
   }
 
   public SuspendablePooledExecutorService(String name, int corePoolSize, int maximumPoolSize) {
-    super(corePoolSize, maximumPoolSize, 1, TimeUnit.MINUTES, new LinkedBlockingDeque<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat(name + "-%d").build());
+    super(corePoolSize, new ThreadFactoryBuilder().setDaemon(true).setNameFormat(name + "-%d").build());
+    setMaximumPoolSize(maximumPoolSize);
+    setKeepAliveTime(1, TimeUnit.MINUTES);
     this.name = name;
   }
 
@@ -96,8 +97,9 @@ public class SuspendablePooledExecutorService extends ThreadPoolExecutor {
 
   public void resume() {
     try (LockSupport support = new LockSupport(lock)) {
-      getQueue().addAll(suspendedTasks);
       suspended = false;
+      suspendedTasks.forEach(r -> execute(r));
+//      getQueue().addAll(suspendedTasks);
     }
   }
 
