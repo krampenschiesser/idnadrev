@@ -56,6 +56,10 @@ public class WorkUnit extends AbstractPersistentObject<WorkUnit> implements Comp
     start = LocalDateTime.now();
   }
 
+  public void setStart(LocalDateTime start) {
+    this.start = start;
+  }
+
   public void stop() {
     if (end == null) {
       end = LocalDateTime.now();
@@ -75,7 +79,11 @@ public class WorkUnit extends AbstractPersistentObject<WorkUnit> implements Comp
   }
 
   public Duration getDuration() {
-    return Duration.between(getStart(), getEnd());
+    if (getEnd() == null) {
+      return Duration.ofMillis(0);
+    } else {
+      return Duration.between(getStart(), getEnd());
+    }
   }
 
   public long getSpentMillis() {
