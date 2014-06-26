@@ -163,5 +163,9 @@ public class DummyData extends Service {
           "  }\n" +
           "}\n" +
           "\n" +
-          "----";
+          "----" +
+          "\n" +
+          "+++\n" +
+          "$$x = (-b +- sqrt(b^2-4ac))/(2a)$$\n" +
+          "+++";
 }
