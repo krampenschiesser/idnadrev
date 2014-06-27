@@ -18,10 +18,12 @@ package de.ks.idnadrev.task.work;
 import de.ks.FXPlatform;
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityController;
+import de.ks.activity.context.ActivityStore;
 import de.ks.idnadrev.entity.Context;
 import de.ks.idnadrev.entity.Tag;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.WorkUnit;
+import de.ks.idnadrev.task.finish.FinishTaskDS;
 import de.ks.idnadrev.task.view.ViewTasksActvity;
 import de.ks.persistence.PersistentWork;
 import org.hamcrest.Matchers;
@@ -36,13 +38,14 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
 public class WorkOnTaskTest {
   @Inject
   ActivityController activityController;
+  @Inject
+  ActivityStore store;
   private WorkOnTask controller;
 
   @Before
@@ -86,5 +89,16 @@ public class WorkOnTaskTest {
   public void testExistingWorkUnits() throws Exception {
     FXPlatform.waitForFX();
     assertThat(controller.estimatedTimeBar.getProgress(), Matchers.greaterThan(0.69));
+  }
+
+  @Test
+  public void testStartFinishActivity() throws Exception {
+    controller.finishTask();
+    activityController.getCurrentExecutorService().waitForAllTasksDone();
+    activityController.waitForDataSource();
+    @SuppressWarnings("unchecked") FinishTaskDS datasource = store.getDatasource();
+    Task task = datasource.loadModel();
+    assertNotNull(task);
+    assertEquals(2, task.getWorkUnits().size());
   }
 }

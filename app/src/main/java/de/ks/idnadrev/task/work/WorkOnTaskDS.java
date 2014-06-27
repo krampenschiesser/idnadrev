@@ -16,6 +16,7 @@ package de.ks.idnadrev.task.work;
 
 import de.ks.datasource.DataSource;
 import de.ks.idnadrev.entity.Task;
+import de.ks.persistence.PersistentWork;
 
 public class WorkOnTaskDS implements DataSource<Task> {
   private Task task;
@@ -27,7 +28,11 @@ public class WorkOnTaskDS implements DataSource<Task> {
 
   @Override
   public void saveModel(Task model) {
-
+    PersistentWork.run(em -> {
+      Task task = model;
+      task = PersistentWork.byId(Task.class, task.getId());
+      task.getWorkUnits().last().stop();
+    });
   }
 
   @Override

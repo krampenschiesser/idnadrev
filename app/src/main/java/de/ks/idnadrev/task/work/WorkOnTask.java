@@ -26,6 +26,7 @@ import de.ks.executor.SuspendablePooledExecutorService;
 import de.ks.i18n.Localized;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.WorkUnit;
+import de.ks.idnadrev.task.finish.FinishTaskActivity;
 import de.ks.persistence.PersistentWork;
 import de.ks.text.AsciiDocParser;
 import javafx.application.Platform;
@@ -96,17 +97,14 @@ public class WorkOnTask implements Initializable {
 
   @FXML
   void stopWork() {
-    PersistentWork.run(em -> {
-      Task task = store.getModel();
-      task = PersistentWork.byId(Task.class, task.getId());
-      task.getWorkUnits().last().stop();
-    });
+    controller.save();
     controller.resumePreviousActivity();
   }
 
   @FXML
   void finishTask() {
-
+    controller.save();
+    controller.start(FinishTaskActivity.class, PersistentWork::reload, null);
   }
 
   @Subscribe
