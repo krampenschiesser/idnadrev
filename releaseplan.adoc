@@ -10,6 +10,7 @@ Main goal: Get a simple Version running
 
 Important features missing:
 
+* check navigation and shortcuts, default buttons etc.
 * Implement asccidoc editor preview standard control
 * Complete but simple workflow: from creating thoughts, conversion to task/project, view tasks, work on task, finish task
 * Refactoring of files to remain on local file system to include them in asciidoc, view them etc.
@@ -25,3 +26,4 @@ Automatic transition from one version to the other
 * Category support and view
 * Search support for tags
 * Task scheduling and trainings
+* template system for asciidoc editor
