@@ -10,7 +10,8 @@ Main goal: Get a simple Version running
 
 Important features missing:
 
-. Complete but simple workflow: from creating thoughts, conversion to task/project, view tasks, work on task, finish task
+* Implement asccidoc editor preview standard control
+* Complete but simple workflow: from creating thoughts, conversion to task/project, view tasks, work on task, finish task
 * Refactoring of files to remain on local file system to include them in asciidoc, view them etc.
 Don't write them to the DB
 * Implement software update capability with version entity -> update database with scripts, change the content etc.
@@ -18,7 +19,7 @@ Automatic transition from one version to the other
 
 == Iteration 0.4 ==
 
-. Full workflow implemented
+* Full workflow implemented
 * Support plantuml
 * Full file support on tasks, thoughts and information with tagging
 * Category support and view
