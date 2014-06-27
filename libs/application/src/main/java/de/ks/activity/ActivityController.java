@@ -23,6 +23,7 @@ import de.ks.activity.link.ViewLink;
 import de.ks.application.Navigator;
 import de.ks.datasource.DataSource;
 import de.ks.eventsystem.bus.EventBus;
+import de.ks.executor.FXExecutorService;
 import de.ks.executor.JavaFXExecutorService;
 import de.ks.executor.SuspendablePooledExecutorService;
 import javafx.scene.Node;
@@ -53,6 +54,7 @@ public class ActivityController {
   @Inject
   protected Instance<Navigator> navigator;
   @Inject
+  @FXExecutorService
   protected JavaFXExecutorService javafxExecutor;
   @Inject
   protected ActivityInitialization initialization;

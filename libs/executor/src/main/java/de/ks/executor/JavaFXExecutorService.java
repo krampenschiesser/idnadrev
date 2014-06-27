@@ -27,6 +27,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 @Singleton
+@FXExecutorService
 public class JavaFXExecutorService extends AbstractExecutorService {
   private static final Logger log = LoggerFactory.getLogger(JavaFXExecutorService.class);
 
