@@ -95,6 +95,9 @@ public class Task extends NamedPersistentObject<Task> {
 
   protected boolean project;
 
+  @Embedded
+  protected Outcome outcome = new Outcome();
+
   @ManyToMany(cascade = CascadeType.PERSIST)
   @JoinTable(name = TASK_TAG_JOINTABLE)
   protected Set<Tag> tags = new HashSet<>();
@@ -264,6 +267,10 @@ public class Task extends NamedPersistentObject<Task> {
 
   public void addTag(String tag) {
     tags.add(new Tag(tag));
+  }
+
+  public Outcome getOutcome() {
+    return outcome;
   }
 
   public Duration getTotalEstimatedTime() {

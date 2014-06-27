@@ -51,6 +51,9 @@ public class TaskTest {
     Task task = new Task("bla");
     persistTask(task);
     assertNotNull(task.getCreationTime());
+    Task reload = PersistentWork.reload(task);
+    assertNotSame(task, reload);
+    assertNotNull(reload.getOutcome());
   }
 
   @Test
