@@ -15,6 +15,7 @@
 
 package de.ks.persistence;
 
+import de.ks.persistence.entity.AbstractPersistentObject;
 import de.ks.persistence.entity.NamedPersistentObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +66,27 @@ public class PersistentWork {
 
   public static <T> T read(Function<EntityManager, T> function) {
     return new PersistentWork(function).run();
+  }
+
+  public static <T> T reload(T instance) {
+    return reload(instance, null);
+  }
+
+  public static <T> T reload(T instance, Consumer<T> resultWalker) {
+
+    return read(em -> {
+      if (instance instanceof AbstractPersistentObject) {
+        AbstractPersistentObject apo = (AbstractPersistentObject) instance;
+        @SuppressWarnings("unchecked") Class<T> clazz = (Class<T>) instance.getClass();
+        T reloaded = em.<T>find(clazz, apo.getId());
+        if (resultWalker != null) {
+          resultWalker.accept(reloaded);
+        }
+        return (T) reloaded;
+      } else {
+        return instance;
+      }
+    });
   }
 
   @SuppressWarnings("unchecked")
