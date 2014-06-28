@@ -69,7 +69,18 @@ public class AsciiDocParserText {
   }
 
   @Test
-  public void testTextParsing() throws Exception {
+  public void testTextParsingToHTML() throws Exception {
+    String html = asciiDocParser.parse(asciiDocSimple);
+    assertNotNull(html);
+    log.info("\n" + html + "\n");
+    assertThat(html, containsString("<html"));
+    assertThat(html, not(containsString("<link rel=\"stylesheet\" href=\"./asciidoctor.css\">")));
+    assertThat(html, not(containsString("<div id=\"footer-text\">")));
+    assertThat(html, containsString(AsciiDocParser.mathJax));
+  }
+
+  @Test
+  public void testTextParsingToDocbook() throws Exception {
     String html = asciiDocParser.parse(asciiDocSimple);
     assertNotNull(html);
     log.info("\n" + html + "\n");

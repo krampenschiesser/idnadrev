@@ -16,7 +16,10 @@ package de.ks.text;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
-import org.asciidoctor.*;
+import org.asciidoctor.Asciidoctor;
+import org.asciidoctor.Attributes;
+import org.asciidoctor.AttributesBuilder;
+import org.asciidoctor.OptionsBuilder;
 
 import javax.enterprise.inject.Vetoed;
 import java.io.File;
@@ -42,20 +45,38 @@ public class AsciiDocParser {
           ".*\n" +
           "</div>\n</div>");
   private final Asciidoctor asciidoctor = Asciidoctor.Factory.create();
-  private final Options options;
+  private final OptionsBuilder options;
   private final Map<String, String> cssCache = new ConcurrentHashMap<>();
 
   public AsciiDocParser() {
     Attributes attributes = AttributesBuilder.attributes()//
             .experimental(true).sourceHighlighter("coderay").get();
-    options = OptionsBuilder.options().headerFooter(true).attributes(attributes).get();
+    options = OptionsBuilder.options().headerFooter(true).backend("docbook5").attributes(attributes);
+  }
+
+  public void renderToFile(File file, AsciiDocBackend backend) {
+
   }
 
   public String parse(String input) {
+    return parse(input, AsciiDocBackend.HTML5);
+  }
+
+  public String parse(String input, AsciiDocBackend backend) {
+    switch (backend) {
+      case DOCBOOK5:
+        options.backend("docbook5");
+        break;
+      case HTML5:
+        options.backend("html5");
+        break;
+    }
     String render = asciidoctor.render(input, options);
-    render = inlineCss(render);
-    render = removeFooter(render);
-    render = addMathJax(render);
+    if (backend == AsciiDocBackend.HTML5) {
+      render = inlineCss(render);
+      render = removeFooter(render);
+      render = addMathJax(render);
+    }
     return render;
   }
 
