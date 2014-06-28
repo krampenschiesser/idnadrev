@@ -1,9 +1,9 @@
-= Idnadrev documentation =
+= Idnadrev documentation
 :Author:    Christian Löhnert
 :Email:     krampenschiesser@gmail.com
 
 
-== About ==
+== About
 
 Idnadrev is a task management and knowledge application
 that helps to organize your ideas, projects and any kind of information.
@@ -11,7 +11,7 @@ It is also a test project for an activity based JavaFX dialog framework.
 I am currently working on the API and slowly moving forward to get the first version running.
 So this is active development and nothing to use, yet.
 
-== Building ==
+== Building
 
 Building idnadrev is based on http://www.gradle.org/[gradle].
 If you don't have gradle installed, no worries.
@@ -22,12 +22,12 @@ $ ./gradlew help
 $ ./gradlew build
 ----
 
-== Parameters useful for testing ==
+== Parameters useful for testing
 
 In order to not see the javaFX dialogs while running your test from the IDE you should use:
 [source]
 -Dglass.platform=Monocle -Dmonocle.platform=Headless -Dprism.order=sw
 
-== License ==
+== License
 
 Idnadrev is licensed under the http://apache.org/licenses/LICENSE-2.0[Apache 2.0 license].
