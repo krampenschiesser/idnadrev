@@ -40,7 +40,7 @@ public class SuspendablePooledExecutorService extends ScheduledThreadPoolExecuto
   }
 
   public SuspendablePooledExecutorService(String name, int corePoolSize, int maximumPoolSize) {
-    super(corePoolSize, new ThreadFactoryBuilder().setDaemon(true).setNameFormat(name + "-%d").build());
+    super(corePoolSize, new ThreadFactoryBuilder().setDaemon(true).setNameFormat(name + "-%d").setUncaughtExceptionHandler(new LoggingUncaughtExceptionHandler()).build());
     setMaximumPoolSize(maximumPoolSize);
     setKeepAliveTime(1, TimeUnit.MINUTES);
     this.name = name;
