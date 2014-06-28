@@ -34,7 +34,9 @@ public class SuspendablePooledExecutorService extends ScheduledThreadPoolExecuto
   private final ArrayList<Runnable> suspendedTasks = new ArrayList<>();
 
   public SuspendablePooledExecutorService(String name) {
-    this(name, 0, Runtime.getRuntime().availableProcessors() * 4);
+    //using 1 core thread sometime stops the executor to start new threads handling an async future
+    //if we poll for that future in the only runnign thread->deadlock... big time
+    this(name, Math.max(4, Runtime.getRuntime().availableProcessors()), Runtime.getRuntime().availableProcessors() * 4);
   }
 
   public SuspendablePooledExecutorService(String name, int corePoolSize, int maximumPoolSize) {
