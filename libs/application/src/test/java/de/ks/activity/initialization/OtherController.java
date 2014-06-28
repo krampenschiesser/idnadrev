@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+@LoadInFXThread
 public class OtherController implements Initializable {
   private static final Logger log = LoggerFactory.getLogger(OtherController.class);
 
