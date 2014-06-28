@@ -84,7 +84,9 @@ public class Binding {
       if (converter != null && value != null) {
         value = converter.getKey().apply(value);
       }
-      property.setValue(value);
+      if (!property.isBound()) {
+        property.setValue(value);
+      }
     });
   }
 
