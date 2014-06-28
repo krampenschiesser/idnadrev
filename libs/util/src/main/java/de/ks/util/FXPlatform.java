@@ -20,27 +20,33 @@ import java.util.concurrent.CountDownLatch;
 
 public class FXPlatform {
   public static void invokeLater(Runnable runnable) {
-    CountDownLatch latch = new CountDownLatch(1);
-    Platform.runLater(() -> {
+    if (Platform.isFxApplicationThread()) {
+      runnable.run();
+    } else {
+      CountDownLatch latch = new CountDownLatch(1);
+      Platform.runLater(() -> {
+        try {
+          runnable.run();
+        } finally {
+          latch.countDown();
+        }
+      });
       try {
-        runnable.run();
-      } finally {
-        latch.countDown();
+        latch.await();
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
       }
-    });
-    try {
-      latch.await();
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
     }
   }
 
   public static void waitForFX() {
-    invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        //noop
-      }
-    });
+    if (!Platform.isFxApplicationThread()) {
+      invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          //noop
+        }
+      });
+    }
   }
 }
