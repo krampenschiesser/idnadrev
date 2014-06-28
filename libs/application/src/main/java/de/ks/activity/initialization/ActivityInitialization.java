@@ -52,6 +52,7 @@ public class ActivityInitialization {
   ActivityController controller;
 
   public void loadActivity(ActivityCfg activityCfg) {
+    currentlyLoadedControllers.get().clear();
     loadControllers(activityCfg);
     setupDefaultCallbacks(activityCfg);
     initalizeControllers();
@@ -71,10 +72,27 @@ public class ActivityInitialization {
       loadController(next.getSourceController());
       loadController(next.getTargetController());
     }
+    preloads.values().forEach(l -> l.join());
   }
 
   private boolean shouldLoadInFXThread(Class<?> clazz) {
     return clazz.isAnnotationPresent(LoadInFXThread.class);
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T> CompletableFuture<DefaultLoader<Node, T>> loadAdditionalController(Class<T> controllerClass) {
+    DefaultLoader<Node, Object> loader = new DefaultLoader<>(controllerClass);
+
+    if (shouldLoadInFXThread(controllerClass)) {
+      loader = controller.getJavaFXExecutor().invokeInJavaFXThread(loader::load);
+      log.debug("Loaded additional controller {} in fx thread", controllerClass);
+    } else {
+      loader.load();
+      log.info("Loaded additional controller {} in current thread", controllerClass);
+    }
+    currentlyLoadedControllers.get().add(loader.getController());
+    CompletableFuture completed = CompletableFuture.completedFuture(loader);
+    return completed;
   }
 
   private void loadController(Class<?> controllerClass) {
@@ -90,7 +108,7 @@ public class ActivityInitialization {
       CompletableFuture<DefaultLoader<Node, Object>> loaderFuture = CompletableFuture.supplyAsync(getDefaultLoaderSupplier(controllerClass), executorService).exceptionally((t) -> {
         if (t.getCause() instanceof RuntimeException && t.getCause().getCause() instanceof LoadException) {
           EventBus eventBus = CDI.current().select(EventBus.class).get();
-          currentlyLoadedControllers.get().forEach(c -> eventBus.unregister(c));
+          currentlyLoadedControllers.get().forEach(eventBus::unregister);
           currentlyLoadedControllers.get().clear();
           log.info("Last load of {} failed, will try again in JavaFX Thread", new DefaultLoader<>(controllerClass).getFxmlFile());
           return javaFXExecutor.invokeInJavaFXThread(() -> getDefaultLoaderSupplier(controllerClass).get());
@@ -105,7 +123,6 @@ public class ActivityInitialization {
   private Supplier<DefaultLoader<Node, Object>> getDefaultLoaderSupplier(Class<?> controllerClass) {
     return () -> {
       DefaultLoader<Node, Object> loader = new DefaultLoader<>(controllerClass);
-
       loader.load();
       Node view = loader.getView();
 
