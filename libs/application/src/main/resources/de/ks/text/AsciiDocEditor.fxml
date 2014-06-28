@@ -19,17 +19,17 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.web.WebView?>
-<StackPane id="StackPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-           prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="de.ks.text.AsciiDocEditor">
+<?import org.fxmisc.richtext.StyleClassedTextArea?>
+<StackPane id="StackPane" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8"
+           xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.text.AsciiDocEditor">
     <children>
-        <GridPane hgap="5.0" vgap="5.0">
+        <GridPane fx:id="mainPane" hgap="5.0" minHeight="300.0" minWidth="600.0" vgap="5.0">
             <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
             </columnConstraints>
             <rowConstraints>
                 <RowConstraints minHeight="10.0" vgrow="ALWAYS"/>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
             </rowConstraints>
             <children>
                 <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
@@ -45,8 +45,6 @@
                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS"/>
                                     </rowConstraints>
                                     <children>
-                                        <TextArea fx:id="editor" prefHeight="200.0" prefWidth="200.0"
-                                                  GridPane.rowIndex="1"/>
                                         <HBox spacing="5.0" GridPane.halignment="CENTER">
                                             <children>
                                                 <Button mnemonicParsing="false" onAction="#insertMath"
@@ -58,6 +56,8 @@
                                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
                                             </padding>
                                         </HBox>
+                                        <StyleClassedTextArea fx:id="editor" popupAlignment="CARET_BOTTOM"
+                                                              GridPane.rowIndex="1"/>
                                     </children>
                                 </GridPane>
                             </content>
@@ -73,7 +73,7 @@
         </GridPane>
         <HBox maxHeight="-Infinity" maxWidth="-Infinity" spacing="5.0" StackPane.alignment="TOP_RIGHT">
             <children>
-                <Button fx:id="save" mnemonicParsing="false" onAction="#saveToFile" text="%saveToFile"/>
+                <Button fx:id="saveToFileButton" mnemonicParsing="false" onAction="#saveToFile" text="%saveToFile"/>
                 <Button fx:id="help" mnemonicParsing="false" onAction="#showHelp" text="%help"
                         StackPane.alignment="TOP_RIGHT">
                     <StackPane.margin>
