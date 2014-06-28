@@ -21,6 +21,7 @@ dependencies {
     compile project(":libs:eventsystem")
 
     compile "org.controlsfx:controlsfx:$controlsFX"
+    compile "org.fxmisc.richtext:richtextfx:$richtextfx"
     compile("org.asciidoctor:asciidoctor-java-integration:$asciidocJavaIntegration") {
         transitive = false;
     }
