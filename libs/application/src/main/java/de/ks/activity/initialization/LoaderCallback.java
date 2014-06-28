@@ -80,7 +80,7 @@ public abstract class LoaderCallback {
   protected Node getChildNodeWithId(Node node, String name) {
     List<Node> collect = getAllIdNodes(node).stream().filter((n) -> n.getId() != null && n.getId().equals(name)).collect(Collectors.toList());
     if (collect.size() > 1) {
-      throw new IllegalStateException("Foudn " + collect.size() + " nodes with id='" + name + "'");
+      throw new IllegalStateException("Found " + collect.size() + " nodes with id='" + name + "'");
     } else if (collect.size() == 1) {
       return collect.get(0);
     } else {
