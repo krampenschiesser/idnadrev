@@ -26,8 +26,13 @@
         <Label text="%thought.description" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
         <TextField fx:id="name" onAction="#saveThought" prefWidth="200.0" GridPane.columnIndex="1"
                    GridPane.rowIndex="1"/>
-        <TextArea fx:id="description" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1"
-                  GridPane.rowIndex="2"/>
+        <StackPane fx:id="descriptionContainer" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="1"
+                   GridPane.rowIndex="2"/>
+        <StackPane GridPane.columnIndex="1" GridPane.rowIndex="3">
+            <children>
+                <fx:include fx:id="fileView" source="file/ThoughtFileView.fxml"/>
+            </children>
+        </StackPane>
         <Button fx:id="save" defaultButton="true" mnemonicParsing="false" text="%default.save" GridPane.columnIndex="1"
                 GridPane.rowIndex="4">
             <GridPane.margin>
@@ -37,11 +42,6 @@
         <Label styleClass="title" text="%main.thought.addthought" GridPane.columnSpan="2147483647"
                GridPane.halignment="LEFT"/>
         <Label text="%thought.files" GridPane.rowIndex="3"/>
-        <StackPane GridPane.columnIndex="1" GridPane.rowIndex="3">
-            <children>
-                <fx:include fx:id="fileView" source="file/ThoughtFileView.fxml"/>
-            </children>
-        </StackPane>
 
 
     </children>

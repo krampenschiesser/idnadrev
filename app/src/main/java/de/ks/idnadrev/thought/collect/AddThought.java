@@ -16,23 +16,30 @@
 package de.ks.idnadrev.thought.collect;
 
 import com.google.common.eventbus.Subscribe;
+import de.ks.activity.ActivityController;
 import de.ks.activity.ActivityLoadFinishedEvent;
 import de.ks.activity.ModelBound;
+import de.ks.activity.context.ActivityStore;
 import de.ks.eventsystem.bus.HandlingThread;
 import de.ks.eventsystem.bus.Threading;
 import de.ks.idnadrev.entity.Thought;
 import de.ks.idnadrev.thought.collect.file.FileThoughtViewController;
+import de.ks.text.AsciiDocEditor;
 import de.ks.validation.ValidationRegistry;
+import javafx.beans.property.StringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.input.*;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +58,8 @@ public class AddThought implements Initializable {
   @FXML
   private GridPane root;
   @FXML
-  protected TextArea description;
+  protected StackPane descriptionContainer;
+  protected AsciiDocEditor description;
   @FXML
   protected TextField name;
   @FXML
@@ -62,14 +70,19 @@ public class AddThought implements Initializable {
   protected GridPane fileView;
   @Inject
   ValidationRegistry validationRegistry;
+  @Inject
+  ActivityController controller;
+  @Inject
+  ActivityStore store;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
+    AsciiDocEditor.load(descriptionContainer.getChildren()::add, this::setDescription);
     bindValidation();
     fileViewController.getFiles().addListener((ListChangeListener<File>) change -> {
       ObservableList<? extends File> list = change.getList();
       if (list.size() == 1) {
-        if (name.textProperty().isEmpty().get() && description.textProperty().isEmpty().get()) {
+        if (name.textProperty().isEmpty().get() && description.getText().isEmpty()) {
           File file = list.get(0);
           name.setText(file.getName());
           description.setText(file.getAbsolutePath());
@@ -77,10 +90,18 @@ public class AddThought implements Initializable {
         }
       }
     });
+
+    description.hideActionBar();
+    StringProperty descriptionBinding = store.getBinding().getStringProperty(Thought.class, t -> t.getDescription());
+    descriptionBinding.bind(description.textProperty());
   }
 
   private void bindValidation() {
     save.disableProperty().bind(validationRegistry.getValidationSupport().invalidProperty());
+  }
+
+  private void setDescription(AsciiDocEditor description) {
+    this.description = description;
   }
 
   @FXML
@@ -91,7 +112,7 @@ public class AddThought implements Initializable {
   }
 
   @FXML
-  void onMouseEntered(MouseEvent event) {
+  void onMouseEntered() {
     Clipboard clipboard = Clipboard.getSystemClipboard();
     log.trace("Mouse entered {}", clipboard.hasString() ? "Clipboard has string" : "Clipboard has no string");
     processClipboard(clipboard);

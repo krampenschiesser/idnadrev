@@ -15,7 +15,7 @@
 
 package de.ks.idnadrev.thought.collect;
 
-import de.ks.activity.context.ActivityStore;
+import de.ks.activity.ActivityController;
 import javafx.concurrent.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,16 +29,12 @@ public class SaveThought extends Task<Void> {
   private static final Logger log = LoggerFactory.getLogger(SaveThought.class);
 
   @Inject
-  ActivityStore context;
+  ActivityController controller;
 
   @Override
   protected Void call() throws Exception {
-    log.info("Try to save thought, yeah baby!");
-
-    Object model = context.getModel();
-    context.getDatasource().saveModel(model);
-
-    log.info("Saved thought, yeah baby!");
+    controller.save();
+    controller.waitForDataSource();
     return null;
   }
 }
