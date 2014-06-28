@@ -52,7 +52,7 @@ public class DefaultLoader<V extends Node, C> {
     loader = new FXMLLoader(fxmlFile, Localized.getBundle(), new JavaFXBuilderFactory(), new ControllerFactory());
   }
 
-  public FXMLLoader load() {
+  public DefaultLoader<V, C> load() {
     try {
       if (loaded.compareAndSet(false, true)) {
         log.debug("Loading fxml file {}", fxmlFile);
@@ -63,7 +63,7 @@ public class DefaultLoader<V extends Node, C> {
       log.error("Could not load fxml file {}", fxmlFile, e);
       throw new RuntimeException(e);
     }
-    return loader;
+    return this;
   }
 
   public V getView() {
