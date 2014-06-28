@@ -81,7 +81,7 @@ public class ActivityController {
         stop(current);
         resume(previous, hint);
       } else {
-        log.info("Relaoding current activity {}", current.getClass().getName());
+        log.info("Reloading current activity {}", current.getClass().getName());
         reload();
       }
     } finally {
@@ -251,11 +251,13 @@ public class ActivityController {
 
     Object model = store.getModel();
     CompletableFuture<Object> save = CompletableFuture.supplyAsync(() -> {
+      log.debug("Start saving model");
       store.getBinding().applyControllerContent(model);
       dataSource.saveModel(model);
+      log.debug("Initially saved model '{}'", model);
       return model;
     }, executorService);
-    finishingFutures = save.thenApplyAsync((value) -> {
+    finishingFutures = save.thenApply((value) -> {
       log.debug("Saved model '{}'", value);
       return value;
     });
