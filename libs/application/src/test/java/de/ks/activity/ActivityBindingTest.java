@@ -15,10 +15,10 @@
 
 package de.ks.activity;
 
-import de.ks.FXPlatform;
 import de.ks.activity.context.ActivityStore;
 import de.ks.application.PresentationArea;
 import de.ks.executor.ExecutorService;
+import de.ks.util.FXPlatform;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.TablePosition;

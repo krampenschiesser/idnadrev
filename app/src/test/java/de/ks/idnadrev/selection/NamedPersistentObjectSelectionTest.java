@@ -14,7 +14,6 @@
  */
 package de.ks.idnadrev.selection;
 
-import de.ks.FXPlatform;
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityController;
 import de.ks.activity.context.ActivityContext;
@@ -23,6 +22,7 @@ import de.ks.executor.SuspendablePooledExecutorService;
 import de.ks.idnadrev.entity.Thought;
 import de.ks.persistence.PersistentWork;
 import de.ks.reflection.PropertyPath;
+import de.ks.util.FXPlatform;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import org.hamcrest.CoreMatchers;

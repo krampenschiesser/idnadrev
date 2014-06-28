@@ -15,7 +15,6 @@
 
 package de.ks.idnadrev.task.work;
 
-import de.ks.FXPlatform;
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityController;
 import de.ks.activity.context.ActivityStore;
@@ -26,6 +25,7 @@ import de.ks.idnadrev.entity.WorkUnit;
 import de.ks.idnadrev.task.finish.FinishTaskDS;
 import de.ks.idnadrev.task.view.ViewTasksActvity;
 import de.ks.persistence.PersistentWork;
+import de.ks.util.FXPlatform;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;

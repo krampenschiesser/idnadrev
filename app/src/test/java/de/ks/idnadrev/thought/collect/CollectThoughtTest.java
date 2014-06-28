@@ -14,7 +14,6 @@
  */
 package de.ks.idnadrev.thought.collect;
 
-import de.ks.FXPlatform;
 import de.ks.LauncherRunner;
 import de.ks.TempFileRule;
 import de.ks.activity.ActivityController;
@@ -22,6 +21,7 @@ import de.ks.idnadrev.entity.Thought;
 import de.ks.launch.JavaFXService;
 import de.ks.launch.Launcher;
 import de.ks.persistence.PersistentWork;
+import de.ks.util.FXPlatform;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.MultipleSelectionModel;

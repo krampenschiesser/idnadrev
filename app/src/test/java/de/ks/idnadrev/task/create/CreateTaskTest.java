@@ -14,7 +14,6 @@
  */
 package de.ks.idnadrev.task.create;
 
-import de.ks.FXPlatform;
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityController;
 import de.ks.idnadrev.entity.Context;
@@ -22,6 +21,7 @@ import de.ks.idnadrev.entity.Tag;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.WorkUnit;
 import de.ks.persistence.PersistentWork;
+import de.ks.util.FXPlatform;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

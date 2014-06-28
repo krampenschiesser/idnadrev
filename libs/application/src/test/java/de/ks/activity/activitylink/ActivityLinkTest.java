@@ -14,7 +14,6 @@
  */
 package de.ks.activity.activitylink;
 
-import de.ks.FXPlatform;
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityCfg;
 import de.ks.activity.ActivityController;
@@ -23,6 +22,7 @@ import de.ks.activity.context.ActivityStore;
 import de.ks.application.Navigator;
 import de.ks.launch.JavaFXService;
 import de.ks.launch.Launcher;
+import de.ks.util.FXPlatform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -138,7 +138,7 @@ public class ActivityLinkTest {
     controller.start(activityCfgA);
     controller.waitForDataSource();
 
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 200; i++) {
       log.info("###Executing iteration {}", i + 1);
       Node activityANode = controller.getCurrentNode();
       Button returnHintButton = (Button) activityANode.lookup("#" + RETURN_HINT);
