@@ -74,8 +74,11 @@ public class CustomValidationDecoration extends AbstractValidationDecoration {
     Point2D point2D = target.localToScreen(target.getLayoutBounds().getMinX(), target.getLayoutBounds().getMaxY());
     if (point2D == null) {
       Platform.runLater(() -> {
-        Point2D point = target.localToScreen(target.getLayoutBounds().getMinX(), target.getLayoutBounds().getMaxY());
-        tooltip.show(target, point.getX(), point.getY());
+        Control target1 = target;
+        Point2D point = target1.localToScreen(target1.getLayoutBounds().getMinX(), target1.getLayoutBounds().getMaxY());
+        if (point != null) {
+          tooltip.show(target1, point.getX(), point.getY());
+        }
       });
     } else {
       tooltip.show(target, point2D.getX(), point2D.getY());
