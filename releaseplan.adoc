@@ -1,14 +1,16 @@
-= Idnadrev simple release plan =
+= Idnadrev simple release plan
 :Author:    Christian Löhnert
 :Email:     krampenschiesser@gmail.com
 
 Current iteration is 0.3
 
-== Iteration 0.3 ==
+== Iteration 0.3
 
 Main goal: Get a simple Version running
 
-Important features missing:
+=== Closed
+
+=== Open:
 
 * check navigation and shortcuts, default buttons etc.
 * Implement asccidoc editor preview standard control
@@ -17,8 +19,13 @@ Important features missing:
 Don't write them to the DB
 * Implement software update capability with version entity -> update database with scripts, change the content etc.
 Automatic transition from one version to the other
+* Enhance i18n to use controller local resource bundles
 
-== Iteration 0.4 ==
+== Iteration 0.4
+
+=== Closed
+
+=== Open:
 
 * Full workflow implemented
 * Support plantuml
@@ -27,3 +34,4 @@ Automatic transition from one version to the other
 * Search support for tags
 * Task scheduling and trainings
 * template system for asciidoc editor
+* options editor, general option usage in application
