@@ -19,7 +19,12 @@ import de.ks.util.LockSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
@@ -32,6 +37,7 @@ public class SuspendablePooledExecutorService extends ScheduledThreadPoolExecuto
   protected volatile boolean suspended = false;
   protected final ReentrantLock lock = new ReentrantLock();
   private final ArrayList<Runnable> suspendedTasks = new ArrayList<>();
+  private final List<WeakReference<ScheduledFuture>> scheduledFutures = new ArrayList<>();
 
   public SuspendablePooledExecutorService(String name) {
     //using 1 core thread sometime stops the executor to start new threads handling an async future
@@ -62,6 +68,18 @@ public class SuspendablePooledExecutorService extends ScheduledThreadPoolExecuto
     try (LockSupport support = new LockSupport(lock)) {
       suspendedTasks.ensureCapacity(getQueue().size() + COMPLETABLE_FUTURES_OFFSET);
       getQueue().drainTo(suspendedTasks);
+      cancelScheduledTasks();
+    }
+  }
+
+  private void cancelScheduledTasks() {
+    for (Iterator<WeakReference<ScheduledFuture>> iterator = scheduledFutures.iterator(); iterator.hasNext(); ) {
+      WeakReference<ScheduledFuture> next = iterator.next();
+      if (next.get() == null) {
+        iterator.remove();
+      } else {
+        next.get().cancel(true);
+      }
     }
   }
 
@@ -101,7 +119,6 @@ public class SuspendablePooledExecutorService extends ScheduledThreadPoolExecuto
     try (LockSupport support = new LockSupport(lock)) {
       suspended = false;
       suspendedTasks.forEach(r -> execute(r));
-//      getQueue().addAll(suspendedTasks);
     }
   }
 
@@ -115,5 +132,33 @@ public class SuspendablePooledExecutorService extends ScheduledThreadPoolExecuto
 
   public String getName() {
     return name;
+  }
+
+  @Override
+  public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
+    ScheduledFuture<?> schedule = super.schedule(command, delay, unit);
+    this.scheduledFutures.add(new WeakReference<ScheduledFuture>(schedule));
+    return schedule;
+  }
+
+  @Override
+  public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit) {
+    ScheduledFuture<V> schedule = super.schedule(callable, delay, unit);
+    this.scheduledFutures.add(new WeakReference<ScheduledFuture>(schedule));
+    return schedule;
+  }
+
+  @Override
+  public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit) {
+    ScheduledFuture<?> schedule = super.scheduleAtFixedRate(command, initialDelay, period, unit);
+    this.scheduledFutures.add(new WeakReference<ScheduledFuture>(schedule));
+    return schedule;
+  }
+
+  @Override
+  public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit) {
+    ScheduledFuture<?> schedule = super.scheduleWithFixedDelay(command, initialDelay, delay, unit);
+    this.scheduledFutures.add(new WeakReference<ScheduledFuture>(schedule));
+    return schedule;
   }
 }

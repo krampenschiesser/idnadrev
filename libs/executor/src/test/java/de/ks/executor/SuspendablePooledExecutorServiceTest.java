@@ -119,6 +119,12 @@ public class SuspendablePooledExecutorServiceTest {
     // assertEquals(2, adder.sum());
   }
 
+  @Test(timeout = 1000)
+  public void testScheduledDraining() throws Exception {
+    executor.scheduleAtFixedRate(createSleepingRunnable(100), 0, 200, TimeUnit.MILLISECONDS);
+    executor.suspend();
+  }
+
   Runnable createSleepingRunnable(int time) {
     final int id = ++count;
     return () -> {
