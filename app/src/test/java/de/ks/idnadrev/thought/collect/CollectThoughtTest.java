@@ -124,7 +124,7 @@ public class CollectThoughtTest {
 
       addThought.save.getOnAction().handle(new ActionEvent());
     });
-    controller.getCurrentExecutorService().waitForAllTasksDoneAndDrain();
+    controller.getCurrentExecutorService().waitForAllTasksDone();
 
     List<Thought> thoughts = PersistentWork.from(Thought.class);
     assertEquals(1, thoughts.size());
@@ -152,13 +152,13 @@ public class CollectThoughtTest {
     });
 
     assertFalse(addThought.name.textProperty().isEmpty().get());
-    assertFalse(addThought.description.textProperty().isEmpty().get());
+    assertFalse(addThought.description.getText().isEmpty());
     assertEquals(2, addThought.fileViewController.getFiles().size());
 
     FXPlatform.invokeLater(() -> {
       addThought.save.getOnAction().handle(new ActionEvent());
     });
-    controller.getCurrentExecutorService().waitForAllTasksDoneAndDrain();
+    controller.getCurrentExecutorService().waitForAllTasksDone();
 
 
     List<Thought> thoughts = PersistentWork.from(Thought.class, thought -> thought.getFiles().size());
@@ -186,7 +186,7 @@ public class CollectThoughtTest {
     });
 
     assertFalse(addThought.name.textProperty().isEmpty().get());
-    assertFalse(addThought.description.textProperty().isEmpty().get());
+    assertFalse(addThought.description.getText().isEmpty());
     assertEquals(2, addThought.fileViewController.getFiles().size());
 
 
