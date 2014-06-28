@@ -26,6 +26,7 @@ import de.ks.eventsystem.bus.EventBus;
 import de.ks.executor.FXExecutorService;
 import de.ks.executor.JavaFXExecutorService;
 import de.ks.executor.SuspendablePooledExecutorService;
+import de.ks.util.FXPlatform;
 import javafx.scene.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -132,6 +133,8 @@ public class ActivityController {
 
       if (context.hasCurrentActivity()) {
         initialization.getControllers().forEach((controller) -> eventBus.unregister(controller));
+        getCurrentExecutorService().suspend();
+        FXPlatform.waitForFX();
       }
 
       context.startActivity(id);
