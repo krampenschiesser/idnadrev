@@ -35,7 +35,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -143,19 +142,15 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
 
     StackPane content = new StackPane();
     content.getChildren().add(tableView);
-    Scene scene = new Scene(content);
-    Instance<String> styleSheets = CDI.current().select(String.class, FxCss.LITERAL);
-    styleSheets.forEach((sheet) -> {
-      scene.getStylesheets().add(sheet);
-    });
 
     dialog = new Dialog(this.browse, Localized.get("select.namedEntity." + entityClass.getSimpleName()));
     dialog.setContent(tableView);
     dialog.show();
-//    stage = new Stage();
-//    stage.initModality(Modality.APPLICATION_MODAL);
-//    stage.setScene(scene);
-//    stage.show();
+    Instance<String> styleSheets = CDI.current().select(String.class, FxCss.LITERAL);
+    styleSheets.forEach((sheet) -> {
+      dialog.getStylesheets().add(sheet);
+    });
+
     tableView.requestFocus();
   }
 
