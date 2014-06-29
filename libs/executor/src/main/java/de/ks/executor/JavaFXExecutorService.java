@@ -146,7 +146,7 @@ public class JavaFXExecutorService extends AbstractExecutorService implements Su
       return;
     }
 
-    long MAX_TIMEOUT = 1000;
+    long MAX_TIMEOUT = 1000 * 10;
     long start = System.currentTimeMillis();
 
 
@@ -161,8 +161,10 @@ public class JavaFXExecutorService extends AbstractExecutorService implements Su
           }
         } else if (System.currentTimeMillis() - start > MAX_TIMEOUT) {
           if (thread != null) {
-            log.warn("Waited for {}ms, will now interrupt the thread", MAX_TIMEOUT);
+            String msg = "Waited for " + MAX_TIMEOUT + "ms, will now interrupt the thread";
+            log.warn(msg);
             thread.interrupt();
+            throw new RuntimeException(msg);
           }
         }
       } catch (InterruptedException e) {
