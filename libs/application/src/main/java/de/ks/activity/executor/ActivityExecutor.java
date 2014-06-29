@@ -46,7 +46,7 @@ public class ActivityExecutor {
     map.putIfAbsent(id, supplier.get());
     T service = map.get(id);
     if (service.isShutdown()) {
-      log.debug("Old executor for activity is shutDown, will start new", id);
+      log.debug("Old executor {} for activity is shutDown, will start new", service.getClass().getSimpleName(), id);
       map.put(id, supplier.get());
       service = map.get(id);
     }
@@ -55,11 +55,11 @@ public class ActivityExecutor {
 
   public void startOrResume(String id) {
     SuspendableExecutorService service = getActivityExecutorService(id);
-    log.debug("Starting/Resuming executor service {}", id);
+    log.debug("{} executor service {}", service.isSuspended() ? "Resuming" : "Starting", id);
     service.resume();
 
     service = getJavaFXExecutorService(id);
-    log.debug("Starting/Resuming JavaFX executor service {}", id);
+    log.debug("{} JavaFX executor service {}", service.isSuspended() ? "Resuming" : "Starting", id);
     service.resume();
   }
 
@@ -67,10 +67,12 @@ public class ActivityExecutor {
     SuspendableExecutorService service = getActivityExecutorService(id);
     log.debug("Suspending executor service {}", id);
     service.suspend();
+    service.waitForAllTasksDoneAndDrain();
 
     service = getJavaFXExecutorService(id);
     log.debug("Suspending JavaFX executor service {}", id);
     service.suspend();
+    service.waitForAllTasksDoneAndDrain();
   }
 
   public void shutdown(String id) {
