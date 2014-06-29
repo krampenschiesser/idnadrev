@@ -142,6 +142,9 @@ public class JavaFXExecutorService extends AbstractExecutorService implements Su
     if (queueListener.get() == null) {
       return;
     }
+    if (isCurrentThread()) {
+      return;
+    }
 
     long MAX_TIMEOUT = 1000;
     long start = System.currentTimeMillis();
@@ -151,11 +154,16 @@ public class JavaFXExecutorService extends AbstractExecutorService implements Su
       try {
         TimeUnit.MILLISECONDS.sleep(100);
 
+        Thread thread = queueListener.get().getThread();
         if (interrupt) {
-          queueListener.get().getThread().interrupt();
+          if (thread != null) {
+            thread.interrupt();
+          }
         } else if (System.currentTimeMillis() - start > MAX_TIMEOUT) {
-          log.warn("Waited for {}ms, will now interrupt the thread", MAX_TIMEOUT);
-          queueListener.get().getThread().interrupt();
+          if (thread != null) {
+            log.warn("Waited for {}ms, will now interrupt the thread", MAX_TIMEOUT);
+            thread.interrupt();
+          }
         }
       } catch (InterruptedException e) {
         log.trace("Got Interrupted while waiting for tasks.", e);
@@ -213,7 +221,7 @@ public class JavaFXExecutorService extends AbstractExecutorService implements Su
 
       Runnable runnable = queue.peek();
       while (runnable != null && shouldResume(count, millis)) {
-        log.debug("Executing runnable #{}", count);
+        log.trace("Executing runnable #{}", count);
         try {
           runnable.run();
         } finally {
