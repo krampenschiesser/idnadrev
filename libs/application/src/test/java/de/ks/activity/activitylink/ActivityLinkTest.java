@@ -136,24 +136,25 @@ public class ActivityLinkTest {
   @Test(timeout = 1000 * 60)
   public void testMultipleReturn() throws Exception {
     controller.start(activityCfgA);
-    controller.waitForDataSource();
+    controller.waitForTasks();
 
     for (int i = 0; i < 200; i++) {
+      controller.waitForTasks();
+      FXPlatform.waitForFX();
       log.info("###Executing iteration {}", i + 1);
       Node activityANode = controller.getCurrentNode();
       Button returnHintButton = (Button) activityANode.lookup("#" + RETURN_HINT);
+      log.info("###Looked up node {}", returnHintButton);
       EventHandler<ActionEvent> onAction = returnHintButton.getOnAction();
       FXPlatform.invokeLater(() -> onAction.handle(new ActionEvent()));
 
-      controller.waitForDataSource();
       Node activityBNode = Navigator.getCurrentNavigator().getMainArea().getCurrentNode();
       Button finishButton = (Button) activityBNode.lookup("#finish");
       EventHandler<ActionEvent> finishAction = finishButton.getOnAction();
       FXPlatform.invokeLater(() -> finishAction.handle(new ActionEvent()));
-      controller.getCurrentExecutorService().waitForAllTasksDone();
-      controller.waitForDataSource();
-      FXPlatform.waitForFX();
     }
+    controller.waitForTasks();
+    FXPlatform.waitForFX();
   }
 
 }
