@@ -217,7 +217,6 @@ public class ActivityController {
         log.warn("Could not stop unregistered activity {}", activityId);
         return;
       }
-      waitForDataSource();
       String id = activityId;
       executor.shutdown(id);
       if (context.hasCurrentActivity()) {
@@ -313,5 +312,10 @@ public class ActivityController {
       log.error("Could not load DataSource {} for activity {}", dataSource, getCurrentActivityId(), t);
       return null;
     });
+  }
+
+  public void waitForTasks() {
+    getCurrentExecutorService().waitForAllTasksDone();
+    getJavaFXExecutor().waitForAllTasksDone();
   }
 }
