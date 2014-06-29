@@ -12,6 +12,7 @@ Main goal: Get a simple Version running
 
 === Open:
 
+* Enhance JavaFXExecutor to be suspendable
 * check navigation and shortcuts, default buttons etc.
 * Implement asccidoc editor preview standard control
 * Complete but simple workflow: from creating thoughts, conversion to task/project, view tasks, work on task, finish task
