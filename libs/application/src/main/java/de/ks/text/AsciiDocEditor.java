@@ -20,25 +20,34 @@ import de.ks.activity.initialization.LoadInFXThread;
 import de.ks.application.fxml.DefaultLoader;
 import de.ks.i18n.Localized;
 import de.ks.javafx.FxCss;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import org.controlsfx.dialog.Dialog;
+import org.fxmisc.richtext.PlainTextChange;
 import org.fxmisc.richtext.StyleClassedTextArea;
+import org.reactfx.EventStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import java.io.File;
 import java.net.URL;
+import java.time.Duration;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -55,6 +64,8 @@ public class AsciiDocEditor implements Initializable {
             });
   }
 
+  private static final Logger log = LoggerFactory.getLogger(AsciiDocEditor.class);
+
   @Inject
   @FxCss
   Instance<String> stylesheets;
@@ -63,7 +74,7 @@ public class AsciiDocEditor implements Initializable {
   @Inject
   ActivityController controller;
   @FXML
-  private StyleClassedTextArea editor;
+  protected StyleClassedTextArea editor;
   @FXML
   protected WebView preview;
   @FXML
@@ -72,10 +83,15 @@ public class AsciiDocEditor implements Initializable {
   protected Button saveToFileButton;
   @FXML
   protected GridPane mainPane;
+  @FXML
+  protected TabPane tabPane;
+  @FXML
+  protected StackPane root;
 
   protected Dialog helpDialog;
   protected WebView helpView;
   protected final SimpleStringProperty text = new SimpleStringProperty();
+  private String previewHtmlString;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -83,11 +99,43 @@ public class AsciiDocEditor implements Initializable {
     helpView.getEngine().load("http://powerman.name/doc/asciidoc");
 
     text.bind(editor.textProperty());
+
+    EventStream<PlainTextChange> textChanges = editor.plainTextChanges();
+    textChanges.successionEnds(Duration.ofMillis(500))//
+            .supplyCompletionStage(() -> CompletableFuture.supplyAsync(() -> parser.parse(editor.getText()), controller.getCurrentExecutorService()))//
+            .awaitLatest(textChanges)//
+            .subscribe(html -> this.previewHtmlString = html);
+
+    tabPane.getSelectionModel().selectedIndexProperty().addListener((p, o, n) -> {
+      if (n != null && n.intValue() == 1) {
+        preview.getEngine().loadContent(previewHtmlString);
+      }
+      if (o == null || n == null) {
+        return;
+      }
+      if (o.intValue() == 1 && n.intValue() == 0) {
+        Platform.runLater(() -> editor.requestFocus());
+      }
+    });
+//    editor.setOnKeyPressed(e -> {
+//      if (e.isControlDown()) {
+//        log.info("Keyevent {}: {}", e, e.getCode().getName());
+//        if (e.getCode().getName().equals("V")) {
+//          log.info("pasting!");
+//          editor.paste();
+//        } else if (e.getCode().getName().equals("C")) {
+//          log.info("copying!");
+//          editor.copy();
+//        } else if (e.getCode().getName().equals("X")) {
+//          log.info("cutting!");
+//          editor.cut();
+//        }
+//      }
+//    });
   }
 
   @FXML
   void insertMath() {
-
   }
 
   @FXML
@@ -98,20 +146,29 @@ public class AsciiDocEditor implements Initializable {
   @FXML
   void saveToFile() {
     FileChooser fileChooser = new FileChooser();
-    File file = fileChooser.showOpenDialog(saveToFileButton.getScene().getWindow());
+    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("html", "html"));
+    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("adoc", "html"));
+    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("docbook", "html"));
+
+    File file = fileChooser.showSaveDialog(saveToFileButton.getScene().getWindow());
 
   }
 
   @FXML
   void showHelp() {
     helpDialog = new Dialog(this.help, Localized.get("help"));
+
     helpDialog.setContent(helpView);
-    helpDialog.show();
+
     Instance<String> styleSheets = CDI.current().select(String.class, FxCss.LITERAL);
     styleSheets.forEach((sheet) -> {
       helpDialog.getStylesheets().add(sheet);
     });
 
+    Stage stage = (Stage) helpDialog.getWindow();
+    stage.initModality(Modality.NONE);
+
+    helpDialog.show();
   }
 
   public ObservableValue<String> textProperty() {
