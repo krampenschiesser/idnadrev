@@ -32,7 +32,6 @@ public class SuspendablePooledExecutorServiceTest {
   private static final Logger log = LoggerFactory.getLogger(SuspendablePooledExecutorServiceTest.class);
   private SuspendablePooledExecutorService executor;
   private static final LongAdder adder = new LongAdder();
-  int count;
 
   @Before
   public void setUp() throws Exception {
@@ -124,6 +123,8 @@ public class SuspendablePooledExecutorServiceTest {
     executor.scheduleAtFixedRate(createSleepingRunnable(100), 0, 200, TimeUnit.MILLISECONDS);
     executor.suspend();
   }
+
+  int count;
 
   Runnable createSleepingRunnable(int time) {
     final int id = ++count;

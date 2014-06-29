@@ -15,6 +15,7 @@
 package de.ks.executor;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import de.ks.util.FXPlatform;
 import de.ks.util.LockSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class SuspendablePooledExecutorService extends ScheduledThreadPoolExecutor {
+public class SuspendablePooledExecutorService extends ScheduledThreadPoolExecutor implements SuspendableExecutorService {
   private static final Logger log = LoggerFactory.getLogger(SuspendablePooledExecutorService.class);
 
   public static final int COMPLETABLE_FUTURES_OFFSET = 10;//some currently running tasks may specify a thenRun
@@ -52,6 +53,7 @@ public class SuspendablePooledExecutorService extends ScheduledThreadPoolExecuto
     this.name = name;
   }
 
+  @Override
   public void suspend() {
     if (isSuspended()) {
       return;
@@ -62,6 +64,7 @@ public class SuspendablePooledExecutorService extends ScheduledThreadPoolExecuto
       drainTasks();
     }
     waitForAllTasksDoneAndDrain();
+    FXPlatform.waitForFX();
   }
 
   protected void drainTasks() {
@@ -83,6 +86,7 @@ public class SuspendablePooledExecutorService extends ScheduledThreadPoolExecuto
     }
   }
 
+  @Override
   public void waitForAllTasksDoneAndDrain() {
     while (getActiveCount() > 0 || !getQueue().isEmpty()) {
       drainTasks();
@@ -94,6 +98,7 @@ public class SuspendablePooledExecutorService extends ScheduledThreadPoolExecuto
     }
   }
 
+  @Override
   public void waitForAllTasksDone() {
     while (getActiveCount() > 0 || !getQueue().isEmpty()) {
       try {
@@ -115,6 +120,7 @@ public class SuspendablePooledExecutorService extends ScheduledThreadPoolExecuto
     }
   }
 
+  @Override
   public void resume() {
     try (LockSupport support = new LockSupport(lock)) {
       suspended = false;
@@ -122,10 +128,25 @@ public class SuspendablePooledExecutorService extends ScheduledThreadPoolExecuto
     }
   }
 
-  public ArrayList<Runnable> getSuspendedTasks() {
+  @Override
+  public void shutdown() {
+    super.shutdown();
+    FXPlatform.waitForFX();
+  }
+
+  @Override
+  public List<Runnable> shutdownNow() {
+    List<Runnable> runnables = super.shutdownNow();
+    FXPlatform.waitForFX();
+    return runnables;
+  }
+
+  @Override
+  public List<Runnable> getSuspendedTasks() {
     return suspendedTasks;
   }
 
+  @Override
   public boolean isSuspended() {
     return suspended;
   }
