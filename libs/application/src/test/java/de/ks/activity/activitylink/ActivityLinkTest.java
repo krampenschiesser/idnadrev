@@ -133,7 +133,7 @@ public class ActivityLinkTest {
     assertEquals(activityANode, topNode);
   }
 
-  @Test
+  @Test(timeout = 1000 * 60)
   public void testMultipleReturn() throws Exception {
     controller.start(activityCfgA);
     controller.waitForDataSource();
