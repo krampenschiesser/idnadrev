@@ -15,7 +15,6 @@
 package de.ks.executor;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import de.ks.util.FXPlatform;
 import de.ks.util.LockSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +33,6 @@ public class SuspendablePooledExecutorService extends ScheduledThreadPoolExecuto
   private static final Logger log = LoggerFactory.getLogger(SuspendablePooledExecutorService.class);
 
   public static final int COMPLETABLE_FUTURES_OFFSET = 10;//some currently running tasks may specify a thenRun
-  private final String name;
   protected volatile boolean suspended = false;
   protected final ReentrantLock lock = new ReentrantLock();
   private final ArrayList<Runnable> suspendedTasks = new ArrayList<>();
@@ -50,7 +48,6 @@ public class SuspendablePooledExecutorService extends ScheduledThreadPoolExecuto
     super(corePoolSize, new ThreadFactoryBuilder().setDaemon(true).setNameFormat(name + "-%d").setUncaughtExceptionHandler(new LoggingUncaughtExceptionHandler()).build());
     setMaximumPoolSize(maximumPoolSize);
     setKeepAliveTime(1, TimeUnit.MINUTES);
-    this.name = name;
   }
 
   @Override
@@ -64,7 +61,6 @@ public class SuspendablePooledExecutorService extends ScheduledThreadPoolExecuto
       drainTasks();
     }
     waitForAllTasksDoneAndDrain();
-    FXPlatform.waitForFX();
   }
 
   protected void drainTasks() {
@@ -131,13 +127,11 @@ public class SuspendablePooledExecutorService extends ScheduledThreadPoolExecuto
   @Override
   public void shutdown() {
     super.shutdown();
-    FXPlatform.waitForFX();
   }
 
   @Override
   public List<Runnable> shutdownNow() {
     List<Runnable> runnables = super.shutdownNow();
-    FXPlatform.waitForFX();
     return runnables;
   }
 
@@ -149,10 +143,6 @@ public class SuspendablePooledExecutorService extends ScheduledThreadPoolExecuto
   @Override
   public boolean isSuspended() {
     return suspended;
-  }
-
-  public String getName() {
-    return name;
   }
 
   @Override

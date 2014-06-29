@@ -16,7 +16,7 @@ package de.ks.executor;
 
 import java.util.List;
 
-public interface SuspendableExecutorService {
+public interface SuspendableExecutorService extends java.util.concurrent.ExecutorService {
   void suspend();
 
   void resume();
@@ -29,4 +29,5 @@ public interface SuspendableExecutorService {
 
   List<Runnable> getSuspendedTasks();
 
+  int getActiveCount();
 }

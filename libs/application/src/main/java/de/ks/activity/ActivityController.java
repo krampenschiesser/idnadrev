@@ -23,10 +23,8 @@ import de.ks.activity.link.ViewLink;
 import de.ks.application.Navigator;
 import de.ks.datasource.DataSource;
 import de.ks.eventsystem.bus.EventBus;
-import de.ks.executor.FXExecutorService;
 import de.ks.executor.JavaFXExecutorService;
 import de.ks.executor.SuspendablePooledExecutorService;
-import de.ks.util.FXPlatform;
 import javafx.scene.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,9 +52,6 @@ public class ActivityController {
   protected ActivityExecutor executor;
   @Inject
   protected Instance<Navigator> navigator;
-  @Inject
-  @FXExecutorService
-  protected JavaFXExecutorService javafxExecutor;
   @Inject
   protected ActivityInitialization initialization;
   @Inject
@@ -133,8 +128,7 @@ public class ActivityController {
 
       if (context.hasCurrentActivity()) {
         initialization.getControllers().forEach((controller) -> eventBus.unregister(controller));
-        getCurrentExecutorService().suspend();
-        FXPlatform.waitForFX();
+        this.executor.suspend(getCurrentActivityId());
       }
 
       context.startActivity(id);
@@ -222,7 +216,7 @@ public class ActivityController {
   }
 
   public JavaFXExecutorService getJavaFXExecutor() {
-    return javafxExecutor;
+    return executor.getJavaFXExecutorService(getCurrentActivityId());
   }
 
   @SuppressWarnings("unchecked")
@@ -274,7 +268,8 @@ public class ActivityController {
   @SuppressWarnings("unchecked")
   public void reload() {
     DataSource dataSource = store.getDatasource();
-    SuspendablePooledExecutorService executorService = executor.getActivityExecutorService(getCurrentActivityId());
+    SuspendablePooledExecutorService executorService = getCurrentExecutorService();
+    JavaFXExecutorService javafxExecutor = getJavaFXExecutor();
 
     CompletableFuture<Object> load = CompletableFuture.supplyAsync(() -> dataSource.loadModel(), executorService);
     finishingFutures = load.thenApplyAsync((value) -> {

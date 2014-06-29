@@ -14,6 +14,8 @@
  */
 package de.ks.activity.executor;
 
+import de.ks.executor.JavaFXExecutorService;
+import de.ks.executor.SuspendableExecutorService;
 import de.ks.executor.SuspendablePooledExecutorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,52 +25,80 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 @Singleton
 public class ActivityExecutor {
   private static final Logger log = LoggerFactory.getLogger(ActivityExecutor.class);
 
   protected Map<String, SuspendablePooledExecutorService> activityBoundExecutors = new ConcurrentHashMap<>();
+  protected Map<String, JavaFXExecutorService> activityBoundFXExecutors = new ConcurrentHashMap<>();
 
   public SuspendablePooledExecutorService getActivityExecutorService(String id) {
-    activityBoundExecutors.putIfAbsent(id, new SuspendablePooledExecutorService(id));
+    return getServiceInternal(id, () -> new SuspendablePooledExecutorService(id), activityBoundExecutors);
+  }
 
-    SuspendablePooledExecutorService service = activityBoundExecutors.get(id);
+  public JavaFXExecutorService getJavaFXExecutorService(String id) {
+    return getServiceInternal(id, JavaFXExecutorService::new, activityBoundFXExecutors);
+  }
+
+  protected <T extends SuspendableExecutorService> T getServiceInternal(String id, Supplier<T> supplier, Map<String, T> map) {
+    map.putIfAbsent(id, supplier.get());
+    T service = map.get(id);
     if (service.isShutdown()) {
       log.debug("Old executor for activity is shutDown, will start new", id);
-      activityBoundExecutors.put(id, new SuspendablePooledExecutorService(id));
-      service = activityBoundExecutors.get(id);
+      map.put(id, supplier.get());
+      service = map.get(id);
     }
     return service;
   }
 
   public void startOrResume(String id) {
-    SuspendablePooledExecutorService service = getActivityExecutorService(id);
-    log.debug("Starting/Resuming executor service {}", service.getName());
+    SuspendableExecutorService service = getActivityExecutorService(id);
+    log.debug("Starting/Resuming executor service {}", id);
+    service.resume();
+
+    service = getJavaFXExecutorService(id);
+    log.debug("Starting/Resuming JavaFX executor service {}", id);
     service.resume();
   }
 
   public void suspend(String id) {
-    SuspendablePooledExecutorService service = getActivityExecutorService(id);
-    log.debug("Suspending executor service {}", service.getName());
+    SuspendableExecutorService service = getActivityExecutorService(id);
+    log.debug("Suspending executor service {}", id);
+    service.suspend();
+
+    service = getJavaFXExecutorService(id);
+    log.debug("Suspending JavaFX executor service {}", id);
     service.suspend();
   }
 
   public void shutdown(String id) {
-    SuspendablePooledExecutorService service = getActivityExecutorService(id);
-    log.debug("Shutting down executor service {}", service.getName());
+    SuspendableExecutorService service = getActivityExecutorService(id);
+    log.debug("Shutting down executor service {}", id);
+    service.shutdownNow();
+    service.waitForAllTasksDoneAndDrain();
+
+    service = getJavaFXExecutorService(id);
+    log.debug("Shutting down JavaFX executor service {}", id);
     service.shutdownNow();
     service.waitForAllTasksDoneAndDrain();
   }
 
   public void shutdownAll() {
-    for (SuspendablePooledExecutorService executor : activityBoundExecutors.values()) {
+    shutdownAll(activityBoundExecutors);
+    shutdownAll(activityBoundFXExecutors);
+  }
+
+  protected void shutdownAll(Map<String, ? extends SuspendableExecutorService> map) {
+    for (Map.Entry<String, ? extends SuspendableExecutorService> entry : map.entrySet()) {
+      SuspendableExecutorService executor = entry.getValue();
       List<Runnable> runnables = executor.shutdownNow();
-      log.debug("{} runnables remaining after shutdown of activity executor '{}'", runnables.size(), executor.getName());
+      log.debug("{} runnables remaining after shutdown of activity executor '{}'", runnables.size(), entry.getKey());
     }
-    for (Map.Entry<String, SuspendablePooledExecutorService> entry : activityBoundExecutors.entrySet()) {
+    for (Map.Entry<String, ? extends SuspendableExecutorService> entry : map.entrySet()) {
       String activityName = entry.getKey();
-      SuspendablePooledExecutorService executor = entry.getValue();
+      SuspendableExecutorService executor = entry.getValue();
       try {
         executor.awaitTermination(10, TimeUnit.SECONDS);
       } catch (InterruptedException e) {
