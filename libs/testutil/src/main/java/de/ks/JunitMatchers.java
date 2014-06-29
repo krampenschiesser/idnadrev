@@ -32,11 +32,13 @@ public class JunitMatchers {
     int count = 0;
 
     boolean success = false;
-    while (count < timeout) {
+    while (count < timeout / 20) {
       try {
         if (delegate.call()) {
           return true;
         }
+        Thread.sleep(rate);
+        count++;
       } catch (Exception e) {
         log.error("Could not execute {}", delegate, e);
         return false;
