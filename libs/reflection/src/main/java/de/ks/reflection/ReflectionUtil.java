@@ -188,4 +188,24 @@ public class ReflectionUtil {
       throw new RuntimeException(caught);
     }
   }
+
+  public static Object getFieldValue(Object object, String fieldName) {
+    Field field = getField(object, fieldName);
+    field.setAccessible(true);
+    try {
+      return field.get(object);
+    } catch (IllegalAccessException e) {
+      log.debug("Could nto get field {} from {}", field, object.getClass().getSimpleName(), e);
+      return null;
+    }
+  }
+
+  public static Field getField(Object object, String fieldName) {
+    List<Field> allFields = getAllFields(object.getClass(), f -> f.getName().equals(fieldName));
+    Field field = null;
+    if (allFields.size() == 1) {
+      field = allFields.get(0);
+    }
+    return field;
+  }
 }
