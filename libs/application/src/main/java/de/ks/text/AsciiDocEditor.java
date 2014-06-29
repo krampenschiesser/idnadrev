@@ -117,21 +117,6 @@ public class AsciiDocEditor implements Initializable {
         Platform.runLater(() -> editor.requestFocus());
       }
     });
-//    editor.setOnKeyPressed(e -> {
-//      if (e.isControlDown()) {
-//        log.info("Keyevent {}: {}", e, e.getCode().getName());
-//        if (e.getCode().getName().equals("V")) {
-//          log.info("pasting!");
-//          editor.paste();
-//        } else if (e.getCode().getName().equals("C")) {
-//          log.info("copying!");
-//          editor.copy();
-//        } else if (e.getCode().getName().equals("X")) {
-//          log.info("cutting!");
-//          editor.cut();
-//        }
-//      }
-//    });
   }
 
   @FXML
