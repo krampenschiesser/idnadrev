@@ -23,10 +23,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class SuspendablePooledExecutorService extends ScheduledThreadPoolExecutor implements SuspendableExecutorService {
@@ -74,10 +71,14 @@ public class SuspendablePooledExecutorService extends ScheduledThreadPoolExecuto
   private void cancelScheduledTasks() {
     for (Iterator<WeakReference<ScheduledFuture>> iterator = scheduledFutures.iterator(); iterator.hasNext(); ) {
       WeakReference<ScheduledFuture> next = iterator.next();
-      if (next.get() == null) {
+      ScheduledFuture scheduledFuture = next.get();
+      if (scheduledFuture == null) {
+        iterator.remove();
+      } else if (scheduledFuture.isCancelled()) {
         iterator.remove();
       } else {
-        next.get().cancel(true);
+        log.debug("Cancelling scheduled future {}", scheduledFuture);
+        scheduledFuture.cancel(true);
       }
     }
   }
@@ -148,28 +149,36 @@ public class SuspendablePooledExecutorService extends ScheduledThreadPoolExecuto
   @Override
   public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
     ScheduledFuture<?> schedule = super.schedule(command, delay, unit);
-    this.scheduledFutures.add(new WeakReference<ScheduledFuture>(schedule));
+    addScheduledFuture(schedule);
     return schedule;
   }
 
   @Override
   public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit) {
     ScheduledFuture<V> schedule = super.schedule(callable, delay, unit);
-    this.scheduledFutures.add(new WeakReference<ScheduledFuture>(schedule));
+    addScheduledFuture(schedule);
     return schedule;
   }
 
   @Override
   public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit) {
     ScheduledFuture<?> schedule = super.scheduleAtFixedRate(command, initialDelay, period, unit);
-    this.scheduledFutures.add(new WeakReference<ScheduledFuture>(schedule));
+    addScheduledFuture(schedule);
     return schedule;
   }
 
   @Override
   public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit) {
     ScheduledFuture<?> schedule = super.scheduleWithFixedDelay(command, initialDelay, delay, unit);
-    this.scheduledFutures.add(new WeakReference<ScheduledFuture>(schedule));
+    addScheduledFuture(schedule);
     return schedule;
+  }
+
+  protected void addScheduledFuture(ScheduledFuture<?> scheduleNonCast) {
+    RunnableScheduledFuture<?> schedule = (RunnableScheduledFuture<?>) scheduleNonCast;
+    if (schedule.getDelay(TimeUnit.NANOSECONDS) <= 0 && !schedule.isPeriodic()) {
+      return;
+    }
+    this.scheduledFutures.add(new WeakReference<ScheduledFuture>(schedule));
   }
 }
