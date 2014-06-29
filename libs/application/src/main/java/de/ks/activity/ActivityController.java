@@ -35,6 +35,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
@@ -164,9 +167,34 @@ public class ActivityController {
   }
 
   public void waitForDataSource() {
+    if (finishingFutures.isDone()) {
+      return;
+    } else if (getCurrentExecutorService().isSuspended() || getCurrentExecutorService().isShutdown()) {
+      return;
+    }
     lock.lock();
     try {
-      finishingFutures.join();
+      try {
+        long start = System.currentTimeMillis();
+        boolean loop = true;
+        while (loop) {
+          try {
+            finishingFutures.get(100, TimeUnit.MILLISECONDS);
+            loop = false;
+          } catch (TimeoutException e) {
+            if (getCurrentExecutorService().isSuspended() || getCurrentExecutorService().isShutdown()) {
+              loop = false;
+            } else {
+              loop = true;
+            }
+            if (System.currentTimeMillis() - start > TimeUnit.SECONDS.toMillis(10)) {
+              throw new IllegalStateException("Waited for 10s for datasource, did not return.");
+            }
+          }
+        }
+      } catch (InterruptedException | ExecutionException e) {
+        throw new RuntimeException(e);
+      }
     } finally {
       lock.unlock();
     }
