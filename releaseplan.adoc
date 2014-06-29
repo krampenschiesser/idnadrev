@@ -10,11 +10,13 @@ Main goal: Get a simple Version running
 
 === Closed
 
+* Enhance JavaFXExecutor to be suspendable
+
 === Open:
 
-* Enhance JavaFXExecutor to be suspendable
-* check navigation and shortcuts, default buttons etc.
 * Implement asccidoc editor preview standard control
+
+* check navigation and shortcuts, default buttons etc.
 * Complete but simple workflow: from creating thoughts, conversion to task/project, view tasks, work on task, finish task
 * Refactoring of files to remain on local file system to include them in asciidoc, view them etc.
 Don't write them to the DB
@@ -36,3 +38,5 @@ Automatic transition from one version to the other
 * Task scheduling and trainings
 * template system for asciidoc editor
 * options editor, general option usage in application
+
+* Refactoring: rework DataSource "API" to something bettern (reduce direct calls from controllers, better to/from converter)
