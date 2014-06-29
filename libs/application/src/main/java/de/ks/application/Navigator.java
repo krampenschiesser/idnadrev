@@ -17,6 +17,7 @@ package de.ks.application;
 
 import com.google.common.collect.MapMaker;
 import de.ks.executor.ExecutorService;
+import de.ks.util.FXPlatform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import javafx.scene.Node;
@@ -78,11 +79,14 @@ public class Navigator {
 
   public static Navigator registerWithBorderPane(Stage stage) {
     BorderPane borderPane = new BorderPane();
-    borderPane.setCenter(new StackPane());
-    borderPane.setTop(new StackPane());
-    borderPane.setBottom(new StackPane());
-    borderPane.setLeft(new StackPane());
-    borderPane.setRight(new StackPane());
+    FXPlatform.invokeLater(() -> {
+      stage.getScene().setRoot(borderPane);
+      borderPane.setCenter(new StackPane());
+      borderPane.setTop(new StackPane());
+      borderPane.setBottom(new StackPane());
+      borderPane.setLeft(new StackPane());
+      borderPane.setRight(new StackPane());
+    });
     return registerWithExistingPane(stage, borderPane);
   }
 
