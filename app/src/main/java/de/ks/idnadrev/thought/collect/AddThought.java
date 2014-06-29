@@ -131,12 +131,13 @@ public class AddThought implements Initializable {
         this.name.requestFocus();
       }
       this.description.setText(clipboardString);
+      clipboard.clear();
     }
 
     if (clipboard.hasFiles()) {
       fileViewController.addFiles(clipboard.getFiles());
+      clipboard.clear();
     }
-    clipboard.clear();
   }
 
   @FXML
