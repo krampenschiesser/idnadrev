@@ -137,8 +137,9 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
   @FXML
   void showBrowser() {
     SuspendablePooledExecutorService executorService = controller.getCurrentExecutorService();
+    JavaFXExecutorService javaFXExecutor = controller.getJavaFXExecutor();
     CompletableFuture.supplyAsync(this::readEntities, executorService)//
-            .thenAcceptAsync(this::setTableItems, new JavaFXExecutorService());
+            .thenAcceptAsync(this::setTableItems, javaFXExecutor);
 
     StackPane content = new StackPane();
     content.getChildren().add(tableView);

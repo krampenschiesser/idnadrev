@@ -18,6 +18,7 @@ import de.ks.LauncherRunner;
 import de.ks.activity.ActivityController;
 import de.ks.activity.context.ActivityContext;
 import de.ks.application.fxml.DefaultLoader;
+import de.ks.executor.JavaFXExecutorService;
 import de.ks.executor.SuspendablePooledExecutorService;
 import de.ks.idnadrev.entity.Thought;
 import de.ks.persistence.PersistentWork;
@@ -41,14 +42,15 @@ public class NamedPersistentObjectSelectionTest {
 
   private NamedPersistentObjectSelection<Thought> selection;
   private SuspendablePooledExecutorService executorService;
+  private JavaFXExecutorService fxExecutorService;
 
   @Before
   public void setUp() throws Exception {
-//    ActivityContext.start("test");
     PersistentWork.deleteAllOf(Thought.class);
     PersistentWork.persist(new Thought("test1"), new Thought("test2").setDescription("bla"), new Thought("other"));
 
     executorService = new SuspendablePooledExecutorService("test");
+    fxExecutorService = new JavaFXExecutorService();
     DefaultLoader<Node, NamedPersistentObjectSelection<Thought>> loader = new DefaultLoader<>(NamedPersistentObjectSelection.class);
     selection = loader.getController();
 
@@ -60,6 +62,7 @@ public class NamedPersistentObjectSelectionTest {
     ActivityContext.stop("test");
     executorService.shutdownNow();
     executorService.waitForAllTasksDoneAndDrain();
+    fxExecutorService.shutdownNow();
   }
 
   @Test
@@ -134,6 +137,7 @@ public class NamedPersistentObjectSelectionTest {
   public void testOpenTable() throws Exception {
     ActivityController mock = Mockito.mock(ActivityController.class);
     Mockito.when(mock.getCurrentExecutorService()).thenReturn(executorService);
+    Mockito.when(mock.getJavaFXExecutor()).thenReturn(fxExecutorService);
     selection.controller = mock;
 
     FXPlatform.invokeLater(() -> selection.showBrowser());
