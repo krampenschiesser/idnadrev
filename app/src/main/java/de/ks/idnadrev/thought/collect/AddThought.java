@@ -119,6 +119,7 @@ public class AddThought implements Initializable {
   }
 
   protected void processClipboard(Clipboard clipboard) {
+    boolean clearClipboard = false;
     String text = this.description.getText();
     if (clipboard.hasString() && //
             (text == null || (text != null && text.isEmpty()))) {
@@ -131,11 +132,14 @@ public class AddThought implements Initializable {
         this.name.requestFocus();
       }
       this.description.setText(clipboardString);
-      clipboard.clear();
+      clearClipboard = true;
     }
 
     if (clipboard.hasFiles()) {
       fileViewController.addFiles(clipboard.getFiles());
+      clearClipboard = true;
+    }
+    if (clearClipboard) {
       clipboard.clear();
     }
   }
