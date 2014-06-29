@@ -14,8 +14,8 @@
  */
 package de.ks.executor;
 
-import org.hamcrest.Matchers;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +26,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 public class SuspendablePooledExecutorServiceTest {
   private static final Logger log = LoggerFactory.getLogger(SuspendablePooledExecutorServiceTest.class);
@@ -45,12 +48,13 @@ public class SuspendablePooledExecutorServiceTest {
     executor.submit(createSleepingRunnable(300));
     executor.submit(createSleepingRunnable(300));
     executor.submit(createSleepingRunnable(300));
+    Thread.sleep(10);
     assertEquals(2, executor.getActiveCount());
 
     long start = System.currentTimeMillis();
     executor.suspend();
     long stop = System.currentTimeMillis();
-    assertTrue(stop - start > 300);
+    assertThat(stop - start, greaterThan(300L));
 
     assertEquals(1, executor.getSuspendedTasks().size());
     assertEquals(2, adder.sum());
@@ -81,7 +85,7 @@ public class SuspendablePooledExecutorServiceTest {
     long start = System.currentTimeMillis();
     executor.suspend();
     long stop = System.currentTimeMillis();
-    assertThat(stop - start, Matchers.greaterThan(400L));
+    assertThat(stop - start, greaterThanOrEqualTo(400L));
 
     assertEquals(1, executor.getSuspendedTasks().size());
     assertEquals(2, adder.sum());
@@ -124,6 +128,14 @@ public class SuspendablePooledExecutorServiceTest {
     executor.suspend();
   }
 
+  @Ignore//whtat to do about this?
+  @Test(timeout = 100)
+  public void testWaitAfterSuspend() throws Exception {
+    executor.suspend();
+    CompletableFuture<String> future = CompletableFuture.supplyAsync(String::new, executor);
+    future.join();
+  }
+
   int count;
 
   Runnable createSleepingRunnable(int time) {
@@ -135,7 +147,7 @@ public class SuspendablePooledExecutorServiceTest {
         adder.increment();
         log.info("Done with   {}", id);
       } catch (InterruptedException e) {
-        log.info("Interrupted {}", id);
+        log.info("Interrupted {}", id, e);
         //
       }
     };
