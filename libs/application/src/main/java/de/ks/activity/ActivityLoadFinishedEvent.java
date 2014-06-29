@@ -31,4 +31,11 @@ public class ActivityLoadFinishedEvent {
   public long getTime() {
     return time;
   }
+
+  @Override
+  public String toString() {
+    return "ActivityLoadFinishedEvent{" +
+            "model=" + model +
+            '}';
+  }
 }
