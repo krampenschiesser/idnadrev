@@ -22,6 +22,9 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.junit.Assert.assertEquals;
 
 public class CompletableFutureTest {
 
@@ -69,5 +72,18 @@ public class CompletableFutureTest {
     }, service);
 
     CompletableFuture.allOf(third, CompletableFuture.allOf(first, second)).join();
+  }
+
+  @Test
+  public void testSecondThen() throws Exception {
+    AtomicInteger result = new AtomicInteger();
+    CompletableFuture<Integer> future = new CompletableFuture<>();
+    future.thenApply(i -> i + 1).thenAccept(i -> result.set(i));
+    future.thenApply(i -> i + 2).thenAccept(i -> result.set(i));
+    future.thenApply(i -> i + 3).thenAccept(i -> result.set(i));
+    future.thenApply(i -> i + 4).thenAccept(i -> result.set(i));
+
+    future.complete(1);
+    assertEquals(2, result.intValue());
   }
 }
