@@ -62,19 +62,20 @@ public class CreateTaskDS extends NewInstanceDataSource<Task> {
   @Override
   public void saveModel(Task model) {
     PersistentWork.run((em) -> {
+      Task task = PersistentWork.reload(model);
       MainTaskInfo mainTaskInfo = controller.getControllerInstance(MainTaskInfo.class);
 
       String contextName = mainTaskInfo.contextController.getInput().textProperty().getValueSafe().trim();
-      setToOne(model, Context.class, contextName, model::setContext);
+      setToOne(task, Context.class, contextName, task::setContext);
 
-      model.setEstimatedTime(mainTaskInfo.getEstimatedDuration());
+      task.setEstimatedTime(mainTaskInfo.getEstimatedDuration());
 
       mainTaskInfo.tagPane.getChildren().stream().map(c -> new Tag(c.getId())).forEach(tag -> {
         Tag readTag = PersistentWork.forName(Tag.class, tag.getName());
         readTag = readTag == null ? tag : readTag;
-        model.addTag(readTag);
+        task.addTag(readTag);
       });
-      em.persist(model);
+      em.persist(task);
     });
   }
 
