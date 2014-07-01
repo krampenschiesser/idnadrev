@@ -31,9 +31,9 @@ public abstract class AbstractPersistentObject<T extends AbstractPersistentObjec
   private static final long serialVersionUID = 1L;
   @Id
   @GeneratedValue
-  protected Long id;
+  protected long id;
   @Version
-  protected Long version;
+  protected long version;
 
   protected AbstractPersistentObject() {
 
