@@ -15,6 +15,7 @@
 
 package de.ks.text;
 
+import de.ks.JunitMatchers;
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityCfg;
 import de.ks.activity.ActivityController;
@@ -34,7 +35,6 @@ import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 
-import static de.ks.JunitMatchers.withRetry;
 import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
@@ -65,9 +65,8 @@ public class AsciiDocEditorTest {
   public void testShowHelp() throws Exception {
     Node current = activityController.getCurrentNode();
     assertNotNull(current);
-    withRetry(() -> current.getScene() != null);
-
     assertNotNull("needs scene", current.getScene());
+
     Platform.runLater(() -> adocEditor.showHelp());
     FXPlatform.waitForFX();
     assertTrue(adocEditor.helpDialog.getWindow().isShowing());
@@ -78,5 +77,22 @@ public class AsciiDocEditorTest {
     Platform.runLater(() -> adocEditor.helpDialog.hide());
     FXPlatform.waitForFX();
     assertFalse(adocEditor.helpDialog.getWindow().isShowing());
+  }
+
+  @Test
+  public void testAdocParsing() throws Exception {
+    adocEditor.editor.setText("= Title\n== more");
+    activityController.waitForTasks();
+    assertNotNull(adocEditor.previewHtmlString);
+
+    assertNull(adocEditor.preview.getEngine().getDocument());
+
+    FXPlatform.invokeLater(() -> adocEditor.tabPane.getSelectionModel().select(1));
+    JunitMatchers.withRetry(() -> adocEditor.preview.getEngine().getDocument() != null);
+    assertNotNull(adocEditor.preview.getEngine().getDocument());
+
+    FXPlatform.invokeLater(() -> adocEditor.tabPane.getSelectionModel().select(0));
+    FXPlatform.waitForFX();
+    assertTrue(adocEditor.editor.isFocused());
   }
 }
