@@ -22,10 +22,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.LongAdder;
 
 import static org.junit.Assert.*;
@@ -44,7 +41,8 @@ public class LastExecutionGroupTest {
 
   @After
   public void tearDown() throws Exception {
-    executorService.shutdownNow();
+    executorService.shutdown();
+    executorService.awaitTermination(5, TimeUnit.SECONDS);
   }
 
   @Test
