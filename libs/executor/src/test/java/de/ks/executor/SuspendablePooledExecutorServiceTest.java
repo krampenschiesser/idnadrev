@@ -26,7 +26,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
 
-import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -54,7 +53,7 @@ public class SuspendablePooledExecutorServiceTest {
     long start = System.currentTimeMillis();
     executor.suspend();
     long stop = System.currentTimeMillis();
-    assertThat(stop - start, greaterThan(300L));
+    assertThat(stop - start, greaterThanOrEqualTo(300L));
 
     assertEquals(1, executor.getSuspendedTasks().size());
     assertEquals(2, adder.sum());
