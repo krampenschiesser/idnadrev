@@ -19,7 +19,6 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.web.WebView?>
-<?import org.fxmisc.richtext.StyleClassedTextArea?>
 <StackPane id="StackPane" fx:id="root" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8"
            xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.text.AsciiDocEditor">
     <children>
@@ -45,19 +44,12 @@
                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS"/>
                                     </rowConstraints>
                                     <children>
-                                        <HBox spacing="5.0" GridPane.halignment="CENTER">
-                                            <children>
-                                                <Button mnemonicParsing="false" onAction="#insertMath"
-                                                        text="%editor.asciidoc.insertMath"/>
-                                                <Button mnemonicParsing="false" onAction="#insertImage"
-                                                        text="%editor.asciidoc.insertImage"/>
-                                            </children>
+                                        <HBox fx:id="editorCommandPane" spacing="5.0" GridPane.halignment="CENTER">
                                             <padding>
                                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
                                             </padding>
                                         </HBox>
-                                        <StyleClassedTextArea fx:id="editor" popupAlignment="CARET_BOTTOM"
-                                                              GridPane.rowIndex="1"/>
+                                        <TextArea fx:id="editor" GridPane.rowIndex="1"/>
                                     </children>
                                 </GridPane>
                             </content>
