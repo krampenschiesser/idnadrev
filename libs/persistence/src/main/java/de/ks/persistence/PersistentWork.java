@@ -79,6 +79,9 @@ public class PersistentWork {
         AbstractPersistentObject apo = (AbstractPersistentObject) instance;
         @SuppressWarnings("unchecked") Class<T> clazz = (Class<T>) instance.getClass();
         T reloaded = em.<T>find(clazz, apo.getId());
+        if (reloaded == null) {
+          return instance;
+        }
         if (resultWalker != null) {
           resultWalker.accept(reloaded);
         }
