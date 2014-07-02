@@ -14,6 +14,8 @@
  */
 package de.ks.text;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
 import de.ks.activity.ActivityController;
 import de.ks.activity.initialization.ActivityInitialization;
 import de.ks.activity.initialization.LoadInFXThread;
@@ -47,6 +49,7 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
@@ -136,11 +139,31 @@ public class AsciiDocEditor implements Initializable {
   void saveToFile() {
     FileChooser fileChooser = new FileChooser();
     fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("html", "html"));
-    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("adoc", "html"));
-    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("docbook", "html"));
+    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("adoc", "adoc"));
+    fileChooser.setInitialFileName("export.html");
 
     File file = fileChooser.showSaveDialog(saveToFileButton.getScene().getWindow());
+    if (file == null) {
+      return;
+    }
+    String extension = fileChooser.getSelectedExtensionFilter().getExtensions().get(0);
 
+    String content;
+    if (extension.endsWith("adoc")) {
+      content = editor.getText();
+    } else {
+      content = previewHtmlString;
+    }
+    if (!file.getName().endsWith(extension)) {
+      file = new File(file.getPath() + extension);
+    }
+    log.info("Saving to file {}", file);
+
+    try {
+      Files.write(content, file, Charsets.UTF_8);
+    } catch (IOException e) {
+      log.error("Could not write file {}", file, e);
+    }
   }
 
   @FXML
