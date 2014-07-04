@@ -40,7 +40,7 @@ public class Note extends NamedPersistentObject<Note> implements FileContainer {
   protected Task task;
 
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "note")
-  protected Set<File> files = new HashSet<>();
+  protected Set<FileReference> files = new HashSet<>();
 
   @ManyToMany(cascade = CascadeType.PERSIST)
   @JoinTable(name = NOTE_TAG_JOINTABLE)
@@ -90,17 +90,17 @@ public class Note extends NamedPersistentObject<Note> implements FileContainer {
     this.category = category;
   }
 
-  public Set<File> getFiles() {
+  public Set<FileReference> getFiles() {
     return files;
   }
 
-  public void addFile(File file) {
+  public void addFile(FileReference file) {
     this.files.add(file);
     file.setNote(this);
   }
 
   @Override
-  public void removeFile(File file) {
+  public void removeFile(FileReference file) {
     this.files.remove(file);
     file.setNote(null);
   }

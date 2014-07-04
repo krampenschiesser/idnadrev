@@ -28,7 +28,7 @@
         <class>de.ks.idnadrev.entity.Category</class>
         <class>de.ks.idnadrev.entity.Context</class>
         <class>de.ks.idnadrev.entity.Note</class>
-        <class>de.ks.idnadrev.entity.File</class>
+        <class>de.ks.idnadrev.entity.FileReference</class>
         <class>de.ks.idnadrev.entity.Tag</class>
         <class>de.ks.idnadrev.entity.Task</class>
         <class>de.ks.idnadrev.entity.Thought</class>

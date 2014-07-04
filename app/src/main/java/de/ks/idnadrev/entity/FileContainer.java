@@ -19,19 +19,19 @@ import java.util.Set;
 
 public interface FileContainer {
 
-  Set<File> getFiles();
+  Set<FileReference> getFiles();
 
-  void addFile(File file);
+  void addFile(FileReference file);
 
-  void removeFile(File file);
+  void removeFile(FileReference file);
 
   default void addFile(String fileName) throws IOException {
     addFile(new java.io.File(fileName));
   }
 
   default void addFile(java.io.File file) throws IOException {
-    File noteFile = File.fromFile(file);
-    addFile(noteFile);
+    //FileReference noteFile = FileReference.fromFile(file);
+    //addFile(noteFile);
   }
 
   default void removeFile(String fileName) throws IOException {
@@ -39,8 +39,8 @@ public interface FileContainer {
   }
 
   default void removeFile(java.io.File file) throws IOException {
-    File noteFile = File.fromFile(file);
-    removeFile(noteFile);
+    //FileReference noteFile = FileReference.fromFile(file);
+    //removeFile(noteFile);
   }
 
 }

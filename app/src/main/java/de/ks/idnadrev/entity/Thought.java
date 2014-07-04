@@ -41,7 +41,7 @@ public class Thought extends NamedPersistentObject<Thought> implements FileConta
   protected LocalDate postponedDate;
 
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "thought")
-  protected Set<File> files = new HashSet<>();
+  protected Set<FileReference> files = new HashSet<>();
 
   public Thought() {
   }
@@ -67,17 +67,17 @@ public class Thought extends NamedPersistentObject<Thought> implements FileConta
     }
   }
 
-  public Set<File> getFiles() {
+  public Set<FileReference> getFiles() {
     return files;
   }
 
-  public void addFile(File file) {
+  public void addFile(FileReference file) {
     this.files.add(file);
     file.setThought(this);
   }
 
   @Override
-  public void removeFile(File file) {
+  public void removeFile(FileReference file) {
     this.files.remove(file);
     file.setThought(null);
   }

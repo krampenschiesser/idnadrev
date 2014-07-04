@@ -40,7 +40,7 @@ public class TaskTest {
     PersistentWork.run((em) -> em.createNativeQuery("delete from " + Note.NOTE_TAG_JOINTABLE).executeUpdate());
 
     List<Class<? extends AbstractPersistentObject<?>>> entitiesToDelete = Arrays.asList(//
-            Tag.class, WorkUnit.class, File.class, Note.class, Task.class, Context.class);
+            Tag.class, WorkUnit.class, FileReference.class, Note.class, Task.class, Context.class);
     for (Class<? extends AbstractPersistentObject<?>> clazz : entitiesToDelete) {
       PersistentWork.deleteAllOf(clazz);
     }
@@ -109,7 +109,7 @@ public class TaskTest {
     PersistentWork.run((em) -> {
       Tag readTag = em.find(Tag.class, tag.getId());
       assertNotNull(readTag);
-      File readFile = em.find(File.class, note.getFiles().iterator().next().getId());
+      FileReference readFile = em.find(FileReference.class, note.getFiles().iterator().next().getId());
       assertNull(readFile);
     });
     PersistentWork.run((em) -> {

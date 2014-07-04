@@ -17,6 +17,7 @@ package de.ks.idnadrev.thought.collect;
 import de.ks.LauncherRunner;
 import de.ks.TempFileRule;
 import de.ks.activity.ActivityController;
+import de.ks.idnadrev.entity.FileReference;
 import de.ks.idnadrev.entity.Thought;
 import de.ks.launch.JavaFXService;
 import de.ks.launch.Launcher;
@@ -57,7 +58,7 @@ public class CollectThoughtTest {
   @Before
   public void setUp() throws Exception {
     FXPlatform.waitForFX();
-    PersistentWork.deleteAllOf(de.ks.idnadrev.entity.File.class);
+    PersistentWork.deleteAllOf(FileReference.class);
     PersistentWork.deleteAllOf(Thought.class);
 
     JavaFXService service = Launcher.instance.getService(JavaFXService.class);

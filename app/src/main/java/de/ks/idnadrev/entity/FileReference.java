@@ -15,13 +15,12 @@
 
 package de.ks.idnadrev.entity;
 
-import com.google.common.io.Files;
 import de.ks.persistence.entity.NamedPersistentObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.*;
-import java.io.IOException;
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 
 /**
  * Created by Christian Loehnert
@@ -30,21 +29,27 @@ import java.io.IOException;
  */
 
 @Entity
-public class File extends NamedPersistentObject<File> {//TODO use file storage path and md5 checksum
-  private static final Logger log = LoggerFactory.getLogger(File.class);
+public class FileReference extends NamedPersistentObject<FileReference> {//TODO use file storage path and md5 checksum
+  private static final Logger log = LoggerFactory.getLogger(FileReference.class);
   private static final long serialVersionUID = 1L;
 
   @ManyToOne
   protected Note note;
   @ManyToOne
   protected Thought thought;
+  @ManyToOne
+  protected Task task;
 
-  @Lob
-  @Basic(fetch = FetchType.LAZY)
-  protected byte[] data;
+  protected String md5Sum;
+  protected String absolutePath;
 
-  public File() {
+  public FileReference() {
     //
+  }
+
+  public FileReference(String name, String md5) {
+    super(name);
+    md5Sum = md5;
   }
 
   public Thought getThought() {
@@ -55,10 +60,6 @@ public class File extends NamedPersistentObject<File> {//TODO use file storage p
     this.thought = thought;
   }
 
-  public File(String name) {
-    super(name);
-  }
-
   public Note getNote() {
     return note;
   }
@@ -67,24 +68,29 @@ public class File extends NamedPersistentObject<File> {//TODO use file storage p
     this.note = note;
   }
 
-  public byte[] getData() {
-    return data;
+  public Task getTask() {
+    return task;
   }
 
-  public File setData(byte[] data) {
-    this.data = data;
+  public void setTask(Task task) {
+    this.task = task;
+  }
+
+  public String getAbsolutePath() {
+    return absolutePath;
+  }
+
+  public FileReference setAbsolutePath(String absolutePath) {
+    this.absolutePath = absolutePath;
     return this;
   }
 
-  public static File fromFile(java.io.File file) throws IOException {
-    try {
-      byte[] data = Files.toByteArray(file);
-      File noteFile = new File(file.getName()).setData(data);
-      return noteFile;
-    } catch (IllegalArgumentException e) {
-      log.error("File {0} is too big");
-      throw e;
-    }
+  public String getMd5Sum() {
+    return md5Sum;
+  }
+
+  public void setMd5Sum(String md5Sum) {
+    this.md5Sum = md5Sum;
   }
 }
 

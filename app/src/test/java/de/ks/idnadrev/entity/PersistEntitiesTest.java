@@ -15,7 +15,6 @@
 
 package de.ks.idnadrev.entity;
 
-import com.google.common.io.Files;
 import de.ks.LauncherRunner;
 import de.ks.persistence.PersistentWork;
 import de.ks.persistence.entity.AbstractPersistentObject;
@@ -31,14 +30,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  *
  */
 @RunWith(LauncherRunner.class)
 public class PersistEntitiesTest {
-  private List<Class<? extends AbstractPersistentObject<?>>> allEntityClasses = Arrays.asList(Category.class, Context.class, File.class, Note.class, Tag.class, Thought.class, WorkUnit.class, Task.class);
+  private List<Class<? extends AbstractPersistentObject<?>>> allEntityClasses = Arrays.asList(Category.class, Context.class, FileReference.class, Note.class, Tag.class, Thought.class, WorkUnit.class, Task.class);
 
   private List<NamedPersistentObject> simpleEntities = new ArrayList<NamedPersistentObject>() {{
     add(new Category("myCategory"));
@@ -80,70 +79,16 @@ public class PersistEntitiesTest {
 
   @Test
   public void testPersistNote() throws Exception {
-    java.io.File imageFile = new java.io.File(getClass().getResource("img.jpg").toURI());
-    assertTrue(imageFile.exists());
-    byte[] data = Files.toByteArray(imageFile);
-
     Note note = new Note("myNote");
-
-
-    File noteFile = new File(imageFile.getName());
-    noteFile.setData(data);
-    note.addFile(noteFile);
 
     PersistentWork.run((em) -> {
       em.persist(note);
-      em.persist(noteFile);
     });
 
     PersistentWork.run((em) -> {
       Note readNote = em.find(Note.class, note.getId());
       assertEquals(note, readNote);
-      assertNotNull(note.getFiles());
-      assertEquals(1, note.getFiles().size());
-      File readNoteFile = note.getFiles().iterator().next();
-      assertEquals(data.length, readNoteFile.getData().length);
-      assertEquals(data, readNoteFile.getData());
     });
   }
 
-  @Test
-  public void testPersistNoteDirectFileAdding() throws Exception {
-    java.io.File imageFile = new java.io.File(getClass().getResource("img.jpg").toURI());
-    assertTrue(imageFile.exists());
-
-    Note note = new Note("myNote");
-    note.addFile(imageFile);
-
-    PersistentWork.persist(note);
-
-    PersistentWork.run((em) -> {
-      Note readNote = em.find(Note.class, note.getId());
-      assertEquals(note, readNote);
-      assertNotNull(note.getFiles());
-      assertEquals(1, note.getFiles().size());
-      File readNoteFile = note.getFiles().iterator().next();
-      assertEquals(imageFile.length(), readNoteFile.getData().length);
-    });
-  }
-
-  @Test
-  public void testPersistThoughtDirectFileAdding() throws Exception {
-    java.io.File imageFile = new java.io.File(getClass().getResource("img.jpg").toURI());
-    assertTrue(imageFile.exists());
-
-    Thought thought = new Thought("myThought");
-    thought.addFile(imageFile);
-
-    PersistentWork.persist(thought);
-
-    PersistentWork.run((em) -> {
-      Thought readNote = em.find(Thought.class, thought.getId());
-      assertEquals(thought, readNote);
-      assertNotNull(thought.getFiles());
-      assertEquals(1, thought.getFiles().size());
-      File readNoteFile = thought.getFiles().iterator().next();
-      assertEquals(imageFile.length(), readNoteFile.getData().length);
-    });
-  }
 }
