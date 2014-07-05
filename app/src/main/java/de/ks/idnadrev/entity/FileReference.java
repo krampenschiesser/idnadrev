@@ -15,6 +15,7 @@
 
 package de.ks.idnadrev.entity;
 
+import de.ks.idnadrev.entity.validation.OwnerFilled;
 import de.ks.persistence.entity.AbstractPersistentObject;
 import de.ks.persistence.entity.NamedPersistentObject;
 import org.slf4j.Logger;
@@ -23,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
-import java.util.Arrays;
 
 /**
  * Created by Christian Loehnert
@@ -32,6 +32,7 @@ import java.util.Arrays;
  */
 
 @Entity
+@OwnerFilled
 public class FileReference extends NamedPersistentObject<FileReference> {//TODO use file storage path and md5 checksum
   private static final Logger log = LoggerFactory.getLogger(FileReference.class);
   private static final long serialVersionUID = 1L;
@@ -50,18 +51,9 @@ public class FileReference extends NamedPersistentObject<FileReference> {//TODO 
     //
   }
 
-  public FileReference(AbstractPersistentObject owner, String name, String md5) {
+  public FileReference(String name, String md5) {
     super(name);
     md5Sum = md5;
-    if (owner instanceof Thought) {
-      setThought((Thought) owner);
-    } else if (owner instanceof Task) {
-      setTask((Task) owner);
-    } else if (owner instanceof Note) {
-      setNote((Note) owner);
-    } else {
-      throw new IllegalArgumentException("owner is off illegal type, expected " + Arrays.asList(Thought.class.getSimpleName(), Task.class.getSimpleName(), Note.class.getSimpleName()));
-    }
   }
 
   public Thought getThought() {
