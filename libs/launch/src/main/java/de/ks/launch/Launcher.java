@@ -228,8 +228,12 @@ public class Launcher {
     log.info("Stopping services with prio {}", prio);
     List<CompletableFuture<Void>> waveFutures = waves.get(prio).stream()//
             .map((s) -> {
-              return CompletableFuture.supplyAsync(() -> s.stop(), executorService)//
-                      .thenAccept((service) -> log.info("Successfully stopped service {}", service.getName()));
+              if (s.isStopped()) {
+                return CompletableFuture.<Void>completedFuture(null);
+              } else {
+                return CompletableFuture.supplyAsync(() -> s.stop(), executorService)//
+                        .thenAccept((service) -> log.info("Successfully stopped service {}", service.getName()));
+              }
             }).collect(Collectors.toList());
 
     CompletableFuture<Void> allOf = CompletableFuture.allOf(waveFutures.toArray(new CompletableFuture[waveFutures.size()]));
