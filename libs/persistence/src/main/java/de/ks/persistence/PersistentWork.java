@@ -32,6 +32,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Handles transactions and {@link EntityManager} closing.
@@ -39,6 +40,14 @@ import java.util.function.Function;
  */
 public class PersistentWork {
   private static final Logger log = LoggerFactory.getLogger(PersistentWork.class);
+
+  public static <R> R wrap(Supplier<R> supplier) {
+    return PersistentWork.read(em -> supplier.get());
+  }
+
+  public static void wrap(Runnable runnable) {
+    PersistentWork.run(em -> runnable.run());
+  }
 
   public static CompletableFuture<Void> runAsync(Consumer<EntityManager> consumer) {
     ExecutorService executorService = CDI.current().select(ExecutorService.class).get();
@@ -99,6 +108,15 @@ public class PersistentWork {
 
   public static <T> void merge(List<T> all) {
     run((em) -> all.forEach(em::merge));
+  }
+
+  public static <T> void persistAndReload(T t, AbstractPersistentObject... parents) {
+    PersistentWork.run(em -> {
+      for (AbstractPersistentObject parent : parents) {
+        PersistentWork.reload(parent);
+      }
+      em.persist(t);
+    });
   }
 
   public static <T> void persist(T... t) {
