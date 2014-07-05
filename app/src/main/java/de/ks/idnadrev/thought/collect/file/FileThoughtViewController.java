@@ -18,7 +18,9 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import de.ks.activity.ActivityLoadFinishedEvent;
 import de.ks.activity.context.ActivityStore;
+import de.ks.activity.initialization.DataStoreCallback;
 import de.ks.file.FileStore;
+import de.ks.idnadrev.entity.Thought;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -40,7 +42,7 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class FileThoughtViewController implements Initializable {
+public class FileThoughtViewController implements Initializable, DataStoreCallback<Thought> {
   private static final Logger log = LoggerFactory.getLogger(FileThoughtViewController.class);
   protected final ObservableList<File> files = FXCollections.observableArrayList();
   protected final java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
@@ -172,4 +174,13 @@ public class FileThoughtViewController implements Initializable {
     files.clear();
   }
 
+  @Override
+  public void duringLoad(Thought model) {
+
+  }
+
+  @Override
+  public void duringSave(Thought model) {
+    files.forEach(f -> fileStore.getReference(model, f));
+  }
 }
