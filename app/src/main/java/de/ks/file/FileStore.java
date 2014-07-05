@@ -53,7 +53,7 @@ public class FileStore {
     return md5Sum.thenCombine(save, (md5, filePath) -> resolveReference(md5, filePath, owner, file));
   }
 
-  public FileReference resolveReference(String md5, String fileStorePath, AbstractPersistentObject owner, File file) {
+  protected FileReference resolveReference(String md5, String fileStorePath, AbstractPersistentObject owner, File file) {
     FileReference fileReference = PersistentWork.forName(FileReference.class, file.getName());
     if (fileReference != null) {
       String originalMd5 = fileReference.getMd5Sum();
