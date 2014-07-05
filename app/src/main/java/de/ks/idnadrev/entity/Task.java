@@ -102,6 +102,9 @@ public class Task extends NamedPersistentObject<Task> {
   @JoinTable(name = TASK_TAG_JOINTABLE)
   protected Set<Tag> tags = new HashSet<>();
 
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "task")
+  protected Set<FileReference> files = new HashSet<>();
+
   protected Task() {
     this.creationTime = LocalDateTime.now();
   }
