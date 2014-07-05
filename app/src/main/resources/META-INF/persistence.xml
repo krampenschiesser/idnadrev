@@ -46,7 +46,10 @@
             <property name="hibernate.ejb.naming_strategy"
                       value="org.hibernate.cfg.DefaultComponentSafeNamingStrategy"/>
 
-            <!--<property name="hibernate.show_sql" value="true"/>-->
+            <property name="hibernate.connection.provider_class"
+                      value="de.ks.persistence.connection.ConnectionProvider"/>
+
+            <property name="hibernate.show_sql" value="true"/>
         </properties>
     </persistence-unit>
 </persistence>

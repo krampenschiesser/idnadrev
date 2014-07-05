@@ -13,19 +13,15 @@
  * limitations under the License.
  */
 
+
+
 dependencies {
-    compile project(":libs:validation")
-    compile project(":libs:launch")
-
     compile "$jpa2api"
+    compile "org.apache.tomcat:tomcat-jdbc:$tomcatjdbc"
+    compile "org.hibernate:hibernate-core:$hibernate"
+    compile "org.hibernate:hibernate-entitymanager:$hibernate"
 
-    runtime project(":libs:hibernate-pool")
+    testRuntime "com.h2database:h2:$h2"
+    testRuntime "org.javassist:javassist:$javassist"
 
-    runtime "org.hibernate:hibernate-core:$hibernate"
-    runtime "org.hibernate:hibernate-entitymanager:$hibernate"
-    runtime "com.h2database:h2:$h2"
-    runtime "org.jboss:jandex:$jandex"
-    runtime "org.javassist:javassist:$javassist"
-
-    testCompile project(":libs:testutil")
 }

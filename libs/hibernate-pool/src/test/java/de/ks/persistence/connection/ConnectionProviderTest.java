@@ -13,19 +13,18 @@
  * limitations under the License.
  */
 
-dependencies {
-    compile project(":libs:validation")
-    compile project(":libs:launch")
+package de.ks.persistence.connection;
 
-    compile "$jpa2api"
+import org.junit.Test;
 
-    runtime project(":libs:hibernate-pool")
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 
-    runtime "org.hibernate:hibernate-core:$hibernate"
-    runtime "org.hibernate:hibernate-entitymanager:$hibernate"
-    runtime "com.h2database:h2:$h2"
-    runtime "org.jboss:jandex:$jandex"
-    runtime "org.javassist:javassist:$javassist"
-
-    testCompile project(":libs:testutil")
+public class ConnectionProviderTest {
+  @Test
+  public void testOpenEM() throws Exception {
+    EntityManagerFactory factory = Persistence.createEntityManagerFactory("pooltest");
+    factory.createEntityManager();
+    factory.close();
+  }
 }
