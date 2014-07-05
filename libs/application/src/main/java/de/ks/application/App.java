@@ -70,13 +70,12 @@ public class App extends Application {
         Launcher.instance.stopAll();
         Launcher.instance.awaitStop();
       });
+      Launcher.instance.getService(JavaFXService.class).setStage(stage);
+      stage.show();
     } catch (Exception e) {
       log.error("Could not start JavaFXApp", e);
       throw e;
     }
-    Launcher.instance.getService(JavaFXService.class).setStage(stage);
-
-    stage.show();
   }
 
   private Scene createScene(MainWindow mainWindow) {
