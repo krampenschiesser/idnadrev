@@ -20,6 +20,7 @@ import de.ks.persistence.entity.NamedPersistentObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import java.util.Arrays;
@@ -35,11 +36,11 @@ public class FileReference extends NamedPersistentObject<FileReference> {//TODO 
   private static final Logger log = LoggerFactory.getLogger(FileReference.class);
   private static final long serialVersionUID = 1L;
 
-  @ManyToOne
+  @ManyToOne(cascade = CascadeType.ALL)
   protected Note note;
-  @ManyToOne
+  @ManyToOne(cascade = CascadeType.ALL)
   protected Thought thought;
-  @ManyToOne
+  @ManyToOne(cascade = CascadeType.ALL)
   protected Task task;
 
   protected String md5Sum;
