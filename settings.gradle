@@ -17,7 +17,7 @@ include "doc"
 include "libs:testutil", "libs:util", "libs:reflection"
 include "libs:launch"
 //PC stuff
-include "libs:validation", "libs:persistence", "libs:eventsystem", "libs:i18n", "libs:scheduler"
+include "libs:validation", "libs:hibernate-pool", "libs:persistence", "libs:eventsystem", "libs:i18n", "libs:scheduler"
 include "libs:executor"
 //javaFX stuff
 include "libs:images", "libs:application"
