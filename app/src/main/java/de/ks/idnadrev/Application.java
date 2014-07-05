@@ -15,15 +15,26 @@
 
 package de.ks.idnadrev;
 
+import de.ks.launch.JavaFXService;
 import de.ks.launch.Launcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.ExecutionException;
 
 /**
  *
  */
 public class Application {
-  public static void main(String[] args) {
+  private static final Logger log = LoggerFactory.getLogger(Application.class);
+
+  public static void main(String[] args) throws ExecutionException, InterruptedException {
     Launcher launcher = Launcher.instance;
     launcher.startAll(args);
     launcher.awaitStart();
+    launcher.getService(JavaFXService.class).getFx().get();
+    launcher.stopAll();
+    launcher.awaitStop();
+    log.info("Finishing main");
   }
 }
