@@ -34,8 +34,8 @@ public class TestBindingDS implements DataSource<Option> {
   @Override
   public void saveModel(Option model, Consumer<Option> beforeSaving) {
     PersistentWork.wrap(() -> {
-      PersistentWork.merge(model);
       beforeSaving.accept(model);
+      PersistentWork.merge(model);
     });
   }
 }
