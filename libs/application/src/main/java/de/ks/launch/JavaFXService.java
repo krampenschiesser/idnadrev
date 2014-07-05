@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 public class JavaFXService extends Service {
@@ -31,6 +32,7 @@ public class JavaFXService extends Service {
   private String[] args;
   private Stage stage;
   private final CountDownLatch latch = new CountDownLatch(1);
+  private Future<?> fx;
 
   @Override
   public void initialize(ExecutorService executorService, String[] args) {
@@ -41,11 +43,11 @@ public class JavaFXService extends Service {
   @Override
   protected void doStart() {
     log.info("Starting {}", getClass().getSimpleName());
-    executorService.submit(() -> Application.launch(App.class, args));
-    waitForJavaFXThread();
+    fx = executorService.submit(() -> Application.launch(App.class, args));
+    waitForJavaFXInitialized();
   }
 
-  private void waitForJavaFXThread() {
+  private void waitForJavaFXInitialized() {
     int timeout = 10;
     try {
       if (System.getProperties().containsKey(IS_DEBUGGING)) {
@@ -84,5 +86,9 @@ public class JavaFXService extends Service {
   @Override
   public int getPriority() {
     return 2;
+  }
+
+  public Future<?> getFx() {
+    return fx;
   }
 }
