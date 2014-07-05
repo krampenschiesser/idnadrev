@@ -15,12 +15,14 @@
 
 package de.ks.idnadrev.entity;
 
+import de.ks.persistence.entity.AbstractPersistentObject;
 import de.ks.persistence.entity.NamedPersistentObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import java.util.Arrays;
 
 /**
  * Created by Christian Loehnert
@@ -41,15 +43,24 @@ public class FileReference extends NamedPersistentObject<FileReference> {//TODO 
   protected Task task;
 
   protected String md5Sum;
-  protected String absolutePath;
+  protected String fileStorePath;
 
   public FileReference() {
     //
   }
 
-  public FileReference(String name, String md5) {
+  public FileReference(AbstractPersistentObject owner, String name, String md5) {
     super(name);
     md5Sum = md5;
+    if (owner instanceof Thought) {
+      setThought((Thought) owner);
+    } else if (owner instanceof Task) {
+      setTask((Task) owner);
+    } else if (owner instanceof Note) {
+      setNote((Note) owner);
+    } else {
+      throw new IllegalArgumentException("owner is off illegal type, expected " + Arrays.asList(Thought.class.getSimpleName(), Task.class.getSimpleName(), Note.class.getSimpleName()));
+    }
   }
 
   public Thought getThought() {
@@ -58,6 +69,8 @@ public class FileReference extends NamedPersistentObject<FileReference> {//TODO 
 
   public void setThought(Thought thought) {
     this.thought = thought;
+    this.task = null;
+    this.note = null;
   }
 
   public Note getNote() {
@@ -66,6 +79,8 @@ public class FileReference extends NamedPersistentObject<FileReference> {//TODO 
 
   protected void setNote(Note note) {
     this.note = note;
+    this.task = null;
+    this.thought = null;
   }
 
   public Task getTask() {
@@ -74,14 +89,16 @@ public class FileReference extends NamedPersistentObject<FileReference> {//TODO 
 
   public void setTask(Task task) {
     this.task = task;
+    this.thought = null;
+    this.note = null;
   }
 
-  public String getAbsolutePath() {
-    return absolutePath;
+  public String getFileStorePath() {
+    return fileStorePath;
   }
 
-  public FileReference setAbsolutePath(String absolutePath) {
-    this.absolutePath = absolutePath;
+  public FileReference setFileStorePath(String fileStorePath) {
+    this.fileStorePath = fileStorePath;
     return this;
   }
 
@@ -91,6 +108,17 @@ public class FileReference extends NamedPersistentObject<FileReference> {//TODO 
 
   public void setMd5Sum(String md5Sum) {
     this.md5Sum = md5Sum;
+  }
+
+  public AbstractPersistentObject getOwner() {
+    if (getTask() != null) {
+      return getTask();
+    } else if (getThought() != null) {
+      return getThought();
+    } else if (getNote() != null) {
+      return getNote();
+    }
+    return null;
   }
 }
 

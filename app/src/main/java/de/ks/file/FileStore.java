@@ -15,8 +15,8 @@
 package de.ks.file;
 
 import de.ks.idnadrev.entity.FileReference;
-import de.ks.idnadrev.entity.Thought;
 import de.ks.option.Options;
+import de.ks.persistence.PersistentWork;
 import de.ks.persistence.entity.AbstractPersistentObject;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
@@ -28,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
@@ -42,40 +43,61 @@ public class FileStore {
     options = Options.get(FileOptions.class);
   }
 
-  public CompletableFuture<FileReference> createReference(Thought thought, File file) {
+  public CompletableFuture<FileReference> getReference(AbstractPersistentObject owner, File file) {
     if (!file.exists()) {
       throw new IllegalArgumentException("File " + file + " does not exist");
     }
     CompletableFuture<String> md5Sum = CompletableFuture.supplyAsync(() -> getMd5(file), executorService);
-    CompletableFuture<String> save = CompletableFuture.supplyAsync(() -> saveInFileStore(thought, file), executorService);
+    CompletableFuture<String> save = CompletableFuture.supplyAsync(() -> saveInFileStore(owner, file), executorService);
 
-    return md5Sum.thenCombine(save, (md5, filePath) -> new FileReference(file.getName(), md5).setAbsolutePath(filePath));
+    return md5Sum.thenCombine(save, (md5, filePath) -> resolveReference(md5, filePath, owner, file));
   }
 
-  protected String saveInFileStore(Thought thought, File file) {
-    Path targetDirectory = getTargetPath(thought, file.getName());
+  public FileReference resolveReference(String md5, String fileStorePath, AbstractPersistentObject owner, File file) {
+    FileReference fileReference = PersistentWork.forName(FileReference.class, file.getName());
+    if (fileReference != null) {
+      String originalMd5 = fileReference.getMd5Sum();
+      if (!originalMd5.equals(md5)) {
+        log.info("MD5Sum of file {} has changed from {} to {}", file.getName(), originalMd5, md5);
+      }
+      fileReference.setMd5Sum(md5);
+      return fileReference;
+    } else {
+      FileReference reference = new FileReference(owner, file.getName(), md5).setFileStorePath(fileStorePath);
+      PersistentWork.persistAndReload(reference, owner);
+      return reference;
+    }
+  }
+
+  public String getFileStoreInternalDir(AbstractPersistentObject specifier) {
+    String folder = String.format("%09d", specifier.getId());
+    return specifier.getClass().getSimpleName() + File.separator + folder;
+  }
+
+  protected String saveInFileStore(AbstractPersistentObject specifier, File file) {
+    Path targetDirectory = getTargetPath(specifier);
     Path targetPath = targetDirectory.resolve(file.getName());
     if (options.shouldCopy()) {
       try {
-        Files.copy(file.toPath(), targetPath);
+        Files.copy(file.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
       } catch (IOException e) {
         log.error("could not copy {} to {}", file.toPath(), targetPath);
         throw new RuntimeException(e);
       }
     } else {
       try {
-        Files.move(file.toPath(), targetPath);
+        Files.move(file.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
       } catch (IOException e) {
         log.error("could not move {} to {}", file.toPath(), targetPath);
         throw new RuntimeException(e);
       }
     }
-    return targetPath.toFile().getAbsolutePath();
+    return getFileStoreInternalDir(specifier) + File.separator + file.getName();
   }
 
-  private Path getTargetPath(AbstractPersistentObject specifier, String fileName) {
-    String folder = String.format("%09d", specifier.getId());
-    File file = new File(options.getFileStoreDir() + File.separator + specifier.getClass().getSimpleName() + File.separator + folder);
+  private Path getTargetPath(AbstractPersistentObject specifier) {
+    String fileStoreInternalDir = getFileStoreInternalDir(specifier);
+    File file = new File(options.getFileStoreDir() + File.separator + fileStoreInternalDir);
     if (!file.exists()) {
       try {
         Files.createDirectories(file.toPath());
@@ -94,5 +116,11 @@ public class FileStore {
       log.error("Could not read md5 from file {}", file, e);
       throw new RuntimeException(e);
     }
+  }
+
+  public File getFile(FileReference fileReference) {
+    Path targetDirectory = getTargetPath(fileReference.getOwner());
+    Path targetPath = targetDirectory.resolve(fileReference.getName());
+    return targetPath.toFile();
   }
 }

@@ -84,7 +84,6 @@ public class TaskTest {
     final String tagName = "bla";
 
     Note note = new Note("a note");
-    note.addFile(new java.io.File(getClass().getResource(fileName).toURI()));
     Task task = new Task("test");
     task.addNote(note);
     Tag tag = new Tag(tagName);
@@ -96,8 +95,6 @@ public class TaskTest {
       Task readTask = em.find(Task.class, task.getId());
       assertEquals(1, readTask.getNotes().size());
       Note readNote = readTask.getNotes().iterator().next();
-      assertEquals(1, readNote.getFiles().size());
-      assertEquals(fileName, readNote.getFiles().iterator().next().getName());
       assertEquals(1, readNote.getTags().size());
       assertEquals(tagName, readNote.getTags().iterator().next().getName());
     });
@@ -109,8 +106,6 @@ public class TaskTest {
     PersistentWork.run((em) -> {
       Tag readTag = em.find(Tag.class, tag.getId());
       assertNotNull(readTag);
-      FileReference readFile = em.find(FileReference.class, note.getFiles().iterator().next().getId());
-      assertNull(readFile);
     });
     PersistentWork.run((em) -> {
       em.remove(em.find(Task.class, task.getId()));

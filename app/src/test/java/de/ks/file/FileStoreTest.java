@@ -36,21 +36,26 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.List;
 
+import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
-public class FilesTest {
-  private static final Logger log = LoggerFactory.getLogger(FilesTest.class);
+public class FileStoreTest {
+  private static final Logger log = LoggerFactory.getLogger(FileStoreTest.class);
   private static final String TMPDIR = System.getProperty("java.io.tmpdir");
 
   @Inject
   FileStore fileStore;
+  private String fileStoreDir;
+  private static final String md5 = DigestUtils.md5Hex("hello world");
+  private static final String content = "hello world";
 
   @Before
   public void setUp() throws Exception {
-    PersistentWork.deleteAllOf(Thought.class, Option.class);
-    String fileStoreDir = TMPDIR + File.separator + "idnadrevTestStore";
+    PersistentWork.deleteAllOf(FileReference.class, Thought.class, Option.class);
+    fileStoreDir = TMPDIR + File.separator + "idnadrevTestStore";
     Options.store(fileStoreDir, FileOptions.class).getFileStoreDir();
     File file = new File(fileStoreDir);
     if (file.exists()) {
@@ -70,29 +75,34 @@ public class FilesTest {
     }
   }
 
+  protected File createTmpFile() throws IOException {
+    String tempFile = TMPDIR + File.separator + "input.txt";
+    log.info("Creating tempfile {}", tempFile);
+    File file = new File(tempFile);
+    file.createNewFile();
+    com.google.common.io.Files.write(content, file, Charsets.US_ASCII);
+    return file;
+  }
+
   @Test
   public void testSaveFileWithThought() throws Exception {
     File file = createTmpFile();
     Thought bla = new Thought("bla");
     PersistentWork.persist(bla);
 
-    FileReference fileReference = fileStore.createReference(bla, file).get();
+    FileReference fileReference = fileStore.getReference(bla, file).get();
 
-    String expectedAbsolutePath = TMPDIR + File.separator + "idnadrevTestStore" + File.separator + Thought.class.getSimpleName() + File.separator + String.format("%09d", bla.getId()) + File.separator + file.getName();
-    assertEquals(expectedAbsolutePath, fileReference.getAbsolutePath());
+    assertThat(fileReference.getId(), greaterThan(0L));
+
+    String expectedFileStorePath = Thought.class.getSimpleName() + File.separator + String.format("%09d", bla.getId()) + File.separator + file.getName();
+    assertEquals(expectedFileStorePath, fileReference.getFileStorePath());
     assertNotNull(fileReference.getMd5Sum());
-    assertEquals(fileReference.getMd5Sum(), DigestUtils.md5Hex("hello world"));
+    assertEquals(fileReference.getMd5Sum(), md5);
     log.info("Generated md5sum {}", fileReference.getMd5Sum());
-    assertTrue(new File(expectedAbsolutePath).exists());
-  }
+    assertTrue(new File(fileStoreDir + File.separator + expectedFileStorePath).exists());
 
-  protected File createTmpFile() throws IOException {
-    String tempFile = TMPDIR + File.separator + "input.txt";
-    log.info("Creating tempfile {}", tempFile);
-    File file = new File(tempFile);
-    file.createNewFile();
-    com.google.common.io.Files.write("hello world", file, Charsets.US_ASCII);
-    return file;
+    file = fileStore.getFile(fileReference);
+    assertTrue(file.exists());
   }
 
   @Test
@@ -103,9 +113,30 @@ public class FilesTest {
     Thought bla = new Thought("bla");
     PersistentWork.persist(bla);
 
-    FileReference fileReference = fileStore.createReference(bla, file).get();
+    FileReference fileReference = fileStore.getReference(bla, file).get();
 
     assertFalse(file.exists());
-    assertTrue(new File(fileReference.getAbsolutePath()).exists());
+    assertTrue(new File(fileStoreDir + File.separator + fileReference.getFileStorePath()).exists());
+  }
+
+  @Test
+  public void testExistingFile() throws Exception {
+    File file = createTmpFile();
+
+    Thought bla = new Thought("bla");
+    PersistentWork.persist(bla);
+    FileReference fileReference = fileStore.getReference(bla, file).get();
+
+    com.google.common.io.Files.write("hello sauerland", file, Charsets.US_ASCII);
+
+    FileReference newReference = fileStore.getReference(bla, file).get();
+
+    assertEquals(fileReference.getId(), newReference.getId());
+    assertNotEquals(fileReference.getMd5Sum(), newReference.getMd5Sum());
+    File fileStoreFile = fileStore.getFile(newReference);
+
+    List<String> lines = com.google.common.io.Files.readLines(fileStoreFile, Charsets.US_ASCII);
+    assertEquals(1, lines.size());
+    assertEquals("hello sauerland", lines.get(0));
   }
 }

@@ -33,7 +33,7 @@ import java.util.Set;
  * All rights reserved by now, license may come later.
  */
 @Entity
-public class Thought extends NamedPersistentObject<Thought> implements FileContainer {
+public class Thought extends NamedPersistentObject<Thought> {
   private static final long serialVersionUID = 1L;
 
   @Column(length = Integer.MAX_VALUE)
@@ -69,17 +69,6 @@ public class Thought extends NamedPersistentObject<Thought> implements FileConta
 
   public Set<FileReference> getFiles() {
     return files;
-  }
-
-  public void addFile(FileReference file) {
-    this.files.add(file);
-    file.setThought(this);
-  }
-
-  @Override
-  public void removeFile(FileReference file) {
-    this.files.remove(file);
-    file.setThought(null);
   }
 
   public void postPone() {

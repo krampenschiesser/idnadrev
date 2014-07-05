@@ -27,7 +27,7 @@ import java.util.Set;
  * All rights reserved by now, license may come later.
  */
 @Entity
-public class Note extends NamedPersistentObject<Note> implements FileContainer {
+public class Note extends NamedPersistentObject<Note> {
   public static final String NOTE_TAG_JOINTABLE = "note_tag";
 
   private static final long serialVersionUID = 1L;
@@ -93,16 +93,4 @@ public class Note extends NamedPersistentObject<Note> implements FileContainer {
   public Set<FileReference> getFiles() {
     return files;
   }
-
-  public void addFile(FileReference file) {
-    this.files.add(file);
-    file.setNote(this);
-  }
-
-  @Override
-  public void removeFile(FileReference file) {
-    this.files.remove(file);
-    file.setNote(null);
-  }
-
 }
