@@ -15,13 +15,16 @@
 package de.ks.persistence.transaction;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 
 class EntityManagerResource implements TransactionResource {
   private final EntityManager em;
+  private EntityTransaction transaction;
 
   public EntityManagerResource(EntityManager em) {
     this.em = em;
-    em.getTransaction().begin();
+    transaction = em.getTransaction();
+    transaction.begin();
   }
 
   @Override
@@ -31,12 +34,15 @@ class EntityManagerResource implements TransactionResource {
 
   @Override
   public void commit() {
-    em.getTransaction().commit();
+    transaction.commit();
+    transaction = null;
   }
 
   @Override
   public void rollback() {
-    em.getTransaction().rollback();
+    if (transaction != null) {
+      transaction.rollback();
+    }
   }
 
   @Override
