@@ -12,19 +12,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.activity.activitylink;
+package de.ks.activity.initialization;
 
-import de.ks.datasource.NewInstanceDataSource;
+public interface DataStoreCallback<M> extends Comparable<DataStoreCallback<M>> {
+  public static final int DEFAULT_PRIORITY = 10;
 
-import java.util.function.Consumer;
+  void duringLoad(M model);
 
-public class ActivityADS extends NewInstanceDataSource<ActivityAModel> {
-  public ActivityADS() {
-    super(ActivityAModel.class);
+  void duringSave(M model);
+
+  default int getPriority() {
+    return DEFAULT_PRIORITY;
   }
 
-  @Override
-  public void saveModel(ActivityAModel model, Consumer<ActivityAModel> beforeSaving) {
-
+  default int compareTo(DataStoreCallback<M> o) {
+    return Integer.compare(getPriority(), o.getPriority());
   }
 }

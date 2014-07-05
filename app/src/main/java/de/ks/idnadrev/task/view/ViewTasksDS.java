@@ -22,17 +22,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class ViewTasksDS implements ListDataSource<Task> {
   private static final Logger log = LoggerFactory.getLogger(ViewTasksDS.class);
   private Task taskToSelect;
 
   @Override
-  public List<Task> loadModel() {
-    return PersistentWork.from(Task.class, (root, query, builder) -> {
-      String finishTime = PropertyPath.property(Task.class, (t) -> t.getFinishTime());
-      query.where(root.get(finishTime).isNull());
-    }, this::loadChildren);
+  public List<Task> loadModel(Consumer<List<Task>> furtherProcessing) {
+    return PersistentWork.wrap(() -> {
+      List<Task> from = PersistentWork.from(Task.class, (root, query, builder) -> {
+        String finishTime = PropertyPath.property(Task.class, (t) -> t.getFinishTime());
+        query.where(root.get(finishTime).isNull());
+      }, this::loadChildren);
+
+      furtherProcessing.accept(from);
+      return from;
+    });
   }
 
   protected void loadChildren(Task task) {
@@ -49,7 +55,7 @@ public class ViewTasksDS implements ListDataSource<Task> {
   }
 
   @Override
-  public void saveModel(List<Task> model) {
+  public void saveModel(List<Task> model, Consumer<List<Task>> beforeSaving) {
     //noop
   }
 

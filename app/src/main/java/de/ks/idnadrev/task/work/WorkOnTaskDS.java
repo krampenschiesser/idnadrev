@@ -18,19 +18,22 @@ import de.ks.datasource.DataSource;
 import de.ks.idnadrev.entity.Task;
 import de.ks.persistence.PersistentWork;
 
+import java.util.function.Consumer;
+
 public class WorkOnTaskDS implements DataSource<Task> {
   private Task task;
 
   @Override
-  public Task loadModel() {
+  public Task loadModel(Consumer<Task> furtherProcessing) {
+    furtherProcessing.accept(task);
     return task;
   }
 
   @Override
-  public void saveModel(Task model) {
+  public void saveModel(Task model, Consumer<Task> beforeSaving) {
     PersistentWork.run(em -> {
-      Task task = model;
-      task = PersistentWork.byId(Task.class, task.getId());
+      task = PersistentWork.reload(model);
+      beforeSaving.accept(model);
       task.getWorkUnits().last().stop();
     });
   }

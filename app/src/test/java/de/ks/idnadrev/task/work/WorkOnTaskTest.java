@@ -97,7 +97,7 @@ public class WorkOnTaskTest {
     activityController.getCurrentExecutorService().waitForAllTasksDone();
     activityController.waitForDataSource();
     @SuppressWarnings("unchecked") FinishTaskDS datasource = store.getDatasource();
-    Task task = datasource.loadModel();
+    Task task = datasource.loadModel(null);
     assertNotNull(task);
     assertEquals(2, task.getWorkUnits().size());
   }

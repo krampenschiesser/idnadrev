@@ -276,8 +276,10 @@ public class ActivityController {
     Object model = store.getModel();
     CompletableFuture<Object> save = CompletableFuture.supplyAsync(() -> {
       log.debug("Start saving model");
-      store.getBinding().applyControllerContent(model);
-      dataSource.saveModel(model);
+      dataSource.saveModel(model, m -> {
+        store.getBinding().applyControllerContent(model);
+        initialization.getDataStoreCallbacks().forEach(c -> c.duringSave(m));
+      });
       log.debug("Initially saved model '{}'", model);
       return model;
     }, executorService);
@@ -298,7 +300,9 @@ public class ActivityController {
     SuspendablePooledExecutorService executorService = getCurrentExecutorService();
     JavaFXExecutorService javafxExecutor = getJavaFXExecutor();
 
-    CompletableFuture<Object> load = CompletableFuture.supplyAsync(() -> dataSource.loadModel(), executorService);
+    CompletableFuture<Object> load = CompletableFuture.supplyAsync(() -> dataSource.loadModel(m -> {
+      initialization.getDataStoreCallbacks().forEach(c -> c.duringLoad(m));
+    }), executorService);
     finishingFutures = load.thenApplyAsync((value) -> {
       log.debug("Loaded model '{}'", value);
       CDI.current().select(ActivityStore.class).get().setModel(value);

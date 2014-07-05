@@ -33,7 +33,9 @@ public class SaveThought extends Task<Void> {
 
   @Override
   protected Void call() throws Exception {
+
     controller.save();
+
     controller.waitForDataSource();
     return null;
   }

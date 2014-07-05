@@ -17,17 +17,13 @@ package de.ks.idnadrev.task.create;
 
 import de.ks.activity.ActivityController;
 import de.ks.datasource.NewInstanceDataSource;
-import de.ks.idnadrev.entity.Context;
-import de.ks.idnadrev.entity.Tag;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.Thought;
 import de.ks.persistence.PersistentWork;
-import de.ks.persistence.entity.NamedPersistentObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 public class CreateTaskDS extends NewInstanceDataSource<Task> {
@@ -44,49 +40,34 @@ public class CreateTaskDS extends NewInstanceDataSource<Task> {
   }
 
   @Override
-  public Task loadModel() {
-    if (fromTask != null) {
-      return PersistentWork.byId(Task.class, fromTask.getId());
-    } else {
-      Task task = super.loadModel();
-      if (fromThought != null) {
-        task.setName(fromThought.getName());
-        task.setDescription(fromThought.getDescription());
+  public Task loadModel(Consumer<Task> furtherProcessing) {
+    return PersistentWork.wrap(() -> {
+      if (fromTask != null) {
+        Task task = PersistentWork.reload(fromTask);
+        furtherProcessing.accept(task);
+        return task;
+      } else {
+        Task task = super.loadModel(furtherProcessing);
+        if (fromThought != null) {
+          task.setName(fromThought.getName());
+          task.setDescription(fromThought.getDescription());
+        }
+        task.setProject(false);
+        furtherProcessing.accept(task);
+        return task;
       }
-      task.setProject(false);
-
-      return task;
-    }
+    });
   }
 
   @Override
-  public void saveModel(Task model) {
+  public void saveModel(Task model, Consumer<Task> beforeSaving) {
     PersistentWork.run((em) -> {
       Task task = PersistentWork.reload(model);
-      MainTaskInfo mainTaskInfo = controller.getControllerInstance(MainTaskInfo.class);
-
-      String contextName = mainTaskInfo.contextController.getInput().textProperty().getValueSafe().trim();
-      setToOne(task, Context.class, contextName, task::setContext);
-
-      task.setEstimatedTime(mainTaskInfo.getEstimatedDuration());
-
-      mainTaskInfo.tagPane.getChildren().stream().map(c -> new Tag(c.getId())).forEach(tag -> {
-        Tag readTag = PersistentWork.forName(Tag.class, tag.getName());
-        readTag = readTag == null ? tag : readTag;
-        task.addTag(readTag);
-      });
+      beforeSaving.accept(task);
       em.persist(task);
     });
   }
 
-  private <T extends NamedPersistentObject<T>> void setToOne(Task model, Class<T> clazz, String contextName, Consumer<T> consumer) {
-    if (!contextName.isEmpty()) {
-      Optional<T> first = PersistentWork.forNameLike(clazz, contextName).stream().findFirst();
-      if (first.isPresent()) {
-        consumer.accept(first.get());
-      }
-    }
-  }
 
   @Override
   public void setLoadingHint(Object dataSourceHint) {

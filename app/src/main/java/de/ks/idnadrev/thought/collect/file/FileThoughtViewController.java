@@ -18,12 +18,11 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import de.ks.activity.ActivityLoadFinishedEvent;
 import de.ks.activity.context.ActivityStore;
-import de.ks.idnadrev.entity.Thought;
+import de.ks.file.FileStore;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -57,6 +56,8 @@ public class FileThoughtViewController implements Initializable {
 
   @Inject
   ActivityStore store;
+  @Inject
+  FileStore fileStore;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -69,31 +70,10 @@ public class FileThoughtViewController implements Initializable {
     selection.addListener((p, o, n) -> {
       folderName.setText(n == null ? "" : n.getParentFile().getAbsolutePath());
       fileNameLabel.setText(n == null ? "" : n.getName());
-
     });
 
     BooleanBinding isDirectory = Bindings.createBooleanBinding(() -> selection.get() != null && selection.get().isDirectory(), selection);
     edit.disableProperty().bind(isDirectory);
-
-    files.addListener((ListChangeListener<File>) change -> {
-      Thought thought = store.getModel();
-      while (change.next()) {
-        change.getAddedSubList().forEach(file -> {
-          try {
-            thought.addFile(file);
-          } catch (IOException e) {
-            log.error("Could not add file {}", file, e);
-          }
-        });
-        change.getRemoved().forEach((file) -> {
-          try {
-            thought.removeFile(file);
-          } catch (IOException e) {
-            log.error("Could not remove file {}", file, e);
-          }
-        });
-      }
-    });
   }
 
   public void addFiles(List<File> additionalFiles) {

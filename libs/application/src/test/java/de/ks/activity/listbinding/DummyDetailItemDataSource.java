@@ -19,16 +19,17 @@ import de.ks.datasource.ListDataSource;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class DummyDetailItemDataSource implements ListDataSource<DetailItem> {
 
   @Override
-  public List<DetailItem> loadModel() {
+  public List<DetailItem> loadModel(Consumer<List<DetailItem>> furtherProcessing) {
     return Arrays.asList(new DetailItem().setName("Name1").setDescription("Desc1"), new DetailItem().setName("Name2").setDescription("Desc2"));
   }
 
   @Override
-  public void saveModel(List<DetailItem> items) {
+  public void saveModel(List<DetailItem> items, Consumer<List<DetailItem>> beforeSaving) {
     //
   }
 }

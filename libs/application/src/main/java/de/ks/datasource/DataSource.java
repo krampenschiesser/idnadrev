@@ -15,13 +15,15 @@
 
 package de.ks.datasource;
 
+import java.util.function.Consumer;
+
 /**
  *
  */
 public interface DataSource<M> {
-  M loadModel();
+  M loadModel(Consumer<M> furtherProcessing);
 
-  void saveModel(M model);
+  void saveModel(M model, Consumer<M> beforeSaving);
 
   default void setLoadingHint(Object dataSourceHint) {
     //ignored by default

@@ -17,6 +17,8 @@ package de.ks.datasource;
 
 import de.ks.reflection.ReflectionUtil;
 
+import java.util.function.Consumer;
+
 /**
  *
  */
@@ -28,10 +30,10 @@ public abstract class NewInstanceDataSource<M> implements DataSource<M> {
   }
 
   @Override
-  public M loadModel() {
+  public M loadModel(Consumer<M> furtherProcessing) {
     return ReflectionUtil.newInstance(modelClass);
   }
 
   @Override
-  public abstract void saveModel(M model);
+  public abstract void saveModel(M model, Consumer<M> beforeSaving);
 }

@@ -19,6 +19,7 @@ import de.ks.activity.ActivityController;
 import de.ks.activity.ActivityLoadFinishedEvent;
 import de.ks.activity.ModelBound;
 import de.ks.activity.context.ActivityStore;
+import de.ks.activity.initialization.DataStoreCallback;
 import de.ks.application.fxml.DefaultLoader;
 import de.ks.eventsystem.bus.HandlingThread;
 import de.ks.eventsystem.bus.Threading;
@@ -27,6 +28,8 @@ import de.ks.idnadrev.entity.Tag;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.selection.NamedPersistentObjectSelection;
 import de.ks.idnadrev.tag.TagInfo;
+import de.ks.persistence.PersistentWork;
+import de.ks.persistence.entity.NamedPersistentObject;
 import de.ks.reflection.PropertyPath;
 import de.ks.validation.FXValidators;
 import de.ks.validation.ValidationRegistry;
@@ -44,14 +47,12 @@ import org.controlsfx.control.textfield.TextFields;
 import javax.inject.Inject;
 import java.net.URL;
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 @ModelBound(Task.class)
-public class MainTaskInfo implements Initializable {
+public class MainTaskInfo implements Initializable, DataStoreCallback<Task> {
   @FXML
   protected NamedPersistentObjectSelection<Task> parentProjectController;
   @FXML
@@ -154,6 +155,35 @@ public class MainTaskInfo implements Initializable {
 
   public Duration getEstimatedDuration() {
     return durationValidator.getDuration();
+  }
+
+  @Override
+  public void duringLoad(Task model) {
+
+  }
+
+  @Override
+  public void duringSave(Task task) {
+
+    String contextName = contextController.getInput().textProperty().getValueSafe().trim();
+    setToOne(task, Context.class, contextName, task::setContext);
+
+    task.setEstimatedTime(getEstimatedDuration());
+
+    tagPane.getChildren().stream().map(c -> new Tag(c.getId())).forEach(tag -> {
+      Tag readTag = PersistentWork.forName(Tag.class, tag.getName());
+      readTag = readTag == null ? tag : readTag;
+      task.addTag(readTag);
+    });
+  }
+
+  private <T extends NamedPersistentObject<T>> void setToOne(Task model, Class<T> clazz, String contextName, Consumer<T> consumer) {
+    if (!contextName.isEmpty()) {
+      Optional<T> first = PersistentWork.forNameLike(clazz, contextName).stream().findFirst();
+      if (first.isPresent()) {
+        consumer.accept(first.get());
+      }
+    }
   }
 
 }

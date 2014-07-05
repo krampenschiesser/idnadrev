@@ -18,16 +18,24 @@ import de.ks.datasource.DataSource;
 import de.ks.option.Option;
 import de.ks.persistence.PersistentWork;
 
+import java.util.function.Consumer;
+
 public class TestBindingDS implements DataSource<Option> {
 
   @Override
-  public Option loadModel() {
-    Option test = PersistentWork.forName(Option.class, "test");
-    return test;
+  public Option loadModel(Consumer<Option> furtherProcessing) {
+    return PersistentWork.wrap(() -> {
+      Option test = PersistentWork.forName(Option.class, "test");
+      furtherProcessing.accept(test);
+      return test;
+    });
   }
 
   @Override
-  public void saveModel(Option model) {
-    PersistentWork.merge(model);
+  public void saveModel(Option model, Consumer<Option> beforeSaving) {
+    PersistentWork.wrap(() -> {
+      PersistentWork.merge(model);
+      beforeSaving.accept(model);
+    });
   }
 }

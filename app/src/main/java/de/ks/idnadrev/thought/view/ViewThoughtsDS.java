@@ -21,14 +21,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class ViewThoughtsDS implements ListDataSource<Thought> {
   private static final Logger log = LoggerFactory.getLogger(ViewThoughtsDS.class);
 
   @Override
-  public List<Thought> loadModel() {
-    List<Thought> thoughts = PersistentWork.from(Thought.class);
+  public List<Thought> loadModel(Consumer<List<Thought>> furtherProcessing) {
+    List<Thought> thoughts = PersistentWork.wrap(() -> {
+      List<Thought> loaded = PersistentWork.from(Thought.class);
+      furtherProcessing.accept(loaded);
+      return loaded;
+    });
     log.debug("Found {} thoughts", thoughts.size());
     thoughts = thoughts.stream().filter((t) -> !t.isPostponed()).collect(Collectors.toList());
     log.debug("After filtering {} thoughts", thoughts.size());
@@ -36,7 +41,7 @@ public class ViewThoughtsDS implements ListDataSource<Thought> {
   }
 
   @Override
-  public void saveModel(List<Thought> model) {
+  public void saveModel(List<Thought> model, Consumer<List<Thought>> beforeSaving) {
     log.info("noop for'{}'", model);
   }
 }

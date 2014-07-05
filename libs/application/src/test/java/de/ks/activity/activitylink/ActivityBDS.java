@@ -16,6 +16,8 @@ package de.ks.activity.activitylink;
 
 import de.ks.datasource.NewInstanceDataSource;
 
+import java.util.function.Consumer;
+
 public class ActivityBDS extends NewInstanceDataSource<ActivityBModel> {
   private ActivityBModel dataSourceHint;
 
@@ -24,16 +26,17 @@ public class ActivityBDS extends NewInstanceDataSource<ActivityBModel> {
   }
 
   @Override
-  public ActivityBModel loadModel() {
-    ActivityBModel activityBModel = super.loadModel();
+  public ActivityBModel loadModel(Consumer<ActivityBModel> furtherProcessing) {
+    ActivityBModel activityBModel = super.loadModel(furtherProcessing);
     if (dataSourceHint != null) {
       activityBModel.setDescription(dataSourceHint.getDescription());
     }
+    furtherProcessing.accept(activityBModel);
     return activityBModel;
   }
 
   @Override
-  public void saveModel(ActivityBModel model) {
+  public void saveModel(ActivityBModel model, Consumer<ActivityBModel> beforeSaving) {
 
   }
 

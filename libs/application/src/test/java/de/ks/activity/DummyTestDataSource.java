@@ -18,6 +18,8 @@ import de.ks.datasource.NewInstanceDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.function.Consumer;
+
 public class DummyTestDataSource extends NewInstanceDataSource<ActivityModel> {
   private static final Logger log = LoggerFactory.getLogger(DummyTestDataSource.class);
 
@@ -26,7 +28,7 @@ public class DummyTestDataSource extends NewInstanceDataSource<ActivityModel> {
   }
 
   @Override
-  public void saveModel(ActivityModel model) {
+  public void saveModel(ActivityModel model, Consumer<ActivityModel> beforeSaving) {
     log.info("Writing back {}", model);
   }
 }

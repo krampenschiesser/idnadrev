@@ -20,6 +20,8 @@ import de.ks.persistence.PersistentWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.function.Consumer;
+
 public class ThoughStoreDS extends NewInstanceDataSource<Thought> {
   private static final Logger log = LoggerFactory.getLogger(ThoughStoreDS.class);
 
@@ -28,8 +30,11 @@ public class ThoughStoreDS extends NewInstanceDataSource<Thought> {
   }
 
   @Override
-  public void saveModel(Thought model) {
+  public void saveModel(Thought model, Consumer<Thought> beforeSaving) {
     log.info("Saving model {}", model);
-    PersistentWork.persist(model);
+    PersistentWork.wrap(() -> {
+      beforeSaving.accept(model);
+      PersistentWork.persist(model);
+    });
   }
 }
