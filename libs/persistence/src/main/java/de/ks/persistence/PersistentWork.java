@@ -17,6 +17,9 @@ package de.ks.persistence;
 
 import de.ks.persistence.entity.AbstractPersistentObject;
 import de.ks.persistence.entity.NamedPersistentObject;
+import de.ks.persistence.transaction.SimpleTransaction;
+import de.ks.persistence.transaction.TransactionProvider;
+import de.ks.persistence.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +31,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
@@ -110,21 +114,14 @@ public class PersistentWork {
     run((em) -> all.forEach(em::merge));
   }
 
-  public static <T> void persistAndReload(T t, AbstractPersistentObject... parents) {
-    PersistentWork.run(em -> {
-      for (AbstractPersistentObject parent : parents) {
-        PersistentWork.reload(parent);
-      }
-      em.persist(t);
-    });
-  }
-
   public static <T> void persist(T... t) {
     persist(Arrays.asList(t));
   }
 
   public static <T> void persist(List<T> all) {
-    run((em) -> all.forEach(em::persist));
+    run((em) -> all.forEach(t -> {
+      em.persist(t);
+    }));
   }
 
   public static <T> T byId(Class<T> clazz, Long id) {
@@ -212,31 +209,18 @@ public class PersistentWork {
 
   @SuppressWarnings("unchecked")
   protected <T> T run() {
-    if (localEM.get() != null) {
+    Optional<SimpleTransaction> txPesent = TransactionProvider.instance.getCurrentTransaction();
+    if (localEM.get() != null && txPesent.isPresent()) {
       Object retval = execute();
       return (T) retval;
     } else {
       localEM.set(CDI.current().select(EntityManager.class).get());
-
-      EntityManager em = localEM.get();
-      if (!em.getTransaction().isActive()) {
-        em.clear();
-        em.getTransaction().begin();
-        try {
-          Object retval = execute();
-          em.getTransaction().commit();
-          return (T) retval;
-        } catch (Exception e) {
-          log.error("Error occured during commit phase:", e);
-          em.getTransaction().rollback();
-          throw e;
-        } finally {
-          em.clear();
-          em.close();
-          localEM.set(null);
-        }
-      }
-      return null;
+      Object run = Transactional.withNewTransaction(() -> {
+        EntityManager em = localEM.get();
+        TransactionProvider.instance.registerEntityManager(em);
+        return execute();
+      });
+      return (T) run;
     }
   }
 
