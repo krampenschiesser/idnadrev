@@ -54,6 +54,9 @@ public abstract class Service {
     if (state != ServiceRuntimeState.RUNNING) {
       await();
     }
+    if (state == ServiceRuntimeState.STOPPED) {
+      return this;
+    }
     resetLatch();
 
     state = ServiceRuntimeState.STOPPING;
