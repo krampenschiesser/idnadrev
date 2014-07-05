@@ -20,11 +20,14 @@ import de.ks.activity.ActivityLoadFinishedEvent;
 import de.ks.activity.context.ActivityStore;
 import de.ks.activity.initialization.DataStoreCallback;
 import de.ks.file.FileStore;
+import de.ks.idnadrev.entity.FileReference;
 import de.ks.idnadrev.entity.Thought;
+import de.ks.persistence.PersistentWork;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -39,6 +42,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -60,6 +65,7 @@ public class FileThoughtViewController implements Initializable, DataStoreCallba
   ActivityStore store;
   @Inject
   FileStore fileStore;
+  protected final Map<File, CompletableFuture<FileReference>> fileReferences = new HashMap<>();
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -76,6 +82,18 @@ public class FileThoughtViewController implements Initializable, DataStoreCallba
 
     BooleanBinding isDirectory = Bindings.createBooleanBinding(() -> selection.get() != null && selection.get().isDirectory(), selection);
     edit.disableProperty().bind(isDirectory);
+
+    files.addListener((ListChangeListener<File>) change -> {
+      Thought thought = store.getModel();
+      while (change.next()) {
+        change.getAddedSubList().forEach(file -> {
+          fileReferences.put(file, fileStore.getReference(thought, file));
+        });
+        change.getRemoved().forEach((file) -> {
+          fileReferences.remove(file);
+        });
+      }
+    });
   }
 
   public void addFiles(List<File> additionalFiles) {
@@ -181,6 +199,18 @@ public class FileThoughtViewController implements Initializable, DataStoreCallba
 
   @Override
   public void duringSave(Thought model) {
-    files.forEach(f -> fileStore.getReference(model, f));
+    this.fileReferences.entrySet().forEach(entry -> {
+      try {
+        File file = entry.getKey();
+        CompletableFuture<FileReference> cf = entry.getValue();
+        FileReference fileReference = cf.get();
+        fileReference.setThought(model);
+        fileStore.scheduleCopy(fileReference, file);
+        PersistentWork.persist(fileReference);
+      } catch (InterruptedException | ExecutionException e) {
+        log.error("Could not get fileReference for file {}", entry.getKey());
+        throw new RuntimeException(e);
+      }
+    });
   }
 }

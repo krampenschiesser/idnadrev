@@ -38,7 +38,6 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 
-import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
@@ -91,8 +90,9 @@ public class FileStoreTest {
     PersistentWork.persist(bla);
 
     FileReference fileReference = fileStore.getReference(bla, file).get();
-
-    assertThat(fileReference.getId(), greaterThan(0L));
+    fileReference.setThought(bla);
+    fileStore.saveInFileStore(fileReference, file);
+    assertEquals(0, fileReference.getId());
 
     String expectedFileStorePath = Thought.class.getSimpleName() + File.separator + String.format("%09d", bla.getId()) + File.separator + file.getName();
     assertEquals(expectedFileStorePath, fileReference.getFileStorePath());
@@ -114,9 +114,16 @@ public class FileStoreTest {
     PersistentWork.persist(bla);
 
     FileReference fileReference = fileStore.getReference(bla, file).get();
+    PersistentWork.run(em -> {
+      Thought reload = PersistentWork.reload(bla);
+      fileReference.setThought(reload);
+      fileStore.scheduleCopy(fileReference, file);
+      em.persist(fileReference);
+    });
 
     assertFalse(file.exists());
-    assertTrue(new File(fileStoreDir + File.separator + fileReference.getFileStorePath()).exists());
+    File newFile = new File(fileStoreDir + File.separator + fileReference.getFileStorePath());
+    assertTrue(newFile.toString() + " does not exist", newFile.exists());
   }
 
   @Test
@@ -126,10 +133,17 @@ public class FileStoreTest {
     Thought bla = new Thought("bla");
     PersistentWork.persist(bla);
     FileReference fileReference = fileStore.getReference(bla, file).get();
+    PersistentWork.run(em -> {
+      Thought reload = PersistentWork.reload(bla);
+      fileReference.setThought(reload);
+      fileStore.scheduleCopy(fileReference, file);
+      em.persist(fileReference);
+    });
 
     com.google.common.io.Files.write("hello sauerland", file, Charsets.US_ASCII);
 
     FileReference newReference = fileStore.getReference(bla, file).get();
+    fileStore.saveInFileStore(newReference, file);
 
     assertEquals(fileReference.getId(), newReference.getId());
     assertNotEquals(fileReference.getMd5Sum(), newReference.getMd5Sum());

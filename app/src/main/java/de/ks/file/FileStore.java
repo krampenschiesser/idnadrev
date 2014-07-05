@@ -18,6 +18,7 @@ import de.ks.idnadrev.entity.FileReference;
 import de.ks.option.Options;
 import de.ks.persistence.PersistentWork;
 import de.ks.persistence.entity.AbstractPersistentObject;
+import de.ks.persistence.transaction.TransactionProvider;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,12 +49,11 @@ public class FileStore {
       throw new IllegalArgumentException("File " + file + " does not exist");
     }
     CompletableFuture<String> md5Sum = CompletableFuture.supplyAsync(() -> getMd5(file), executorService);
-    CompletableFuture<String> save = CompletableFuture.supplyAsync(() -> saveInFileStore(owner, file), executorService);
 
-    return md5Sum.thenCombine(save, (md5, filePath) -> resolveReference(md5, filePath, owner, file));
+    return md5Sum.thenApply(md5 -> resolveReference(md5, file));
   }
 
-  protected FileReference resolveReference(String md5, String fileStorePath, AbstractPersistentObject owner, File file) {
+  protected FileReference resolveReference(String md5, File file) {
     FileReference fileReference = PersistentWork.forName(FileReference.class, file.getName());
     if (fileReference != null) {
       String originalMd5 = fileReference.getMd5Sum();
@@ -63,8 +63,7 @@ public class FileStore {
       fileReference.setMd5Sum(md5);
       return fileReference;
     } else {
-      FileReference reference = new FileReference(owner, file.getName(), md5).setFileStorePath(fileStorePath);
-      PersistentWork.persistAndReload(reference, owner);
+      FileReference reference = new FileReference(file.getName(), md5);
       return reference;
     }
   }
@@ -72,27 +71,6 @@ public class FileStore {
   public String getFileStoreInternalDir(AbstractPersistentObject specifier) {
     String folder = String.format("%09d", specifier.getId());
     return specifier.getClass().getSimpleName() + File.separator + folder;
-  }
-
-  protected String saveInFileStore(AbstractPersistentObject specifier, File file) {
-    Path targetDirectory = getTargetPath(specifier);
-    Path targetPath = targetDirectory.resolve(file.getName());
-    if (options.shouldCopy()) {
-      try {
-        Files.copy(file.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
-      } catch (IOException e) {
-        log.error("could not copy {} to {}", file.toPath(), targetPath);
-        throw new RuntimeException(e);
-      }
-    } else {
-      try {
-        Files.move(file.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
-      } catch (IOException e) {
-        log.error("could not move {} to {}", file.toPath(), targetPath);
-        throw new RuntimeException(e);
-      }
-    }
-    return getFileStoreInternalDir(specifier) + File.separator + file.getName();
   }
 
   private Path getTargetPath(AbstractPersistentObject specifier) {
@@ -119,8 +97,59 @@ public class FileStore {
   }
 
   public File getFile(FileReference fileReference) {
-    Path targetDirectory = getTargetPath(fileReference.getOwner());
+    AbstractPersistentObject owner = fileReference.getOwner();
+    if (owner == null) {
+      throw new IllegalArgumentException("owner of " + fileReference + " must not be null!");
+    }
+    Path targetDirectory = getTargetPath(owner);
     Path targetPath = targetDirectory.resolve(fileReference.getName());
     return targetPath.toFile();
+  }
+
+  public void scheduleCopy(FileReference fileReference, File file) {
+    checkOwner(fileReference);
+    String fileStoreInternalDir = getFileStoreInternalDir(fileReference.getOwner());
+    fileReference.setFileStorePath(fileStoreInternalDir + File.separator + file.getName());
+
+    CopyFileAfterCommit synchronization = new CopyFileAfterCommit(() -> {
+      saveInFileStore(fileReference, file);
+    });
+    TransactionProvider.instance.getCurrentTransaction().ifPresent(tx -> {
+      tx.registerSynchronization(synchronization);
+    });
+  }
+
+  protected void checkOwner(FileReference fileReference) {
+    if (fileReference.getOwner().getId() == 0) {
+      throw new IllegalArgumentException("Owner " + fileReference.getOwner() + " has to be persisted");
+    }
+  }
+
+  public void saveInFileStore(FileReference ref, File file) {
+    checkOwner(ref);
+    if (!file.exists()) {
+      throw new IllegalArgumentException("File " + file + " has to exist");
+    }
+    if (ref.getFileStorePath() == null) {
+      String fileStoreInternalDir = getFileStoreInternalDir(ref.getOwner());
+      ref.setFileStorePath(fileStoreInternalDir + File.separator + file.getName());
+    }
+
+    Path targetPath = getTargetPath(ref.getOwner()).resolve(file.getName());
+    if (options.shouldCopy()) {
+      try {
+        Files.copy(file.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+      } catch (IOException e) {
+        log.error("could not copy {} to {}", file.toPath(), targetPath);
+        throw new RuntimeException(e);
+      }
+    } else {
+      try {
+        Files.move(file.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+      } catch (IOException e) {
+        log.error("could not move {} to {}", file.toPath(), targetPath);
+        throw new RuntimeException(e);
+      }
+    }
   }
 }

@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotNull;
 
 /**
  * Created by Christian Loehnert
@@ -45,6 +46,7 @@ public class FileReference extends NamedPersistentObject<FileReference> {//TODO 
   protected Task task;
 
   protected String md5Sum;
+  @NotNull
   protected String fileStorePath;
 
   public FileReference() {
