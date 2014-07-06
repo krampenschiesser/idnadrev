@@ -54,10 +54,6 @@ public class AsciiDocParser {
     options = OptionsBuilder.options().headerFooter(true).backend("docbook5").attributes(attributes);
   }
 
-  public void renderToFile(File file, AsciiDocBackend backend) {
-
-  }
-
   public String parse(String input) {
     return parse(input, AsciiDocBackend.HTML5);
   }

@@ -14,17 +14,20 @@
  */
 package de.ks.text.command;
 
+import de.ks.text.AsciiDocEditor;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 
 public interface AsciiDocEditorCommand {
+  default void initialize(AsciiDocEditor edior, Button button) {
+    //noop
+  }
 
   default void execute(TextArea editor) {
     String insertText = getInsertText();
     int insertPosition = editor.getCaretPosition();
     editor.insertText(insertPosition, insertText);
     editor.positionCaret(insertPosition + getNextCaretOffset());
-    TextField textField = new TextField();
     editor.requestFocus();
   }
 

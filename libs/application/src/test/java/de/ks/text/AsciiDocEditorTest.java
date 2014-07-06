@@ -23,17 +23,21 @@ import de.ks.activity.DummyTestDataSource;
 import de.ks.application.Navigator;
 import de.ks.launch.JavaFXService;
 import de.ks.launch.Launcher;
+import de.ks.text.command.InsertImage;
 import de.ks.util.FXPlatform;
 import javafx.application.Platform;
 import javafx.scene.Node;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
+import java.util.concurrent.Future;
 
 import static org.junit.Assert.*;
 
@@ -94,5 +98,25 @@ public class AsciiDocEditorTest {
     FXPlatform.invokeLater(() -> adocEditor.tabPane.getSelectionModel().select(0));
     FXPlatform.waitForFX();
     assertTrue(adocEditor.editor.isFocused());
+  }
+
+  @Test
+  public void testImageInsertion() throws Exception {
+    adocEditor.getImages().add(new ImageData("test", "/de/ks/images/keymap.jpg"));
+
+    InsertImage command = adocEditor.getCommand(InsertImage.class);
+    SelectImageController selectImageController = command.getSelectImageController();
+    for (Future<?> future : selectImageController.getLoadingFutures()) {
+      future.get();
+    }
+    FXPlatform.waitForFX();
+    assertEquals(1, selectImageController.getImagePane().getChildren().size());
+
+    FXPlatform.invokeLater(() -> {
+      GridPane grid = (GridPane) command.getSelectImageController().getImagePane().getChildren().get(0);
+      grid.getChildren().get(0).getOnMouseClicked().handle(null);
+    });
+
+    assertThat(adocEditor.editor.getText(), Matchers.containsString("image::/de/ks/images/keymap.jpg"));
   }
 }

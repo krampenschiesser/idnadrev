@@ -27,6 +27,8 @@ import de.ks.text.command.AsciiDocEditorCommand;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -51,6 +53,8 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -76,6 +80,8 @@ public class AsciiDocEditor implements Initializable {
   AsciiDocParser parser;
   @Inject
   ActivityController controller;
+  @Inject
+  ActivityInitialization initialization;
   @FXML
   protected TextArea editor;
   @FXML
@@ -98,6 +104,11 @@ public class AsciiDocEditor implements Initializable {
   protected final SimpleStringProperty text = new SimpleStringProperty();
   protected LastExecutionGroup<String> renderGroup;
   protected String previewHtmlString;
+  protected Button insertImage = null;
+  protected final ObservableList<ImageData> images = FXCollections.observableArrayList();
+  protected SelectImageController selectImageController;
+
+  protected final Map<Class<?>, AsciiDocEditorCommand> commands = new HashMap<>();
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -122,13 +133,14 @@ public class AsciiDocEditor implements Initializable {
         Platform.runLater(() -> editor.requestFocus());
       }
     });
-
     addCommands();
   }
 
   private void addCommands() {
     CDI.current().select(AsciiDocEditorCommand.class).forEach(c -> {
       Button button = new Button();
+      c.initialize(this, button);
+      this.commands.put(c.getClass(), c);
       button.setText(Localized.get(c.getName()));
       button.setOnAction(e -> c.execute(editor));
       editorCommandPane.getChildren().add(button);
@@ -200,5 +212,18 @@ public class AsciiDocEditor implements Initializable {
     rowConstraints.setMinHeight(0.0);
     rowConstraints.setPrefHeight(0.0);
     rowConstraints.setMaxHeight(0.0);
+  }
+
+  public ObservableList<ImageData> getImages() {
+    return images;
+  }
+
+  public TextArea getEditor() {
+    return editor;
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T extends AsciiDocEditorCommand> T getCommand(Class<T> clazz) {
+    return (T) commands.get(clazz);
   }
 }
