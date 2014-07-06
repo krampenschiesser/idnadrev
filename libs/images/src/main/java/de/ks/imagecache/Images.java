@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.Future;
 
 /**
  *
@@ -48,8 +49,8 @@ public class Images {
     return instance.getImage(imagePath);
   }
 
-  public static void later(String imagePath, AsyncImage applier) {
-    instance.loadAsync(imagePath, applier);
+  public static Future<?> later(String imagePath, AsyncImage applier) {
+    return instance.loadAsync(imagePath, applier);
   }
 
   protected Image getImage(String imagePath) {
@@ -61,8 +62,8 @@ public class Images {
     }
   }
 
-  public void loadAsync(String imagePath, AsyncImage applier) {
-    ForkJoinPool.commonPool().submit(new Runnable() {
+  public Future<?> loadAsync(String imagePath, AsyncImage applier) {
+    return ForkJoinPool.commonPool().submit(new Runnable() {
       @Override
       public void run() {
         Image image = getImage(imagePath);
