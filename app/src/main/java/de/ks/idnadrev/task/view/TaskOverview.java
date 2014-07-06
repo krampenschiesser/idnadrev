@@ -18,14 +18,17 @@ import com.google.common.eventbus.Subscribe;
 import de.ks.activity.ActivityController;
 import de.ks.activity.ActivityLoadFinishedEvent;
 import de.ks.activity.context.ActivityStore;
+import de.ks.activity.initialization.ActivityInitialization;
 import de.ks.activity.initialization.LoadInFXThread;
 import de.ks.eventsystem.bus.HandlingThread;
 import de.ks.eventsystem.bus.Threading;
+import de.ks.file.FileStore;
 import de.ks.i18n.Localized;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.task.work.WorkOnTaskActivity;
 import de.ks.persistence.PersistentWork;
-import de.ks.text.AsciiDocParser;
+import de.ks.text.view.AsciiDocContent;
+import de.ks.text.view.AsciiDocViewer;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -36,8 +39,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.web.WebView;
-import org.apache.commons.lang3.tuple.Pair;
+import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,8 +51,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @LoadInFXThread
 public class TaskOverview implements Initializable {
@@ -81,7 +82,7 @@ public class TaskOverview implements Initializable {
   @FXML
   protected FlowPane tagPane;
   @FXML
-  protected WebView description;
+  protected StackPane description;
   @FXML
   protected Button start;
   @FXML
@@ -94,15 +95,30 @@ public class TaskOverview implements Initializable {
   @Inject
   ActivityController controller;
   @Inject
-  AsciiDocParser parser;
+  ActivityInitialization initialization;
+  @Inject
+  FileStore fileStore;
 
   protected ObservableList<Task> tasks = FXCollections.observableArrayList();
-  protected final ConcurrentHashMap<Long, String> renderedDescription = new ConcurrentHashMap<>();
   private Map<Task, TreeItem<Task>> task2TreeItem = new HashMap<>();
   private final SimpleBooleanProperty disable = new SimpleBooleanProperty(false);
+  private AsciiDocViewer asciiDocViewer;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
+    initialization.loadAdditionalController(AsciiDocViewer.class).thenAcceptAsync(l -> {
+      asciiDocViewer = l.getController();
+      asciiDocViewer.addPreProcessor(fileStore::replaceFileStoreDir);
+      tasksView.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
+        if (n == null) {
+          asciiDocViewer.reset();
+        } else {
+          asciiDocViewer.show(new AsciiDocContent(n.getValue().getName(), n.getValue().getDescription()));
+        }
+      });
+      description.getChildren().add(l.getView());
+    }, controller.getJavaFXExecutor());
+
     ReadOnlyObjectProperty<TreeItem<Task>> selectedItemProperty = tasksView.getSelectionModel().selectedItemProperty();
     selectedItemProperty.addListener((p, o, n) -> applyTask(n));
     taskViewNameColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getValue().getName()));
@@ -143,13 +159,7 @@ public class TaskOverview implements Initializable {
 
       task.getTags().forEach((tag) -> tagPane.getChildren().add(new Label(tag.getName())));
 
-      String asciiDoc = renderedDescription.get(task.getId());
-      if (asciiDoc != null) {
-        description.getEngine().loadContent(asciiDoc);
-      } else {
-        String desc = task.getDescription();
-        description.getEngine().loadContent(desc == null ? "" : desc);
-      }
+      asciiDocViewer.show(new AsciiDocContent(task.getName(), task.getDescription()));
     }
   }
 
@@ -170,7 +180,7 @@ public class TaskOverview implements Initializable {
   private void clear() {
     name.setText(null);
     spentTime.setText(null);
-    description.getEngine().loadContent("");
+    asciiDocViewer.reset();
     parentProject.setText(null);
     context.setText(null);
     physicalEffort.setProgress(0);
@@ -230,23 +240,8 @@ public class TaskOverview implements Initializable {
       }
     });
 
-    tasks.forEach(task -> {
-      CompletableFuture.supplyAsync(() -> Pair.of(task, parser.parse(task.getDescription())), controller.getCurrentExecutorService())//
-              .thenApply(pair -> {
-                Task currentTask = pair.getKey();
-                String asciiDocHtml = pair.getValue();
-                renderedDescription.put(currentTask.getId(), asciiDocHtml);
-                return pair;
-              })//
-              .thenAcceptAsync(pair -> {
-                Task currentTask = pair.getKey();
-                String asciiDocHtml = pair.getValue();
-                TreeItem<Task> selectedItem = tasksView.getSelectionModel().getSelectedItem();
-                if (selectedItem != null && selectedItem.getValue().equals(currentTask)) {
-                  description.getEngine().loadContent(asciiDocHtml);
-                }
-              }, controller.getJavaFXExecutor());
-    });
+    List<AsciiDocContent> asciiDocContents = tasks.stream().map(t -> new AsciiDocContent(t.getName(), t.getDescription())).collect(Collectors.toList());
+    this.asciiDocViewer.preload(asciiDocContents);
   }
 
   protected TreeItem<Task> buildTreeStructure(List<Task> loaded) {

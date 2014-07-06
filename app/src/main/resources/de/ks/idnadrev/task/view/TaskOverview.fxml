@@ -19,7 +19,6 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.web.WebView?>
 <HBox spacing="5.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="de.ks.idnadrev.task.view.TaskOverview">
     <children>
@@ -66,7 +65,7 @@
                 <Label text="%task.physicalEffort" GridPane.rowIndex="3"/>
                 <Label text="%task.tags" GridPane.rowIndex="6"/>
                 <FlowPane fx:id="tagPane" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
-                <WebView fx:id="description" blendMode="DARKEN" focusTraversable="false" prefHeight="-1.0"
+                <StackPane fx:id="description" prefHeight="-1.0"
                          prefWidth="-1.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="11" GridPane.rowSpan="6"/>
                 <Label text="%task.estimatedTime" GridPane.rowIndex="7"/>
                 <Label text="%task.spendTime" GridPane.rowIndex="8"/>
