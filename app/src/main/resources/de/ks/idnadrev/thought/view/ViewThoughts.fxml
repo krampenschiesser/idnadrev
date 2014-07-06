@@ -21,7 +21,6 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.web.WebView?>
 <HBox spacing="5.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="de.ks.idnadrev.thought.view.ViewThoughts">
     <children>
@@ -67,7 +66,7 @@
                 <Label text="%name:"/>
                 <Label text="%description:" GridPane.rowIndex="1"/>
                 <Label fx:id="nameLabel" text="Label" GridPane.columnIndex="1"/>
-                <WebView fx:id="description" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2147483647"
+                <StackPane fx:id="description" GridPane.columnSpan="2147483647"
                          GridPane.rowIndex="2"/>
             </children>
         </GridPane>
