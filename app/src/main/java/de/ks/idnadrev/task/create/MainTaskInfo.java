@@ -31,15 +31,21 @@ import de.ks.idnadrev.tag.TagInfo;
 import de.ks.persistence.PersistentWork;
 import de.ks.persistence.entity.NamedPersistentObject;
 import de.ks.reflection.PropertyPath;
+import de.ks.text.AsciiDocEditor;
 import de.ks.validation.FXValidators;
 import de.ks.validation.ValidationRegistry;
 import de.ks.validation.validators.DurationValidator;
 import javafx.application.Platform;
+import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.util.Callback;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
@@ -65,7 +71,8 @@ public class MainTaskInfo implements Initializable, DataStoreCallback<Task> {
   @FXML
   protected CheckBox project;
   @FXML
-  protected TextArea description;
+  protected StackPane descriptionContainer;
+  protected AsciiDocEditor description;
   @FXML
   protected TextField estimatedTimeDuration;
   @FXML
@@ -89,6 +96,12 @@ public class MainTaskInfo implements Initializable, DataStoreCallback<Task> {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
+    AsciiDocEditor.load(descriptionContainer.getChildren()::add, ade -> this.description = ade);
+
+    description.hideActionBar();
+    StringProperty descriptionBinding = store.getBinding().getStringProperty(Task.class, t -> t.getDescription());
+    descriptionBinding.bind(description.textProperty());
+
     parentProjectController.disableProperty().bind(project.selectedProperty());
     project.disableProperty().bind(parentProjectController.getInput().textProperty().isNotEmpty());
 

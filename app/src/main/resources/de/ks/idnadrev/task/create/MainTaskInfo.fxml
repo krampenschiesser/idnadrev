@@ -91,7 +91,7 @@
         <TextField fx:id="estimatedTimeDuration" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
 
         <Label text="%description" GridPane.rowIndex="10"/>
-        <TextArea fx:id="description" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
+        <StackPane fx:id="descriptionContainer" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
 
         <Label text="%tags" GridPane.rowIndex="11"/>
         <StackPane GridPane.columnIndex="1" GridPane.rowIndex="11" GridPane.valignment="TOP" GridPane.vgrow="NEVER">
