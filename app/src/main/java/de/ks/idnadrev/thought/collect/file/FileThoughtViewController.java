@@ -35,6 +35,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -222,6 +223,12 @@ public class FileThoughtViewController implements Initializable, DataStoreCallba
         FileReference fileReference = cf.get();
         fileReference.setThought(model);
         fileStore.scheduleCopy(fileReference, file);
+
+        String search = "file://" + file.getAbsolutePath();
+        String replacement = FileReference.FILESTORE_VAR + fileReference.getFileStorePath();
+        String newDescription = StringUtils.replace(model.getDescription(), search, replacement);
+        model.setDescription(newDescription);
+
         PersistentWork.persist(fileReference);
       } catch (InterruptedException | ExecutionException e) {
         log.error("Could not get fileReference for file {}", entry.getKey());

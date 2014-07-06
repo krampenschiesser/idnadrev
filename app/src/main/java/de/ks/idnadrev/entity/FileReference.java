@@ -35,6 +35,7 @@ import javax.validation.constraints.NotNull;
 @Entity
 @OwnerFilled
 public class FileReference extends NamedPersistentObject<FileReference> {//TODO use file storage path and md5 checksum
+  public static final String FILESTORE_VAR = "$filestore$";
   private static final Logger log = LoggerFactory.getLogger(FileReference.class);
   private static final long serialVersionUID = 1L;
 

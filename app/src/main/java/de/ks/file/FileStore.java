@@ -152,4 +152,8 @@ public class FileStore {
       }
     }
   }
+
+  public String getFileStoreDir() {
+    return Options.get(FileOptions.class).getFileStoreDir();
+  }
 }

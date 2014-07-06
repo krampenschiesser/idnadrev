@@ -22,12 +22,14 @@ import de.ks.idnadrev.entity.Thought;
 import de.ks.launch.JavaFXService;
 import de.ks.launch.Launcher;
 import de.ks.persistence.PersistentWork;
+import de.ks.text.command.InsertImage;
 import de.ks.util.FXPlatform;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import org.junit.After;
 import org.junit.Before;
@@ -39,9 +41,14 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.Future;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
@@ -206,5 +213,56 @@ public class CollectThoughtTest {
 
     Thought thought = thoughts.get(0);
     assertEquals(1, thought.getFiles().size());
+  }
+
+  @Test
+  public void testAdocWithFiles() throws Exception {
+    File file = new File(System.getProperty("java.io.tmpdir") + File.separator + "test.jpg");
+    file.deleteOnExit();
+    file.createNewFile();
+
+    String contentType = Files.probeContentType(file.toPath());
+    assertThat(contentType, containsString("image"));
+
+
+    FXPlatform.invokeLater(() -> {
+      addThought.fileViewController.addFiles(Arrays.asList(file));
+    });
+
+    InsertImage command = addThought.description.getCommand(InsertImage.class);
+    for (Future<?> future : command.getSelectImageController().getLoadingFutures()) {
+      future.get();
+    }
+
+    FXPlatform.invokeLater(() -> {
+      GridPane grid = (GridPane) command.getSelectImageController().getImagePane().getChildren().get(0);
+      grid.getChildren().get(0).getOnMouseClicked().handle(null);
+    });
+
+    FXPlatform.waitForFX();
+    assertThat(addThought.description.getText(), containsString("test.jpg"));
+
+    controller.save();
+    controller.waitForTasks();
+
+    PersistentWork.wrap(() -> {
+      List<FileReference> references = PersistentWork.from(FileReference.class);
+      List<Thought> thoughts = PersistentWork.from(Thought.class);
+
+      assertEquals(1, references.size());
+      assertEquals(1, thoughts.size());
+
+      Thought thought = thoughts.get(0);
+      log.info(thought.getDescription());
+      FileReference fileReference = references.get(0);
+
+      assertEquals("test.jpg", fileReference.getName());
+      assertEquals(thought, fileReference.getOwner());
+
+      assertThat(thought.getDescription(), not(containsString("file://" + file.getAbsolutePath())));
+      assertThat(thought.getDescription(), containsString(fileReference.getFileStorePath()));
+      assertThat(thought.getDescription(), containsString(FileReference.FILESTORE_VAR));
+    });
+
   }
 }
