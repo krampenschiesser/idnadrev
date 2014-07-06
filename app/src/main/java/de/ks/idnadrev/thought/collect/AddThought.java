@@ -94,6 +94,8 @@ public class AddThought implements Initializable {
     description.hideActionBar();
     StringProperty descriptionBinding = store.getBinding().getStringProperty(Thought.class, t -> t.getDescription());
     descriptionBinding.bind(description.textProperty());
+
+    fileViewController.setImageData(description.getImages());
   }
 
   private void bindValidation() {

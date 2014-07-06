@@ -23,6 +23,7 @@ import de.ks.file.FileStore;
 import de.ks.idnadrev.entity.FileReference;
 import de.ks.idnadrev.entity.Thought;
 import de.ks.persistence.PersistentWork;
+import de.ks.text.ImageData;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -41,6 +42,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -66,6 +68,7 @@ public class FileThoughtViewController implements Initializable, DataStoreCallba
   @Inject
   FileStore fileStore;
   protected final Map<File, CompletableFuture<FileReference>> fileReferences = new HashMap<>();
+  private ObservableList<ImageData> imageData;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -98,6 +101,7 @@ public class FileThoughtViewController implements Initializable, DataStoreCallba
 
   public void addFiles(List<File> additionalFiles) {
     additionalFiles.removeAll(files);
+    additionalFiles.forEach(this::addPossibleImage);
     files.addAll(additionalFiles);
 
     if (!additionalFiles.isEmpty()) {
@@ -107,6 +111,18 @@ public class FileThoughtViewController implements Initializable, DataStoreCallba
       fileList.scrollTo(lastFile);
       fileList.getSelectionModel().clearSelection();
       fileList.getSelectionModel().select(lastFile);
+    }
+  }
+
+  protected void addPossibleImage(File file) {
+    try {
+      String contentType = Files.probeContentType(file.toPath());
+      if (contentType != null && contentType.contains("image")) {
+
+        imageData.add(new ImageData(file.getName(), file.getPath()));
+      }
+    } catch (IOException e) {
+      //
     }
   }
 
@@ -212,5 +228,9 @@ public class FileThoughtViewController implements Initializable, DataStoreCallba
         throw new RuntimeException(e);
       }
     });
+  }
+
+  public void setImageData(ObservableList<ImageData> imageData) {
+    this.imageData = imageData;
   }
 }
