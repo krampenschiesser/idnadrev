@@ -20,7 +20,6 @@ import de.ks.activity.ActivityLoadFinishedEvent;
 import de.ks.activity.ListBound;
 import de.ks.activity.initialization.ActivityInitialization;
 import de.ks.file.FileStore;
-import de.ks.idnadrev.entity.FileReference;
 import de.ks.idnadrev.entity.Thought;
 import de.ks.persistence.PersistentWork;
 import de.ks.text.view.AsciiDocContent;
@@ -33,12 +32,10 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.StackPane;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -66,7 +63,7 @@ public class ViewThoughts implements Initializable {
   public void initialize(URL location, ResourceBundle resources) {
     initialization.loadAdditionalController(AsciiDocViewer.class).thenAcceptAsync(l -> {
       asciiDocViewer = l.getController();
-      asciiDocViewer.addPreProcessor(this::replaceFileStoreDir);
+      asciiDocViewer.addPreProcessor(fileStore::replaceFileStoreDir);
       _this.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
         if (n == null) {
           asciiDocViewer.reset();
@@ -125,12 +122,4 @@ public class ViewThoughts implements Initializable {
     this.asciiDocViewer.preload(asciiDocContents);
   }
 
-  private String replaceFileStoreDir(String description) {
-    String replacement = "file://" + fileStore.getFileStoreDir();
-    if (!replacement.endsWith(File.separator)) {
-      replacement = replacement + File.separator;
-    }
-    String newDescription = StringUtils.replace(description, FileReference.FILESTORE_VAR, replacement);
-    return newDescription;
-  }
 }

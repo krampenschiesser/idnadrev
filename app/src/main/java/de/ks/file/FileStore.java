@@ -20,6 +20,7 @@ import de.ks.persistence.PersistentWork;
 import de.ks.persistence.entity.AbstractPersistentObject;
 import de.ks.persistence.transaction.TransactionProvider;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -155,5 +156,14 @@ public class FileStore {
 
   public String getFileStoreDir() {
     return Options.get(FileOptions.class).getFileStoreDir();
+  }
+
+  public String replaceFileStoreDir(String description) {
+    String replacement = "file://" + getFileStoreDir();
+    if (!replacement.endsWith(File.separator)) {
+      replacement = replacement + File.separator;
+    }
+    String newDescription = StringUtils.replace(description, FileReference.FILESTORE_VAR, replacement);
+    return newDescription;
   }
 }
