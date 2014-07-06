@@ -60,9 +60,10 @@ public class AsciiDocViewer {
     String identifier = content.getIdentifier();
     currentIdentifier.set(identifier);
     if (preloaded.containsKey(identifier)) {
-      webView.getEngine().loadContent(preloaded.get(identifier));
+      String html = preloaded.get(identifier);
+      webView.getEngine().loadContent(html == null ? "" : html);
     } else {
-      webView.getEngine().loadContent(content.getAdoc());
+      webView.getEngine().loadContent(content.getAdoc() == null ? "" : content.getAdoc());
     }
   }
 
