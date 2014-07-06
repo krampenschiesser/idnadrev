@@ -28,12 +28,15 @@ import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.WorkUnit;
 import de.ks.idnadrev.task.finish.FinishTaskActivity;
 import de.ks.persistence.PersistentWork;
+import de.ks.text.AsciiDocEditor;
 import de.ks.text.AsciiDocParser;
 import javafx.application.Platform;
+import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
-import javafx.scene.web.WebView;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,12 +44,11 @@ import javax.inject.Inject;
 import java.net.URL;
 import java.time.Duration;
 import java.util.ResourceBundle;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-@LoadInFXThread
 @ModelBound(Task.class)
+@LoadInFXThread
 public class WorkOnTask implements Initializable {
   private static final Logger log = LoggerFactory.getLogger(WorkOnTask.class);
   public static final String OVERTIME_STYLE_CLASS = "negativeFunFactor";
@@ -59,15 +61,8 @@ public class WorkOnTask implements Initializable {
   @FXML
   protected Label overTime;
   @FXML
-  protected WebView descriptionView;
-  @FXML
-  protected TextArea description;
-  @FXML
-  protected Tab previewTab;
-  @FXML
-  protected Tab editTab;
-  @FXML
-  protected TabPane tabView;
+  protected StackPane descriptionView;
+  protected AsciiDocEditor description;
 
   @Inject
   protected ActivityController controller;
@@ -79,11 +74,12 @@ public class WorkOnTask implements Initializable {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    description.textProperty().addListener((p, o, n) -> {
-      if (n != null) {
-        renderAsciiDoc(n, false);//FIXME use blocking queue last render pattern here
-      }
-    });
+    AsciiDocEditor.load(descriptionView.getChildren()::add, ade -> this.description = ade);
+
+    description.hideActionBar();
+    StringProperty descriptionBinding = store.getBinding().getStringProperty(Task.class, t -> t.getDescription());
+    descriptionBinding.bind(description.textProperty());
+
     overTime.textProperty().isNotEmpty().addListener((p, o, n) -> {
       if (n) {
         log.info("Switching to negative style class");
@@ -112,12 +108,9 @@ public class WorkOnTask implements Initializable {
   public void afterLoad(ActivityLoadFinishedEvent event) {
     Task task = event.getModel();
     String descriptionContent = task.getDescription();
-    descriptionView.getEngine().loadContent(descriptionContent);
+    description.setText(descriptionContent);
 
     SuspendablePooledExecutorService executorService = controller.getCurrentExecutorService();
-
-    renderAsciiDoc(descriptionContent, true);
-
     PersistentWork.runAsync(em -> {
       Task reloaded = PersistentWork.byId(Task.class, task.getId());
       WorkUnit workUnit = new WorkUnit(reloaded);
@@ -148,16 +141,6 @@ public class WorkOnTask implements Initializable {
       long remainingMinutes = duration.minus(Duration.ofHours(hours)).toMinutes();
       return hours + ":" + String.format("%02d", remainingMinutes) + Localized.get("duration.hours.short");
     }
-  }
-
-  public void renderAsciiDoc(String descriptionContent, boolean showTab) {
-    CompletableFuture.supplyAsync(() -> parser.parse(descriptionContent), controller.getCurrentExecutorService())//
-            .thenAcceptAsync(html -> {
-              descriptionView.getEngine().loadContent(html);
-              if (showTab && descriptionContent != null && !descriptionContent.isEmpty()) {
-                tabView.getSelectionModel().select(previewTab);
-              }
-            }, controller.getJavaFXExecutor());
   }
 
   private void increaseProgress() {

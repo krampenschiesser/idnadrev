@@ -17,7 +17,6 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.web.WebView?>
 <GridPane hgap="5.0" prefHeight="600.0" prefWidth="800.0" vgap="5.0" xmlns="http://javafx.com/javafx/8"
           xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.idnadrev.task.work.WorkOnTask">
     <columnConstraints>
@@ -34,21 +33,6 @@
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
     </rowConstraints>
     <children>
-        <TabPane fx:id="tabView" GridPane.columnSpan="2147483647" GridPane.rowIndex="3">
-            <tabs>
-                <Tab fx:id="editTab" closable="false" text="%edit">
-                    <content>
-                        <TextArea fx:id="description" prefHeight="200.0" prefWidth="200.0"/>
-                    </content>
-                </Tab>
-                <Tab fx:id="previewTab" closable="false" text="%preview">
-                    <content>
-                        <WebView fx:id="descriptionView" focusTraversable="false" prefHeight="-1.0" prefWidth="-1.0"
-                                 GridPane.columnSpan="2147483647" GridPane.rowIndex="3"/>
-                    </content>
-                </Tab>
-            </tabs>
-        </TabPane>
         <Label text="%task.name:" GridPane.columnSpan="2147483647"/>
         <Label text="%task.description:" GridPane.columnSpan="2147483647" GridPane.rowIndex="2"/>
         <Label fx:id="name" styleClass="title" text="Label" GridPane.columnSpan="2147483647" GridPane.rowIndex="1"/>
@@ -64,5 +48,7 @@
         <Label fx:id="estimatedTime" styleClass="title" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
         <Label text="%task.overTime:" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
         <Label fx:id="overTime" styleClass="title" GridPane.columnIndex="3" GridPane.rowIndex="2"/>
+        <StackPane fx:id="descriptionView" prefHeight="150.0" prefWidth="200.0" GridPane.columnSpan="2147483647"
+                   GridPane.rowIndex="3"/>
     </children>
 </GridPane>
