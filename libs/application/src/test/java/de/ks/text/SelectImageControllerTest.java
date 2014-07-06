@@ -16,32 +16,53 @@
 package de.ks.text;
 
 import de.ks.LauncherRunner;
-import de.ks.application.fxml.DefaultLoader;
+import de.ks.activity.ActivityCfg;
+import de.ks.activity.ActivityController;
+import de.ks.activity.DummyTestDataSource;
+import de.ks.application.Navigator;
+import de.ks.launch.JavaFXService;
+import de.ks.launch.Launcher;
+import de.ks.util.FXPlatform;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import javax.inject.Inject;
 
 import static org.junit.Assert.assertEquals;
 
 @RunWith(LauncherRunner.class)
 public class SelectImageControllerTest {
+  @Inject
+  ActivityController activityController;
+  private ActivityCfg wrapper;
 
   private FlowPane imagesView;
   private SelectImageController controller;
 
   @Before
   public void setUp() throws Exception {
-    DefaultLoader<FlowPane, SelectImageController> loader = new DefaultLoader<>(SelectImageController.class);
-    loader.load();
-    imagesView = loader.getView();
-    controller = loader.getController();
+    JavaFXService service = Launcher.instance.getService(JavaFXService.class);
+    Navigator.registerWithBorderPane(service.getStage());
+    wrapper = new ActivityCfg(DummyTestDataSource.class, SelectImageController.class);
+    activityController.start(wrapper);
+
+    controller = activityController.getControllerInstance(SelectImageController.class);
+    imagesView = controller.getImagePane();
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    activityController.stop(wrapper);
   }
 
   @Test
   public void testShowImage() throws Exception {
     controller.addImage("keymap", "/de/ks/images/keymap.jpg").get();
+    FXPlatform.waitForFX();
     assertEquals(1, imagesView.getChildren().size());
     GridPane grid = (GridPane) imagesView.getChildren().get(0);
     assertEquals(2, grid.getChildren().size());
