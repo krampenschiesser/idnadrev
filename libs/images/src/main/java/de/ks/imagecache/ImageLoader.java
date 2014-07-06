@@ -38,25 +38,33 @@ public class ImageLoader extends CacheLoader<String, Image> {
     if (resource == null) {
       log.debug("Could not load image {} from classpath", key);
     } else {
-      return loadFromUrl(resource);
+      Image image = loadFromUrl(resource);
+      log.info("Loaded image {} from classpath", key);
+      return image;
     }
     resource = getClass().getResource(DEFAULT_IMAGE_PACKAGE + key);
     if (resource == null) {
-      log.debug("Could not load image {} from default image package", key);
+      log.debug("Could not load image {} from default image package {}", key, DEFAULT_IMAGE_PACKAGE);
     } else {
-      return loadFromUrl(resource);
+      Image image = loadFromUrl(resource);
+      log.info("Loaded image {} from default image package {}", key, DEFAULT_IMAGE_PACKAGE);
+      return image;
     }
 
     File file = new File(key);
     if (file.exists()) {
 
-      return loadFromFile(file);
+      Image image = loadFromFile(file);
+      log.info("Loaded image {} from file {}", key, file);
+      return image;
     } else {
       log.debug("Could not load image {} from filesystem", key);
     }
     try {
       URL url = new URL(key);
-      return loadFromUrl(url);
+      Image image = loadFromUrl(url);
+      log.info("Loaded image {} from url {}", key, url);
+      return image;
     } catch (MalformedURLException e) {
       log.debug("Could not load image {} via URL", key);
     }
