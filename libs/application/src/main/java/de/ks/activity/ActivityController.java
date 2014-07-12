@@ -20,15 +20,18 @@ import de.ks.activity.context.ActivityStore;
 import de.ks.activity.executor.ActivityExecutor;
 import de.ks.activity.initialization.ActivityInitialization;
 import de.ks.activity.link.ViewLink;
+import de.ks.activity.loading.ActivityLoadingExecutor;
 import de.ks.application.Navigator;
 import de.ks.datasource.DataSource;
 import de.ks.eventsystem.bus.EventBus;
 import de.ks.executor.JavaFXExecutorService;
 import de.ks.executor.SuspendablePooledExecutorService;
+import javafx.application.Platform;
 import javafx.scene.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PreDestroy;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
@@ -47,6 +50,8 @@ import java.util.function.Function;
 @Singleton
 public class ActivityController {
   private static final Logger log = LoggerFactory.getLogger(ActivityController.class);
+  protected final ActivityLoadingExecutor loadingExecutor = new ActivityLoadingExecutor();
+
   @Inject
   protected ActivityContext context;
   @Inject
@@ -70,22 +75,24 @@ public class ActivityController {
   }
 
   public void resumePreviousActivity(Object hint) {
-    lock.lock();
-    try {
-      Iterator<ActivityCfg> activityIterator = activities.descendingIterator();
-      ActivityCfg current = activityIterator.next();
-      if (activityIterator.hasNext()) {
-        ActivityCfg previous = activityIterator.next();
-        log.info("Resuming previous activity {}, current={}", previous.getClass().getName(), current.getClass().getName());
-        stop(current);
-        resume(previous, hint);
-      } else {
-        log.info("Reloading current activity {}", current.getClass().getName());
-        reload();
+    loadingExecutor.submit(() -> {
+      lock.lock();
+      try {
+        Iterator<ActivityCfg> activityIterator = activities.descendingIterator();
+        ActivityCfg current = activityIterator.next();
+        if (activityIterator.hasNext()) {
+          ActivityCfg previous = activityIterator.next();
+          log.info("Resuming previous activity {}, current={}", previous.getClass().getName(), current.getClass().getName());
+          stop(current);
+          resume(previous, hint);
+        } else {
+          log.info("Reloading current activity {}", current.getClass().getName());
+          reload();
+        }
+      } finally {
+        lock.unlock();
       }
-    } finally {
-      lock.unlock();
-    }
+    });
   }
 
   private void resume(ActivityCfg activityCfg, Object dataSourceHint) {
@@ -104,14 +111,13 @@ public class ActivityController {
     log.info("Resumed activity {} with hint", id, dataSourceHint);
   }
 
-  public <T extends ActivityCfg> T start(Class<T> activityClass) {
-    return start(activityClass, null, null);
+  public <T extends ActivityCfg> void start(Class<T> activityClass) {
+    start(activityClass, null, null);
   }
 
-  public <T extends ActivityCfg> T start(Class<T> activityClass, Function toConverter, Function returnConverter) {
+  public <T extends ActivityCfg> void start(Class<T> activityClass, Function toConverter, Function returnConverter) {
     T activity = CDI.current().select(activityClass).get();
     start(activity, toConverter, returnConverter);
-    return activity;
   }
 
   public void start(ActivityCfg activityCfg) {
@@ -120,40 +126,41 @@ public class ActivityController {
 
   @SuppressWarnings("unchecked")
   public void start(ActivityCfg activityCfg, Function toConverter, Function returnConverter) {
-    lock.lock();
-    try {
-      Object dataSourceHint = null;
-      if (context.hasCurrentActivity() && toConverter != null) {
-        dataSourceHint = toConverter.apply(store.getModel());
+    loadingExecutor.submit(() -> {
+      lock.lock();
+      try {
+        Object dataSourceHint = null;
+        if (context.hasCurrentActivity() && toConverter != null) {
+          dataSourceHint = toConverter.apply(store.getModel());
+        }
+        activityCfg.setReturnConverter(returnConverter);
+        String id = activityCfg.getClass().getName();
+
+        if (context.hasCurrentActivity()) {
+          initialization.getControllers().forEach((controller) -> eventBus.unregister(controller));
+          this.executor.suspend(getCurrentActivityId());
+        }
+
+        context.startActivity(id);
+        executor.startOrResume(id);
+        activities.add(activityCfg);
+        registeredActivities.put(id, activityCfg);
+
+        log.info("Starting activity {}", id);
+        DataSource dataSource = CDI.current().select(activityCfg.getDataSource()).get();
+        dataSource.setLoadingHint(dataSourceHint);
+        store.setDatasource(dataSource);
+
+        initialization.loadActivity(activityCfg);
+        initialization.getControllers().forEach((controller) -> eventBus.register(controller));
+
+        select(activityCfg, activityCfg.getInitialController(), Navigator.MAIN_AREA);
+        reload();
+        log.info("Started activity {}", id);
+      } finally {
+        lock.unlock();
       }
-      activityCfg.setReturnConverter(returnConverter);
-      String id = activityCfg.getClass().getName();
-
-      if (context.hasCurrentActivity()) {
-        initialization.getControllers().forEach((controller) -> eventBus.unregister(controller));
-        this.executor.suspend(getCurrentActivityId());
-      }
-
-      context.startActivity(id);
-      executor.startOrResume(id);
-      activities.add(activityCfg);
-      registeredActivities.put(id, activityCfg);
-
-      log.info("Starting activity {}", id);
-      DataSource dataSource = CDI.current().select(activityCfg.getDataSource()).get();
-      dataSource.setLoadingHint(dataSourceHint);
-      store.setDatasource(dataSource);
-
-      initialization.loadActivity(activityCfg);
-      initialization.getControllers().forEach((controller) -> eventBus.register(controller));
-
-      select(activityCfg, activityCfg.getInitialController(), Navigator.MAIN_AREA);
-      reload();
-      log.info("Started activity {}", id);
-    } finally {
-      lock.unlock();
-    }
-
+    });
   }
 
   public void select(ActivityCfg activityCfg, ViewLink link) {
@@ -164,6 +171,11 @@ public class ActivityController {
     Node view = initialization.getViewForController(targetController);
     navigator.get().present(presentationArea, view);
     activityCfg.setCurrentController(targetController);
+  }
+
+  public void waitForTasks() {
+    getCurrentExecutorService().waitForAllTasksDone();
+    getJavaFXExecutor().waitForAllTasksDone();
   }
 
   public void waitForDataSource() {
@@ -200,6 +212,12 @@ public class ActivityController {
     }
   }
 
+  protected void checkNotFXThread() {
+    if (Platform.isFxApplicationThread()) {
+      throw new IllegalThreadStateException("Operation not allowed in javafx thread");
+    }
+  }
+
   public ActivityCfg getCurrentActivity() {
     return activities.getLast();
   }
@@ -209,24 +227,26 @@ public class ActivityController {
   }
 
   public void stop(Class<? extends ActivityCfg> activityClass) {
-    lock.lock();
-    try {
-      String activityId = activityClass.getName();
-      ActivityCfg activityCfg = registeredActivities.get(activityId);
-      if (activityCfg == null) {
-        log.warn("Could not stop unregistered activity {}", activityId);
-        return;
+    loadingExecutor.submit(() -> {
+      lock.lock();
+      try {
+        String activityId = activityClass.getName();
+        ActivityCfg activityCfg = registeredActivities.get(activityId);
+        if (activityCfg == null) {
+          log.warn("Could not stop unregistered activity {}", activityId);
+          return;
+        }
+        String id = activityId;
+        executor.shutdown(id);
+        if (context.hasCurrentActivity()) {
+          initialization.getControllers().forEach((controller) -> eventBus.unregister(controller));
+        }
+        activities.removeLastOccurrence(activityCfg);
+        stop(id);
+      } finally {
+        lock.unlock();
       }
-      String id = activityId;
-      executor.shutdown(id);
-      if (context.hasCurrentActivity()) {
-        initialization.getControllers().forEach((controller) -> eventBus.unregister(controller));
-      }
-      activities.removeLastOccurrence(activityCfg);
-      stop(id);
-    } finally {
-      lock.unlock();
-    }
+    });
   }
 
   public void stop(ActivityCfg activityCfg) {
@@ -318,8 +338,13 @@ public class ActivityController {
     });
   }
 
-  public void waitForTasks() {
-    getCurrentExecutorService().waitForAllTasksDone();
-    getJavaFXExecutor().waitForAllTasksDone();
+  @PreDestroy
+  private void shutdown() {
+    loadingExecutor.shutdown();
+    try {
+      loadingExecutor.awaitTermination(5, TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+      //i dont care
+    }
   }
 }
