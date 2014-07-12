@@ -67,7 +67,7 @@ public class SelectImageControllerTest {
     GridPane grid = (GridPane) imagesView.getChildren().get(0);
     assertEquals(2, grid.getChildren().size());
 
-    controller.removeImage("keymap");
+    FXPlatform.invokeLater(() -> controller.removeImage("keymap"));
     assertEquals(0, imagesView.getChildren().size());
   }
 }
