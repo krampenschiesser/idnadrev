@@ -37,10 +37,7 @@ import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
@@ -75,7 +72,7 @@ public class ActivityController {
   }
 
   public void resumePreviousActivity(Object hint) {
-    loadingExecutor.submit(() -> {
+    loadInExecutor("could not resume previous activity", () -> {
       lock.lock();
       try {
         Iterator<ActivityCfg> activityIterator = activities.descendingIterator();
@@ -126,7 +123,8 @@ public class ActivityController {
 
   @SuppressWarnings("unchecked")
   public void start(ActivityCfg activityCfg, Function toConverter, Function returnConverter) {
-    loadingExecutor.submit(() -> {
+
+    loadInExecutor("couldn ot start " + activityCfg, () -> {
       lock.lock();
       try {
         Object dataSourceHint = null;
@@ -161,6 +159,20 @@ public class ActivityController {
         lock.unlock();
       }
     });
+  }
+
+  protected void loadInExecutor(String errorMsg, Runnable runnable) {
+    Future<?> submit = loadingExecutor.submit(runnable);
+    if (!Platform.isFxApplicationThread()) {
+      try {
+        submit.get();
+      } catch (InterruptedException e) {
+        //
+      } catch (ExecutionException e) {
+        log.error(errorMsg, e);
+        throw new RuntimeException(e);
+      }
+    }
   }
 
   public void select(ActivityCfg activityCfg, ViewLink link) {
@@ -227,7 +239,7 @@ public class ActivityController {
   }
 
   public void stop(Class<? extends ActivityCfg> activityClass) {
-    loadingExecutor.submit(() -> {
+    loadInExecutor("could not stop " + activityClass, () -> {
       lock.lock();
       try {
         String activityId = activityClass.getName();
