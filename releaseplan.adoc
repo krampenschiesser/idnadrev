@@ -11,19 +11,18 @@ Main goal: Get a simple Version running
 === Closed
 
 * Enhance JavaFXExecutor to be suspendable
+* provide simple transaction+synchronization stuff
+* Implement asccidoc editor preview standard control
+* Refactoring of files to remain on local file system to include them in asciidoc, view them etc.
+Don't write them to the DB
 
 === Open:
 
-* Implement asccidoc editor preview standard control
-
 * check navigation and shortcuts, default buttons etc.
 * Complete but simple workflow: from creating thoughts, conversion to task/project, view tasks, work on task, finish task
-* Refactoring of files to remain on local file system to include them in asciidoc, view them etc.
-Don't write them to the DB
 * Implement software update capability with version entity -> update database with scripts, change the content etc.
 Automatic transition from one version to the other
 * Enhance i18n to use controller local resource bundles
-* provide simple transaction+synchronization stuff
 
 == Iteration 0.4
 
