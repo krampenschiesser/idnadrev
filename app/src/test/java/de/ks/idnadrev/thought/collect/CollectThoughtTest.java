@@ -71,7 +71,7 @@ public class CollectThoughtTest {
     JavaFXService service = Launcher.instance.getService(JavaFXService.class);
     Stage stage = service.getStage();
     scene = stage.getScene();
-    ThoughtActivity activity = controller.start(ThoughtActivity.class);
+    controller.start(ThoughtActivity.class);
     controller.waitForDataSource();
 
     addThought = controller.getCurrentController();
