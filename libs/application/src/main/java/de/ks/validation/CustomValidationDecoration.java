@@ -67,21 +67,21 @@ public class CustomValidationDecoration extends AbstractValidationDecoration {
     Label label = new Label();
     label.setGraphic(graphic);
     Tooltip tooltip = createTooltip(message);
-    label.setTooltip(tooltip);
     label.setAlignment(Pos.CENTER);
 
     Control target = message.getTarget();
-    Point2D point2D = target.localToScreen(target.getLayoutBounds().getMinX(), target.getLayoutBounds().getMaxY());
+
+    Point2D point2D = target.localToScreen(target.getLayoutBounds().getMinX(), target.getLayoutBounds().getMinY());
     if (point2D == null) {
       Platform.runLater(() -> {
         Control target1 = target;
-        Point2D point = target1.localToScreen(target1.getLayoutBounds().getMinX(), target1.getLayoutBounds().getMaxY());
+        Point2D point = target1.localToScreen(target1.getLayoutBounds().getMinX(), target.getLayoutBounds().getMinY());
         if (point != null) {
-          tooltip.show(target1, point.getX(), point.getY());
+          showTooltip(tooltip, target, point2D);
         }
       });
     } else {
-      tooltip.show(target, point2D.getX(), point2D.getY());
+      showTooltip(tooltip, target, point2D);
     }
 
     label.parentProperty().addListener((p, o, n) -> {
@@ -90,6 +90,12 @@ public class CustomValidationDecoration extends AbstractValidationDecoration {
       }
     });
     return label;
+  }
+
+  private void showTooltip(Tooltip tooltip, Control target, Point2D point2D) {
+    tooltip.show(target, point2D.getX(), point2D.getY());
+    tooltip.hide();
+    tooltip.show(target, point2D.getX(), point2D.getY() - tooltip.getHeight() / 2);
   }
 
   protected Tooltip createTooltip(ValidationMessage message) {
