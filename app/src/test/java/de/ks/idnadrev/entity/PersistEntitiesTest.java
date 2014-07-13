@@ -37,7 +37,7 @@ import static org.junit.Assert.assertEquals;
  */
 @RunWith(LauncherRunner.class)
 public class PersistEntitiesTest {
-  private List<Class<? extends AbstractPersistentObject<?>>> allEntityClasses = Arrays.asList(Category.class, Context.class, FileReference.class, Note.class, Tag.class, Thought.class, WorkUnit.class, Task.class);
+  private List<Class<? extends AbstractPersistentObject<?>>> allEntityClasses = Arrays.asList(Category.class, FileReference.class, Note.class, Tag.class, Thought.class, WorkUnit.class, Task.class, Context.class);
 
   private List<NamedPersistentObject> simpleEntities = new ArrayList<NamedPersistentObject>() {{
     add(new Category("myCategory"));
