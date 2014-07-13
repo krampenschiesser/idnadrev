@@ -250,6 +250,11 @@ public class ActivityController {
     return activities.getLast().getId();
   }
 
+  public void stopCurrentStart(Class<? extends ActivityCfg> next) {
+    stop(getCurrentActivity());
+    start(next);
+  }
+
   public void stop(Class<? extends ActivityCfg> activityClass) {
     loadInExecutor("could not stop " + activityClass, () -> {
       lock.lock();
