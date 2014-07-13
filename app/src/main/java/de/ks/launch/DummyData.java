@@ -14,10 +14,8 @@
  */
 package de.ks.launch;
 
-import de.ks.idnadrev.entity.Context;
-import de.ks.idnadrev.entity.Task;
-import de.ks.idnadrev.entity.Thought;
-import de.ks.idnadrev.entity.WorkUnit;
+import de.ks.idnadrev.entity.*;
+import de.ks.persistence.PersistentWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +39,7 @@ public class DummyData extends Service {
   @Override
   protected void doStart() {
     if (Boolean.getBoolean(CREATE_DUMMYDATA)) {
+      PersistentWork.deleteAllOf(Tag.class, WorkUnit.class, Thought.class, Task.class, FileReference.class, Context.class);
       ArrayList<Task> tasks = new ArrayList<>();
 
       log.info("Creating dummy data.");
