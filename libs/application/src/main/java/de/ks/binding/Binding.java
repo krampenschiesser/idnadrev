@@ -66,13 +66,18 @@ public class Binding {
   }
 
   public void bindChangedModel(ObservableValue<?> observable, Object oldValue, Object newValue) {
+    log.debug("Binding changed model old={}, new={}", oldValue, newValue);
     if (oldValue == newValue) { //yes, no equals needed
       fireValueChangedEvent();
     } else {
       unbind(oldValue);
-      bind(newValue);
+      if (newValue != null) {
+        bind(newValue);
+      }
     }
-    applyModelToCustomProperties(newValue);
+    if (newValue != null) {
+      applyModelToCustomProperties(newValue);
+    }
   }
 
   @SuppressWarnings("unchecked")
