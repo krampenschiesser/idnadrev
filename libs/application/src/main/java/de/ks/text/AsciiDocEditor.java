@@ -119,7 +119,12 @@ public class AsciiDocEditor implements Initializable {
     text.bind(editor.textProperty());
 
     editor.textProperty().addListener((p, o, n) -> {
-      renderGroup.schedule(() -> parser.parse(n)).thenAcceptAsync(html -> previewHtmlString = html, controller.getJavaFXExecutor());
+      renderGroup.schedule(() -> parser.parse(n)).thenAcceptAsync(html -> {
+        previewHtmlString = html;
+        if (tabPane.getSelectionModel().getSelectedIndex() == 1) {
+          preview.getEngine().loadContent(html);
+        }
+      }, controller.getJavaFXExecutor());
     });
 
     tabPane.getSelectionModel().selectedIndexProperty().addListener((p, o, n) -> {
