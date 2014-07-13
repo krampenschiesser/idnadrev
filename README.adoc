@@ -28,6 +28,13 @@ In order to not see the javaFX dialogs while running your test from the IDE you 
 [source]
 -Dglass.platform=Monocle -Dmonocle.platform=Headless -Dprism.order=sw
 
+=== Xvfb
+Sadly monocle was removed again from the JDK ea build 1.8.20 and I know need an xvfb:
+
+[source,shell]
+$ mkdir /tmp/xvfb_test
+$ Xvfb :99 -fbdir /tmp/xvfb_test -ac -extension GLX
+
 == License
 
 Idnadrev is licensed under the http://apache.org/licenses/LICENSE-2.0[Apache 2.0 license].
