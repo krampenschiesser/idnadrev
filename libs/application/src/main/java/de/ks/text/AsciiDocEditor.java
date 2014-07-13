@@ -127,6 +127,14 @@ public class AsciiDocEditor implements Initializable {
       }, controller.getJavaFXExecutor());
     });
 
+    tabPane.focusedProperty().addListener((p, o, n) -> {
+      if (n) {
+        if (tabPane.getSelectionModel().getSelectedIndex() == 0) {
+          editor.requestFocus();
+        }
+      }
+    });
+
     tabPane.getSelectionModel().selectedIndexProperty().addListener((p, o, n) -> {
       if (n != null && n.intValue() == 1) {
         preview.getEngine().loadContent(previewHtmlString);
