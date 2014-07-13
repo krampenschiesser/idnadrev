@@ -21,7 +21,6 @@ import de.ks.idnadrev.entity.Tag;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.WorkUnit;
 import de.ks.persistence.PersistentWork;
-import de.ks.util.FXPlatform;
 import javafx.scene.control.TreeItem;
 import org.junit.After;
 import org.junit.Before;
@@ -78,19 +77,5 @@ public class TaskOverViewTest {
     assertEquals("project1", root.getChildren().get(1).getValue().getName());
 
     assertEquals(5, root.getChildren().get(1).getChildren().size());
-  }
-
-  @Test
-  public void testFinishTask() throws Exception {
-    FXPlatform.waitForFX();
-    int originalCount = controller.tasks.size();
-    Task task = controller.tasksView.getSelectionModel().getSelectedItem().getValue();
-    assertNotNull(task);
-
-    controller.finishTask();
-    activityController.waitForDataSource();
-
-
-    assertEquals(originalCount - 1, controller.tasks.size());
   }
 }

@@ -22,7 +22,6 @@ import de.ks.idnadrev.entity.Context;
 import de.ks.idnadrev.entity.Tag;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.WorkUnit;
-import de.ks.idnadrev.task.finish.FinishTaskDS;
 import de.ks.idnadrev.task.view.ViewTasksActvity;
 import de.ks.persistence.PersistentWork;
 import de.ks.util.FXPlatform;
@@ -38,7 +37,8 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 @RunWith(LauncherRunner.class)
 public class WorkOnTaskTest {
@@ -89,17 +89,5 @@ public class WorkOnTaskTest {
   public void testExistingWorkUnits() throws Exception {
     FXPlatform.waitForFX();
     assertThat(controller.estimatedTimeBar.getProgress(), Matchers.greaterThan(0.69));
-  }
-
-  @Test
-  public void testStartFinishActivity() throws Exception {
-    controller.finishTask();
-    activityController.getCurrentExecutorService().waitForAllTasksDone();
-    activityController.waitForDataSource();
-    Object nonCast = store.getDatasource();
-    @SuppressWarnings("unchecked") FinishTaskDS datasource = (FinishTaskDS) nonCast;
-    Task task = datasource.loadModel(m -> m.toString());
-    assertNotNull(task);
-    assertEquals(2, task.getWorkUnits().size());
   }
 }
