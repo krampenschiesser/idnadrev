@@ -56,4 +56,9 @@ class UTF8Control extends Control {
     }
     return bundle;
   }
+
+  @Override
+  public Locale getFallbackLocale(String baseName, Locale locale) {
+    return Locale.ENGLISH;
+  }
 }
