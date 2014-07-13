@@ -20,6 +20,7 @@ import de.ks.activity.ActivityLoadFinishedEvent;
 import de.ks.activity.context.ActivityStore;
 import de.ks.activity.initialization.ActivityInitialization;
 import de.ks.activity.initialization.LoadInFXThread;
+import de.ks.datasource.DataSource;
 import de.ks.eventsystem.bus.HandlingThread;
 import de.ks.eventsystem.bus.Threading;
 import de.ks.file.FileStore;
@@ -221,7 +222,9 @@ public class TaskOverview implements Initializable {
   @Subscribe
   @Threading(HandlingThread.JavaFX)
   public void afterLoad(ActivityLoadFinishedEvent event) {
-    @SuppressWarnings("unchecked") ViewTasksDS datasource = store.getDatasource();
+    DataSource noncast = store.getDatasource();
+    @SuppressWarnings("unchecked") //
+            ViewTasksDS datasource = (ViewTasksDS) noncast;
     Task taskToSelect = datasource.getTaskToSelect();
 
     List<Task> loaded = event.getModel();
