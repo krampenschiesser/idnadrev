@@ -17,7 +17,6 @@
 
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.StackPane?>
 <TabPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"
          tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
@@ -39,7 +38,11 @@
         </Tab>
         <Tab text="%task.outcome.expected">
             <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
+                <StackPane>
+                    <children>
+                        <fx:include fx:id="expectedOutcome" source="TaskOutcome.fxml"/>
+                    </children>
+                </StackPane>
             </content>
         </Tab>
     </tabs>

@@ -21,6 +21,7 @@ import de.ks.idnadrev.entity.Tag;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.WorkUnit;
 import de.ks.persistence.PersistentWork;
+import de.ks.text.AsciiDocEditor;
 import de.ks.util.FXPlatform;
 import org.junit.After;
 import org.junit.Before;
@@ -40,6 +41,7 @@ public class CreateTaskTest {
   ActivityController activityController;
   private MainTaskInfo controller;
   private CreateTask createTask;
+  private AsciiDocEditor expectedOutcomeEditor;
 
   @Before
   public void setUp() throws Exception {
@@ -50,6 +52,7 @@ public class CreateTaskTest {
     activityController.waitForDataSource();
     createTask = activityController.<CreateTask>getCurrentController();
     controller = createTask.mainInfoController;
+    expectedOutcomeEditor = createTask.expectedOutcomeController.expectedOutcome;
   }
 
   @After
@@ -66,6 +69,7 @@ public class CreateTaskTest {
       controller.funFactor.valueProperty().set(3);
       controller.mentalEffort.valueProperty().set(10);
       controller.physicalEffort.valueProperty().set(7);
+      expectedOutcomeEditor.setText("outcome123");
     });
     FXPlatform.invokeLater(() -> {
       controller.save();
@@ -83,6 +87,7 @@ public class CreateTaskTest {
     assertEquals(7, task.getPhysicalEffort().getAmount());
     assertEquals(3, task.getFunFactor().getAmount());
     assertEquals(10, task.getMentalEffort().getAmount());
+    assertEquals("outcome123", task.getOutcome().getExpectedOutcome());
 
     Duration estimatedTime = task.getEstimatedTime();
     assertNotNull(estimatedTime);

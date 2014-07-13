@@ -19,4 +19,6 @@ import javafx.fxml.FXML;
 public class CreateTask {
   @FXML
   MainTaskInfo mainInfoController;
+  @FXML
+  TaskOutcome expectedOutcomeController;
 }
