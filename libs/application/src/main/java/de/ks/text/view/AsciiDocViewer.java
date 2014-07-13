@@ -15,17 +15,22 @@
 package de.ks.text.view;
 
 import de.ks.activity.ActivityController;
+import de.ks.activity.initialization.ActivityInitialization;
 import de.ks.activity.initialization.LoadInFXThread;
+import de.ks.application.fxml.DefaultLoader;
 import de.ks.executor.JavaFXExecutorService;
 import de.ks.executor.SuspendablePooledExecutorService;
 import de.ks.text.AsciiDocParser;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebView;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,10 +38,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 @LoadInFXThread
 public class AsciiDocViewer {
+  public static CompletableFuture<DefaultLoader<Node, AsciiDocViewer>> load(Consumer<StackPane> viewConsumer, Consumer<AsciiDocViewer> controllerConsumer) {
+    ActivityInitialization initialization = CDI.current().select(ActivityInitialization.class).get();
+    return initialization.loadAdditionalController(AsciiDocViewer.class)//
+            .thenApply(loader -> {
+              viewConsumer.accept((StackPane) loader.getView());
+              controllerConsumer.accept(loader.getController());
+              return loader;
+            });
+  }
+
   private static final Logger log = LoggerFactory.getLogger(AsciiDocViewer.class);
 
   protected final Map<String, String> preloaded = new ConcurrentHashMap<>();
