@@ -15,14 +15,21 @@
 
 package de.ks.idnadrev;
 
+import de.ks.activity.ActivityController;
 import de.ks.application.MainWindow;
 import de.ks.application.fxml.DefaultLoader;
+import de.ks.idnadrev.thought.collect.ThoughtActivity;
 import de.ks.menu.presenter.MenuBarPresenter;
 import de.ks.menu.sink.ContentSink;
 import de.ks.menu.sink.PopupSink;
 import javafx.scene.Parent;
+import javafx.scene.control.Control;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,9 +48,12 @@ public class IdnadrevWindow extends MainWindow {
   PopupSink popupSink;
   @Inject
   ContentSink contentSink;
+  @Inject
+  ActivityController activityController;
 
   private BorderPane borderPane;
   private DefaultLoader<BorderPane, Object> loader;
+  private ButtonBar buttonBar;
 
   @PostConstruct
   public void initialize() {
@@ -56,13 +66,42 @@ public class IdnadrevWindow extends MainWindow {
   public Parent getNode() {
     if (borderPane == null) {
       borderPane = loader.getView();
-      borderPane.setTop(menuBarPresenter.getMenu("/main"));
+      VBox vBox = new VBox();
+      vBox.setMinSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
+      vBox.setMaxSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
+      vBox.getChildren().add(menuBarPresenter.getMenu("/main"));
+      DefaultLoader<FlowPane, ButtonBar> loader = new DefaultLoader<>(ButtonBar.class);
+      buttonBar = loader.getController();
+      vBox.getChildren().add(loader.getView());
+      borderPane.setTop(vBox);
 
       StackPane contentPane = new StackPane();
       borderPane.setCenter(contentPane);
       contentSink.setPane(contentPane);
+
+      borderPane.setOnKeyReleased(this::checkShortcut);
+
+      activityController.start(ThoughtActivity.class);
     }
     return borderPane;
+  }
+
+  private void checkShortcut(KeyEvent event) {
+    KeyCode code = event.getCode();
+
+    if (code == KeyCode.F1) {
+      buttonBar.addThought();
+      event.consume();
+    } else if (code == KeyCode.F2) {
+      buttonBar.viewThoughts();
+      event.consume();
+    } else if (code == KeyCode.F3) {
+      buttonBar.createTask();
+      event.consume();
+    } else if (code == KeyCode.F4) {
+      buttonBar.viewTasks();
+      event.consume();
+    }
   }
 
   @Override

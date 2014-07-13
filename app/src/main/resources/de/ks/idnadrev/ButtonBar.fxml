@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.Line?>
+<FlowPane minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8"
+          xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.idnadrev.ButtonBar">
+    <children>
+        <Button focusTraversable="false" mnemonicParsing="false" onAction="#addThought"
+                text="%main.thought.thoughtactivity"/>
+        <Line endX="50.0" fill="BLACK" strokeDashOffset="3.0" strokeLineCap="ROUND" strokeLineJoin="ROUND"
+              strokeWidth="3.0">
+            <stroke>
+                <LinearGradient endX="1.0" endY="1.0" startY="1.0">
+                    <stops>
+                        <Stop color="#0000004d"/>
+                        <Stop color="BLACK" offset="1.0"/>
+                    </stops>
+                </LinearGradient>
+            </stroke>
+        </Line>
+        <Button focusTraversable="false" mnemonicParsing="false" onAction="#viewThoughts"
+                text="%main.thought.viewthoughtsactivity"/>
+        <Line endX="50.0" fill="BLACK" strokeDashOffset="3.0" strokeLineCap="ROUND" strokeLineJoin="ROUND"
+              strokeWidth="3.0">
+            <stroke>
+                <LinearGradient endX="1.0" endY="1.0" startY="1.0">
+                    <stops>
+                        <Stop color="#0000004d"/>
+                        <Stop color="BLACK" offset="1.0"/>
+                    </stops>
+                </LinearGradient>
+            </stroke>
+        </Line>
+        <Button focusTraversable="false" mnemonicParsing="false" onAction="#createTask"
+                text="%main.task.createtaskactivity"/>
+        <Line endX="50.0" fill="BLACK" strokeDashOffset="3.0" strokeLineCap="ROUND" strokeLineJoin="ROUND"
+              strokeWidth="3.0">
+            <stroke>
+                <LinearGradient endX="1.0" endY="1.0" startY="1.0">
+                    <stops>
+                        <Stop color="#0000004d"/>
+                        <Stop color="BLACK" offset="1.0"/>
+                    </stops>
+                </LinearGradient>
+            </stroke>
+        </Line>
+        <Button focusTraversable="false" mnemonicParsing="false" onAction="#viewTasks"
+                text="%main.task.viewtasksactvity"/>
+    </children>
+    <padding>
+        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+    </padding>
+</FlowPane>
