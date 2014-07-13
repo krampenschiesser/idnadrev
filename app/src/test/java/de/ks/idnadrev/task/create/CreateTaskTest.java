@@ -71,6 +71,8 @@ public class CreateTaskTest {
       controller.physicalEffort.valueProperty().set(7);
       expectedOutcomeEditor.setText("outcome123");
     });
+    activityController.waitForTasks();
+    FXPlatform.waitForFX();
     FXPlatform.invokeLater(() -> {
       controller.save();
     });
