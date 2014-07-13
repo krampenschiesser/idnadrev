@@ -20,9 +20,6 @@ Don't write them to the DB
 
 * check navigation and shortcuts, default buttons etc.
 * Complete but simple workflow: from creating thoughts, conversion to task/project, view tasks, work on task, finish task
-* Implement software update capability with version entity -> update database with scripts, change the content etc.
-Automatic transition from one version to the other
-* Enhance i18n to use controller local resource bundles
 
 == Iteration 0.4
 
@@ -30,6 +27,9 @@ Automatic transition from one version to the other
 
 === Open:
 
+* Enhance i18n to use controller local resource bundles
+* Implement software update capability with version entity -> update database with scripts, change the content etc.
+Automatic transition from one version to the other
 * Full workflow implemented
 * Support plantuml
 * Full file support on tasks, thoughts and information with tagging
@@ -39,4 +39,4 @@ Automatic transition from one version to the other
 * template system for asciidoc editor
 * options editor, general option usage in application
 
-* Refactoring: rework DataSource "API" to something bettern (reduce direct calls from controllers, better to/from converter)
+* Refactoring: rework DataSource "API" to something better (reduce direct calls from controllers, better to/from converter)
