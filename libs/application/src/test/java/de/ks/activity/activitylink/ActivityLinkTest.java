@@ -147,6 +147,7 @@ public class ActivityLinkTest {
       log.info("###Looked up node {}", returnHintButton);
       EventHandler<ActionEvent> onAction = returnHintButton.getOnAction();
       FXPlatform.invokeLater(() -> onAction.handle(new ActionEvent()));
+      controller.waitForTasks();
 
       Node activityBNode = Navigator.getCurrentNavigator().getMainArea().getCurrentNode();
       Button finishButton = (Button) activityBNode.lookup("#finish");
