@@ -17,7 +17,6 @@
   ~ limitations under the License.
   -->
 
-
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -51,10 +50,10 @@
                       GridPane.columnSpan="2147483647" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3"
                       GridPane.valignment="BOTTOM">
                     <children>
-                        <Button fx:id="toTask" mnemonicParsing="false" text="%thought.transform.action"/>
+                        <Button fx:id="toTask" defaultButton="true" mnemonicParsing="false"
+                                text="%thought.transform.task"/>
                         <Button mnemonicParsing="false" text="%thought.transform.info"/>
                         <Button mnemonicParsing="false" onAction="#postPone" text="%thought.transform.later"/>
-                        <Button mnemonicParsing="false" text="%thought.transform.project"/>
                     </children>
                     <GridPane.margin>
                         <Insets/>
@@ -66,8 +65,7 @@
                 <Label text="%name:"/>
                 <Label text="%description:" GridPane.rowIndex="1"/>
                 <Label fx:id="nameLabel" text="Label" GridPane.columnIndex="1"/>
-                <StackPane fx:id="description" GridPane.columnSpan="2147483647"
-                         GridPane.rowIndex="2"/>
+                <StackPane fx:id="description" GridPane.columnSpan="2147483647" GridPane.rowIndex="2"/>
             </children>
         </GridPane>
     </children>

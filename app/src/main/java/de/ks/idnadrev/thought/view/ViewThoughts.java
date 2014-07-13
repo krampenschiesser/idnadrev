@@ -27,10 +27,8 @@ import de.ks.text.view.AsciiDocViewer;
 import javafx.beans.binding.DoubleBinding;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +55,8 @@ public class ViewThoughts implements Initializable {
   private Label nameLabel;
   @FXML
   private StackPane description;
+  @FXML
+  Button toTask;
   private AsciiDocViewer asciiDocViewer;
 
   @Override
@@ -88,6 +88,12 @@ public class ViewThoughts implements Initializable {
 
     _this.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
       updateSelection(n);
+    });
+    _this.setOnKeyPressed(e -> {
+      if (e.getCode() == KeyCode.ENTER) {
+        toTask.getOnAction().handle(null);
+      }
+      e.consume();
     });
   }
 
