@@ -242,6 +242,16 @@ public class ActivityController {
     }
   }
 
+  public ActivityCfg getPreviousActivity() {
+    Iterator<ActivityCfg> iter = activities.descendingIterator();
+    iter.next();
+    if (iter.hasNext()) {
+      return iter.next();
+    } else {
+      return null;
+    }
+  }
+
   public ActivityCfg getCurrentActivity() {
     return activities.getLast();
   }
