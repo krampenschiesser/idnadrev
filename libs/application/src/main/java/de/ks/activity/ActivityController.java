@@ -123,7 +123,6 @@ public class ActivityController {
 
   @SuppressWarnings("unchecked")
   public void start(ActivityCfg activityCfg, Function toConverter, Function returnConverter) {
-
     loadInExecutor("couldn ot start " + activityCfg, () -> {
       lock.lock();
       try {
@@ -143,6 +142,7 @@ public class ActivityController {
         executor.startOrResume(id);
         activities.add(activityCfg);
         registeredActivities.put(id, activityCfg);
+        finishingFutures = null;
 
         log.info("Starting activity {}", id);
         DataSource dataSource = CDI.current().select(activityCfg.getDataSource()).get();
