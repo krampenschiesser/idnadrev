@@ -203,7 +203,7 @@ public class ActivityController {
   }
 
   public void waitForDataSource() {
-    if (finishingFutures.isDone()) {
+    if (finishingFutures == null || finishingFutures.isDone()) {
       return;
     } else if (getCurrentExecutorService().isSuspended() || getCurrentExecutorService().isShutdown()) {
       return;
@@ -345,6 +345,7 @@ public class ActivityController {
 
   @SuppressWarnings("unchecked")
   public void reload() {
+    waitForDataSource();
     DataSource dataSource = store.getDatasource();
     SuspendablePooledExecutorService executorService = getCurrentExecutorService();
     JavaFXExecutorService javafxExecutor = getJavaFXExecutor();
