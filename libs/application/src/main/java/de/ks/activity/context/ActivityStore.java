@@ -18,6 +18,8 @@ package de.ks.activity.context;
 import de.ks.binding.Binding;
 import de.ks.datasource.DataSource;
 import javafx.beans.property.SimpleObjectProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -27,6 +29,8 @@ import javax.inject.Inject;
  */
 @ActivityScoped
 public class ActivityStore {
+  private static final Logger log = LoggerFactory.getLogger(ActivityStore.class);
+
   private final SimpleObjectProperty<Object> model = new SimpleObjectProperty<>();
   @Inject
   private Binding binding;
@@ -43,6 +47,8 @@ public class ActivityStore {
   }
 
   public void setModel(Object model) {
+    log.info("Setting new model {}", model);
+    this.model.set(null);
     this.model.set(model);
   }
 
@@ -58,8 +64,7 @@ public class ActivityStore {
     this.datasource = datasource;
   }
 
-  @SuppressWarnings("unchecked")
-  public <M, D extends DataSource<M>> D getDatasource() {
-    return (D) datasource;
+  public DataSource<?> getDatasource() {
+    return datasource;
   }
 }
