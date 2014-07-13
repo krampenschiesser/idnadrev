@@ -186,6 +186,18 @@ public class ActivityController {
   }
 
   public void waitForTasks() {
+    try {
+      Thread.sleep(100);
+    } catch (InterruptedException e) {
+      //
+    }
+    while (loadingExecutor.getActiveCount() > 0) {
+      try {
+        TimeUnit.MILLISECONDS.sleep(100);
+      } catch (InterruptedException e) {
+        log.trace("Got interrupted while waiting for tasks.", e);
+      }
+    }
     getCurrentExecutorService().waitForAllTasksDone();
     getJavaFXExecutor().waitForAllTasksDone();
   }
