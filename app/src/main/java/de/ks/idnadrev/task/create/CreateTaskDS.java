@@ -29,8 +29,8 @@ import java.util.function.Consumer;
 public class CreateTaskDS extends NewInstanceDataSource<Task> {
   private static final Logger log = LoggerFactory.getLogger(CreateTaskDS.class);
 
-  private Thought fromThought;
-  private Task fromTask;
+  Thought fromThought;
+  Task fromTask;
 
   @Inject
   ActivityController controller;
@@ -68,7 +68,6 @@ public class CreateTaskDS extends NewInstanceDataSource<Task> {
     });
   }
 
-
   @Override
   public void setLoadingHint(Object dataSourceHint) {
     if (dataSourceHint instanceof Thought) {
@@ -77,5 +76,10 @@ public class CreateTaskDS extends NewInstanceDataSource<Task> {
     if (dataSourceHint instanceof Task) {
       this.fromTask = (Task) dataSourceHint;
     }
+  }
+
+  public void resetFrom() {
+    fromTask = null;
+    fromThought = null;
   }
 }

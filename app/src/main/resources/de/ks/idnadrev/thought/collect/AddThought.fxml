@@ -33,8 +33,8 @@
                 <fx:include fx:id="fileView" source="file/ThoughtFileView.fxml"/>
             </children>
         </StackPane>
-        <Button fx:id="save" defaultButton="true" mnemonicParsing="false" text="%default.save" GridPane.columnIndex="1"
-                GridPane.rowIndex="4">
+        <Button fx:id="save" defaultButton="true" mnemonicParsing="false" onAction="#onSave" text="%default.save"
+                GridPane.columnIndex="1" GridPane.rowIndex="4">
             <GridPane.margin>
                 <Insets/>
             </GridPane.margin>

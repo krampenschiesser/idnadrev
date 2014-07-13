@@ -26,11 +26,5 @@ public class ThoughtActivity extends ActivityCfg {
 
   public ThoughtActivity() {
     super(ThoughStoreDS.class, AddThought.class);
-
-    configure();
-  }
-
-  private void configure() {
-    withEnd(getInitialController(), "save", SaveThought.class);
   }
 }

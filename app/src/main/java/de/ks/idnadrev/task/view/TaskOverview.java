@@ -26,8 +26,8 @@ import de.ks.eventsystem.bus.Threading;
 import de.ks.file.FileStore;
 import de.ks.i18n.Localized;
 import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.task.finish.FinishTaskActivity;
 import de.ks.idnadrev.task.work.WorkOnTaskActivity;
-import de.ks.persistence.PersistentWork;
 import de.ks.text.view.AsciiDocContent;
 import de.ks.text.view.AsciiDocViewer;
 import javafx.application.Platform;
@@ -209,14 +209,7 @@ public class TaskOverview implements Initializable {
 
   @FXML
   void finishTask() {
-    TreeItem<Task> selectedItem = tasksView.getSelectionModel().getSelectedItem();
-    if (selectedItem != null) {
-      PersistentWork.run(em -> {
-        Task task = PersistentWork.byId(Task.class, selectedItem.getValue().getId());
-        task.setFinished(true);
-      });
-      controller.reload();
-    }
+    controller.start(FinishTaskActivity.class, t -> tasksView.getSelectionModel().getSelectedItem().getValue(), null);
   }
 
   @Subscribe

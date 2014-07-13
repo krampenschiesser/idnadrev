@@ -164,9 +164,16 @@ public class AddThought implements Initializable {
     event.consume();
   }
 
+  @FXML
+  void onSave() {
+    controller.save();
+    controller.reload();
+  }
+
   @Subscribe
   @Threading(HandlingThread.JavaFX)
   public void onRefresh(ActivityLoadFinishedEvent event) {
     this.name.requestFocus();
+    this.description.setText("");
   }
 }

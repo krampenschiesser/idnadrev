@@ -33,8 +33,8 @@ public class ThoughStoreDS extends NewInstanceDataSource<Thought> {
   public void saveModel(Thought model, Consumer<Thought> beforeSaving) {
     log.info("Saving model {}", model);
     PersistentWork.wrap(() -> {
-      PersistentWork.persist(model);
       beforeSaving.accept(model);
+      PersistentWork.persist(model);
     });
   }
 }

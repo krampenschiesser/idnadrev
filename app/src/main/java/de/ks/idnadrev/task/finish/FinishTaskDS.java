@@ -16,8 +16,10 @@ package de.ks.idnadrev.task.finish;
 
 import de.ks.datasource.DataSource;
 import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.entity.WorkUnit;
 import de.ks.persistence.PersistentWork;
 
+import java.util.SortedSet;
 import java.util.function.Consumer;
 
 public class FinishTaskDS implements DataSource<Task> {
@@ -27,6 +29,12 @@ public class FinishTaskDS implements DataSource<Task> {
   public Task loadModel(Consumer<Task> furtherProcessing) {
     return PersistentWork.wrap(() -> {
       Task reload = PersistentWork.reload(task, t -> t.getWorkUnits().forEach(u -> u.getStart()));
+
+      SortedSet<WorkUnit> workUnits = reload.getWorkUnits();
+      if (!workUnits.isEmpty()) {
+        workUnits.last().stop();
+      }
+      reload.setFinished(true);
       furtherProcessing.accept(reload);
       return reload;
     });
@@ -34,7 +42,10 @@ public class FinishTaskDS implements DataSource<Task> {
 
   @Override
   public void saveModel(Task model, Consumer<Task> beforeSaving) {
-
+    PersistentWork.wrap(() -> {
+      Task reload = PersistentWork.reload(model);
+      beforeSaving.accept(reload);
+    });
   }
 
   @Override

@@ -14,14 +14,72 @@
  */
 package de.ks.idnadrev.task.finish;
 
+import de.ks.activity.ActivityController;
+import de.ks.activity.initialization.ActivityInitialization;
+import de.ks.activity.initialization.DataStoreCallback;
+import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.task.view.ViewTasksActvity;
+import de.ks.text.AsciiDocEditor;
+import de.ks.text.view.AsciiDocContent;
+import de.ks.text.view.AsciiDocViewer;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.layout.StackPane;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 
-public class FinishTask implements Initializable {
+public class FinishTask implements Initializable, DataStoreCallback<Task> {
+  private static final Logger log = LoggerFactory.getLogger(FinishTask.class);
+  @FXML
+  private StackPane expectedOutcomeContainer;
+  @FXML
+  private StackPane finalOutcomeContainer;
+
+  protected AsciiDocEditor finalOutcome;
+  protected AsciiDocViewer expectedOutcome;
+
+  @Inject
+  ActivityInitialization activityInitialization;
+  @Inject
+  ActivityController controller;
+
   @Override
   public void initialize(URL location, ResourceBundle resources) {
+    AsciiDocEditor.load(pane -> finalOutcomeContainer.getChildren().add(pane), editor -> {
+      finalOutcome = editor;
+      finalOutcome.hideActionBar();
+    });
+    AsciiDocViewer.load(pane -> expectedOutcomeContainer.getChildren().add(pane), viewer -> expectedOutcome = viewer);
+  }
 
+  @Override
+  public void duringLoad(Task model) {
+    AsciiDocContent content = new AsciiDocContent(model.getName(), model.getOutcome().getExpectedOutcome());
+    expectedOutcome.preload(Arrays.asList(content));
+
+    controller.getJavaFXExecutor().submit(() -> expectedOutcome.show(content));
+
+    String outcome = model.getOutcome().getFinalOutcome();
+    controller.getJavaFXExecutor().submit(() -> {
+      log.info("Setting final outcome text {}", outcome);
+      finalOutcome.setText(outcome);
+    });
+  }
+
+  @Override
+  public void duringSave(Task model) {
+    model.getOutcome().setFinalOutcome(finalOutcome.getText());
+  }
+
+  @FXML
+  void onSave(ActionEvent event) {
+    controller.save();
+    controller.stopCurrentStart(ViewTasksActvity.class);
   }
 }

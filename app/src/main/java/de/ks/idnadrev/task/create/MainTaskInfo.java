@@ -115,7 +115,10 @@ public class MainTaskInfo implements Initializable, DataStoreCallback<Task> {
 
     durationValidator = FXValidators.createDurationValidator();
 
-    Platform.runLater(() -> TextFields.bindAutoCompletion(estimatedTimeDuration, getEstimatedTimeAutoCompletion()));
+    Platform.runLater(() -> {
+      Callback<AutoCompletionBinding.ISuggestionRequest, Collection<String>> estimatedTimeAutoCompletion = getEstimatedTimeAutoCompletion();
+      TextFields.bindAutoCompletion(estimatedTimeDuration, estimatedTimeAutoCompletion);
+    });
     validationRegistry.getValidationSupport().registerValidator(estimatedTimeDuration, durationValidator);
 
     project.selectedProperty().bind(store.getBinding().getBooleanProperty(Task.class, (t) -> t.isProject()).not());
@@ -164,6 +167,9 @@ public class MainTaskInfo implements Initializable, DataStoreCallback<Task> {
   @FXML
   void save() {
     controller.save();
+    CreateTaskDS datasource = (CreateTaskDS) store.getDatasource();
+    datasource.resetFrom();
+    controller.reload();
   }
 
   public Duration getEstimatedDuration() {
