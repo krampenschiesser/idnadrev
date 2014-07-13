@@ -168,7 +168,6 @@ public class MainTaskInfo implements Initializable, DataStoreCallback<Task> {
   void save() {
     controller.save();
     CreateTaskDS datasource = (CreateTaskDS) store.getDatasource();
-    datasource.resetFrom();
     controller.reload();
   }
 

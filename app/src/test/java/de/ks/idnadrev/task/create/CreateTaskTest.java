@@ -16,10 +16,8 @@ package de.ks.idnadrev.task.create;
 
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityController;
-import de.ks.idnadrev.entity.Context;
-import de.ks.idnadrev.entity.Tag;
-import de.ks.idnadrev.entity.Task;
-import de.ks.idnadrev.entity.WorkUnit;
+import de.ks.activity.context.ActivityStore;
+import de.ks.idnadrev.entity.*;
 import de.ks.persistence.PersistentWork;
 import de.ks.text.AsciiDocEditor;
 import de.ks.util.FXPlatform;
@@ -32,20 +30,21 @@ import javax.inject.Inject;
 import java.time.Duration;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
 public class CreateTaskTest {
   @Inject
   ActivityController activityController;
+  @Inject
+  ActivityStore store;
   private MainTaskInfo controller;
   private CreateTask createTask;
   private AsciiDocEditor expectedOutcomeEditor;
 
   @Before
   public void setUp() throws Exception {
-    PersistentWork.deleteAllOf(WorkUnit.class, Context.class, Task.class, Tag.class);
+    PersistentWork.deleteAllOf(WorkUnit.class, Task.class, Context.class, Tag.class, Thought.class);
     PersistentWork.persist(new Context("context"));
 
     activityController.start(CreateTaskActivity.class);
@@ -58,6 +57,24 @@ public class CreateTaskTest {
   @After
   public void tearDown() throws Exception {
     activityController.stop(CreateTaskActivity.class);
+  }
+
+  @Test
+  public void testTaskFromThought() throws Exception {
+    Thought bla = new Thought("Bla");
+    PersistentWork.persist(bla);
+
+    @SuppressWarnings("unchecked") CreateTaskDS datasource = (CreateTaskDS) store.getDatasource();
+    datasource.fromThought = bla;
+    activityController.reload();
+    activityController.waitForDataSource();
+    FXPlatform.waitForFX();
+    assertEquals("Bla", controller.name.getText());
+    activityController.save();
+    activityController.waitForDataSource();
+
+    assertNull(datasource.fromThought);
+    assertEquals(0, PersistentWork.from(Thought.class).size());
   }
 
   @Test

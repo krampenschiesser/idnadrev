@@ -65,7 +65,11 @@ public class CreateTaskDS extends NewInstanceDataSource<Task> {
       Task task = PersistentWork.reload(model);
       beforeSaving.accept(task);
       em.persist(task);
+      if (fromThought != null && fromThought.getId() > 0) {
+        em.remove(PersistentWork.reload(fromThought));
+      }
     });
+    resetFrom();
   }
 
   @Override
