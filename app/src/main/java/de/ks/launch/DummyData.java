@@ -66,6 +66,7 @@ public class DummyData extends Service {
       workUnit.stop();
       tasks.add(task);
       Task asciiDocSample = new Task("AsciiDocSample", asciiDocString).setEstimatedTime(Duration.ofMinutes(1));
+      asciiDocSample.getOutcome().setExpectedOutcome("= title\n\n== other\n");
       tasks.add(asciiDocSample);
 
       tasks.forEach((t) -> t.getPhysicalEffort().setAmount(ThreadLocalRandom.current().nextInt(0, 10)));
