@@ -40,3 +40,12 @@ Automatic transition from one version to the other
 * options editor, general option usage in application
 
 * Refactoring: rework DataSource "API" to something better (reduce direct calls from controllers, better to/from converter)
+
+== Future
+
+* Blogging support with wordpress link
+* Google calendar integration
+* Stock module
+* Cost module
+* Knowledge training module
+* Vocabulary training module
