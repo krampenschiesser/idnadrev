@@ -41,7 +41,7 @@
             <property name="javax.persistence.jdbc.password" value=""/>
             <property name="javax.persistence.jdbc.url" value="jdbc:h2:split:./db/db;COMPRESS_LOB=LZF"/>
             <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
-            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
             <property name="hibernate.archive.autodetection" value="class"/>
             <property name="hibernate.ejb.naming_strategy"
                       value="org.hibernate.cfg.DefaultComponentSafeNamingStrategy"/>
