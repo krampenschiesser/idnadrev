@@ -28,4 +28,5 @@ dependencies {
     runtime "ch.qos.logback:logback-classic:$logback"
 
     testCompile project(":libs:testutil")
+    testCompile "org.loadui:testFx:$testfx"
 }
