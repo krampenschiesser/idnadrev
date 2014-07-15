@@ -129,7 +129,7 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
   public NamedPersistentObjectSelection<T> enableValidation() {
     ValidationRegistry validationRegistry = CDI.current().select(ValidationRegistry.class).get();
     Platform.runLater(() -> {
-      validationRegistry.getValidationSupport().registerValidator(input, new NamedEntityValidator(entityClass));
+      validationRegistry.registerValidator(input, new NamedEntityValidator(entityClass));
     });
     return this;
   }

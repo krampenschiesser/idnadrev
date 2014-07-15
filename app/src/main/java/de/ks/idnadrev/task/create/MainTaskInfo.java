@@ -118,12 +118,12 @@ public class MainTaskInfo implements Initializable, DataStoreCallback<Task> {
       Callback<AutoCompletionBinding.ISuggestionRequest, Collection<String>> estimatedTimeAutoCompletion = getEstimatedTimeAutoCompletion();
       TextFields.bindAutoCompletion(estimatedTimeDuration, estimatedTimeAutoCompletion);
     });
-    validationRegistry.getValidationSupport().registerValidator(estimatedTimeDuration, durationValidator);
+    validationRegistry.registerValidator(estimatedTimeDuration, durationValidator);
 
     project.selectedProperty().bind(store.getBinding().getBooleanProperty(Task.class, (t) -> t.isProject()).not());
 
     tagAddController.setOnAction(e -> addTag(tagAddController.getInput().getText()));
-    saveButton.disableProperty().bind(validationRegistry.getValidationSupport().invalidProperty());
+    saveButton.disableProperty().bind(validationRegistry.invalidProperty());
 
     physicalEffort.valueProperty().bindBidirectional(store.getBinding().getIntegerProperty(Task.class, (t) -> t.getPhysicalEffort().getAmount()));
     mentalEffort.valueProperty().bindBidirectional(store.getBinding().getIntegerProperty(Task.class, (t) -> t.getMentalEffort().getAmount()));

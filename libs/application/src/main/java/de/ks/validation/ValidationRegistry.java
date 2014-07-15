@@ -17,9 +17,12 @@ package de.ks.validation;
 import de.ks.activity.context.ActivityScoped;
 import de.ks.activity.context.ActivityStore;
 import de.ks.validation.validators.BeanValidationValidator;
+import de.ks.validation.validators.ValidatorChain;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.adapter.JavaBeanProperty;
 import javafx.scene.Node;
 import javafx.scene.control.Control;
+import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.decoration.CompoundValidationDecoration;
 import org.controlsfx.validation.decoration.StyleClassValidationDecoration;
@@ -33,12 +36,16 @@ import javax.validation.metadata.BeanDescriptor;
 import javax.validation.metadata.PropertyDescriptor;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 @ActivityScoped
 public class ValidationRegistry {
   private static final Logger log = LoggerFactory.getLogger(ValidationRegistry.class);
   protected final ValidationSupport validationSupport = new ValidationSupport();
   protected final Map<String, Control> registeredControls = new HashMap<>();
+  protected final Map<Control, ValidatorChain<?>> registeredValidators = new HashMap<>();
+
   @Inject
   Validator validator;
   @Inject
@@ -49,7 +56,6 @@ public class ValidationRegistry {
     ValidationDecoration cssDecorator = new StyleClassValidationDecoration();
     ValidationDecoration compoundDecorator = new CompoundValidationDecoration(cssDecorator, iconDecorator);
     validationSupport.setValidationDecorator(compoundDecorator);
-//    validationSupport.setValidationDecorator(iconDecorator);
   }
 
   public void addProperty(JavaBeanProperty<?> property, Node node) {
@@ -64,13 +70,47 @@ public class ValidationRegistry {
 
       if (constraintsForProperty != null && constraintsForProperty.hasConstraints()) {
         registeredControls.put(propertyName, control);
-        validationSupport.registerValidator(control, true, new BeanValidationValidator(modelClass, validator, propertyName));
+        registerValidator(control, true, new BeanValidationValidator(modelClass, validator, propertyName));
         log.debug("Registered BeanValidation validator for property {} on control {}", propertyName, control);
       }
     }
   }
 
-  public ValidationSupport getValidationSupport() {
+  public ValidationResult getValidationResult() {
+    return validationSupport.getValidationResult();
+  }
+
+  public Boolean isInvalid() {
+    return validationSupport.isInvalid();
+  }
+
+  public ReadOnlyObjectProperty<Boolean> invalidProperty() {
+    return validationSupport.invalidProperty();
+  }
+
+  public <T> boolean registerValidator(Control control, boolean required, org.controlsfx.validation.Validator<T> validator) {
+    @SuppressWarnings("unchecked") ValidatorChain<T> validatorChain = (ValidatorChain<T>) this.registeredValidators.computeIfAbsent(control, c -> {
+      ValidatorChain<Object> retval = new ValidatorChain<>();
+      validationSupport.registerValidator(control, required, retval);
+      return retval;
+    });
+    validatorChain.addValidator(validator);
+    return true;
+  }
+
+  public <T> boolean registerValidator(Control control, org.controlsfx.validation.Validator<T> validator) {
+    return registerValidator(control, true, validator);
+  }
+
+  public Optional<org.controlsfx.validation.ValidationMessage> getHighestMessage(Control target) {
+    return validationSupport.getHighestMessage(target);
+  }
+
+  public Set<Control> getRegisteredControls() {
+    return validationSupport.getRegisteredControls();
+  }
+
+  protected ValidationSupport getValidationSupport() {
     return validationSupport;
   }
 }
