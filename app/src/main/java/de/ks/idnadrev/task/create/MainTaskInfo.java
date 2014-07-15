@@ -32,7 +32,6 @@ import de.ks.persistence.PersistentWork;
 import de.ks.persistence.entity.NamedPersistentObject;
 import de.ks.reflection.PropertyPath;
 import de.ks.text.AsciiDocEditor;
-import de.ks.validation.FXValidators;
 import de.ks.validation.ValidationRegistry;
 import de.ks.validation.validators.DurationValidator;
 import javafx.application.Platform;
@@ -113,7 +112,7 @@ public class MainTaskInfo implements Initializable, DataStoreCallback<Task> {
     contextController.from(Context.class).enableValidation();
     tagAddController.from(Tag.class);
 
-    durationValidator = FXValidators.createDurationValidator();
+    durationValidator = new DurationValidator();
 
     Platform.runLater(() -> {
       Callback<AutoCompletionBinding.ISuggestionRequest, Collection<String>> estimatedTimeAutoCompletion = getEstimatedTimeAutoCompletion();

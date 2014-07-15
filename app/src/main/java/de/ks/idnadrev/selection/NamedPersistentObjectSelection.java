@@ -24,8 +24,8 @@ import de.ks.persistence.PersistentWork;
 import de.ks.persistence.QueryConsumer;
 import de.ks.persistence.entity.NamedPersistentObject;
 import de.ks.reflection.PropertyPath;
-import de.ks.validation.FXValidators;
 import de.ks.validation.ValidationRegistry;
+import de.ks.validation.validators.NamedEntityValidator;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -129,7 +129,7 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
   public NamedPersistentObjectSelection<T> enableValidation() {
     ValidationRegistry validationRegistry = CDI.current().select(ValidationRegistry.class).get();
     Platform.runLater(() -> {
-      validationRegistry.getValidationSupport().registerValidator(input, FXValidators.createNamedEntityValidator(entityClass));
+      validationRegistry.getValidationSupport().registerValidator(input, new NamedEntityValidator(entityClass));
     });
     return this;
   }
