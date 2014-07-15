@@ -26,6 +26,7 @@ import de.ks.idnadrev.entity.Thought;
 import de.ks.idnadrev.thought.collect.file.FileThoughtViewController;
 import de.ks.text.AsciiDocEditor;
 import de.ks.validation.ValidationRegistry;
+import de.ks.validation.validators.NamedEntityMustNotExistValidator;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -100,6 +101,7 @@ public class AddThought implements Initializable {
 
   private void bindValidation() {
     save.disableProperty().bind(validationRegistry.getValidationSupport().invalidProperty());
+    assert validationRegistry.getValidationSupport().registerValidator(name, new NamedEntityMustNotExistValidator(Thought.class));
   }
 
   private void setDescription(AsciiDocEditor description) {
