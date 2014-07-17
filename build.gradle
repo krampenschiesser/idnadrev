@@ -27,6 +27,9 @@ allprojects {
             url = "http://repository.jboss.org/nexus/content/groups/public"
         }
         maven {
+            url = "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+        maven {
             url = "https://repository.sonatype.org/content/repositories/central/"
         }
     }

@@ -21,16 +21,13 @@ dependencies {
     compile project(":libs:application")
     compile project(":libs:scheduler")
     compile "commons-codec:commons-codec:$commonscodec"
-
-
     compile "$jpa2api"
 
     runtime "org.hibernate:hibernate-validator:$hibernateValidation"
     runtime "com.sun.el:el-ri:1.0"
-
     runtime "ch.qos.logback:logback-core:$logback"
     runtime "ch.qos.logback:logback-classic:$logback"
 
     testCompile project(":libs:testutil")
-    testCompile "org.loadui:testFx:$testfx"
+    testCompile "org.testfx:testfx-core:$testfx"
 }
