@@ -15,6 +15,7 @@
 package de.ks.binding;
 
 import com.google.common.primitives.Primitives;
+import de.ks.activity.ActivityController;
 import de.ks.javafx.converter.LastValueConverter;
 import de.ks.reflection.PropertyPath;
 import de.ks.reflection.ReflectionUtil;
@@ -60,6 +61,8 @@ public class Binding {
 
   @Inject
   ValidationRegistry validationRegistry;
+  @Inject
+  ActivityController controller;
 
   public void addBoundProperty(String name, Class<?> modelClass, Node node) {
     this.propertyCandidates.put(name, Pair.of(modelClass, node));
@@ -72,7 +75,7 @@ public class Binding {
     } else {
       unbind(oldValue);
       if (newValue != null) {
-        bind(newValue);
+        controller.getJavaFXExecutor().submit(() -> bind(newValue));
       }
     }
     if (newValue != null) {
