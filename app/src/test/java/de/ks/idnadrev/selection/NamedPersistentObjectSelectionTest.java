@@ -20,6 +20,7 @@ import de.ks.activity.context.ActivityContext;
 import de.ks.application.fxml.DefaultLoader;
 import de.ks.executor.JavaFXExecutorService;
 import de.ks.executor.SuspendablePooledExecutorService;
+import de.ks.idnadrev.entity.FileReference;
 import de.ks.idnadrev.entity.Thought;
 import de.ks.persistence.PersistentWork;
 import de.ks.reflection.PropertyPath;
@@ -46,7 +47,7 @@ public class NamedPersistentObjectSelectionTest {
 
   @Before
   public void setUp() throws Exception {
-    PersistentWork.deleteAllOf(Thought.class);
+    PersistentWork.deleteAllOf(FileReference.class, Thought.class);
     PersistentWork.persist(new Thought("test1"), new Thought("test2").setDescription("bla"), new Thought("other"));
 
     executorService = new SuspendablePooledExecutorService("test");
