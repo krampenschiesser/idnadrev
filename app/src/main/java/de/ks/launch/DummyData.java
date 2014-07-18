@@ -39,7 +39,7 @@ public class DummyData extends Service {
   @Override
   protected void doStart() {
     if (Boolean.getBoolean(CREATE_DUMMYDATA)) {
-      PersistentWork.deleteAllOf(Tag.class, WorkUnit.class, Thought.class, Task.class, FileReference.class, Context.class);
+      PersistentWork.deleteAllOf(Tag.class, WorkUnit.class, FileReference.class, Thought.class, Task.class, Context.class);
       ArrayList<Task> tasks = new ArrayList<>();
 
       log.info("Creating dummy data.");
