@@ -67,7 +67,7 @@ public class NamedPersistentObjectSelectionTest {
 
   @Test
   public void testFilteringForTest() throws Exception {
-    selection.getInput().setText("te");
+    FXPlatform.invokeLater(() -> selection.getInput().setText("te"));
     List<Thought> thoughts = selection.readEntities();
     assertEquals(2, thoughts.size());
     thoughts.forEach((t) -> assertThat(t.getName(), CoreMatchers.startsWith("test")));
@@ -75,24 +75,24 @@ public class NamedPersistentObjectSelectionTest {
 
   @Test
   public void testFilterWildcards() throws Exception {
-    selection.getInput().setText("e");
+    FXPlatform.invokeLater(() -> selection.getInput().setText("e"));
     List<Thought> thoughts = selection.readEntities();
     assertEquals(0, thoughts.size());
 
-    selection.getInput().setText("*e");
+    FXPlatform.invokeLater(() -> selection.getInput().setText("*e"));
     thoughts = selection.readEntities();
     assertEquals(3, thoughts.size());
 
-    selection.getInput().setText("*es");
+    FXPlatform.invokeLater(() -> selection.getInput().setText("*es"));
     thoughts = selection.readEntities();
     assertEquals(2, thoughts.size());
 
-    selection.getInput().setText("*s?1");
+    FXPlatform.invokeLater(() -> selection.getInput().setText("*s?1"));
     thoughts = selection.readEntities();
     assertEquals(1, thoughts.size());
     assertEquals("test1", thoughts.get(0).getName());
 
-    selection.getInput().setText("*s?2");
+    FXPlatform.invokeLater(() -> selection.getInput().setText("*s?2"));
     thoughts = selection.readEntities();
     assertEquals(1, thoughts.size());
     assertEquals("test2", thoughts.get(0).getName());
@@ -101,7 +101,7 @@ public class NamedPersistentObjectSelectionTest {
 
   @Test
   public void testCaseInsensitive() throws Exception {
-    selection.getInput().setText("TE");
+    FXPlatform.invokeLater(() -> selection.getInput().setText("TE"));
     List<Thought> thoughts = selection.readEntities();
     assertEquals(2, thoughts.size());
 
@@ -109,7 +109,7 @@ public class NamedPersistentObjectSelectionTest {
 
   @Test
   public void testFilteringForOther() throws Exception {
-    selection.getInput().setText("other");
+    FXPlatform.invokeLater(() -> selection.getInput().setText("other"));
     List<Thought> thoughts = selection.readEntities();
     assertEquals(1, thoughts.size());
     thoughts.forEach((t) -> assertEquals("other", t.getName()));
