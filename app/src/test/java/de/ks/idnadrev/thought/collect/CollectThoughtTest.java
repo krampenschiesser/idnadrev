@@ -166,6 +166,8 @@ public class CollectThoughtTest {
     FXPlatform.invokeLater(() -> {
       addThought.save.getOnAction().handle(new ActionEvent());
     });
+    Thread.sleep(100);
+    controller.waitForDataSource();
     controller.getCurrentExecutorService().waitForAllTasksDone();
 
 
@@ -243,6 +245,8 @@ public class CollectThoughtTest {
     assertThat(addThought.description.getText(), containsString("test.jpg"));
 
     controller.save();
+    Thread.sleep(100);
+    controller.waitForDataSource();
     controller.waitForTasks();
 
     PersistentWork.wrap(() -> {
