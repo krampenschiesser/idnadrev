@@ -89,20 +89,19 @@ public class FileThoughtViewController implements Initializable, DataStoreCallba
 
     files.addListener((ListChangeListener<File>) change -> {
       Thought thought = store.getModel();
-      while (change.next()) {
-        change.getAddedSubList().forEach(file -> {
+
+      files.forEach(file -> {
+        if (!fileReferences.containsKey(file)) {
           fileReferences.put(file, fileStore.getReference(thought, file));
-        });
-        change.getRemoved().forEach((file) -> {
-          fileReferences.remove(file);
-        });
-      }
+        }
+      });
     });
   }
 
   public void addFiles(List<File> additionalFiles) {
     additionalFiles.removeAll(files);
     additionalFiles.forEach(this::addPossibleImage);
+    log.info("Adding addtional files {}", additionalFiles);
     files.addAll(additionalFiles);
 
     if (!additionalFiles.isEmpty()) {
@@ -192,7 +191,8 @@ public class FileThoughtViewController implements Initializable, DataStoreCallba
   @FXML
   public void removeFile(ActionEvent event) {
     ObservableList<File> selectedItems = fileList.getSelectionModel().getSelectedItems();
-    files.removeAll(selectedItems);
+    log.info("Removing files {}", selectedItems);
+    selectedItems.forEach(f -> files.remove(f));
   }
 
   @FXML
@@ -206,6 +206,7 @@ public class FileThoughtViewController implements Initializable, DataStoreCallba
 
   @Subscribe
   public void onRefresh(ActivityLoadFinishedEvent event) {
+    log.debug("Clearing files");
     files.clear();
   }
 
@@ -216,6 +217,10 @@ public class FileThoughtViewController implements Initializable, DataStoreCallba
 
   @Override
   public void duringSave(Thought model) {
+    fileReferences.keySet().retainAll(files);
+    if (this.fileReferences.isEmpty()) {
+      log.info("No files to save for {}", model);
+    }
     this.fileReferences.entrySet().forEach(entry -> {
       try {
         File file = entry.getKey();
@@ -228,6 +233,7 @@ public class FileThoughtViewController implements Initializable, DataStoreCallba
         String replacement = FileReference.FILESTORE_VAR + fileReference.getFileStorePath();
         String newDescription = StringUtils.replace(model.getDescription(), search, replacement);
         model.setDescription(newDescription);
+        log.info("Adding file reference {}", fileReference);
 
         PersistentWork.persist(fileReference);
       } catch (InterruptedException | ExecutionException e) {
