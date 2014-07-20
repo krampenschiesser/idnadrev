@@ -19,6 +19,7 @@ import de.ks.activity.ActivityCfg;
 import de.ks.activity.ListBound;
 import de.ks.activity.context.ActivityStore;
 import de.ks.activity.initialization.LoaderCallback;
+import de.ks.javafx.NodeLookup;
 import de.ks.reflection.ReflectionUtil;
 import javafx.scene.Node;
 import org.slf4j.Logger;
@@ -53,7 +54,7 @@ public class InitializeListBindings extends LoaderCallback {
     ActivityStore store = CDI.current().select(ActivityStore.class).get();
 
     if (property.equals("this")) {
-      Node table = getChildNodeWithId(node, "_this");
+      Node table = NodeLookup.getChildNodeWithId(node, "_this");
       log.debug("Found node {} for property '{}' for model class '{}' in {}", table, property, modelClass.getSimpleName(), node);
       store.getBinding().addBoundProperty(property, List.class, table);
       return;

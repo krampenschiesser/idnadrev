@@ -19,6 +19,7 @@ import de.ks.activity.ActivityCfg;
 import de.ks.activity.ModelBound;
 import de.ks.activity.context.ActivityStore;
 import de.ks.activity.initialization.LoaderCallback;
+import de.ks.javafx.NodeLookup;
 import de.ks.reflection.ReflectionUtil;
 import javafx.scene.Node;
 import org.slf4j.Logger;
@@ -56,7 +57,7 @@ public class InitializeModelBindings extends LoaderCallback {
     List<Field> allFields = ReflectionUtil.getAllFields(modelClass, (f) -> !Modifier.isStatic(f.getModifiers()));
     for (Field field : allFields) {
       String name = field.getName();
-      Node found = getChildNodeWithId(node, name);
+      Node found = NodeLookup.getChildNodeWithId(node, name);
       if (found != null) {
         log.debug("Found node {} for property '{}' for model class '{}' in {}", found, name, modelClass.getSimpleName(), node);
 
@@ -64,7 +65,7 @@ public class InitializeModelBindings extends LoaderCallback {
         activityStore.getBinding().addBoundProperty(name, modelClass, found);
       } else {
         log.debug("Did not find {} in {}", field.getName(), node);
-        Set<Node> allPossibleNodes = getAllIdNodes(node);
+        Set<Node> allPossibleNodes = NodeLookup.getAllIdNodes(node);
         allPossibleNodes.forEach((n) -> log.trace("\t\tGot available node {} with id {}", n.getClass().getSimpleName(), n.getId()));
       }
     }
