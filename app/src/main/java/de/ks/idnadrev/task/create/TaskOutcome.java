@@ -19,8 +19,10 @@ import de.ks.activity.initialization.ActivityInitialization;
 import de.ks.activity.initialization.DataStoreCallback;
 import de.ks.idnadrev.entity.Task;
 import de.ks.text.AsciiDocEditor;
+import de.ks.validation.ValidationRegistry;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 
 import javax.inject.Inject;
@@ -30,20 +32,28 @@ import java.util.ResourceBundle;
 public class TaskOutcome implements Initializable, DataStoreCallback<Task> {
   @FXML
   protected StackPane expectedOutcomeContainer;
+  @FXML
+  private Button saveButton;
 
   @Inject
   protected ActivityInitialization activityInitialization;
   @Inject
   protected ActivityController controller;
+  @Inject
+  protected ValidationRegistry validationRegistry;
 
   protected AsciiDocEditor expectedOutcome;
+  protected Runnable saveRunnable;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     activityInitialization.loadAdditionalController(AsciiDocEditor.class).thenAcceptAsync(loader -> {
       expectedOutcome = loader.getController();
       expectedOutcomeContainer.getChildren().add(loader.getView());
+      expectedOutcome.hideActionBar();
     }, controller.getJavaFXExecutor());
+
+    saveButton.disableProperty().bind(validationRegistry.invalidProperty());
   }
 
   @Override
@@ -54,5 +64,14 @@ public class TaskOutcome implements Initializable, DataStoreCallback<Task> {
   @Override
   public void duringSave(Task model) {
     model.getOutcome().setExpectedOutcome(expectedOutcome.getText());
+  }
+
+  @FXML
+  void save() {
+    saveRunnable.run();
+  }
+
+  public void setSaveRunnable(Runnable run) {
+    this.saveRunnable = run;
   }
 }

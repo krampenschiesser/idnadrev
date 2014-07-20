@@ -34,6 +34,7 @@ import de.ks.reflection.PropertyPath;
 import de.ks.text.AsciiDocEditor;
 import de.ks.validation.ValidationRegistry;
 import de.ks.validation.validators.DurationValidator;
+import de.ks.validation.validators.NamedEntityMustNotExistValidator;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
@@ -92,11 +93,13 @@ public class MainTaskInfo implements Initializable, DataStoreCallback<Task> {
   @Inject
   ActivityStore store;
   private DurationValidator durationValidator;
+  private Runnable saveRunnable;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     AsciiDocEditor.load(descriptionContainer.getChildren()::add, ade -> this.description = ade);
 
+    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator(Task.class));
     description.hideActionBar();
     StringProperty descriptionBinding = store.getBinding().getStringProperty(Task.class, t -> t.getDescription());
     descriptionBinding.bindBidirectional(description.textProperty());
@@ -166,9 +169,7 @@ public class MainTaskInfo implements Initializable, DataStoreCallback<Task> {
 
   @FXML
   void save() {
-    controller.save();
-    CreateTaskDS datasource = (CreateTaskDS) store.getDatasource();
-    controller.resumePreviousActivity();
+    saveRunnable.run();
   }
 
   public Duration getEstimatedDuration() {
@@ -206,6 +207,10 @@ public class MainTaskInfo implements Initializable, DataStoreCallback<Task> {
         consumer.accept(first.get());
       }
     }
+  }
+
+  public void setSaveRunnable(Runnable run) {
+    this.saveRunnable = run;
   }
 
   public TextField getName() {

@@ -14,11 +14,31 @@
  */
 package de.ks.idnadrev.task.create;
 
+import de.ks.activity.ActivityController;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 
-public class CreateTask {
+import javax.inject.Inject;
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class CreateTask implements Initializable {
   @FXML
   MainTaskInfo mainInfoController;
   @FXML
   TaskOutcome expectedOutcomeController;
+
+  @Inject
+  protected ActivityController controller;
+
+  public void save() {
+    controller.save();
+    controller.resumePreviousActivity();
+  }
+
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    expectedOutcomeController.setSaveRunnable(this::save);
+    mainInfoController.setSaveRunnable(this::save);
+  }
 }
