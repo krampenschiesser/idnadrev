@@ -11,10 +11,12 @@ Main goal: Get a simple Version running
 === Closed
 
 * Enhance JavaFXExecutor to be suspendable
+* Enhance JavaFXExecutor to be suspendable
 * provide simple transaction+synchronization stuff
 * Implement asccidoc editor preview standard control
 * Refactoring of files to remain on local file system to include them in asciidoc, view them etc.
 Don't write them to the DB
+* use navigation hint instead of return/to converters
 
 === Open:
 
