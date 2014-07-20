@@ -90,10 +90,10 @@ public class ActivityBindingTest extends AbstractActivityTest {
 
     assertEquals("13", idInput.getText());
 
-    idInput.setText("78");
+    FXPlatform.invokeLater(() -> idInput.setText("78"));
     assertEquals(78, model.getId());
 
-    idInput.setText("bla");
+    FXPlatform.invokeLater(() -> idInput.setText("bla"));
     assertEquals(78, model.getId());
   }
 
