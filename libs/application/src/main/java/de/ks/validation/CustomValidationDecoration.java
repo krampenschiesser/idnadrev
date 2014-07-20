@@ -71,6 +71,22 @@ public class CustomValidationDecoration extends AbstractValidationDecoration {
 
     Control target = message.getTarget();
 
+    showTooltip(tooltip, target);
+
+    label.parentProperty().addListener((p, o, n) -> {
+      if (n == null) {
+        tooltip.hide();
+      }
+    });
+    target.sceneProperty().addListener((p, o, n) -> {
+      if (n == null) {
+        tooltip.hide();
+      }
+    });
+    return label;
+  }
+
+  private void showTooltip(Tooltip tooltip, Control target) {
     Point2D point2D = target.localToScreen(target.getLayoutBounds().getMinX(), target.getLayoutBounds().getMinY());
     if (point2D == null) {
       Platform.runLater(() -> {
@@ -83,13 +99,6 @@ public class CustomValidationDecoration extends AbstractValidationDecoration {
     } else {
       showTooltip(tooltip, target, point2D);
     }
-
-    label.parentProperty().addListener((p, o, n) -> {
-      if (n == null) {
-        tooltip.hide();
-      }
-    });
-    return label;
   }
 
   private void showTooltip(Tooltip tooltip, Control target, Point2D point2D) {
