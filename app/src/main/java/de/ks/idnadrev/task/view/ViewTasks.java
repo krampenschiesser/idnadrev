@@ -42,6 +42,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.NodeOrientation;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
@@ -206,6 +208,12 @@ public class ViewTasks implements Initializable {
     tagPane.getChildren().clear();
   }
 
+  @FXML
+  void onTableKeyReleased(KeyEvent event) {
+    if (event.getCode().equals(KeyCode.ENTER)) {
+      startWork();
+    }
+  }
   @FXML
   void selectParentProject() {
     Task parent = tasksView.getSelectionModel().getSelectedItem().getValue().getParent();
