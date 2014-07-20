@@ -126,6 +126,7 @@ public class ViewThoughts implements Initializable {
     List<Thought> thoughts = e.getModel();
     List<AsciiDocContent> asciiDocContents = thoughts.stream().map(t -> new AsciiDocContent(t.getName(), t.getDescription())).collect(Collectors.toList());
     this.asciiDocViewer.preload(asciiDocContents);
+    _this.requestFocus();
   }
 
   public TableView<Thought> getTable() {
