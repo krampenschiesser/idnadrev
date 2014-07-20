@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.time.Duration;
 import java.util.function.Consumer;
 
 public class CreateTaskDS extends NewInstanceDataSource<Task> {
@@ -52,6 +53,7 @@ public class CreateTaskDS extends NewInstanceDataSource<Task> {
           task.setName(fromThought.getName());
           task.setDescription(fromThought.getDescription());
         }
+        task.setEstimatedTime(Duration.ofMinutes(65));
         task.setProject(false);
         furtherProcessing.accept(task);
         return task;

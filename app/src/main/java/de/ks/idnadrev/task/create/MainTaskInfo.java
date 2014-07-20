@@ -165,6 +165,18 @@ public class MainTaskInfo implements Initializable, DataStoreCallback<Task> {
   @Threading(HandlingThread.JavaFX)
   public void onRefresh(ActivityLoadFinishedEvent event) {
     this.name.requestFocus();
+
+    Task model = event.getModel();
+
+    Duration estimatedTime = model.getEstimatedTime();
+
+    if (estimatedTime.toMinutes() < 60) {
+      estimatedTimeDuration.setText(estimatedTime.toMinutes() + "m");
+    } else {
+      long hours = estimatedTime.toHours();
+      long minutes = estimatedTime.toMinutes() % 60;
+      estimatedTimeDuration.setText(hours + ":" + String.format("%02d", minutes));
+    }
   }
 
   @FXML
@@ -178,7 +190,7 @@ public class MainTaskInfo implements Initializable, DataStoreCallback<Task> {
 
   @Override
   public void duringLoad(Task model) {
-
+    //
   }
 
   @Override
