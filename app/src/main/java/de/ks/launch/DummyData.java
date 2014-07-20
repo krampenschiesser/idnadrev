@@ -76,6 +76,12 @@ public class DummyData extends Service {
       persist(hiking, backpack, sketch, sew, task, workUnit, asciiDocSample);
       persist(new Context("Work"), new Context("Studying"), new Context("Music"));
 
+      Task effort = new Task("effort");
+      effort.getMentalEffort().setAmount(-3);
+      effort.getPhysicalEffort().setAmount(4);
+      effort.getFunFactor().setAmount(4);
+
+      persist(effort);
     }
   }
 

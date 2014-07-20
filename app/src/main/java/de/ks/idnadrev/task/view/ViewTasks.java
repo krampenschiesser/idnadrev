@@ -39,6 +39,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.NodeOrientation;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.StackPane;
@@ -60,6 +61,7 @@ import java.util.stream.Collectors;
 public class ViewTasks implements Initializable {
   private static final Logger log = LoggerFactory.getLogger(ViewTasks.class);
   public static final String NEGATIVE_FUN_FACTOR = "negativeFunFactor";
+  public static final String RECOVERING_EFFORT = "recoveringEffortFactor";
   @FXML
   protected TreeTableView<Task> tasksView;
   @FXML
@@ -142,6 +144,7 @@ public class ViewTasks implements Initializable {
     clear();
     if (taskTreeItem != null) {
       Task task = taskTreeItem.getValue();
+      log.info("Applying task {}", task);
       if (task.getId() >= 0) {
         disable.set(false);
       }
@@ -150,19 +153,26 @@ public class ViewTasks implements Initializable {
       estimatedTime.setText(parseDuration(task.isProject() ? task.getTotalEstimatedTime() : task.getEstimatedTime()));
       spentTime.setText(parseDuration(task.getTotalWorkDuration()));
       parentProject.setText(task.getParent() != null ? task.getParent().getName() : null);
-      physicalEffort.setProgress(task.getPhysicalEffort().getAmount() / 10D);
-      mentalEffort.setProgress(task.getMentalEffort().getAmount() / 10D);
 
-      if (task.getFunFactor().getAmount() < 0) {
-        funFactor.getStyleClass().add(NEGATIVE_FUN_FACTOR);
-      } else {
-        funFactor.getStyleClass().remove(NEGATIVE_FUN_FACTOR);
-      }
-      funFactor.setProgress(Math.abs(task.getFunFactor().getAmount()) / 5D);
+
+      setEffortProgress(task.getPhysicalEffort().getAmount(), physicalEffort, RECOVERING_EFFORT);
+      setEffortProgress(task.getMentalEffort().getAmount(), mentalEffort, RECOVERING_EFFORT);
+      setEffortProgress(task.getFunFactor().getAmount(), funFactor, NEGATIVE_FUN_FACTOR);
 
       task.getTags().forEach((tag) -> tagPane.getChildren().add(new Label(tag.getName())));
 
       asciiDocViewer.show(new AsciiDocContent(task.getName(), task.getDescription()));
+    }
+  }
+
+  private void setEffortProgress(int amount, ProgressBar temp, String styleClass) {
+    temp.setProgress(Math.abs(amount / 5D));
+    if (amount < 0) {
+      temp.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
+      temp.getStyleClass().add(styleClass);
+    } else {
+      temp.setNodeOrientation(NodeOrientation.LEFT_TO_RIGHT);
+      temp.getStyleClass().remove(styleClass);
     }
   }
 
