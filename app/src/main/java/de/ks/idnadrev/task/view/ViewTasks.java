@@ -27,6 +27,7 @@ import de.ks.eventsystem.bus.Threading;
 import de.ks.file.FileStore;
 import de.ks.i18n.Localized;
 import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.task.create.CreateTaskActivity;
 import de.ks.idnadrev.task.finish.FinishTaskActivity;
 import de.ks.idnadrev.task.work.WorkOnTaskActivity;
 import de.ks.text.view.AsciiDocContent;
@@ -93,6 +94,8 @@ public class ViewTasks implements Initializable {
   @FXML
   protected Button finish;
   @FXML
+  protected Button edit;
+  @FXML
   protected Button show;
 
   @Inject
@@ -136,6 +139,7 @@ public class ViewTasks implements Initializable {
 
     start.disableProperty().bind(disable);
     finish.disableProperty().bind(disable);
+    edit.disableProperty().bind(disable);
     show.disableProperty().bind(disable);
   }
 
@@ -212,6 +216,15 @@ public class ViewTasks implements Initializable {
   @FXML
   void showTimeUnits() {
 
+  }
+
+  @FXML
+  void editTask() {
+    NavigationHint hint = new NavigationHint();
+    hint.setReturnToActivity(controller.getCurrentActivity());
+    hint.setReturnToDatasourceHint(() -> tasksView.getSelectionModel().getSelectedItem().getValue());
+    hint.setDataSourceHint(() -> tasksView.getSelectionModel().getSelectedItem().getValue());
+    controller.start(CreateTaskActivity.class, hint);
   }
 
   @FXML

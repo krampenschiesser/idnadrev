@@ -84,6 +84,7 @@ public class CreateTaskTest {
   public void testPersist() throws InterruptedException {
     FXPlatform.invokeLater(() -> {
       controller.name.setText("name");
+      controller.description.setText("description");
       controller.contextController.getInput().setText("context");
       controller.estimatedTimeDuration.setText("15min");
       controller.funFactor.valueProperty().set(3);
@@ -104,6 +105,7 @@ public class CreateTaskTest {
     assertEquals(1, tasks.size());
     Task task = tasks.get(0);
     assertEquals("name", task.getName());
+    assertEquals("description", task.getDescription());
     assertNotNull(task.getContext());
     assertEquals("context", task.getContext().getName());
     assertEquals(3, task.getPhysicalEffort().getAmount());
@@ -190,4 +192,30 @@ public class CreateTaskTest {
     Task task = tasks.get(0);
     assertEquals(2, task.getTags().size());
   }
+
+  @Test
+  public void testEditExisting() throws Exception {
+    Task bla = new Task("Bla").setDescription("description");
+    PersistentWork.persist(bla);
+
+    @SuppressWarnings("unchecked") CreateTaskDS datasource = (CreateTaskDS) store.getDatasource();
+    datasource.fromTask = bla;
+    activityController.reload();
+    activityController.waitForDataSource();
+    FXPlatform.waitForFX();
+    assertEquals("Bla", controller.name.getText());
+    assertEquals("description", controller.description.getText());
+
+    FXPlatform.invokeLater(() -> controller.description.setText("hallo"));
+    FXPlatform.waitForFX();
+
+    activityController.save();
+    activityController.waitForDataSource();
+
+    assertNull(datasource.fromTask);
+    List<Task> tasks = PersistentWork.from(Task.class);
+    assertEquals(1, tasks.size());
+    assertEquals("hallo", tasks.get(0).getDescription());
+  }
+
 }
