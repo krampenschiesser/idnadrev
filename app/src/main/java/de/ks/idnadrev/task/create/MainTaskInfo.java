@@ -99,7 +99,7 @@ public class MainTaskInfo implements Initializable, DataStoreCallback<Task> {
 
     description.hideActionBar();
     StringProperty descriptionBinding = store.getBinding().getStringProperty(Task.class, t -> t.getDescription());
-    descriptionBinding.bind(description.textProperty());
+    descriptionBinding.bindBidirectional(description.textProperty());
 
     parentProjectController.disableProperty().bind(project.selectedProperty());
     project.disableProperty().bind(parentProjectController.getInput().textProperty().isNotEmpty());
@@ -203,4 +203,47 @@ public class MainTaskInfo implements Initializable, DataStoreCallback<Task> {
     }
   }
 
+  public TextField getName() {
+    return name;
+  }
+
+  public CheckBox getProject() {
+    return project;
+  }
+
+  public AsciiDocEditor getDescription() {
+    return description;
+  }
+
+  public TextField getEstimatedTimeDuration() {
+    return estimatedTimeDuration;
+  }
+
+  public Button getSaveButton() {
+    return saveButton;
+  }
+
+  public Slider getFunFactor() {
+    return funFactor;
+  }
+
+  public Slider getMentalEffort() {
+    return mentalEffort;
+  }
+
+  public Slider getPhysicalEffort() {
+    return physicalEffort;
+  }
+
+  public NamedPersistentObjectSelection<Tag> getTagAddController() {
+    return tagAddController;
+  }
+
+  public NamedPersistentObjectSelection<Context> getContextController() {
+    return contextController;
+  }
+
+  public NamedPersistentObjectSelection<Task> getParentProjectController() {
+    return parentProjectController;
+  }
 }

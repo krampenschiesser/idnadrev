@@ -26,7 +26,6 @@ import de.ks.javafx.FxCss;
 import de.ks.text.command.AsciiDocEditorCommand;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -116,7 +115,7 @@ public class AsciiDocEditor implements Initializable {
     helpView = new WebView();
     helpView.getEngine().load("http://powerman.name/doc/asciidoc");
 
-    text.bind(editor.textProperty());
+    text.bindBidirectional(editor.textProperty());
 
     editor.textProperty().addListener((p, o, n) -> {
       renderGroup.schedule(() -> parser.parse(n)).thenAcceptAsync(html -> {
@@ -208,7 +207,7 @@ public class AsciiDocEditor implements Initializable {
     helpDialog.show();
   }
 
-  public ObservableValue<String> textProperty() {
+  public SimpleStringProperty textProperty() {
     return text;
   }
 
@@ -238,5 +237,17 @@ public class AsciiDocEditor implements Initializable {
   @SuppressWarnings("unchecked")
   public <T extends AsciiDocEditorCommand> T getCommand(Class<T> clazz) {
     return (T) commands.get(clazz);
+  }
+
+  public void selectPreview() {
+    this.tabPane.getSelectionModel().select(1);
+  }
+
+  public void selectEditor() {
+    this.tabPane.getSelectionModel().select(0);
+  }
+
+  public WebView getPreview() {
+    return preview;
   }
 }
