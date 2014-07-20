@@ -186,6 +186,7 @@ public class Task extends NamedPersistentObject<Task> {
 
   public void setParent(Task parent) {
     this.parent = parent;
+    parent.addChild(this);
   }
 
   public String getDelegationReason() {
@@ -242,7 +243,9 @@ public class Task extends NamedPersistentObject<Task> {
 
   public Task addChild(Task child) {
     getChildren().add(child);
-    child.setParent(this);
+    if (!this.equals(child.getParent())) {
+      child.setParent(this);
+    }
     this.setProject(true);
     return this;
   }

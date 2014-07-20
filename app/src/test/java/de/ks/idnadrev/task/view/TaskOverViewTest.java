@@ -36,7 +36,7 @@ import static org.junit.Assert.assertNotNull;
 public class TaskOverViewTest {
   @Inject
   ActivityController activityController;
-  private TaskOverview controller;
+  private ViewTasks controller;
 
   @Before
   public void setUp() throws Exception {
@@ -60,7 +60,7 @@ public class TaskOverViewTest {
 
     activityController.start(ViewTasksActvity.class);
     activityController.waitForDataSource();
-    controller = activityController.getControllerInstance(TaskOverview.class);
+    controller = activityController.getControllerInstance(ViewTasks.class);
   }
 
   @After

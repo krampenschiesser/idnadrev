@@ -77,7 +77,9 @@ public class ActivityController {
       try {
         Iterator<ActivityCfg> activityIterator = activities.descendingIterator();
         ActivityCfg current = activityIterator.next();
-        if (activityIterator.hasNext()) {
+        NavigationHint navigationHint = current.getNavigationHint();
+
+        if (navigationHint.getReturnToActivity() != null && activityIterator.hasNext()) {
           ActivityCfg previous = activityIterator.next();
           log.info("Resuming previous activity {}, current={}", previous.getClass().getName(), current.getClass().getName());
           stop(current);

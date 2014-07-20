@@ -17,7 +17,7 @@ package de.ks.idnadrev;
 import de.ks.activity.ActivityController;
 import de.ks.idnadrev.task.create.CreateTaskActivity;
 import de.ks.idnadrev.task.view.ViewTasksActvity;
-import de.ks.idnadrev.thought.collect.ThoughtActivity;
+import de.ks.idnadrev.thought.add.AddThoughtActivity;
 import de.ks.idnadrev.thought.view.ViewThoughtsActivity;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -37,7 +37,7 @@ public class ButtonBar implements Initializable {
 
   @FXML
   void addThought() {
-    controller.start(ThoughtActivity.class);
+    controller.start(AddThoughtActivity.class);
   }
 
   @FXML

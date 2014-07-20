@@ -20,7 +20,7 @@
 <?import javafx.scene.layout.*?>
 <GridPane fx:id="root" hgap="5.0" minHeight="600.0" minWidth="800.0" onDragDropped="#onDragDrop"
           onDragOver="#onDragOver" onMouseEntered="#onMouseEntered" vgap="5.0" xmlns="http://javafx.com/javafx/8"
-          xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.idnadrev.thought.collect.AddThought">
+          xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.idnadrev.thought.add.AddThought">
     <children>
         <Label text="%thought.name" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
         <Label text="%thought.description" GridPane.columnIndex="0" GridPane.rowIndex="2"/>

@@ -22,8 +22,8 @@ import de.ks.idnadrev.entity.FileReference;
 import de.ks.idnadrev.entity.Thought;
 import de.ks.idnadrev.task.create.CreateTaskActivity;
 import de.ks.idnadrev.task.create.MainTaskInfo;
-import de.ks.idnadrev.thought.collect.AddThought;
-import de.ks.idnadrev.thought.collect.ThoughtActivity;
+import de.ks.idnadrev.thought.add.AddThought;
+import de.ks.idnadrev.thought.add.AddThoughtActivity;
 import de.ks.idnadrev.thought.view.ViewThoughts;
 import de.ks.idnadrev.thought.view.ViewThoughtsActivity;
 import de.ks.launch.JavaFXService;
@@ -99,7 +99,7 @@ public class SimpleWorkflowTest extends GuiTest {
 
     ActivityController activityController = CDI.current().select(ActivityController.class).get();
     activityController.waitForTasks();
-    assertEquals(ThoughtActivity.class, activityController.getCurrentActivity().getClass());
+    assertEquals(AddThoughtActivity.class, activityController.getCurrentActivity().getClass());
 
     AddThought addThought = activityController.getCurrentController();
 

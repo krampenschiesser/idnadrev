@@ -20,6 +20,6 @@ import de.ks.menu.MenuItem;
 @MenuItem(order = 2, value = "/main/task")
 public class ViewTasksActvity extends ActivityCfg {
   public ViewTasksActvity() {
-    super(ViewTasksDS.class, TaskOverview.class);
+    super(ViewTasksDS.class, ViewTasks.class);
   }
 }

@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.thought.collect;
+package de.ks.idnadrev.thought.add;
 
 import de.ks.LauncherRunner;
 import de.ks.TempFileRule;
@@ -71,7 +71,7 @@ public class CollectThoughtTest {
     JavaFXService service = Launcher.instance.getService(JavaFXService.class);
     Stage stage = service.getStage();
     scene = stage.getScene();
-    controller.start(ThoughtActivity.class);
+    controller.start(AddThoughtActivity.class);
     controller.waitForDataSource();
 
     addThought = controller.getCurrentController();
@@ -83,7 +83,7 @@ public class CollectThoughtTest {
   @After
   public void tearDown() throws Exception {
     FXPlatform.waitForFX();
-    controller.stop(ThoughtActivity.class);
+    controller.stop(AddThoughtActivity.class);
   }
 
   @Test

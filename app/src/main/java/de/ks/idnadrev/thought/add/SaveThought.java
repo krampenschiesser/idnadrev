@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package de.ks.idnadrev.thought.collect;
+package de.ks.idnadrev.thought.add;
 
 import de.ks.activity.ActivityController;
 import javafx.concurrent.Task;

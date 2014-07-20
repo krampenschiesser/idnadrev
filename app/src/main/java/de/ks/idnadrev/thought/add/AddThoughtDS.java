@@ -12,19 +12,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package de.ks.idnadrev.thought.add;
 
-package de.ks.idnadrev.thought.collect;
-
-import de.ks.activity.ActivityCfg;
-import de.ks.menu.MenuItem;
+import de.ks.datasource.NewInstanceDataSource;
+import de.ks.idnadrev.entity.Thought;
+import de.ks.persistence.PersistentWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@MenuItem(order = 1, value = "/main/thought")
-public class ThoughtActivity extends ActivityCfg {
-  private static final Logger log = LoggerFactory.getLogger(ThoughtActivity.class);
+import java.util.function.Consumer;
 
-  public ThoughtActivity() {
-    super(ThoughStoreDS.class, AddThought.class);
+public class AddThoughtDS extends NewInstanceDataSource<Thought> {
+  private static final Logger log = LoggerFactory.getLogger(AddThoughtDS.class);
+
+  public AddThoughtDS() {
+    super(Thought.class);
+  }
+
+  @Override
+  public void saveModel(Thought model, Consumer<Thought> beforeSaving) {
+    log.info("Saving model {}", model);
+    PersistentWork.wrap(() -> {
+      PersistentWork.persist(model);
+      beforeSaving.accept(model);
+    });
   }
 }

@@ -57,8 +57,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @LoadInFXThread
-public class TaskOverview implements Initializable {
-  private static final Logger log = LoggerFactory.getLogger(TaskOverview.class);
+public class ViewTasks implements Initializable {
+  private static final Logger log = LoggerFactory.getLogger(ViewTasks.class);
   public static final String NEGATIVE_FUN_FACTOR = "negativeFunFactor";
   @FXML
   protected TreeTableView<Task> tasksView;

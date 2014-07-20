@@ -185,6 +185,10 @@ public class MainTaskInfo implements Initializable, DataStoreCallback<Task> {
 
     String contextName = contextController.getInput().textProperty().getValueSafe().trim();
     setToOne(task, Context.class, contextName, task::setContext);
+    String parentProject = parentProjectController.getInput().textProperty().getValueSafe().trim();
+    if (!parentProject.isEmpty()) {
+      setToOne(task, Task.class, parentProject, task::setParent);
+    }
 
     task.setEstimatedTime(getEstimatedDuration());
 

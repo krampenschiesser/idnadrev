@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package de.ks.idnadrev.thought.collect;
+package de.ks.idnadrev.thought.add;
 
 import com.google.common.eventbus.Subscribe;
 import de.ks.activity.ActivityController;
@@ -23,7 +23,7 @@ import de.ks.activity.context.ActivityStore;
 import de.ks.eventsystem.bus.HandlingThread;
 import de.ks.eventsystem.bus.Threading;
 import de.ks.idnadrev.entity.Thought;
-import de.ks.idnadrev.thought.collect.file.FileThoughtViewController;
+import de.ks.idnadrev.thought.add.file.FileThoughtViewController;
 import de.ks.text.AsciiDocEditor;
 import de.ks.validation.ValidationRegistry;
 import de.ks.validation.validators.NamedEntityMustNotExistValidator;

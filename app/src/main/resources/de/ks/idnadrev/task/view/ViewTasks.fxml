@@ -20,8 +20,8 @@
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.*?>
 <HBox spacing="5.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="de.ks.idnadrev.task.view.TaskOverview">
-    <children>
+      fx:controller="de.ks.idnadrev.task.view.ViewTasks">
+<children>
         <TreeTableView fx:id="tasksView">
             <columns>
                 <TreeTableColumn fx:id="taskViewNameColumn" prefWidth="271.0" text="%task.name"/>

@@ -23,7 +23,6 @@ import de.ks.text.AsciiDocEditor;
 import de.ks.util.FXPlatform;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -141,7 +140,6 @@ public class CreateTaskTest {
     activityController.waitForDataSource();
   }
 
-  @Ignore
   @Test
   public void testSaveWithParentProject() throws InterruptedException {
     createTask("parent", controller -> controller.project.setSelected(true));
