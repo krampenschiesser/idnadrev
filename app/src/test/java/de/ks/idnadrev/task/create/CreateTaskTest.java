@@ -45,7 +45,7 @@ public class CreateTaskTest {
 
   @Before
   public void setUp() throws Exception {
-    PersistentWork.deleteAllOf(WorkUnit.class, Task.class, Context.class, Tag.class, Thought.class);
+    PersistentWork.deleteAllOf(WorkUnit.class, Task.class, Context.class, Tag.class, FileReference.class, Thought.class);
     PersistentWork.persist(new Context("context"));
 
     activityController.start(CreateTaskActivity.class);
