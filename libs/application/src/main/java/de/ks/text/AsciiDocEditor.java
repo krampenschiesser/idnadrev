@@ -151,6 +151,7 @@ public class AsciiDocEditor implements Initializable {
   private void addCommands() {
     CDI.current().select(AsciiDocEditorCommand.class).forEach(c -> {
       Button button = new Button();
+      button.setMnemonicParsing(true);
       c.initialize(this, button);
       this.commands.put(c.getClass(), c);
       button.setText(Localized.get(c.getName()));
