@@ -22,6 +22,10 @@ $ ./gradlew help
 $ ./gradlew build
 ----
 
+=== Check-in build
+
+image:https://travis-ci.org/krampenschiesser/idnadrev.svg?branch=master["Build Status", link="https://travis-ci.org/krampenschiesser/idnadrev"]
+
 == Parameters useful for testing
 
 In order to not see the javaFX dialogs while running your test from the IDE you should use:
