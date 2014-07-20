@@ -29,6 +29,7 @@ import org.junit.runner.RunWith;
 import javax.inject.Inject;
 import java.time.Duration;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static org.junit.Assert.*;
 
@@ -113,6 +114,52 @@ public class CreateTaskTest {
     Duration estimatedTime = task.getEstimatedTime();
     assertNotNull(estimatedTime);
     assertEquals(Duration.ofMinutes(15), estimatedTime);
+  }
+
+  @Test
+  public void testSaveProject() throws InterruptedException {
+    createTask("name", controller -> controller.project.setSelected(true));
+
+    List<Task> tasks = PersistentWork.from(Task.class);
+    assertEquals(1, tasks.size());
+    Task task = tasks.get(0);
+    assertEquals("name", task.getName());
+    assertTrue(task.isProject());
+  }
+
+  protected void createTask(String name, Consumer<MainTaskInfo> consumer) {
+    FXPlatform.invokeLater(() -> {
+      controller.name.setText(name);
+      consumer.accept(controller);
+    });
+    activityController.waitForTasks();
+    FXPlatform.waitForFX();
+    FXPlatform.invokeLater(() -> {
+      controller.save();
+    });
+    activityController.waitForDataSource();
+  }
+
+  @Test
+  public void testSaveWithParentProject() throws InterruptedException {
+    createTask("parent", controller -> controller.project.setSelected(true));
+    createTask("child", controller -> controller.parentProjectController.getInput().setText("parent"));
+
+    PersistentWork.wrap(() -> {
+      List<Task> tasks = PersistentWork.from(Task.class);
+      assertEquals(2, tasks.size());
+      for (Task task : tasks) {
+        if (task.getName().equals("parent")) {
+          assertTrue(task.isProject());
+          assertEquals(1, task.getChildren().size());
+          assertNull(task.getParent());
+        } else {
+          assertFalse(task.isProject());
+          assertEquals(0, task.getChildren().size());
+          assertNotNull(task.getParent());
+        }
+      }
+    });
   }
 
   @Test

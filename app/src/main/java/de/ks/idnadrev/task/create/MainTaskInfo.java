@@ -120,7 +120,8 @@ public class MainTaskInfo implements Initializable, DataStoreCallback<Task> {
     });
     validationRegistry.registerValidator(estimatedTimeDuration, durationValidator);
 
-    project.selectedProperty().bind(store.getBinding().getBooleanProperty(Task.class, (t) -> t.isProject()).not());
+    project.setText("");
+    project.selectedProperty().bindBidirectional(store.getBinding().getBooleanProperty(Task.class, (t) -> t.isProject()));
 
     tagAddController.setOnAction(e -> addTag(tagAddController.getInput().getText()));
     saveButton.disableProperty().bind(validationRegistry.invalidProperty());
