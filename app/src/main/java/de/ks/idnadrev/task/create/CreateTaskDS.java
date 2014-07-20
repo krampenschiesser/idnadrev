@@ -53,7 +53,7 @@ public class CreateTaskDS extends NewInstanceDataSource<Task> {
           task.setName(fromThought.getName());
           task.setDescription(fromThought.getDescription());
         }
-        task.setEstimatedTime(Duration.ofMinutes(65));
+        task.setEstimatedTime(Duration.ofMinutes(5));
         task.setProject(false);
         furtherProcessing.accept(task);
         return task;
