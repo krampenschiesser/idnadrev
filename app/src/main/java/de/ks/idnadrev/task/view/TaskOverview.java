@@ -20,6 +20,7 @@ import de.ks.activity.ActivityLoadFinishedEvent;
 import de.ks.activity.context.ActivityStore;
 import de.ks.activity.initialization.ActivityInitialization;
 import de.ks.activity.initialization.LoadInFXThread;
+import de.ks.activity.link.NavigationHint;
 import de.ks.datasource.DataSource;
 import de.ks.eventsystem.bus.HandlingThread;
 import de.ks.eventsystem.bus.Threading;
@@ -52,6 +53,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @LoadInFXThread
@@ -204,12 +206,21 @@ public class TaskOverview implements Initializable {
 
   @FXML
   void startWork() {
-    controller.start(WorkOnTaskActivity.class, t -> tasksView.getSelectionModel().getSelectedItem().getValue(), t -> t);
+    Supplier currentSelection = () -> tasksView.getSelectionModel().getSelectedItem().getValue();
+
+    NavigationHint navigationHint = new NavigationHint(controller.getCurrentActivity());
+    navigationHint.setDataSourceHint(currentSelection);
+    navigationHint.setReturnToDatasourceHint(currentSelection);
+
+    controller.start(WorkOnTaskActivity.class, navigationHint);
   }
 
   @FXML
   void finishTask() {
-    controller.start(FinishTaskActivity.class, t -> tasksView.getSelectionModel().getSelectedItem().getValue(), null);
+    NavigationHint navigationHint = new NavigationHint(controller.getCurrentActivity());
+    navigationHint.setDataSourceHint(() -> tasksView.getSelectionModel().getSelectedItem().getValue());
+
+    controller.start(FinishTaskActivity.class, navigationHint);
   }
 
   @Subscribe

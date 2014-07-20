@@ -19,6 +19,7 @@ import de.ks.activity.context.ActivityContext;
 import de.ks.activity.context.ActivityStore;
 import de.ks.activity.executor.ActivityExecutor;
 import de.ks.activity.initialization.ActivityInitialization;
+import de.ks.activity.link.NavigationHint;
 import de.ks.activity.link.ViewLink;
 import de.ks.activity.loading.ActivityLoadingExecutor;
 import de.ks.application.Navigator;
@@ -39,7 +40,6 @@ import javax.inject.Singleton;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Function;
 
 /**
  * used to control different activities and their interaction
@@ -109,28 +109,27 @@ public class ActivityController {
   }
 
   public <T extends ActivityCfg> void start(Class<T> activityClass) {
-    start(activityClass, null, null);
-  }
-
-  public <T extends ActivityCfg> void start(Class<T> activityClass, Function toConverter, Function returnConverter) {
-    T activity = CDI.current().select(activityClass).get();
-    start(activity, toConverter, returnConverter);
+    start(activityClass, new NavigationHint());
   }
 
   public void start(ActivityCfg activityCfg) {
-    start(activityCfg, null, null);
+    start(activityCfg, new NavigationHint());
+  }
+
+  public <T extends ActivityCfg> void start(Class<T> activityClass, NavigationHint navigationHint) {
+    T activity = CDI.current().select(activityClass).get();
+    start(activity, navigationHint);
   }
 
   @SuppressWarnings("unchecked")
-  public void start(ActivityCfg activityCfg, Function toConverter, Function returnConverter) {
+  public void start(ActivityCfg activityCfg, NavigationHint navigationHint) {
     loadInExecutor("couldn ot start " + activityCfg, () -> {
       lock.lock();
       try {
         Object dataSourceHint = null;
-        if (context.hasCurrentActivity() && toConverter != null) {
-          dataSourceHint = toConverter.apply(store.getModel());
+        if (context.hasCurrentActivity() && navigationHint.getDataSourceHint() != null) {
+          dataSourceHint = navigationHint.getDataSourceHint().get();
         }
-        activityCfg.setReturnConverter(returnConverter);
         String id = activityCfg.getClass().getName();
 
         if (context.hasCurrentActivity()) {
@@ -143,6 +142,7 @@ public class ActivityController {
         activities.add(activityCfg);
         registeredActivities.put(id, activityCfg);
         finishingFutures = null;
+        activityCfg.setNavigationHint(navigationHint);
 
         log.info("Starting activity {}", id);
         DataSource dataSource = CDI.current().select(activityCfg.getDataSource()).get();

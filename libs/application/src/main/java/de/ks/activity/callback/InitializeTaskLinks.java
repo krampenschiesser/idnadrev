@@ -17,7 +17,6 @@ package de.ks.activity.callback;
 
 import de.ks.activity.ActivityCfg;
 import de.ks.activity.ActivityController;
-import de.ks.activity.context.ActivityStore;
 import de.ks.activity.initialization.LoaderCallback;
 import de.ks.activity.link.TaskLink;
 import javafx.concurrent.Task;
@@ -29,7 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.spi.CDI;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  *
@@ -53,10 +52,10 @@ public class InitializeTaskLinks extends LoaderCallback {
         Task<?> task = cdi.select(taskLink.getTask()).get();
         ActivityController activityController = cdi.select(ActivityController.class).get();
         if (taskLink.isEnd()) {
-          Function returnConverter = activityCfg.getReturnConverter();
+          Supplier returnConverter = activityCfg.getNavigationHint().getReturnToDatasourceHint();
           task.setOnSucceeded((e) -> {
             if (returnConverter != null) {
-              @SuppressWarnings("unchecked") Object hint = returnConverter.apply(cdi.select(ActivityStore.class).get().getModel());
+              Object hint = returnConverter.get();
               activityController.resumePreviousActivity(hint);
             } else {
               activityController.resumePreviousActivity();

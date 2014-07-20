@@ -17,8 +17,6 @@ package de.ks.activity.link;
 
 import de.ks.activity.ActivityCfg;
 
-import java.util.function.Function;
-
 /**
  *
  */
@@ -27,8 +25,7 @@ public class ActivityLink {
     private final Class<?> sourceController;
     private String id;
     private Class<? extends ActivityCfg> nextActivity;
-    private Function toConverter;
-    private Function returnConverter;
+    private NavigationHint navigationHint;
 
     public ActivityLinkBuilder(Class<?> sourceController) {
       this.sourceController = sourceController;
@@ -44,18 +41,13 @@ public class ActivityLink {
       return this;
     }
 
-    public ActivityLinkBuilder toConverter(Function toConverter) {
-      this.toConverter = toConverter;
-      return this;
-    }
-
-    public ActivityLinkBuilder returnConverter(Function returnConverter) {
-      this.returnConverter = returnConverter;
+    public ActivityLinkBuilder navigationHint(NavigationHint hint) {
+      this.navigationHint = hint;
       return this;
     }
 
     public ActivityLink build() {
-      return new ActivityLink(sourceController, id, nextActivity, toConverter, returnConverter);
+      return new ActivityLink(sourceController, id, nextActivity, navigationHint);
     }
   }
 
@@ -66,15 +58,13 @@ public class ActivityLink {
   protected final Class<?> sourceController;
   protected final String id;
   protected final Class<? extends ActivityCfg> nextActivity;
-  protected final Function toConverter;
-  protected final Function returnConverter;
+  protected final NavigationHint navigationHint;
 
-  private ActivityLink(Class<?> sourceController, String id, Class<? extends ActivityCfg> nextActivity, Function toConverter, Function returnConverter) {
+  private ActivityLink(Class<?> sourceController, String id, Class<? extends ActivityCfg> nextActivity, NavigationHint hint) {
     this.sourceController = sourceController;
     this.id = id;
     this.nextActivity = nextActivity;
-    this.toConverter = toConverter;
-    this.returnConverter = returnConverter;
+    this.navigationHint = hint;
   }
 
   public Class<?> getSourceController() {
@@ -89,11 +79,7 @@ public class ActivityLink {
     return nextActivity;
   }
 
-  public Function getToConverter() {
-    return toConverter;
-  }
-
-  public Function getReturnConverter() {
-    return returnConverter;
+  public NavigationHint getNavigationHint() {
+    return navigationHint;
   }
 }

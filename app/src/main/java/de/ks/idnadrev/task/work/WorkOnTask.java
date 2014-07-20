@@ -20,6 +20,7 @@ import de.ks.activity.ActivityLoadFinishedEvent;
 import de.ks.activity.ModelBound;
 import de.ks.activity.context.ActivityStore;
 import de.ks.activity.initialization.LoadInFXThread;
+import de.ks.activity.link.NavigationHint;
 import de.ks.eventsystem.bus.HandlingThread;
 import de.ks.eventsystem.bus.Threading;
 import de.ks.executor.SuspendablePooledExecutorService;
@@ -100,7 +101,9 @@ public class WorkOnTask implements Initializable {
   @FXML
   void finishTask() {
     controller.save();
-    controller.start(FinishTaskActivity.class, PersistentWork::reload, null);
+    NavigationHint hint = new NavigationHint(controller.getCurrentActivity());
+    hint.setModelHint(PersistentWork::reload);
+    controller.start(FinishTaskActivity.class, hint);
   }
 
   @Subscribe

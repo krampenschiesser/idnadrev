@@ -18,6 +18,7 @@ package de.ks.idnadrev.task.work;
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityController;
 import de.ks.activity.context.ActivityStore;
+import de.ks.activity.link.NavigationHint;
 import de.ks.idnadrev.entity.Context;
 import de.ks.idnadrev.entity.Tag;
 import de.ks.idnadrev.entity.Task;
@@ -63,7 +64,8 @@ public class WorkOnTaskTest {
     activityController.start(ViewTasksActvity.class);
     activityController.waitForDataSource();
     FXPlatform.waitForFX();
-    activityController.start(WorkOnTaskActivity.class, t -> task, null);
+    NavigationHint hint = new NavigationHint(activityController.getCurrentActivity()).setDataSourceHint(() -> task);
+    activityController.start(WorkOnTaskActivity.class, hint);
     activityController.waitForDataSource();
     controller = activityController.getControllerInstance(WorkOnTask.class);
   }

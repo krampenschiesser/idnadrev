@@ -16,6 +16,7 @@
 package de.ks.activity;
 
 import de.ks.activity.link.ActivityLink;
+import de.ks.activity.link.NavigationHint;
 import de.ks.activity.link.TaskLink;
 import de.ks.activity.link.ViewLink;
 import de.ks.application.Navigator;
@@ -26,7 +27,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 /**
  *
@@ -39,22 +39,14 @@ public class ActivityCfg {
   protected final List<TaskLink> taskLinks = new ArrayList<>();
   protected final List<ActivityLink> activityLinks = new ArrayList<>();
 
-  protected Function returnConverter;
   private Class<?> currentController;
+  private NavigationHint navigationHint;
 
   public ActivityCfg(Class<? extends DataSource<?>> dataSource, Class<?> initialController) {
     this.dataSource = dataSource;
     this.initialController = initialController;
   }
 
-  /**
-   * Select next controller
-   *
-   * @param sourceController
-   * @param id
-   * @param targetController
-   * @return
-   */
   public ActivityCfg withLink(Class<?> sourceController, String id, Class<?> targetController) {
     return withLink(sourceController, id, Navigator.MAIN_AREA, targetController);
   }
@@ -107,14 +99,8 @@ public class ActivityCfg {
     return this;
   }
 
-  public <T, R> ActivityCfg withActivity(Class<?> sourceController, String id, Class<? extends ActivityCfg> next, Function<T, R> toConverter) {
-    ActivityLink activityLink = ActivityLink.from(sourceController).with(id).start(next).toConverter(toConverter).build();
-    activityLinks.add(activityLink);
-    return this;
-  }
-
-  public <T, R> ActivityCfg withActivityAndReturn(Class<?> sourceController, String id, Class<? extends ActivityCfg> next, Function<T, R> toConverter, Function<R, T> returnConverter) {
-    ActivityLink activityLink = ActivityLink.from(sourceController).with(id).start(next).toConverter(toConverter).returnConverter(returnConverter).build();
+  public <T, R> ActivityCfg withActivity(Class<?> sourceController, String id, Class<? extends ActivityCfg> next, NavigationHint hint) {
+    ActivityLink activityLink = ActivityLink.from(sourceController).with(id).start(next).navigationHint(hint).build();
     activityLinks.add(activityLink);
     return this;
   }
@@ -139,14 +125,6 @@ public class ActivityCfg {
     return dataSource;
   }
 
-  public void setReturnConverter(Function returnConverter) {
-    this.returnConverter = returnConverter;
-  }
-
-  public Function getReturnConverter() {
-    return returnConverter;
-  }
-
   public String getId() {
     return getClass().getName();
   }
@@ -157,5 +135,13 @@ public class ActivityCfg {
 
   public Class<?> getCurrentController() {
     return currentController;
+  }
+
+  public void setNavigationHint(NavigationHint navigationHint) {
+    this.navigationHint = navigationHint;
+  }
+
+  public NavigationHint getNavigationHint() {
+    return navigationHint;
   }
 }

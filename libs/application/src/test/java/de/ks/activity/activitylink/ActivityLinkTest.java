@@ -19,6 +19,7 @@ import de.ks.activity.ActivityCfg;
 import de.ks.activity.ActivityController;
 import de.ks.activity.context.ActivityContext;
 import de.ks.activity.context.ActivityStore;
+import de.ks.activity.link.NavigationHint;
 import de.ks.application.Navigator;
 import de.ks.launch.JavaFXService;
 import de.ks.launch.Launcher;
@@ -37,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.util.function.Supplier;
 
 import static org.junit.Assert.*;
 
@@ -57,8 +59,24 @@ public class ActivityLinkTest {
 
     activityCfgA = new ActivityCfg(ActivityADS.class, ActivityAController.class);
 
-    activityCfgA.withActivity(ActivityAController.class, STANDARD_HINT, ActivityB.class, (ActivityAModel m) -> new ActivityBModel(m.getId()));
-    activityCfgA.withActivityAndReturn(ActivityAController.class, RETURN_HINT, ActivityB.class, (ActivityAModel m) -> new ActivityBModel(m.getId() + "Hello"), (ActivityBModel m2) -> new ActivityAModel(m2.getDescription() + " Sauerland"));
+    Supplier supplier = () -> {
+      ActivityAModel model = store.getModel();
+      return new ActivityBModel(model.getId());
+    };
+    NavigationHint hintAtoB = new NavigationHint(activityCfgA, null, supplier);
+    activityCfgA.withActivity(ActivityAController.class, STANDARD_HINT, ActivityB.class, hintAtoB);
+
+
+    Supplier supplierA = () -> {
+      ActivityAModel model = store.getModel();
+      return new ActivityBModel(model.getId() + "Hello");
+    };
+    Supplier supplierB = () -> {
+      ActivityBModel model = store.getModel();
+      return new ActivityAModel(model.getDescription() + " Sauerland");
+    };
+    NavigationHint hintBtoA = new NavigationHint(activityCfgA, supplierB, supplierA);
+    activityCfgA.withActivity(ActivityAController.class, RETURN_HINT, ActivityB.class, hintBtoA);
   }
 
   @After
