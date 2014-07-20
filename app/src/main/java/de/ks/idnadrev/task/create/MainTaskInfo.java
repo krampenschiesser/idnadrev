@@ -99,7 +99,7 @@ public class MainTaskInfo implements Initializable, DataStoreCallback<Task> {
   public void initialize(URL location, ResourceBundle resources) {
     AsciiDocEditor.load(descriptionContainer.getChildren()::add, ade -> this.description = ade);
 
-    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator(Task.class));
+    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(Task.class, t -> t.getId() == store.<Task>getModel().getId()));
     description.hideActionBar();
     StringProperty descriptionBinding = store.getBinding().getStringProperty(Task.class, t -> t.getDescription());
     descriptionBinding.bindBidirectional(description.textProperty());

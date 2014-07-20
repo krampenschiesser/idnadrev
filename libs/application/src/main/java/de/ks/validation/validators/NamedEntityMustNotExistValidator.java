@@ -22,11 +22,19 @@ import javafx.scene.control.Control;
 import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.Validator;
 
-public class NamedEntityMustNotExistValidator implements Validator<String> {
-  protected Class<? extends NamedPersistentObject> entityClass;
+import java.util.function.Predicate;
 
-  public NamedEntityMustNotExistValidator(Class<? extends NamedPersistentObject> entityClass) {
+public class NamedEntityMustNotExistValidator<T extends NamedPersistentObject> implements Validator<String> {
+  protected Class<T> entityClass;
+  private final Predicate<T> ignore;
+
+  public NamedEntityMustNotExistValidator(Class<T> entityClass) {
+    this(entityClass, any -> false);
+  }
+
+  public NamedEntityMustNotExistValidator(Class<T> entityClass, Predicate<T> ignore) {
     this.entityClass = entityClass;
+    this.ignore = ignore;
   }
 
   @Override
@@ -36,8 +44,11 @@ public class NamedEntityMustNotExistValidator implements Validator<String> {
     } else if (name.trim().isEmpty()) {
       return null;
     } else {
-      NamedPersistentObject found = PersistentWork.forName(entityClass, name.trim());
+      T found = (T) PersistentWork.forName(entityClass, name.trim());
       if (found != null) {
+        if (ignore != null && ignore.test(found)) {
+          return null;
+        }
         String validationMsg = Localized.get("validation.namedEntity.mustNotExist", name.trim());
         return ValidationResult.fromError(control, validationMsg);
       }

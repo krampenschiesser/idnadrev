@@ -101,7 +101,7 @@ public class AddThought implements Initializable {
 
   private void bindValidation() {
     save.disableProperty().bind(validationRegistry.invalidProperty());
-    assert validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator(Thought.class));
+    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(Thought.class, t -> t.getId() == store.<Thought>getModel().getId()));
   }
 
   private void setDescription(AsciiDocEditor description) {

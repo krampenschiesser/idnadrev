@@ -47,7 +47,7 @@ public class CreateContext implements Initializable {
     StringProperty nameProperty = store.getBinding().getStringProperty(Context.class, c -> c.getName());
     name.textProperty().bindBidirectional(nameProperty);
 
-    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator(Context.class));
+    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(Context.class));
     validationRegistry.registerBeanValidationValidator(name, Context.class, PropertyPath.property(Context.class, c -> c.getName()));
 
     saveButton.disableProperty().bind(validationRegistry.invalidProperty());
