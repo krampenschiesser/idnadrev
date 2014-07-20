@@ -1,56 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.shape.Line?>
-<FlowPane minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8"
-          xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.idnadrev.ButtonBar">
+<VBox alignment="TOP_CENTER" prefWidth="150.0" styleClass="buttonBar" xmlns="http://javafx.com/javafx/8"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.idnadrev.ButtonBar">
     <children>
-        <Button focusTraversable="false" mnemonicParsing="false" onAction="#addThought"
-                text="%main.thought.thoughtactivity"/>
-        <Line endX="50.0" fill="BLACK" strokeDashOffset="3.0" strokeLineCap="ROUND" strokeLineJoin="ROUND"
+        <Button focusTraversable="false" mnemonicParsing="false" onAction="#addThought" prefWidth="120.0"
+                text="%main.thought.thoughtactivity">
+            <tooltip>
+                <Tooltip text="F1"/>
+            </tooltip>
+        </Button>
+        <Line endY="50.0" fill="BLACK" strokeDashOffset="3.0" strokeLineCap="ROUND" strokeLineJoin="ROUND"
               strokeWidth="3.0">
             <stroke>
-                <LinearGradient endX="1.0" endY="1.0" startY="1.0">
+                <LinearGradient endX="0.8461538461538461" endY="1.0">
                     <stops>
-                        <Stop color="#0000004d"/>
+                        <Stop color="TRANSPARENT"/>
                         <Stop color="BLACK" offset="1.0"/>
                     </stops>
                 </LinearGradient>
             </stroke>
         </Line>
-        <Button focusTraversable="false" mnemonicParsing="false" onAction="#viewThoughts"
-                text="%main.thought.viewthoughtsactivity"/>
-        <Line endX="50.0" fill="BLACK" strokeDashOffset="3.0" strokeLineCap="ROUND" strokeLineJoin="ROUND"
+        <Button focusTraversable="false" mnemonicParsing="false" onAction="#viewThoughts" prefWidth="120.0"
+                text="%main.thought.viewthoughtsactivity">
+            <tooltip>
+                <Tooltip text="F2"/>
+            </tooltip>
+        </Button>
+        <Line endY="50.0" fill="BLACK" strokeDashOffset="3.0" strokeLineCap="ROUND" strokeLineJoin="ROUND"
               strokeWidth="3.0">
             <stroke>
-                <LinearGradient endX="1.0" endY="1.0" startY="1.0">
+                <LinearGradient endX="0.8461538461538461" endY="1.0">
                     <stops>
-                        <Stop color="#0000004d"/>
+                        <Stop color="TRANSPARENT"/>
                         <Stop color="BLACK" offset="1.0"/>
                     </stops>
                 </LinearGradient>
             </stroke>
         </Line>
-        <Button focusTraversable="false" mnemonicParsing="false" onAction="#createTask"
-                text="%main.task.createtaskactivity"/>
-        <Line endX="50.0" fill="BLACK" strokeDashOffset="3.0" strokeLineCap="ROUND" strokeLineJoin="ROUND"
+        <Button focusTraversable="false" mnemonicParsing="false" onAction="#createTask" prefWidth="120.0"
+                text="%main.task.createtaskactivity">
+            <tooltip>
+                <Tooltip text="F3"/>
+            </tooltip>
+        </Button>
+        <Line endY="50.0" fill="BLACK" strokeDashOffset="3.0" strokeLineCap="ROUND" strokeLineJoin="ROUND"
               strokeWidth="3.0">
             <stroke>
-                <LinearGradient endX="1.0" endY="1.0" startY="1.0">
+                <LinearGradient endX="0.8461538461538461" endY="1.0">
                     <stops>
-                        <Stop color="#0000004d"/>
+                        <Stop color="TRANSPARENT"/>
                         <Stop color="BLACK" offset="1.0"/>
                     </stops>
                 </LinearGradient>
             </stroke>
         </Line>
-        <Button focusTraversable="false" mnemonicParsing="false" onAction="#viewTasks"
-                text="%main.task.viewtasksactvity"/>
+        <Button focusTraversable="false" mnemonicParsing="false" onAction="#viewTasks" prefWidth="120.0"
+                text="%main.task.viewtasksactvity">
+            <tooltip>
+                <Tooltip text="F4"/>
+            </tooltip>
+        </Button>
     </children>
     <padding>
         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
     </padding>
-</FlowPane>
+</VBox>

@@ -22,7 +22,7 @@
 <HBox spacing="5.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="de.ks.idnadrev.task.view.ViewTasks">
     <children>
-        <TreeTableView fx:id="tasksView">
+        <TreeTableView fx:id="tasksView" onKeyReleased="#onTableKeyReleased">
             <columns>
                 <TreeTableColumn fx:id="taskViewNameColumn" prefWidth="271.0" text="%task.name"/>
                 <TreeTableColumn fx:id="taskViewCreationTimeColumn" minWidth="0.0" prefWidth="181.0"

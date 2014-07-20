@@ -27,7 +27,6 @@ import javafx.scene.control.Control;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
@@ -70,10 +69,11 @@ public class IdnadrevWindow extends MainWindow {
       vBox.setMinSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
       vBox.setMaxSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
       vBox.getChildren().add(menuBarPresenter.getMenu("/main"));
-      DefaultLoader<FlowPane, ButtonBar> loader = new DefaultLoader<>(ButtonBar.class);
-      buttonBar = loader.getController();
-      vBox.getChildren().add(loader.getView());
       borderPane.setTop(vBox);
+
+      DefaultLoader<VBox, ButtonBar> loader = new DefaultLoader<>(ButtonBar.class);
+      buttonBar = loader.getController();
+      borderPane.setRight(loader.getView());
 
       StackPane contentPane = new StackPane();
       borderPane.setCenter(contentPane);

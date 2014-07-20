@@ -9,3 +9,7 @@
 .recoveringEffortFactor {
     -fx-accent: green;
 }
+
+.buttonBar {
+    -fx-background-color: linear-gradient(to right, -fx-background, derive(-fx-background, -15%) 65%, derive(-fx-background, -45%) 100%)
+}
