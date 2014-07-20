@@ -70,7 +70,7 @@ public class ValidationRegistry {
 
       if (constraintsForProperty != null && constraintsForProperty.hasConstraints()) {
         registeredControls.put(propertyName, control);
-        registerValidator(control, true, new BeanValidationValidator(modelClass, validator, propertyName));
+        registerBeanValidationValidator(control, modelClass, propertyName);
         log.debug("Registered BeanValidation validator for property {} on control {}", propertyName, control);
       }
     }
@@ -86,6 +86,10 @@ public class ValidationRegistry {
 
   public ReadOnlyObjectProperty<Boolean> invalidProperty() {
     return validationSupport.invalidProperty();
+  }
+
+  public void registerBeanValidationValidator(Control control, Class<?> clazz, String propertyName) {
+    registerValidator(control, true, new BeanValidationValidator(clazz, validator, propertyName));
   }
 
   public <T> boolean registerValidator(Control control, boolean required, org.controlsfx.validation.Validator<T> validator) {
