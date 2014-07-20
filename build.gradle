@@ -21,6 +21,9 @@ allprojects {
     apply plugin: "java"
     version = "$version"
 
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
     repositories {
         mavenCentral()
         maven {
