@@ -18,6 +18,7 @@ package de.ks.idnadrev;
 import de.ks.NodeProvider;
 import de.ks.application.fxml.DefaultLoader;
 import de.ks.menu.MenuItem;
+import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,10 @@ public class About implements NodeProvider<StackPane> {
 
   @Override
   public StackPane getNode() {
-    return new DefaultLoader<StackPane, Object>(getClass().getResource("about.fxml")).getView();
+    String javaVersion = System.getProperty("java.version");
+    StackPane view = new DefaultLoader<StackPane, Object>(getClass().getResource("about.fxml")).getView();
+    Label lookup = (Label) view.lookup("#javaVersion");
+    lookup.setText(javaVersion);
+    return view;
   }
 }

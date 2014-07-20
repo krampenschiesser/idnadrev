@@ -22,8 +22,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 <StackPane id="StackPane" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-           minWidth="-Infinity" prefHeight="300.0" prefWidth="350.0" xmlns:fx="http://javafx.com/fxml/1"
-           xmlns="http://javafx.com/javafx/2.2">
+           minWidth="-Infinity" prefHeight="300.0" prefWidth="350.0" xmlns="http://javafx.com/javafx/8"
+           xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <GridPane alignment="CENTER" prefHeight="150.0" prefWidth="150.0" StackPane.alignment="CENTER">
             <children>
@@ -36,6 +36,8 @@
                         <Font name="System Bold" size="13.0"/>
                     </font>
                 </Label>
+                <Label text="%about.javaversion" GridPane.rowIndex="3"/>
+                <Label fx:id="javaVersion" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
             </children>
             <columnConstraints>
                 <ColumnConstraints halignment="LEFT" hgrow="NEVER" minWidth="10.0" prefWidth="150.0"/>
@@ -45,6 +47,7 @@
                 <Insets/>
             </padding>
             <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
