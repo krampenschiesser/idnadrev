@@ -338,7 +338,7 @@ public class ActivityController {
     CompletableFuture<Object> save = CompletableFuture.supplyAsync(() -> {
       log.debug("Start saving model");
       dataSource.saveModel(model, m -> {
-        store.getBinding().applyControllerContent(model);
+        store.getBinding().applyControllerContent(m);
         initialization.getDataStoreCallbacks().forEach(c -> c.duringSave(m));
       });
       log.debug("Initially saved model '{}'", model);
