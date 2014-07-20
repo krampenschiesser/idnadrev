@@ -61,7 +61,7 @@ public class CreateTaskTest {
 
   @Test
   public void testTaskFromThought() throws Exception {
-    Thought bla = new Thought("Bla");
+    Thought bla = new Thought("Bla").setDescription("description");
     PersistentWork.persist(bla);
 
     @SuppressWarnings("unchecked") CreateTaskDS datasource = (CreateTaskDS) store.getDatasource();
@@ -70,6 +70,8 @@ public class CreateTaskTest {
     activityController.waitForDataSource();
     FXPlatform.waitForFX();
     assertEquals("Bla", controller.name.getText());
+    assertEquals("description", controller.description.getText());
+
     activityController.save();
     activityController.waitForDataSource();
 
