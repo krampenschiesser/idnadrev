@@ -50,10 +50,11 @@
                       GridPane.columnSpan="2147483647" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3"
                       GridPane.valignment="BOTTOM">
                     <children>
-                        <Button fx:id="toTask" defaultButton="true" mnemonicParsing="false"
+                        <Button fx:id="toTask" defaultButton="true" mnemonicParsing="false" onAction="#convertToTask"
                                 text="%thought.transform.task"/>
-                        <Button mnemonicParsing="false" text="%thought.transform.info"/>
-                        <Button mnemonicParsing="false" onAction="#postPone" text="%thought.transform.later"/>
+                        <Button fx:id="toInfo" mnemonicParsing="false" text="%thought.transform.info"/>
+                        <Button fx:id="later" mnemonicParsing="false" onAction="#postPone"
+                                text="%thought.transform.later"/>
                     </children>
                     <GridPane.margin>
                         <Insets/>

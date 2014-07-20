@@ -19,11 +19,14 @@ import de.ks.activity.ActivityController;
 import de.ks.activity.ActivityLoadFinishedEvent;
 import de.ks.activity.ListBound;
 import de.ks.activity.initialization.ActivityInitialization;
+import de.ks.activity.link.NavigationHint;
 import de.ks.file.FileStore;
 import de.ks.idnadrev.entity.Thought;
+import de.ks.idnadrev.task.create.CreateTaskActivity;
 import de.ks.persistence.PersistentWork;
 import de.ks.text.view.AsciiDocContent;
 import de.ks.text.view.AsciiDocViewer;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.DoubleBinding;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -56,7 +59,12 @@ public class ViewThoughts implements Initializable {
   @FXML
   private StackPane description;
   @FXML
-  Button toTask;
+  private Button toTask;
+  @FXML
+  private Button toInfo;
+  @FXML
+  private Button later;
+
   private AsciiDocViewer asciiDocViewer;
 
   @Override
@@ -89,12 +97,19 @@ public class ViewThoughts implements Initializable {
     _this.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
       updateSelection(n);
     });
-    _this.setOnKeyPressed(e -> {
+    _this.setOnKeyReleased(e -> {
       if (e.getCode() == KeyCode.ENTER) {
-        toTask.getOnAction().handle(null);
+        if (!toTask.isDisabled()) {
+          toTask.getOnAction().handle(null);
+        }
+        e.consume();
       }
-      e.consume();
     });
+
+    BooleanBinding disable = _this.getSelectionModel().selectedItemProperty().isNull();
+    toTask.disableProperty().bind(disable);
+    toInfo.disableProperty().bind(disable);
+    later.disableProperty().bind(disable);
   }
 
   public void postPone() {
@@ -110,7 +125,12 @@ public class ViewThoughts implements Initializable {
   }
 
   public Thought getSelectedThought() {
-    return _this.getSelectionModel().getSelectedItem();
+    Thought selectedItem = _this.getSelectionModel().getSelectedItem();
+    if (selectedItem == null) {
+      TablePosition focusedCell = this._this.getFocusModel().getFocusedCell();
+      selectedItem = _this.getFocusModel().getFocusedItem();
+    }
+    return selectedItem;
   }
 
   private void updateSelection(Thought thought) {
@@ -121,12 +141,22 @@ public class ViewThoughts implements Initializable {
     }
   }
 
+  @FXML
+  void convertToTask() {
+    NavigationHint navigationHint = new NavigationHint();
+    navigationHint.setReturnToActivity(controller.getCurrentActivity());
+    navigationHint.setDataSourceHint(this::getSelectedThought);
+
+    controller.start(CreateTaskActivity.class, navigationHint);
+  }
+
   @Subscribe
   public void afterRefresh(ActivityLoadFinishedEvent e) {
     List<Thought> thoughts = e.getModel();
     List<AsciiDocContent> asciiDocContents = thoughts.stream().map(t -> new AsciiDocContent(t.getName(), t.getDescription())).collect(Collectors.toList());
     this.asciiDocViewer.preload(asciiDocContents);
     _this.requestFocus();
+    controller.getJavaFXExecutor().submit(() -> _this.getSelectionModel().select(0));
   }
 
   public TableView<Thought> getTable() {

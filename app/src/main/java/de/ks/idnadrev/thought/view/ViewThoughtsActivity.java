@@ -15,23 +15,12 @@
 package de.ks.idnadrev.thought.view;
 
 import de.ks.activity.ActivityCfg;
-import de.ks.activity.ActivityController;
-import de.ks.activity.link.NavigationHint;
-import de.ks.idnadrev.task.create.CreateTaskActivity;
 import de.ks.menu.MenuItem;
-
-import javax.enterprise.inject.spi.CDI;
 
 @MenuItem(order = 0, value = "/main/thought")
 public class ViewThoughtsActivity extends ActivityCfg {
 
   public ViewThoughtsActivity() {
     super(ViewThoughtsDS.class, ViewThoughts.class);
-
-    NavigationHint navigationHint = new NavigationHint();
-    navigationHint.setReturnToActivity(this);
-    navigationHint.setDataSourceHint(() -> CDI.current().select(ActivityController.class).get().getControllerInstance(ViewThoughts.class).getSelectedThought());
-
-    withActivity(ViewThoughts.class, "toTask", CreateTaskActivity.class, navigationHint);
   }
 }

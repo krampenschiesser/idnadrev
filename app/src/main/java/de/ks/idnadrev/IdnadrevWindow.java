@@ -109,13 +109,13 @@ public class IdnadrevWindow extends MainWindow {
 
     if (event.isControlDown() && event.getCode() == KeyCode.S) {
       Set<Node> defaultButtons = NodeLookup.getAllNodes(borderPane, n -> n.isVisible() && n instanceof Button && ((Button) n).isDefaultButton());
-      if (defaultButtons.size() == 1) {
+      if (!defaultButtons.isEmpty()) {
         Button defaultButton = (Button) defaultButtons.iterator().next();
-        log.debug("Executing default button {} on ctrl+s", defaultButton);
-        defaultButton.getOnAction().handle(null);
+        if (!defaultButton.isDisabled()) {
+          log.debug("Executing default button {} on ctrl+s", defaultButton);
+          defaultButton.getOnAction().handle(null);
+        }
         event.consume();
-      } else {
-        log.warn("More than one default button found");
       }
     }
   }
