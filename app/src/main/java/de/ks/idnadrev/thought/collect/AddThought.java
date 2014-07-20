@@ -178,4 +178,16 @@ public class AddThought implements Initializable {
     this.name.requestFocus();
     this.description.setText("");
   }
+
+  public AsciiDocEditor getDescription() {
+    return description;
+  }
+
+  public TextField getName() {
+    return name;
+  }
+
+  public Button getSave() {
+    return save;
+  }
 }

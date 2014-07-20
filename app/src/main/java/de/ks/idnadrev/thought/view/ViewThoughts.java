@@ -128,4 +128,11 @@ public class ViewThoughts implements Initializable {
     this.asciiDocViewer.preload(asciiDocContents);
   }
 
+  public TableView<Thought> getTable() {
+    return _this;
+  }
+
+  public Button getToTask() {
+    return toTask;
+  }
 }
