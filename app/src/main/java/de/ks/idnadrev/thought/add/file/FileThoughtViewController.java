@@ -18,7 +18,7 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import de.ks.activity.ActivityLoadFinishedEvent;
 import de.ks.activity.context.ActivityStore;
-import de.ks.activity.initialization.DataStoreCallback;
+import de.ks.activity.initialization.DatasourceCallback;
 import de.ks.file.FileStore;
 import de.ks.idnadrev.entity.FileReference;
 import de.ks.idnadrev.entity.Thought;
@@ -50,7 +50,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class FileThoughtViewController implements Initializable, DataStoreCallback<Thought> {
+public class FileThoughtViewController implements Initializable, DatasourceCallback<Thought> {
   private static final Logger log = LoggerFactory.getLogger(FileThoughtViewController.class);
   protected final ObservableList<File> files = FXCollections.observableArrayList();
   protected final java.awt.Desktop desktop = java.awt.Desktop.getDesktop();

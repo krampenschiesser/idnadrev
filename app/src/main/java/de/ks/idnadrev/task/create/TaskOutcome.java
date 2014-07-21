@@ -16,7 +16,7 @@ package de.ks.idnadrev.task.create;
 
 import de.ks.activity.ActivityController;
 import de.ks.activity.initialization.ActivityInitialization;
-import de.ks.activity.initialization.DataStoreCallback;
+import de.ks.activity.initialization.DatasourceCallback;
 import de.ks.idnadrev.entity.Task;
 import de.ks.text.AsciiDocEditor;
 import de.ks.validation.ValidationRegistry;
@@ -29,7 +29,7 @@ import javax.inject.Inject;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class TaskOutcome implements Initializable, DataStoreCallback<Task> {
+public class TaskOutcome implements Initializable, DatasourceCallback<Task> {
   @FXML
   protected StackPane expectedOutcomeContainer;
   @FXML

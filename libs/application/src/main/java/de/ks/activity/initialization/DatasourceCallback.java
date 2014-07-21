@@ -14,7 +14,7 @@
  */
 package de.ks.activity.initialization;
 
-public interface DataStoreCallback<M> extends Comparable<DataStoreCallback<M>> {
+public interface DatasourceCallback<M> extends Comparable<DatasourceCallback<M>> {
   public static final int DEFAULT_PRIORITY = 10;
 
   void duringLoad(M model);
@@ -25,7 +25,7 @@ public interface DataStoreCallback<M> extends Comparable<DataStoreCallback<M>> {
     return DEFAULT_PRIORITY;
   }
 
-  default int compareTo(DataStoreCallback<M> o) {
+  default int compareTo(DatasourceCallback<M> o) {
     return Integer.compare(getPriority(), o.getPriority());
   }
 }

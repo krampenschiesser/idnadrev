@@ -19,7 +19,7 @@ import de.ks.activity.ActivityController;
 import de.ks.activity.ActivityLoadFinishedEvent;
 import de.ks.activity.ModelBound;
 import de.ks.activity.context.ActivityStore;
-import de.ks.activity.initialization.DataStoreCallback;
+import de.ks.activity.initialization.DatasourceCallback;
 import de.ks.application.fxml.DefaultLoader;
 import de.ks.eventsystem.bus.HandlingThread;
 import de.ks.eventsystem.bus.Threading;
@@ -58,7 +58,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 @ModelBound(Task.class)
-public class MainTaskInfo implements Initializable, DataStoreCallback<Task> {
+public class MainTaskInfo implements Initializable, DatasourceCallback<Task> {
   @FXML
   protected NamedPersistentObjectSelection<Task> parentProjectController;
   @FXML

@@ -47,7 +47,7 @@ public class ActivityInitialization {
   protected final List<LoaderCallback> callbacks = new ArrayList<>();
   protected final Map<Class<?>, CompletableFuture<DefaultLoader<Node, Object>>> preloads = new HashMap<>();
   protected final ThreadLocal<List<Object>> currentlyLoadedControllers = ThreadLocal.withInitial(ArrayList::new);
-  protected final List<DataStoreCallback> dataStoreCallbacks = new ArrayList<>();
+  protected final List<DatasourceCallback> dataStoreCallbacks = new ArrayList<>();
 
   @Inject
   ActivityController controller;
@@ -151,7 +151,7 @@ public class ActivityInitialization {
     scanControllers();
     doChangesInFXThread();
     dataStoreCallbacks.clear();
-    dataStoreCallbacks.addAll(controllers.values().stream().map(p -> p.getLeft()).filter(o -> o instanceof DataStoreCallback).map(o -> (DataStoreCallback) o).collect(Collectors.toList()));
+    dataStoreCallbacks.addAll(controllers.values().stream().map(p -> p.getLeft()).filter(o -> o instanceof DatasourceCallback).map(o -> (DatasourceCallback) o).collect(Collectors.toList()));
     Collections.sort(dataStoreCallbacks);
   }
 
@@ -197,7 +197,7 @@ public class ActivityInitialization {
     return controllers.values().stream().map(pair -> pair.getKey()).collect(Collectors.toList());
   }
 
-  public List<DataStoreCallback> getDataStoreCallbacks() {
+  public List<DatasourceCallback> getDataStoreCallbacks() {
     return dataStoreCallbacks;
   }
 }

@@ -16,7 +16,7 @@ package de.ks.idnadrev.task.finish;
 
 import de.ks.activity.ActivityController;
 import de.ks.activity.initialization.ActivityInitialization;
-import de.ks.activity.initialization.DataStoreCallback;
+import de.ks.activity.initialization.DatasourceCallback;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.task.view.ViewTasksActvity;
 import de.ks.text.AsciiDocEditor;
@@ -34,7 +34,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 
-public class FinishTask implements Initializable, DataStoreCallback<Task> {
+public class FinishTask implements Initializable, DatasourceCallback<Task> {
   private static final Logger log = LoggerFactory.getLogger(FinishTask.class);
   @FXML
   private StackPane expectedOutcomeContainer;
