@@ -74,6 +74,9 @@ allprojects {
 
     clean.doLast {
         file('log').listFiles().findAll { it.name.endsWith('.log') }.collect { println("deleting $it"); it.delete() }
+        file('data/mathjax').deleteDir();
+        file('data/asciidoctor.css').delete();
+        file('data/asciidoctor-coderay.css').delete();
     }
 
     task cleanlog {
