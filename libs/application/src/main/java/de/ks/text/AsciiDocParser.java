@@ -40,8 +40,7 @@ public class AsciiDocParser {
           "    });\n" +
           "    </script>\n<script type=\"text/javascript\"\n" +
           "  src=\"";
-  protected static final String mathJaxEnd = "MathJax.js?config=AM_HTMLorMML-full\">\n" +
-          "</script>";
+  protected static final String mathJaxEnd = "MathJax.js?config=AM_HTMLorMML-full\">\n" + "</script>";
   private static final Pattern footerPattern = Pattern.compile("<div id=\"footer\">\n<div id=\"footer-text\">\n" +
           ".*\n" +
           "</div>\n</div>");
@@ -86,7 +85,7 @@ public class AsciiDocParser {
       String first = render.substring(0, index);
       String last = render.substring(index);
 
-      return first + mathJaxStart + new File(dataDir, "mathJax" + File.separator).toURI().toString() + mathJaxEnd + last;
+      return first + mathJaxStart + new File(dataDir, "mathjax").toURI().toString() + File.separator + mathJaxEnd + last;
     }
     return render;
   }
