@@ -13,3 +13,5 @@ out/
 /index.html
 /.nb-gradle/profiles/private/
 *.log
+data/mathjax
+data/*.css
