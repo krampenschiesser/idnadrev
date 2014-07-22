@@ -59,6 +59,15 @@
                                 <WebView fx:id="preview" prefHeight="200.0" prefWidth="200.0"/>
                             </content>
                         </Tab>
+                        <Tab text="%plainhtml">
+                            <content>
+                                <StackPane prefHeight="150.0" prefWidth="200.0">
+                                    <children>
+                                        <TextArea fx:id="plainHtml" prefHeight="200.0" prefWidth="200.0"/>
+                                    </children>
+                                </StackPane>
+                            </content>
+                        </Tab>
                     </tabs>
                 </TabPane>
             </children>

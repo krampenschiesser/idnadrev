@@ -97,6 +97,8 @@ public class AsciiDocEditor implements Initializable {
   protected StackPane root;
   @FXML
   protected HBox editorCommandPane;
+  @FXML
+  protected TextArea plainHtml;
 
   protected Dialog helpDialog;
   protected WebView helpView;
@@ -120,6 +122,7 @@ public class AsciiDocEditor implements Initializable {
     editor.textProperty().addListener((p, o, n) -> {
       renderGroup.schedule(() -> parser.parse(n)).thenAcceptAsync(html -> {
         previewHtmlString = html;
+        plainHtml.setText(html);
         if (tabPane.getSelectionModel().getSelectedIndex() == 1) {
           preview.getEngine().loadContent(html);
         }
