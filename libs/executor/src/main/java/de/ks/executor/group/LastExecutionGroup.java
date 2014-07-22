@@ -71,6 +71,7 @@ public class LastExecutionGroup<T> implements Runnable {
   }
 
   public void run() {
+    log.info("Starting execution group.");
     try {
       T value = null;
       while (!queue.isEmpty()) {
@@ -79,7 +80,17 @@ public class LastExecutionGroup<T> implements Runnable {
           value = nextValue;
         }
       }
+      if (log.isDebugEnabled()) {
+        String strVal = String.valueOf(value);
+        if (strVal.length() > 100) {
+          strVal = strVal.substring(0, 100);
+        }
+        log.debug("Finished execution group with value {}", strVal);
+      }
       result.complete(value);
+    } catch (Throwable t) {
+      log.error("Error while running execution group", t);
+      result.completeExceptionally(t);
     } finally {
       running.set(false);
     }
