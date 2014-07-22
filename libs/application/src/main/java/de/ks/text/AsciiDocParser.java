@@ -72,7 +72,6 @@ public class AsciiDocParser {
     }
     String render = asciidoctor.render(input, options);
     if (backend == AsciiDocBackend.HTML5) {
-      render = inlineCss(render);
       render = removeFooter(render);
       render = addMathJax(render);
     }
