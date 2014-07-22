@@ -120,13 +120,12 @@ public class AsciiDocEditor implements Initializable {
     text.bindBidirectional(editor.textProperty());
 
     editor.textProperty().addListener((p, o, n) -> {
-      renderGroup.schedule(() -> parser.parse(n)).thenAcceptAsync(html -> {
-        previewHtmlString = html;
-        plainHtml.setText(html);
-        if (tabPane.getSelectionModel().getSelectedIndex() == 1) {
-          preview.getEngine().loadContent(html);
-        }
-      }, controller.getJavaFXExecutor());
+      CompletableFuture<String> future = renderGroup.schedule(() -> parser.parse(n));
+      future.thenAcceptAsync(this::applyRenderedHtml, controller.getJavaFXExecutor());
+      future.exceptionally(t -> {
+        log.error("Could not parse asciidoc {}", n, t);
+        return null;
+      });
     });
 
     tabPane.focusedProperty().addListener((p, o, n) -> {
@@ -149,6 +148,14 @@ public class AsciiDocEditor implements Initializable {
       }
     });
     addCommands();
+  }
+
+  protected void applyRenderedHtml(String html) {
+    previewHtmlString = html;
+    plainHtml.setText(html);
+    if (tabPane.getSelectionModel().getSelectedIndex() == 1) {
+      preview.getEngine().loadContent(html);
+    }
   }
 
   private void addCommands() {
