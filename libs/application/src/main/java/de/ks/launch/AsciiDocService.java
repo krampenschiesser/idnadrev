@@ -16,6 +16,7 @@
 package de.ks.launch;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import de.ks.text.AsciiDocMetaData;
 import de.ks.text.AsciiDocParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,7 @@ public class AsciiDocService extends Service {
   }
 
   public AsciiDocParser getAsciiDocParser() {
+    new AsciiDocMetaData().extract();
     try {
       return asciiDocParserFuture.get();
     } catch (InterruptedException | ExecutionException e) {

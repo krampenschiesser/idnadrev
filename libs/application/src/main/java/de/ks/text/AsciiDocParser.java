@@ -32,14 +32,15 @@ import java.util.regex.Pattern;
 
 @Vetoed
 public class AsciiDocParser {
-  protected static final String mathJax = "   <script type=\"text/x-mathjax-config\">\n" +
+  protected static final String mathJaxStart = "   <script type=\"text/x-mathjax-config\">\n" +
           "    MathJax.Hub.Config({\n" +
           "    asciimath2jax: {\n" +
           "    delimiters: [['`','`'], ['$$','$$'], ['||','||']]\n" +
           "    }\n" +
           "    });\n" +
           "    </script>\n<script type=\"text/javascript\"\n" +
-          "  src=\"http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=AM_HTMLorMML-full\">\n" +
+          "  src=\"";
+  protected static final String mathJaxEnd = "MathJax.js?config=AM_HTMLorMML-full\">\n" +
           "</script>";
   private static final Pattern footerPattern = Pattern.compile("<div id=\"footer\">\n<div id=\"footer-text\">\n" +
           ".*\n" +
@@ -47,10 +48,13 @@ public class AsciiDocParser {
   private final Asciidoctor asciidoctor = Asciidoctor.Factory.create();
   private final OptionsBuilder options;
   private final Map<String, String> cssCache = new ConcurrentHashMap<>();
+  private final File dataDir;
 
   public AsciiDocParser() {
+    dataDir = new AsciiDocMetaData().disocverDataDir();
+
     Attributes attributes = AttributesBuilder.attributes()//
-            .experimental(true).sourceHighlighter("coderay").get();
+            .experimental(true).sourceHighlighter("coderay").copyCss(true).stylesDir(dataDir.toURI().toString()).get();
     options = OptionsBuilder.options().headerFooter(true).backend("docbook5").attributes(attributes);
   }
 
@@ -82,7 +86,7 @@ public class AsciiDocParser {
       String first = render.substring(0, index);
       String last = render.substring(index);
 
-      return first + mathJax + last;
+      return first + mathJaxStart + new File(dataDir, "mathJax" + File.separator).toURI().toString() + mathJaxEnd + last;
     }
     return render;
   }
