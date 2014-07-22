@@ -40,7 +40,9 @@ public class AsciiDocMetaData {
     String pathname = "data" + File.separator + "mathjax.zip";
     for (workingDirectory = new File(System.getProperty("user.dir")); !new File(workingDirectory, pathname).exists(); workingDirectory = workingDirectory.getParentFile()) {
     }
-    return new File(workingDirectory, "data");
+    File dir = new File(workingDirectory, "data");
+    log.info("Discovered data dir {}", dir);
+    return dir;
   }
 
 }
