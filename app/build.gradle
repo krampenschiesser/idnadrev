@@ -31,3 +31,8 @@ dependencies {
     testCompile project(":libs:testutil")
     testCompile "org.testfx:testfx-core:$testfx"
 }
+
+applicationDistribution.from("../data") {
+    into 'data'
+    include '*.zip'
+}
