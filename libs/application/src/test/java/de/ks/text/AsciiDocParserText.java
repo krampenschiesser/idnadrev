@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.profiler.Profiler;
 
+import java.io.File;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -138,5 +139,15 @@ public class AsciiDocParserText {
       service.shutdownNow();
       service.awaitTermination(5, TimeUnit.SECONDS);
     }
+  }
+
+  @Test
+  public void testRenderToFile() throws Exception {
+    File file = new File(System.getProperty("java.io.tmpdir") + File.separator + "adocRender.html");
+    if (!file.exists()) {
+      file.createNewFile();
+    }
+    asciiDocParser.renderToFile(AsciiDocBackend.HTML5, file);
+
   }
 }

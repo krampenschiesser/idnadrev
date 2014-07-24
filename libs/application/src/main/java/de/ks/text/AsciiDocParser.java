@@ -17,9 +17,11 @@ package de.ks.text;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import org.asciidoctor.Asciidoctor;
-import org.asciidoctor.Attributes;
 import org.asciidoctor.AttributesBuilder;
+import org.asciidoctor.Options;
 import org.asciidoctor.OptionsBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.Vetoed;
 import java.io.File;
@@ -32,6 +34,8 @@ import java.util.regex.Pattern;
 
 @Vetoed
 public class AsciiDocParser {
+  private static final Logger log = LoggerFactory.getLogger(AsciiDocParser.class);
+
   protected static final String mathJaxStart = "   <script type=\"text/x-mathjax-config\">\n" +
           "    MathJax.Hub.Config({\n" +
           "    asciimath2jax: {\n" +
@@ -45,37 +49,49 @@ public class AsciiDocParser {
           ".*\n" +
           "</div>\n</div>");
   private final Asciidoctor asciidoctor = Asciidoctor.Factory.create();
-  private final OptionsBuilder options;
+  private final OptionsBuilder defaultOptions;
   private final Map<String, String> cssCache = new ConcurrentHashMap<>();
   private final File dataDir;
+  private final AsciiDocMetaData metaData = new AsciiDocMetaData();
 
   public AsciiDocParser() {
     dataDir = new AsciiDocMetaData().disocverDataDir();
+    defaultOptions = getDefaultOptions(getDefaultAttributes());
+  }
 
-    Attributes attributes = AttributesBuilder.attributes()//
-            .experimental(true).sourceHighlighter("coderay").copyCss(true).stylesDir(dataDir.toURI().toString()).get();
-    options = OptionsBuilder.options().headerFooter(true).backend("docbook5").attributes(attributes);
+  public AttributesBuilder getDefaultAttributes() {
+    AttributesBuilder attributes = AttributesBuilder.attributes()//
+            .experimental(true).sourceHighlighter("coderay").copyCss(true).stylesDir(dataDir.toURI().toString());
+    return attributes;
+  }
+
+  public OptionsBuilder getDefaultOptions(AttributesBuilder attributes) {
+    return OptionsBuilder.options().headerFooter(true).backend(AsciiDocBackend.HTML5.name().toLowerCase()).attributes(attributes.get());
   }
 
   public String parse(String input) {
-    return parse(input, AsciiDocBackend.HTML5);
+    return parse(input, true, defaultOptions);
   }
 
-  public String parse(String input, AsciiDocBackend backend) {
-    switch (backend) {
-      case DOCBOOK5:
-        options.backend("docbook5");
-        break;
-      case HTML5:
-        options.backend("html5");
-        break;
-    }
+  public String parse(String input, boolean removeFooter, OptionsBuilder options) {
     String render = asciidoctor.render(input, options);
-    if (backend == AsciiDocBackend.HTML5) {
-      render = removeFooter(render);
+    String backend = (String) options.asMap().get(Options.BACKEND);
+    if (backend == AsciiDocBackend.HTML5.name().toLowerCase()) {
+      if (removeFooter) {
+        render = removeFooter(render);
+      }
       render = addMathJax(render);
     }
     return render;
+  }
+
+  public void renderToFile(AsciiDocBackend backend, File file) {
+    if (file.exists()) {
+      log.info("Removing existing render target {}", file);
+    }
+    String child = file.getName().contains(".") ? file.getName().substring(0, file.getName().lastIndexOf('.')) : file.getName();
+    File dataDir = new File(file.getParent(), child + "_data");
+    log.debug("using target data dir {}", dataDir);
   }
 
   private String addMathJax(String render) {
