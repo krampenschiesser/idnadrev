@@ -48,6 +48,7 @@ public class AsciiDocParser {
   private static final Pattern footerPattern = Pattern.compile("<div id=\"footer\">\n<div id=\"footer-text\">\n" +
           ".*\n" +
           "</div>\n</div>");
+  public static final String DATADIR_NAME = "_data";
   private final Asciidoctor asciidoctor = Asciidoctor.Factory.create();
   private final OptionsBuilder defaultOptions;
   private final Map<String, String> cssCache = new ConcurrentHashMap<>();
@@ -85,13 +86,38 @@ public class AsciiDocParser {
     return render;
   }
 
-  public void renderToFile(AsciiDocBackend backend, File file) {
+  public void renderToFile(String input, AsciiDocBackend backend, File file) {
     if (file.exists()) {
       log.info("Removing existing render target {}", file);
+      file.delete();
     }
+    File dataDir = createDataDir(file);
+    boolean needsMathJax = needsMathJax(input);
+    metaData.copyToDir(dataDir, needsMathJax);
+  }
+
+  protected boolean needsMathJax(String input) {
+    if (input.contains("+++\n$$")) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  protected File createDataDir(File file) {
     String child = file.getName().contains(".") ? file.getName().substring(0, file.getName().lastIndexOf('.')) : file.getName();
-    File dataDir = new File(file.getParent(), child + "_data");
+    File dataDir = new File(file.getParent(), child + DATADIR_NAME);
     log.debug("using target data dir {}", dataDir);
+
+    if (!dataDir.exists()) {
+      try {
+        java.nio.file.Files.createDirectories(dataDir.toPath());
+      } catch (IOException e) {
+        log.error("Could not create datadir {}", dataDir, e);
+        throw new RuntimeException(e);
+      }
+    }
+    return dataDir;
   }
 
   private String addMathJax(String render) {

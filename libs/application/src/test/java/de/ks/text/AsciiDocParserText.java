@@ -14,6 +14,7 @@
  */
 package de.ks.text;
 
+import de.ks.util.DeleteDir;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -147,7 +148,17 @@ public class AsciiDocParserText {
     if (!file.exists()) {
       file.createNewFile();
     }
-    asciiDocParser.renderToFile(AsciiDocBackend.HTML5, file);
+    File dataDir = new File(file.getPath().substring(0, file.getPath().length() - 5) + AsciiDocParser.DATADIR_NAME);
 
+    if (dataDir.exists()) {
+      new DeleteDir(dataDir).delete();
+    }
+
+    asciiDocParser.renderToFile(asciiDocSimple, AsciiDocBackend.HTML5, file);
+
+    assertTrue(dataDir.getPath() + " does not exist", dataDir.exists());
+    assertTrue(new File(dataDir, AsciiDocMetaData.CODERAY_CSS).exists());
+    assertTrue(new File(dataDir, AsciiDocMetaData.ASCIIDOCTOR_CSS).exists());
+    assertFalse(new File(dataDir, AsciiDocMetaData.MATHJAX).exists());
   }
 }

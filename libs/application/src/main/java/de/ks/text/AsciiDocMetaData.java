@@ -19,25 +19,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 
 public class AsciiDocMetaData {
   private static final Logger log = LoggerFactory.getLogger(AsciiDocMetaData.class);
+  public static final String MATHJAX = "mathjax";
+  public static final String ASCIIDOCTOR_CSS = "asciidoctor.css";
+  public static final String CODERAY_CSS = "asciidoctor-coderay.css";
+  public static final String ADOC_CSS_ZIP = "adoc-css.zip";
 
   public static String DIR = null;
+  private File dataDir;
 
   public void extract() {
     File dataDir = disocverDataDir();
-    if (!new File(dataDir, "mathjax").exists()) {
-      new Unzipper(new File(dataDir, "mathjax.zip")).unzip(dataDir);
+    if (!new File(dataDir, MATHJAX).exists()) {
+      new Unzipper(new File(dataDir, MATHJAX + ".zip")).unzip(dataDir);
     }
-    if (!new File(dataDir, "asciidoctor.css").exists()) {
-      new Unzipper(new File(dataDir, "adoc-css.zip")).unzip(dataDir);
+    if (!new File(dataDir, ASCIIDOCTOR_CSS).exists()) {
+      new Unzipper(new File(dataDir, ADOC_CSS_ZIP)).unzip(dataDir);
     }
   }
 
   protected File disocverDataDir() {
     File workingDirectory;
-    String pathname = "data" + File.separator + "mathjax.zip";
+    String pathname = "data" + File.separator + MATHJAX + ".zip";
     for (workingDirectory = new File(System.getProperty("user.dir")); !new File(workingDirectory, pathname).exists(); workingDirectory = workingDirectory.getParentFile()) {
     }
     File dir = new File(workingDirectory, "data");
@@ -45,4 +52,28 @@ public class AsciiDocMetaData {
     return dir;
   }
 
+  public File getDataDir() {
+    if (dataDir == null) {
+      dataDir = disocverDataDir();
+    }
+    return dataDir;
+  }
+
+  public void copyToDir(File newDataDir, boolean needsMathJax) {
+    try {
+      File[] files = getDataDir().listFiles();
+      for (File file : files) {
+        if (file.isDirectory() && file.getName().equals(MATHJAX)) {
+          if (needsMathJax) {
+            Files.copy(file.toPath(), new File(newDataDir, file.getName()).toPath());
+          }
+        } else if (!file.getName().toLowerCase().endsWith(".zip")) {
+          Files.copy(file.toPath(), new File(newDataDir, file.getName()).toPath());
+        }
+      }
+    } catch (IOException e) {
+      log.error("Could not copy to new data dir {}", dataDir, e);
+      throw new RuntimeException(e);
+    }
+  }
 }
