@@ -182,22 +182,18 @@ public class AsciiDocEditor implements Initializable {
       return;
     }
     String extension = fileChooser.getSelectedExtensionFilter().getExtensions().get(0);
-
-    String content;
-    if (extension.endsWith("adoc")) {
-      content = editor.getText();
-    } else {
-      content = previewHtmlString;
-    }
     if (!file.getName().endsWith(extension)) {
       file = new File(file.getPath() + extension);
     }
-    log.info("Saving to file {}", file);
 
-    try {
-      Files.write(content, file, Charsets.UTF_8);
-    } catch (IOException e) {
-      log.error("Could not write file {}", file, e);
+    if (extension.endsWith("adoc")) {
+      try {
+        Files.write(editor.getText(), file, Charsets.UTF_8);
+      } catch (IOException e) {
+        log.error("Could not write file {}", file, e);
+      }
+    } else {
+      this.parser.renderToFile(editor.getText(), AsciiDocBackend.HTML5, file);
     }
   }
 
