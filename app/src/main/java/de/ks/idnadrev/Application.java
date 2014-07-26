@@ -32,7 +32,7 @@ public class Application {
     Launcher launcher = Launcher.instance;
     launcher.startAll(args);
     launcher.awaitStart();
-    launcher.getService(JavaFXService.class).getFx().get();
+    launcher.getService(JavaFXService.class).waitUntilFXFinished();
     launcher.stopAll();
     launcher.awaitStop();
     log.info("Finishing main");

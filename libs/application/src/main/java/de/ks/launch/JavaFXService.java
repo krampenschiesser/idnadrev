@@ -21,10 +21,7 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public class JavaFXService extends Service {
   private static final Logger log = LoggerFactory.getLogger(JavaFXService.class);
@@ -90,5 +87,9 @@ public class JavaFXService extends Service {
 
   public Future<?> getFx() {
     return fx;
+  }
+
+  public void waitUntilFXFinished() throws ExecutionException, InterruptedException {
+    fx.get();
   }
 }
