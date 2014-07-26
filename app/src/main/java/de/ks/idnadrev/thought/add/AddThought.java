@@ -22,8 +22,8 @@ import de.ks.activity.ModelBound;
 import de.ks.activity.context.ActivityStore;
 import de.ks.eventsystem.bus.HandlingThread;
 import de.ks.eventsystem.bus.Threading;
+import de.ks.file.FileViewController;
 import de.ks.idnadrev.entity.Thought;
-import de.ks.idnadrev.thought.add.file.FileThoughtViewController;
 import de.ks.text.AsciiDocEditor;
 import de.ks.validation.ValidationRegistry;
 import de.ks.validation.validators.NamedEntityMustNotExistValidator;
@@ -66,7 +66,7 @@ public class AddThought implements Initializable {
   @FXML
   protected Button save;
   @FXML
-  protected FileThoughtViewController fileViewController;
+  protected FileViewController fileViewController;
   @FXML
   protected GridPane fileView;
   @Inject

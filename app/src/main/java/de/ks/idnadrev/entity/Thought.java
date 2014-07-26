@@ -33,7 +33,7 @@ import java.util.Set;
  * All rights reserved by now, license may come later.
  */
 @Entity
-public class Thought extends NamedPersistentObject<Thought> {
+public class Thought extends NamedPersistentObject<Thought> implements FileContainer<Thought> {
   private static final long serialVersionUID = 1L;
 
   @Column(length = Integer.MAX_VALUE)

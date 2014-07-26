@@ -12,14 +12,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.thought.add.file;
+package de.ks.file;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import de.ks.activity.ActivityLoadFinishedEvent;
 import de.ks.activity.context.ActivityStore;
 import de.ks.activity.initialization.DatasourceCallback;
-import de.ks.file.FileStore;
+import de.ks.idnadrev.entity.FileContainer;
 import de.ks.idnadrev.entity.FileReference;
 import de.ks.idnadrev.entity.Thought;
 import de.ks.persistence.PersistentWork;
@@ -50,8 +50,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class FileThoughtViewController implements Initializable, DatasourceCallback<Thought> {
-  private static final Logger log = LoggerFactory.getLogger(FileThoughtViewController.class);
+public class FileViewController implements Initializable, DatasourceCallback<FileContainer> {
+  private static final Logger log = LoggerFactory.getLogger(FileViewController.class);
   protected final ObservableList<File> files = FXCollections.observableArrayList();
   protected final java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
   protected final ExecutorService executor = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(true).setNameFormat("awt.Desktop-%d").build());
@@ -211,12 +211,12 @@ public class FileThoughtViewController implements Initializable, DatasourceCallb
   }
 
   @Override
-  public void duringLoad(Thought model) {
+  public void duringLoad(FileContainer model) {
 
   }
 
   @Override
-  public void duringSave(Thought model) {
+  public void duringSave(FileContainer model) {
     fileReferences.keySet().retainAll(files);
     if (this.fileReferences.isEmpty()) {
       log.info("No files to save for {}", model);
@@ -226,7 +226,7 @@ public class FileThoughtViewController implements Initializable, DatasourceCallb
         File file = entry.getKey();
         CompletableFuture<FileReference> cf = entry.getValue();
         FileReference fileReference = cf.get();
-        fileReference.setThought(model);
+        fileReference.setOwner(model);
         fileStore.scheduleCopy(fileReference, file);
 
         String search = "file://" + file.getAbsolutePath();

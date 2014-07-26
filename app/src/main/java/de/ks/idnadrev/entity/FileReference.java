@@ -106,6 +106,16 @@ public class FileReference extends NamedPersistentObject<FileReference> {//TODO 
     this.md5Sum = md5Sum;
   }
 
+  public void setOwner(FileContainer owner) {
+    if (owner instanceof Thought) {
+      setThought((Thought) owner);
+    } else if (owner instanceof Task) {
+      setTask((Task) owner);
+    } else if (owner instanceof Note) {
+      setNote((Note) owner);
+    }
+  }
+
   public AbstractPersistentObject getOwner() {
     if (getTask() != null) {
       return getTask();
