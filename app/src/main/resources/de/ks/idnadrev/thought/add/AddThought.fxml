@@ -30,7 +30,7 @@
                    GridPane.rowIndex="2"/>
         <StackPane GridPane.columnIndex="1" GridPane.rowIndex="3">
             <children>
-                <fx:include fx:id="fileView" source="file/ThoughtFileView.fxml"/>
+                <fx:include fx:id="fileView" source="../../../file/FileView.fxml"/>
             </children>
         </StackPane>
         <Button fx:id="save" defaultButton="true" mnemonicParsing="false" onAction="#onSave" text="%default.save"
