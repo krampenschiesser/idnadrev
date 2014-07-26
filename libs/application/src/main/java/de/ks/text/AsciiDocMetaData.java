@@ -63,11 +63,11 @@ public class AsciiDocMetaData {
     try {
       File[] files = getDataDir().listFiles();
       for (File file : files) {
-        if (file.isDirectory() && file.getName().equals(MATHJAX)) {
+        if (file.getName().equals(MATHJAX + ".zip")) {
           if (needsMathJax) {
-            Files.copy(file.toPath(), new File(newDataDir, file.getName()).toPath());
+            new Unzipper(file).unzip(newDataDir);
           }
-        } else if (!file.getName().toLowerCase().endsWith(".zip")) {
+        } else if (!file.getName().toLowerCase().endsWith(".zip") && !file.getName().equals(MATHJAX)) {
           Files.copy(file.toPath(), new File(newDataDir, file.getName()).toPath());
         }
       }

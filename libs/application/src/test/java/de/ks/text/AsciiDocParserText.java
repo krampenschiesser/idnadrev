@@ -14,7 +14,6 @@
  */
 package de.ks.text;
 
-import de.ks.util.DeleteDir;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -22,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.profiler.Profiler;
 
-import java.io.File;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -140,25 +138,5 @@ public class AsciiDocParserText {
       service.shutdownNow();
       service.awaitTermination(5, TimeUnit.SECONDS);
     }
-  }
-
-  @Test
-  public void testRenderToFile() throws Exception {
-    File file = new File(System.getProperty("java.io.tmpdir") + File.separator + "adocRender.html");
-    if (!file.exists()) {
-      file.createNewFile();
-    }
-    File dataDir = new File(file.getPath().substring(0, file.getPath().length() - 5) + AsciiDocParser.DATADIR_NAME);
-
-    if (dataDir.exists()) {
-      new DeleteDir(dataDir).delete();
-    }
-
-    asciiDocParser.renderToFile(asciiDocSimple, AsciiDocBackend.HTML5, file);
-
-    assertTrue(dataDir.getPath() + " does not exist", dataDir.exists());
-    assertTrue(new File(dataDir, AsciiDocMetaData.CODERAY_CSS).exists());
-    assertTrue(new File(dataDir, AsciiDocMetaData.ASCIIDOCTOR_CSS).exists());
-    assertFalse(new File(dataDir, AsciiDocMetaData.MATHJAX).exists());
   }
 }

@@ -16,6 +16,7 @@ package de.ks.text;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
+import org.apache.commons.lang3.StringUtils;
 import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.AttributesBuilder;
 import org.asciidoctor.Options;
@@ -26,10 +27,13 @@ import org.slf4j.LoggerFactory;
 import javax.enterprise.inject.Vetoed;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Vetoed
@@ -71,17 +75,20 @@ public class AsciiDocParser {
   }
 
   public String parse(String input) {
-    return parse(input, true, defaultOptions);
+    String mathjaxDir = new File(dataDir, "mathjax").toURI().toString() + File.separator;
+    return parse(input, true, true, mathjaxDir, defaultOptions);
   }
 
-  public String parse(String input, boolean removeFooter, OptionsBuilder options) {
+  public String parse(String input, boolean removeFooter, boolean addMathJax, String mathjaxDir, OptionsBuilder options) {
     String render = asciidoctor.render(input, options);
     String backend = (String) options.asMap().get(Options.BACKEND);
     if (backend.equals(AsciiDocBackend.HTML5.name().toLowerCase())) {
       if (removeFooter) {
         render = removeFooter(render);
       }
-      render = addMathJax(render);
+      if (addMathJax) {
+        render = addMathJax(render, mathjaxDir);
+      }
     }
     return render;
   }
@@ -92,8 +99,60 @@ public class AsciiDocParser {
       file.delete();
     }
     File dataDir = createDataDir(file);
+    String mathjaxDir = "./" + dataDir.getName() + "/" + AsciiDocMetaData.MATHJAX + "/";
     boolean needsMathJax = needsMathJax(input);
     metaData.copyToDir(dataDir, needsMathJax);
+
+    AttributesBuilder attributes = getDefaultAttributes();
+    attributes.stylesDir(dataDir.getName());
+    attributes.tableOfContents(true);
+    attributes.imagesDir(dataDir.getName());
+
+    OptionsBuilder options = getDefaultOptions(attributes);
+    options.backend(backend.name().toLowerCase());
+
+    String parse = parse(input, false, needsMathJax, mathjaxDir, options);
+    try {
+      parse = copyFiles(parse, dataDir);
+      Files.write(parse, file, Charsets.UTF_8);
+    } catch (IOException e) {
+      log.error("Could not write to file {}", file, e);
+      throw new RuntimeException(e);
+    }
+  }
+
+  private String copyFiles(String parse, File dataDir) throws IOException {
+    Pattern pattern = Pattern.compile("\"file:.*\"");
+    Matcher matcher = pattern.matcher(parse);
+    int bodyTag = parse.indexOf("<body");
+    Map<String, String> replacements = new HashMap<>();
+    while (matcher.find()) {
+      int start = matcher.start();
+      if (start < bodyTag) {
+        continue;
+      }
+      int end = matcher.end();
+
+      String fileReference = parse.substring(start + 1, end - 1);
+      end = fileReference.indexOf("\"");
+      fileReference = fileReference.substring(0, end);
+
+      log.debug("Found file reference {}", fileReference);
+
+      URI uri = URI.create(fileReference);
+      File sourceFile = new File(uri);
+      File targetFile = new File(dataDir, sourceFile.getName());
+      java.nio.file.Files.copy(sourceFile.toPath(), targetFile.toPath());
+
+      replacements.put(fileReference, dataDir.getName() + "/" + targetFile.getName());
+    }
+
+    for (Map.Entry<String, String> entry : replacements.entrySet()) {
+      String original = entry.getKey();
+      String replacement = entry.getValue();
+      parse = StringUtils.replace(parse, original, replacement);
+    }
+    return parse;
   }
 
   protected boolean needsMathJax(String input) {
@@ -120,13 +179,13 @@ public class AsciiDocParser {
     return dataDir;
   }
 
-  private String addMathJax(String render) {
+  private String addMathJax(String render, String mathjaxDir) {
     int index = render.lastIndexOf("</head>");
     if (index > 0) {
       String first = render.substring(0, index);
       String last = render.substring(index);
 
-      return first + mathJaxStart + new File(dataDir, "mathjax").toURI().toString() + File.separator + mathJaxEnd + last;
+      return first + mathJaxStart + mathjaxDir + mathJaxEnd + last;
     }
     return render;
   }
