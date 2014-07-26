@@ -52,8 +52,8 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
-public class CollectThoughtTest {
-  private static final Logger log = LoggerFactory.getLogger(CollectThoughtTest.class);
+public class AddThoughtTest {
+  private static final Logger log = LoggerFactory.getLogger(AddThoughtTest.class);
   @Rule
   public TempFileRule testFiles = new TempFileRule(2);
   private Scene scene;
