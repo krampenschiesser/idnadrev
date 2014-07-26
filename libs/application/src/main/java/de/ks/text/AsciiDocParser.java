@@ -76,7 +76,7 @@ public class AsciiDocParser {
   public String parse(String input, boolean removeFooter, OptionsBuilder options) {
     String render = asciidoctor.render(input, options);
     String backend = (String) options.asMap().get(Options.BACKEND);
-    if (backend == AsciiDocBackend.HTML5.name().toLowerCase()) {
+    if (backend.equals(AsciiDocBackend.HTML5.name().toLowerCase())) {
       if (removeFooter) {
         render = removeFooter(render);
       }
