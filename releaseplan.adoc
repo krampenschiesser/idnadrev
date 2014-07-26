@@ -40,7 +40,6 @@ Automatic transition from one version to the other
 * Task scheduling and trainings
 * template system for asciidoc editor
 * options editor, general option usage in application
-
 * Refactoring: rework DataSource "API" to something better (reduce direct calls from controllers, better to/from converter)
 
 == Future
