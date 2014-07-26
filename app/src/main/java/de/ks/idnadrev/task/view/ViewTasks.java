@@ -30,6 +30,7 @@ import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.task.create.CreateTaskActivity;
 import de.ks.idnadrev.task.finish.FinishTaskActivity;
 import de.ks.idnadrev.task.work.WorkOnTaskActivity;
+import de.ks.persistence.PersistentWork;
 import de.ks.text.view.AsciiDocContent;
 import de.ks.text.view.AsciiDocViewer;
 import javafx.application.Platform;
@@ -99,6 +100,8 @@ public class ViewTasks implements Initializable {
   protected Button edit;
   @FXML
   protected Button show;
+  @FXML
+  protected Button delete;
 
   @Inject
   ActivityStore store;
@@ -143,6 +146,7 @@ public class ViewTasks implements Initializable {
     finish.disableProperty().bind(disable);
     edit.disableProperty().bind(disable);
     show.disableProperty().bind(disable);
+    delete.disableProperty().bind(disable);
   }
 
   protected void applyTask(TreeItem<Task> taskTreeItem) {
@@ -214,6 +218,7 @@ public class ViewTasks implements Initializable {
       startWork();
     }
   }
+
   @FXML
   void selectParentProject() {
     Task parent = tasksView.getSelectionModel().getSelectedItem().getValue().getParent();
@@ -252,6 +257,15 @@ public class ViewTasks implements Initializable {
     navigationHint.setDataSourceHint(() -> tasksView.getSelectionModel().getSelectedItem().getValue());
 
     controller.start(FinishTaskActivity.class, navigationHint);
+  }
+
+  @FXML
+  void deleteTask() {
+    PersistentWork.run(em -> {
+      Task task = tasksView.getSelectionModel().getSelectedItem().getValue();
+      em.remove(PersistentWork.reload(task));
+    });
+    controller.reload();
   }
 
   @Subscribe

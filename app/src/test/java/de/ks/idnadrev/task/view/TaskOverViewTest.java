@@ -21,6 +21,7 @@ import de.ks.idnadrev.entity.Tag;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.WorkUnit;
 import de.ks.persistence.PersistentWork;
+import de.ks.util.FXPlatform;
 import javafx.scene.control.TreeItem;
 import org.junit.After;
 import org.junit.Before;
@@ -28,6 +29,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -66,6 +68,7 @@ public class TaskOverViewTest {
   @After
   public void tearDown() throws Exception {
     activityController.stop(ViewTasksActvity.class);
+    FXPlatform.waitForFX();
   }
 
   @Test
@@ -77,5 +80,19 @@ public class TaskOverViewTest {
     assertEquals("project1", root.getChildren().get(1).getValue().getName());
 
     assertEquals(5, root.getChildren().get(1).getChildren().size());
+  }
+
+  @Test
+  public void testDeleteProject() throws Exception {
+    List<Task> from = PersistentWork.from(Task.class);
+    assertEquals(8, from.size());
+
+    TreeItem<Task> project = controller.tasksView.getRoot().getChildren().get(1);
+    FXPlatform.invokeLater(() -> controller.tasksView.getSelectionModel().select(project));
+
+    controller.deleteTask();
+
+    from = PersistentWork.from(Task.class);
+    assertEquals(1, from.size());
   }
 }
