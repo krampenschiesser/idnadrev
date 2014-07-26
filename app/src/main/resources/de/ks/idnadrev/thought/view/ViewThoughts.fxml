@@ -55,6 +55,7 @@
                         <Button fx:id="toInfo" mnemonicParsing="false" text="%thought.transform.info"/>
                         <Button fx:id="later" mnemonicParsing="false" onAction="#postPone"
                                 text="%thought.transform.later"/>
+                        <Button fx:id="deleteBtn" mnemonicParsing="false" onAction="#delete" text="%delete"/>
                     </children>
                     <GridPane.margin>
                         <Insets/>

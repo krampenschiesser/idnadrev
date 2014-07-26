@@ -64,6 +64,8 @@ public class ViewThoughts implements Initializable {
   private Button toInfo;
   @FXML
   private Button later;
+  @FXML
+  private Button deleteBtn;
 
   private AsciiDocViewer asciiDocViewer;
 
@@ -110,6 +112,7 @@ public class ViewThoughts implements Initializable {
     toTask.disableProperty().bind(disable);
     toInfo.disableProperty().bind(disable);
     later.disableProperty().bind(disable);
+    deleteBtn.disableProperty().bind(disable);
   }
 
   public void postPone() {
@@ -148,6 +151,15 @@ public class ViewThoughts implements Initializable {
     navigationHint.setDataSourceHint(this::getSelectedThought);
 
     controller.start(CreateTaskActivity.class, navigationHint);
+  }
+
+  @FXML
+  void delete() {
+    PersistentWork.run(em -> {
+      Thought thought = _this.getSelectionModel().getSelectedItem();
+      em.remove(PersistentWork.reload(thought));
+    });
+    controller.reload();
   }
 
   @Subscribe
