@@ -110,8 +110,7 @@ public class AddThoughtTest {
     copy2Clipboard(clipboardText);
 
     assertEquals(clipboardText, addThought.description.getText());
-    assertNull(addThought.name.getText());
-    assertTrue(addThought.name.isFocused());
+    assertEquals(clipboardText, addThought.name.getText());
   }
 
   private void copy2Clipboard(String clipboardText) {
