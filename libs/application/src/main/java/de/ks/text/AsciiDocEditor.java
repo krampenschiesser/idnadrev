@@ -120,12 +120,14 @@ public class AsciiDocEditor implements Initializable {
     text.bindBidirectional(editor.textProperty());
 
     editor.textProperty().addListener((p, o, n) -> {
-      CompletableFuture<String> future = renderGroup.schedule(() -> parser.parse(n));
-      future.thenAcceptAsync(this::applyRenderedHtml, controller.getJavaFXExecutor());
-      future.exceptionally(t -> {
-        log.error("Could not parse asciidoc {}", n, t);
-        return null;
-      });
+      if (n != null) {
+        CompletableFuture<String> future = renderGroup.schedule(() -> parser.parse(n));
+        future.thenAcceptAsync(this::applyRenderedHtml, controller.getJavaFXExecutor());
+        future.exceptionally(t -> {
+          log.error("Could not parse asciidoc {}", n, t);
+          return null;
+        });
+      }
     });
 
     tabPane.focusedProperty().addListener((p, o, n) -> {
