@@ -15,6 +15,7 @@
 package de.ks.idnadrev.task.create;
 
 import de.ks.activity.ActivityController;
+import de.ks.file.FileViewController;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 
@@ -27,6 +28,8 @@ public class CreateTask implements Initializable {
   MainTaskInfo mainInfoController;
   @FXML
   TaskOutcome expectedOutcomeController;
+  @FXML
+  FileViewController fileViewController;
 
   @Inject
   protected ActivityController controller;

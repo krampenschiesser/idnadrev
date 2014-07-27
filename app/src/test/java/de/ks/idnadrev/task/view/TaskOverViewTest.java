@@ -16,11 +16,9 @@ package de.ks.idnadrev.task.view;
 
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityController;
-import de.ks.idnadrev.entity.Context;
-import de.ks.idnadrev.entity.Tag;
-import de.ks.idnadrev.entity.Task;
-import de.ks.idnadrev.entity.WorkUnit;
+import de.ks.idnadrev.entity.*;
 import de.ks.persistence.PersistentWork;
+import de.ks.persistence.entity.Sequence;
 import de.ks.util.FXPlatform;
 import javafx.scene.control.TreeItem;
 import org.junit.After;
@@ -42,7 +40,7 @@ public class TaskOverViewTest {
 
   @Before
   public void setUp() throws Exception {
-    PersistentWork.deleteAllOf(WorkUnit.class, Task.class, Context.class, Tag.class);
+    PersistentWork.deleteAllOf(FileReference.class, Sequence.class, WorkUnit.class, Task.class, Context.class, Tag.class);
 
     Context context = new Context("context");
 

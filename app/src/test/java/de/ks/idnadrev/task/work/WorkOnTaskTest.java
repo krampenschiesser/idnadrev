@@ -19,12 +19,10 @@ import de.ks.LauncherRunner;
 import de.ks.activity.ActivityController;
 import de.ks.activity.context.ActivityStore;
 import de.ks.activity.link.NavigationHint;
-import de.ks.idnadrev.entity.Context;
-import de.ks.idnadrev.entity.Tag;
-import de.ks.idnadrev.entity.Task;
-import de.ks.idnadrev.entity.WorkUnit;
+import de.ks.idnadrev.entity.*;
 import de.ks.idnadrev.task.view.ViewTasksActvity;
 import de.ks.persistence.PersistentWork;
+import de.ks.persistence.entity.Sequence;
 import de.ks.util.FXPlatform;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -51,7 +49,7 @@ public class WorkOnTaskTest {
 
   @Before
   public void setUp() throws Exception {
-    PersistentWork.deleteAllOf(WorkUnit.class, Task.class, Context.class, Tag.class);
+    PersistentWork.deleteAllOf(FileReference.class, Sequence.class, WorkUnit.class, Task.class, Context.class, Tag.class);
     Context context = new Context("context");
     Task task = new Task("task").setProject(true);
     task.setContext(context);

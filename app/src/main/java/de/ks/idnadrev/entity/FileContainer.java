@@ -17,6 +17,7 @@ package de.ks.idnadrev.entity;
 import java.util.Set;
 
 public interface FileContainer<T> {
+
   Set<FileReference> getFiles();
 
   long getId();

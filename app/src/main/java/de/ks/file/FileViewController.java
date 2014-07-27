@@ -49,7 +49,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class FileViewController implements Initializable, DatasourceCallback<FileContainer> {
+public class FileViewController implements Initializable, DatasourceCallback<FileContainer<?>> {
   private static final Logger log = LoggerFactory.getLogger(FileViewController.class);
   protected final ObservableList<File> files = FXCollections.observableArrayList();
   protected final java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
@@ -207,15 +207,23 @@ public class FileViewController implements Initializable, DatasourceCallback<Fil
   public void onRefresh(ActivityLoadFinishedEvent event) {
     log.debug("Clearing files");
     files.clear();
+    event.<FileContainer<?>>getModel().getFiles().forEach(f -> {
+      File file = fileStore.getFile(f);
+      fileReferences.put(file, CompletableFuture.completedFuture(f));
+      files.add(file);
+    });
   }
 
   @Override
-  public void duringLoad(FileContainer model) {
-
+  public void duringLoad(FileContainer<?> model) {
+    model.getFiles().forEach(f -> f.getName());
+//    model.getFiles().forEach(f -> {
+//      files.add(fileStore.getFile(f));
+//    });
   }
 
   @Override
-  public void duringSave(FileContainer model) {
+  public void duringSave(FileContainer<?> model) {
     fileReferences.keySet().retainAll(files);
     if (this.fileReferences.isEmpty()) {
       log.info("No files to save for {}", model);
@@ -225,6 +233,9 @@ public class FileViewController implements Initializable, DatasourceCallback<Fil
         File file = entry.getKey();
         CompletableFuture<FileReference> cf = entry.getValue();
         FileReference fileReference = cf.get();
+        if (fileReference.getId() > 0) {
+          return;
+        }
         fileReference.setOwner(model);
         fileStore.scheduleCopy(fileReference, file);
 

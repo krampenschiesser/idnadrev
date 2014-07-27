@@ -50,8 +50,12 @@ public class CreateTaskDS extends NewInstanceDataSource<Task> {
       } else {
         Task task = super.loadModel(furtherProcessing);
         if (fromThought != null) {
-          task.setName(fromThought.getName());
-          task.setDescription(fromThought.getDescription());
+          Thought reloaded = PersistentWork.reload(fromThought);
+          task.setName(reloaded.getName());
+          task.setDescription(reloaded.getDescription());
+          task.setFileStoreDir(reloaded.getFileStoreDir());
+          task.getFiles().addAll(reloaded.getFiles());
+          reloaded.getFiles().forEach(f -> f.setOwner(task));
         }
         task.setEstimatedTime(Duration.ofMinutes(5));
         task.setProject(false);
@@ -65,8 +69,8 @@ public class CreateTaskDS extends NewInstanceDataSource<Task> {
   public void saveModel(Task model, Consumer<Task> beforeSaving) {
     PersistentWork.run((em) -> {
       Task task = PersistentWork.reload(model);
-      beforeSaving.accept(task);
       em.persist(task);
+      beforeSaving.accept(task);
       if (fromThought != null && fromThought.getId() > 0) {
         em.remove(PersistentWork.reload(fromThought));
       }

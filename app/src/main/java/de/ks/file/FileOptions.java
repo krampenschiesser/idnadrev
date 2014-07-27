@@ -18,13 +18,10 @@ import java.io.File;
 
 public class FileOptions {
   public static final String userHome = System.getProperty("user.home");
-
-  public String getIdnadrevDir() {
-    return ".idnadrev";
-  }
+  public static final String workingDir = System.getProperty("user.dir");
 
   public String getFileStoreDir() {
-    return userHome + File.separator + getIdnadrevDir() + File.separator + "files";
+    return workingDir + File.separator + "files";
   }
 
   public boolean shouldCopy() {
