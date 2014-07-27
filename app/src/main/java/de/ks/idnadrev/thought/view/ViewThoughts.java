@@ -105,6 +105,11 @@ public class ViewThoughts implements Initializable {
           toTask.getOnAction().handle(null);
         }
         e.consume();
+      } else if (e.getCode() == KeyCode.DELETE) {
+        if (!deleteBtn.isDisabled()) {
+          delete();
+        }
+        e.consume();
       }
     });
 
