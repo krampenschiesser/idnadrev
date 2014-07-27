@@ -55,20 +55,28 @@ public class FileViewController implements Initializable, DatasourceCallback<Fil
   protected final java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
   protected final ExecutorService executor = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(true).setNameFormat("awt.Desktop-%d").build());
   @FXML
-  private Button edit;
+  protected Button edit;
   @FXML
-  private Label fileNameLabel;
+  protected Button open;
   @FXML
-  private Label folderName;
+  protected Button openFolder;
   @FXML
-  private ListView<File> fileList;
+  protected Button addNewFile;
+  @FXML
+  protected Button removeFile;
+  @FXML
+  protected Label fileNameLabel;
+  @FXML
+  protected Label folderName;
+  @FXML
+  protected ListView<File> fileList;
 
   @Inject
-  ActivityStore store;
+  protected ActivityStore store;
   @Inject
-  FileStore fileStore;
+  protected FileStore fileStore;
   protected final Map<File, CompletableFuture<FileReference>> fileReferences = new HashMap<>();
-  private ObservableList<ImageData> imageData;
+  protected ObservableList<ImageData> imageData;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -95,6 +103,11 @@ public class FileViewController implements Initializable, DatasourceCallback<Fil
         }
       });
     });
+    BooleanBinding disable = fileList.getSelectionModel().selectedItemProperty().isNull();
+    open.disableProperty().bind(disable);
+    edit.disableProperty().bind(disable);
+    openFolder.disableProperty().bind(disable);
+    removeFile.disableProperty().bind(disable);
   }
 
   public void addFiles(List<File> additionalFiles) {
@@ -217,9 +230,6 @@ public class FileViewController implements Initializable, DatasourceCallback<Fil
   @Override
   public void duringLoad(FileContainer<?> model) {
     model.getFiles().forEach(f -> f.getName());
-//    model.getFiles().forEach(f -> {
-//      files.add(fileStore.getFile(f));
-//    });
   }
 
   @Override
