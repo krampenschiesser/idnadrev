@@ -39,7 +39,7 @@ import java.util.TreeSet;
  */
 
 @Entity
-public class Task extends NamedPersistentObject<Task> {
+public class Task extends NamedPersistentObject<Task> implements FileContainer<Task> {
   private static final long serialVersionUID = 1L;
   private static final String TASK_TAG_JOINTABLE = "task_tag";
 
@@ -104,6 +104,7 @@ public class Task extends NamedPersistentObject<Task> {
 
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "task")
   protected Set<FileReference> files = new HashSet<>();
+  protected String fileStoreDir;
 
   protected Task() {
     this.creationTime = LocalDateTime.now();
@@ -117,6 +118,11 @@ public class Task extends NamedPersistentObject<Task> {
   public Task(String name, String description) {
     this(name);
     this.description = description;
+  }
+
+  @Override
+  public Set<FileReference> getFiles() {
+    return files;
   }
 
   public String getDescription() {
@@ -133,6 +139,17 @@ public class Task extends NamedPersistentObject<Task> {
 
   public Task setDescription(String description) {
     this.description = description;
+    return this;
+  }
+
+  @Override
+  public String getFileStoreDir() {
+    return fileStoreDir;
+  }
+
+  @Override
+  public Task setFileStoreDir(String dir) {
+    this.fileStoreDir = dir;
     return this;
   }
 

@@ -22,6 +22,7 @@ import de.ks.idnadrev.entity.Thought;
 import de.ks.launch.JavaFXService;
 import de.ks.launch.Launcher;
 import de.ks.persistence.PersistentWork;
+import de.ks.persistence.entity.Sequence;
 import de.ks.text.command.InsertImage;
 import de.ks.util.FXPlatform;
 import javafx.event.ActionEvent;
@@ -65,7 +66,7 @@ public class AddThoughtTest {
   @Before
   public void setUp() throws Exception {
     FXPlatform.waitForFX();
-    PersistentWork.deleteAllOf(FileReference.class);
+    PersistentWork.deleteAllOf(Sequence.class, FileReference.class);
     PersistentWork.deleteAllOf(Thought.class);
 
     JavaFXService service = Launcher.instance.getService(JavaFXService.class);

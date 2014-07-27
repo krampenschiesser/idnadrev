@@ -42,6 +42,7 @@ public class Thought extends NamedPersistentObject<Thought> implements FileConta
 
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "thought")
   protected Set<FileReference> files = new HashSet<>();
+  protected String fileStoreDir;
 
   public Thought() {
   }
@@ -52,6 +53,17 @@ public class Thought extends NamedPersistentObject<Thought> implements FileConta
 
   public Thought setDescription(String description) {
     this.description = description;
+    return this;
+  }
+
+  @Override
+  public String getFileStoreDir() {
+    return fileStoreDir;
+  }
+
+  @Override
+  public Thought setFileStoreDir(String dir) {
+    this.fileStoreDir = dir;
     return this;
   }
 

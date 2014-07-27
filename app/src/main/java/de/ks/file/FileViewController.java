@@ -21,7 +21,6 @@ import de.ks.activity.context.ActivityStore;
 import de.ks.activity.initialization.DatasourceCallback;
 import de.ks.idnadrev.entity.FileContainer;
 import de.ks.idnadrev.entity.FileReference;
-import de.ks.idnadrev.entity.Thought;
 import de.ks.persistence.PersistentWork;
 import de.ks.text.ImageData;
 import javafx.beans.binding.Bindings;
@@ -88,7 +87,7 @@ public class FileViewController implements Initializable, DatasourceCallback<Fil
     edit.disableProperty().bind(isDirectory);
 
     files.addListener((ListChangeListener<File>) change -> {
-      Thought thought = store.getModel();
+      FileContainer thought = store.getModel();
 
       files.forEach(file -> {
         if (!fileReferences.containsKey(file)) {

@@ -24,4 +24,8 @@ public interface FileContainer<T> {
   String getDescription();
 
   T setDescription(String description);
+
+  String getFileStoreDir();
+
+  T setFileStoreDir(String dir);
 }

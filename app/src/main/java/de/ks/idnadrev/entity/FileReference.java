@@ -16,7 +16,6 @@
 package de.ks.idnadrev.entity;
 
 import de.ks.idnadrev.entity.validation.OwnerFilled;
-import de.ks.persistence.entity.AbstractPersistentObject;
 import de.ks.persistence.entity.NamedPersistentObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,7 +115,7 @@ public class FileReference extends NamedPersistentObject<FileReference> {//TODO 
     }
   }
 
-  public AbstractPersistentObject getOwner() {
+  public FileContainer<?> getOwner() {
     if (getTask() != null) {
       return getTask();
     } else if (getThought() != null) {

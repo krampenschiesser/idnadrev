@@ -27,7 +27,7 @@ import java.util.Set;
  * All rights reserved by now, license may come later.
  */
 @Entity
-public class Note extends NamedPersistentObject<Note> {
+public class Note extends NamedPersistentObject<Note> implements FileContainer<Note> {
   public static final String NOTE_TAG_JOINTABLE = "note_tag";
 
   private static final long serialVersionUID = 1L;
@@ -48,6 +48,7 @@ public class Note extends NamedPersistentObject<Note> {
 
   @ManyToOne
   protected Category category;
+  protected String fileStoreDir;
 
   public Note() {
     //
@@ -92,5 +93,27 @@ public class Note extends NamedPersistentObject<Note> {
 
   public Set<FileReference> getFiles() {
     return files;
+  }
+
+  @Override
+  public String getDescription() {
+    return content;
+  }
+
+  @Override
+  public Note setDescription(String description) {
+    setContent(description);
+    return this;
+  }
+
+  @Override
+  public String getFileStoreDir() {
+    return fileStoreDir;
+  }
+
+  @Override
+  public Note setFileStoreDir(String dir) {
+    this.fileStoreDir = dir;
+    return this;
   }
 }

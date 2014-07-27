@@ -14,10 +14,11 @@
  */
 package de.ks.file;
 
+import de.ks.idnadrev.entity.FileContainer;
 import de.ks.idnadrev.entity.FileReference;
 import de.ks.option.Options;
 import de.ks.persistence.PersistentWork;
-import de.ks.persistence.entity.AbstractPersistentObject;
+import de.ks.persistence.entity.Sequence;
 import de.ks.persistence.transaction.TransactionProvider;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -36,6 +37,7 @@ import java.util.concurrent.ExecutorService;
 
 public class FileStore {
   private static final Logger log = LoggerFactory.getLogger(FileStore.class);
+  private static final String FILESTORE_SEQUENCE = "filestore";
   private final FileOptions options;
 
   @Inject
@@ -45,7 +47,7 @@ public class FileStore {
     options = Options.get(FileOptions.class);
   }
 
-  public CompletableFuture<FileReference> getReference(AbstractPersistentObject owner, File file) {
+  public CompletableFuture<FileReference> getReference(FileContainer owner, File file) {
     if (!file.exists()) {
       throw new IllegalArgumentException("File " + file + " does not exist");
     }
@@ -69,12 +71,20 @@ public class FileStore {
     }
   }
 
-  public String getFileStoreInternalDir(AbstractPersistentObject specifier) {
-    String folder = String.format("%09d", specifier.getId());
-    return specifier.getClass().getSimpleName() + File.separator + folder;
+  public String getFileStoreInternalDir(FileContainer specifier) {
+    if (specifier.getFileStoreDir() == null) {
+      specifier.setFileStoreDir(generateFileStoreDir());
+    }
+    return specifier.getFileStoreDir();
   }
 
-  private Path getTargetPath(AbstractPersistentObject specifier) {
+  protected String generateFileStoreDir() {
+    long nextSeq = Sequence.getNextSequenceNr(FILESTORE_SEQUENCE);
+    String folder = String.format("%09d", nextSeq);
+    return folder;
+  }
+
+  private Path getTargetPath(FileContainer specifier) {
     String fileStoreInternalDir = getFileStoreInternalDir(specifier);
     File file = new File(options.getFileStoreDir() + File.separator + fileStoreInternalDir);
     if (!file.exists()) {
@@ -98,7 +108,7 @@ public class FileStore {
   }
 
   public File getFile(FileReference fileReference) {
-    AbstractPersistentObject owner = fileReference.getOwner();
+    FileContainer owner = fileReference.getOwner();
     if (owner == null) {
       throw new IllegalArgumentException("owner of " + fileReference + " must not be null!");
     }
@@ -108,7 +118,6 @@ public class FileStore {
   }
 
   public void scheduleCopy(FileReference fileReference, File file) {
-    checkOwner(fileReference);
     String fileStoreInternalDir = getFileStoreInternalDir(fileReference.getOwner());
     fileReference.setFileStorePath(fileStoreInternalDir + File.separator + file.getName());
 
@@ -120,14 +129,7 @@ public class FileStore {
     });
   }
 
-  protected void checkOwner(FileReference fileReference) {
-    if (fileReference.getOwner().getId() == 0) {
-      throw new IllegalArgumentException("Owner " + fileReference.getOwner() + " has to be persisted");
-    }
-  }
-
   public void saveInFileStore(FileReference ref, File file) {
-    checkOwner(ref);
     if (!file.exists()) {
       throw new IllegalArgumentException("File " + file + " has to exist");
     }

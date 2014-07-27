@@ -21,8 +21,9 @@
     <persistence-unit name="idnadrev" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
-        <class>de.ks.idnadrev.entity.AbstractPersistentObject</class>
-        <class>de.ks.idnadrev.entity.NamedPersistentObject</class>
+        <class>de.ks.persistence.entity.AbstractPersistentObject</class>
+        <class>de.ks.persistence.entity.NamedPersistentObject</class>
+        <class>de.ks.persistence.entity.Sequence</class>
         <class>de.ks.option.Option</class>
 
         <class>de.ks.idnadrev.entity.Category</class>

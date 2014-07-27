@@ -21,6 +21,7 @@ import de.ks.idnadrev.entity.Thought;
 import de.ks.option.Option;
 import de.ks.option.Options;
 import de.ks.persistence.PersistentWork;
+import de.ks.persistence.entity.Sequence;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,7 +54,7 @@ public class FileStoreTest {
 
   @Before
   public void setUp() throws Exception {
-    PersistentWork.deleteAllOf(FileReference.class, Thought.class, Option.class);
+    PersistentWork.deleteAllOf(Sequence.class, FileReference.class, Thought.class, Option.class);
     fileStoreDir = TMPDIR + File.separator + "idnadrevTestStore";
     Options.store(fileStoreDir, FileOptions.class).getFileStoreDir();
     File file = new File(fileStoreDir);
@@ -94,7 +95,9 @@ public class FileStoreTest {
     fileStore.saveInFileStore(fileReference, file);
     assertEquals(0, fileReference.getId());
 
-    String expectedFileStorePath = Thought.class.getSimpleName() + File.separator + String.format("%09d", bla.getId()) + File.separator + file.getName();
+    Sequence sequence = PersistentWork.from(Sequence.class).get(0);
+
+    String expectedFileStorePath = String.format("%09d", sequence.getSeqNr()) + File.separator + file.getName();
     assertEquals(expectedFileStorePath, fileReference.getFileStorePath());
     assertNotNull(fileReference.getMd5Sum());
     assertEquals(fileReference.getMd5Sum(), md5);
