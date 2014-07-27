@@ -32,9 +32,6 @@ dependencies {
     testCompile "org.testfx:testfx-core:$testfx"
 }
 
-installApp {
-    destinationDir = new File("$installDir")
-}
 
 applicationDistribution.from("../data") {
     into 'data'
