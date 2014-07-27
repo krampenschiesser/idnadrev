@@ -77,6 +77,7 @@ allprojects {
         file('data/mathjax').deleteDir();
         file('data/asciidoctor.css').delete();
         file('data/asciidoctor-coderay.css').delete();
+        file('files').deleteDir();
     }
 
     task cleanlog {
