@@ -21,7 +21,12 @@ public class FileOptions {
   public static final String workingDir = System.getProperty("user.dir");
 
   public String getFileStoreDir() {
-    return workingDir + File.separator + "files";
+    if (workingDir.endsWith("bin")) {
+      File parentFile = new File(workingDir).getParentFile();
+      return parentFile.getPath() + File.separator + "files";
+    } else {
+      return workingDir + File.separator + "files";
+    }
   }
 
   public boolean shouldCopy() {
