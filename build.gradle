@@ -84,3 +84,12 @@ allprojects {
         file('log').listFiles().findAll { it.name.endsWith('.log') }.collect { println("deleting $it"); it.delete() }
     }
 }
+
+task installLocal {
+    copy {
+        from "app/build/install/app"
+        into "/home/scar/idnadrev-dist"
+    }
+}
+
+installLocal.dependsOn(':app:installApp')
