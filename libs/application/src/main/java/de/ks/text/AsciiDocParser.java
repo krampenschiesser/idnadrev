@@ -139,7 +139,7 @@ public class AsciiDocParser {
 
       log.debug("Found file reference {}", fileReference);
 
-      URI uri = URI.create(fileReference);
+      URI uri = URI.create(fileReference.replace('\\', '/'));
       File sourceFile = new File(uri);
       File targetFile = new File(dataDir, sourceFile.getName());
       java.nio.file.Files.copy(sourceFile.toPath(), targetFile.toPath());

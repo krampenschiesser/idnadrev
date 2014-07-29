@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 public class AsciiDocMetaData {
   private static final Logger log = LoggerFactory.getLogger(AsciiDocMetaData.class);
@@ -68,7 +69,7 @@ public class AsciiDocMetaData {
             new Unzipper(file).unzip(newDataDir);
           }
         } else if (!file.getName().toLowerCase().endsWith(".zip") && !file.getName().equals(MATHJAX)) {
-          Files.copy(file.toPath(), new File(newDataDir, file.getName()).toPath());
+          Files.copy(file.toPath(), new File(newDataDir, file.getName()).toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
       }
     } catch (IOException e) {

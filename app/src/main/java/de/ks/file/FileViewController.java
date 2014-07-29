@@ -249,7 +249,7 @@ public class FileViewController implements Initializable, DatasourceCallback<Fil
         fileReference.setOwner(model);
         fileStore.scheduleCopy(fileReference, file);
 
-        String search = "file://" + file.getAbsolutePath();
+        String search = "file:///" + file.getAbsolutePath();
         String replacement = FileReference.FILESTORE_VAR + fileReference.getFileStorePath();
         String newDescription = StringUtils.replace(model.getDescription(), search, replacement);
         model.setDescription(newDescription);

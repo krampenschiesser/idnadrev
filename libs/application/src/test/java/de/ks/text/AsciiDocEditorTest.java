@@ -117,6 +117,6 @@ public class AsciiDocEditorTest {
       grid.getChildren().get(0).getOnMouseClicked().handle(null);
     });
 
-    assertThat(adocEditor.editor.getText(), Matchers.containsString("image::file:///de/ks/images/keymap.jpg"));
+    assertThat(adocEditor.editor.getText(), Matchers.containsString("image::file:////de/ks/images/keymap.jpg"));
   }
 }

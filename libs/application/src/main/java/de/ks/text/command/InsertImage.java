@@ -78,7 +78,7 @@ public class InsertImage implements AsciiDocEditorCommand {
   }
 
   public void insert(TextArea editor, String imagePath) {
-    String insertText = "\nimage::file://" + imagePath + "[]\n";
+    String insertText = "\nimage::file:///" + imagePath + "[]\n";
     int insertPosition = editor.getCaretPosition();
     editor.insertText(insertPosition, insertText);
     editor.positionCaret(insertPosition + insertText.length() - 2);
