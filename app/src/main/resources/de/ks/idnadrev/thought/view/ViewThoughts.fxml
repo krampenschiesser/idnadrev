@@ -26,7 +26,8 @@
         <VBox prefHeight="-1.0" prefWidth="-1.0" spacing="5.0">
             <children>
                 <Label styleClass="title" stylesheets="@../../idnadrev.css" text="%main.thought.overview"/>
-                <TableView fx:id="_this" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="SOMETIMES">
+                <TableView fx:id="_this" onKeyReleased="#handleKeyReleased" prefHeight="-1.0" prefWidth="-1.0"
+                           VBox.vgrow="SOMETIMES">
                     <columns>
                         <TableColumn id="name" fx:id="name" maxWidth="5000.0" minWidth="10.0" prefWidth="222.0"
                                      text="%de.ks.persistence.entity.NamedPersistentObject.name"/>

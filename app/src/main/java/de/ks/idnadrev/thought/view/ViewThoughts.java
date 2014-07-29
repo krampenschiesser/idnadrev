@@ -32,6 +32,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,19 +100,6 @@ public class ViewThoughts implements Initializable {
     _this.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
       updateSelection(n);
     });
-    _this.setOnKeyReleased(e -> {
-      if (e.getCode() == KeyCode.ENTER) {
-        if (!toTask.isDisabled()) {
-          toTask.getOnAction().handle(null);
-        }
-        e.consume();
-      } else if (e.getCode() == KeyCode.DELETE) {
-        if (!deleteBtn.isDisabled()) {
-          delete();
-        }
-        e.consume();
-      }
-    });
 
     BooleanBinding disable = _this.getSelectionModel().selectedItemProperty().isNull();
     toTask.disableProperty().bind(disable);
@@ -146,6 +134,21 @@ public class ViewThoughts implements Initializable {
       nameLabel.setText(null);
     } else {
       nameLabel.setText(thought.getName());
+    }
+  }
+
+  @FXML
+  void handleKeyReleased(KeyEvent e) {
+    if (e.getCode() == KeyCode.ENTER) {
+      if (!toTask.isDisabled()) {
+        toTask.getOnAction().handle(null);
+      }
+      e.consume();
+    } else if (e.getCode() == KeyCode.DELETE) {
+      if (!deleteBtn.isDisabled()) {
+        delete();
+      }
+      e.consume();
     }
   }
 
