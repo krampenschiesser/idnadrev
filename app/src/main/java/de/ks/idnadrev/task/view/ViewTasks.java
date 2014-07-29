@@ -54,6 +54,7 @@ import javax.inject.Inject;
 import java.net.URL;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -117,6 +118,8 @@ public class ViewTasks implements Initializable {
   private final SimpleBooleanProperty disable = new SimpleBooleanProperty(false);
   private AsciiDocViewer asciiDocViewer;
 
+  private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern(Localized.get("fullDate"));
+
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     initialization.loadAdditionalController(AsciiDocViewer.class).thenAcceptAsync(l -> {
@@ -139,7 +142,8 @@ public class ViewTasks implements Initializable {
       TreeItem<Task> treeItem = param.getValue();
       Task task = treeItem.getValue();
       LocalDateTime creationTime = task.getCreationTime();
-      return new SimpleStringProperty(creationTime.toString());
+      String formatted = dateFormat.format(creationTime);
+      return new SimpleStringProperty(formatted);
     });
 
     start.disableProperty().bind(disable);
