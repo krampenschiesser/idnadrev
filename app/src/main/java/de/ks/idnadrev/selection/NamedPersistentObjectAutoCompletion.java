@@ -15,42 +15,50 @@
 package de.ks.idnadrev.selection;
 
 import de.ks.persistence.PersistentWork;
+import de.ks.persistence.QueryConsumer;
 import de.ks.persistence.entity.NamedPersistentObject;
 import javafx.util.Callback;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.util.Collection;
 import java.util.List;
 
-public class NamedPersistentObjectAutoCompletion implements Callback<AutoCompletionBinding.ISuggestionRequest, Collection<String>> {
-  private final Class<? extends NamedPersistentObject> entityClass;
+public class NamedPersistentObjectAutoCompletion<T extends NamedPersistentObject<T>> implements Callback<AutoCompletionBinding.ISuggestionRequest, Collection<String>> {
+  private final Class<T> entityClass;
+  private final QueryConsumer filter;
 
-  public NamedPersistentObjectAutoCompletion(Class<? extends NamedPersistentObject> entityClass) {
+  public NamedPersistentObjectAutoCompletion(Class<T> entityClass, QueryConsumer<T> filter) {
     this.entityClass = entityClass;
+    this.filter = filter;
   }
 
   @Override
   public Collection<String> call(AutoCompletionBinding.ISuggestionRequest param) {
     String userText = param.getUserText().trim();
-    @SuppressWarnings("unchecked") Class<NamedPersistentObject> clazz = (Class<NamedPersistentObject>) entityClass;
+    Class<T> clazz = entityClass;
 
     List<String> result = PersistentWork.read((em) -> getNamedObjects(userText, clazz, em));
     return result;
   }
 
-  protected List<String> getNamedObjects(String userText, Class<NamedPersistentObject> clazz, EntityManager em) {
+  @SuppressWarnings("unchecked")
+  protected List<String> getNamedObjects(String userText, Class<T> clazz, EntityManager em) {
     CriteriaBuilder builder = em.getCriteriaBuilder();
     CriteriaQuery<String> criteria = builder.createQuery(String.class);
-    Root<NamedPersistentObject> root = criteria.from(clazz);
+    Root<T> root = criteria.from(clazz);
     Path<String> nameSelection = root.get("name");
     criteria.select(nameSelection);
-    criteria.where(builder.like(builder.lower(nameSelection), userText.toLowerCase() + "%"));
+
+    Predicate like = builder.like(builder.lower(nameSelection), userText.toLowerCase() + "%");
+    if (filter != null) {
+      filter.accept(root, criteria, builder);
+      criteria.where(criteria.getRestriction(), like);
+    } else {
+      criteria.where(like);
+    }
     TypedQuery<String> query = em.createQuery(criteria);
     query.setMaxResults(10);
     return query.getResultList();

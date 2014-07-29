@@ -121,7 +121,7 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
     this.entityClass = namedEntity;
     this.filter = filter;
     Platform.runLater(() -> {
-      autoCompletion = new CustomAutoCompletionBinding(input, new NamedPersistentObjectAutoCompletion(entityClass));
+      autoCompletion = new CustomAutoCompletionBinding(input, new NamedPersistentObjectAutoCompletion<T>(entityClass, filter));
     });
     return this;
   }
