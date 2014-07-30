@@ -29,6 +29,8 @@ public class CreateTask implements Initializable {
   @FXML
   TaskOutcome expectedOutcomeController;
   @FXML
+  EffortInfo effortInfoController;
+  @FXML
   FileViewController fileViewController;
 
   @Inject
@@ -43,5 +45,6 @@ public class CreateTask implements Initializable {
   public void initialize(URL location, ResourceBundle resources) {
     expectedOutcomeController.setSaveRunnable(this::save);
     mainInfoController.setSaveRunnable(this::save);
+    effortInfoController.setSaveRunnable(this::save);
   }
 }

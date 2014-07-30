@@ -41,7 +41,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
@@ -79,13 +78,6 @@ public class MainTaskInfo implements Initializable, DatasourceCallback<Task> {
   protected FlowPane tagPane;
   @FXML
   protected Button saveButton;
-  @FXML
-  protected Slider funFactor;
-  @FXML
-  protected Slider mentalEffort;
-  @FXML
-  protected Slider physicalEffort;
-
   @Inject
   ValidationRegistry validationRegistry;
   @Inject
@@ -128,10 +120,6 @@ public class MainTaskInfo implements Initializable, DatasourceCallback<Task> {
 
     tagAddController.setOnAction(e -> addTag(tagAddController.getInput().getText()));
     saveButton.disableProperty().bind(validationRegistry.invalidProperty());
-
-    physicalEffort.valueProperty().bindBidirectional(store.getBinding().getIntegerProperty(Task.class, (t) -> t.getPhysicalEffort().getAmount()));
-    mentalEffort.valueProperty().bindBidirectional(store.getBinding().getIntegerProperty(Task.class, (t) -> t.getMentalEffort().getAmount()));
-    funFactor.valueProperty().bindBidirectional(store.getBinding().getIntegerProperty(Task.class, (t) -> t.getFunFactor().getAmount()));
   }
 
   private Callback<AutoCompletionBinding.ISuggestionRequest, Collection<String>> getEstimatedTimeAutoCompletion() {
@@ -243,18 +231,6 @@ public class MainTaskInfo implements Initializable, DatasourceCallback<Task> {
 
   public Button getSaveButton() {
     return saveButton;
-  }
-
-  public Slider getFunFactor() {
-    return funFactor;
-  }
-
-  public Slider getMentalEffort() {
-    return mentalEffort;
-  }
-
-  public Slider getPhysicalEffort() {
-    return physicalEffort;
   }
 
   public NamedPersistentObjectSelection<Tag> getTagAddController() {

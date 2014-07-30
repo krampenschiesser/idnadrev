@@ -43,6 +43,7 @@ public class CreateTaskTest {
   private MainTaskInfo controller;
   private CreateTask createTask;
   private AsciiDocEditor expectedOutcomeEditor;
+  private EffortInfo effortInfo;
 
   @Before
   public void setUp() throws Exception {
@@ -53,6 +54,7 @@ public class CreateTaskTest {
     activityController.waitForDataSource();
     createTask = activityController.<CreateTask>getCurrentController();
     controller = createTask.mainInfoController;
+    effortInfo = activityController.getControllerInstance(EffortInfo.class);
     expectedOutcomeEditor = createTask.expectedOutcomeController.expectedOutcome;
   }
 
@@ -88,9 +90,9 @@ public class CreateTaskTest {
       controller.description.setText("description");
       controller.contextController.getInput().setText("context");
       controller.estimatedTimeDuration.setText("15min");
-      controller.funFactor.valueProperty().set(3);
-      controller.mentalEffort.valueProperty().set(5);
-      controller.physicalEffort.valueProperty().set(3);
+      effortInfo.funFactor.valueProperty().set(3);
+      effortInfo.mentalEffort.valueProperty().set(5);
+      effortInfo.physicalEffort.valueProperty().set(3);
       expectedOutcomeEditor.setText("outcome123");
     });
     activityController.waitForTasks();
