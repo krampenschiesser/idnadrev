@@ -14,15 +14,10 @@
  */
 package de.ks.idnadrev.task.work;
 
-import com.google.common.eventbus.Subscribe;
-import de.ks.activity.ActivityController;
-import de.ks.activity.ActivityLoadFinishedEvent;
+import de.ks.BaseController;
 import de.ks.activity.ModelBound;
-import de.ks.activity.context.ActivityStore;
 import de.ks.activity.initialization.LoadInFXThread;
 import de.ks.activity.link.NavigationHint;
-import de.ks.eventsystem.bus.HandlingThread;
-import de.ks.eventsystem.bus.Threading;
 import de.ks.executor.SuspendablePooledExecutorService;
 import de.ks.i18n.Localized;
 import de.ks.idnadrev.entity.Task;
@@ -34,7 +29,6 @@ import de.ks.text.AsciiDocParser;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.StackPane;
@@ -50,7 +44,7 @@ import java.util.concurrent.TimeUnit;
 
 @ModelBound(Task.class)
 @LoadInFXThread
-public class WorkOnTask implements Initializable {
+public class WorkOnTask extends BaseController<Task> {
   private static final Logger log = LoggerFactory.getLogger(WorkOnTask.class);
   public static final String OVERTIME_STYLE_CLASS = "negativeFunFactor";
   @FXML
@@ -65,10 +59,6 @@ public class WorkOnTask implements Initializable {
   protected StackPane descriptionView;
   protected AsciiDocEditor description;
 
-  @Inject
-  protected ActivityController controller;
-  @Inject
-  protected ActivityStore store;
   @Inject
   protected AsciiDocParser parser;
   private ScheduledFuture<?> progressFuture;
@@ -106,10 +96,8 @@ public class WorkOnTask implements Initializable {
     controller.start(FinishTaskActivity.class, hint);
   }
 
-  @Subscribe
-  @Threading(HandlingThread.JavaFX)
-  public void afterLoad(ActivityLoadFinishedEvent event) {
-    Task task = event.getModel();
+  @Override
+  protected void onRefresh(Task task) {
     String descriptionContent = task.getDescription();
     description.setText(descriptionContent);
 

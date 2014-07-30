@@ -14,9 +14,7 @@
  */
 package de.ks.idnadrev.task.finish;
 
-import de.ks.activity.ActivityController;
-import de.ks.activity.initialization.ActivityInitialization;
-import de.ks.activity.initialization.DatasourceCallback;
+import de.ks.BaseController;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.task.view.ViewTasksActvity;
 import de.ks.text.AsciiDocEditor;
@@ -24,17 +22,15 @@ import de.ks.text.view.AsciiDocContent;
 import de.ks.text.view.AsciiDocViewer;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 
-public class FinishTask implements Initializable, DatasourceCallback<Task> {
+public class FinishTask extends BaseController<Task> {
   private static final Logger log = LoggerFactory.getLogger(FinishTask.class);
   @FXML
   private StackPane expectedOutcomeContainer;
@@ -43,11 +39,6 @@ public class FinishTask implements Initializable, DatasourceCallback<Task> {
 
   protected AsciiDocEditor finalOutcome;
   protected AsciiDocViewer expectedOutcome;
-
-  @Inject
-  ActivityInitialization activityInitialization;
-  @Inject
-  ActivityController controller;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {

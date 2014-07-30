@@ -14,15 +14,9 @@
  */
 package de.ks.idnadrev.task.create;
 
-import com.google.common.eventbus.Subscribe;
-import de.ks.activity.ActivityController;
-import de.ks.activity.ActivityLoadFinishedEvent;
+import de.ks.BaseController;
 import de.ks.activity.ModelBound;
-import de.ks.activity.context.ActivityStore;
-import de.ks.activity.initialization.DatasourceCallback;
 import de.ks.application.fxml.DefaultLoader;
-import de.ks.eventsystem.bus.HandlingThread;
-import de.ks.eventsystem.bus.Threading;
 import de.ks.idnadrev.entity.Context;
 import de.ks.idnadrev.entity.Tag;
 import de.ks.idnadrev.entity.Task;
@@ -32,13 +26,11 @@ import de.ks.persistence.PersistentWork;
 import de.ks.persistence.entity.NamedPersistentObject;
 import de.ks.reflection.PropertyPath;
 import de.ks.text.AsciiDocEditor;
-import de.ks.validation.ValidationRegistry;
 import de.ks.validation.validators.DurationValidator;
 import de.ks.validation.validators.NamedEntityMustNotExistValidator;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
@@ -49,7 +41,6 @@ import javafx.util.Callback;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
 
-import javax.inject.Inject;
 import java.net.URL;
 import java.time.Duration;
 import java.util.*;
@@ -57,7 +48,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 @ModelBound(Task.class)
-public class MainTaskInfo implements Initializable, DatasourceCallback<Task> {
+public class MainTaskInfo extends BaseController<Task> {
   @FXML
   protected NamedPersistentObjectSelection<Task> parentProjectController;
   @FXML
@@ -78,12 +69,7 @@ public class MainTaskInfo implements Initializable, DatasourceCallback<Task> {
   protected FlowPane tagPane;
   @FXML
   protected Button saveButton;
-  @Inject
-  ValidationRegistry validationRegistry;
-  @Inject
-  ActivityController controller;
-  @Inject
-  ActivityStore store;
+
   private DurationValidator durationValidator;
   private Runnable saveRunnable;
 
@@ -149,12 +135,9 @@ public class MainTaskInfo implements Initializable, DatasourceCallback<Task> {
     }, controller.getJavaFXExecutor());
   }
 
-  @Subscribe
-  @Threading(HandlingThread.JavaFX)
-  public void onRefresh(ActivityLoadFinishedEvent event) {
+  @Override
+  protected void onRefresh(Task model) {
     this.name.requestFocus();
-
-    Task model = event.getModel();
 
     Duration estimatedTime = model.getEstimatedTime();
 

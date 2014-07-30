@@ -15,24 +15,17 @@
 
 package de.ks.idnadrev.thought.add;
 
-import com.google.common.eventbus.Subscribe;
-import de.ks.activity.ActivityController;
-import de.ks.activity.ActivityLoadFinishedEvent;
+import de.ks.BaseController;
 import de.ks.activity.ModelBound;
-import de.ks.activity.context.ActivityStore;
-import de.ks.eventsystem.bus.HandlingThread;
-import de.ks.eventsystem.bus.Threading;
 import de.ks.file.FileViewController;
 import de.ks.idnadrev.entity.Thought;
 import de.ks.text.AsciiDocEditor;
-import de.ks.validation.ValidationRegistry;
 import de.ks.validation.validators.NamedEntityMustNotExistValidator;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.input.Clipboard;
@@ -44,7 +37,6 @@ import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -53,7 +45,7 @@ import java.util.ResourceBundle;
  *
  */
 @ModelBound(Thought.class)
-public class AddThought implements Initializable {
+public class AddThought extends BaseController<Thought> {
   private static final Logger log = LoggerFactory.getLogger(AddThought.class);
 
   @FXML
@@ -69,12 +61,6 @@ public class AddThought implements Initializable {
   protected FileViewController fileViewController;
   @FXML
   protected GridPane fileView;
-  @Inject
-  ValidationRegistry validationRegistry;
-  @Inject
-  ActivityController controller;
-  @Inject
-  ActivityStore store;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -167,9 +153,8 @@ public class AddThought implements Initializable {
     controller.reload();
   }
 
-  @Subscribe
-  @Threading(HandlingThread.JavaFX)
-  public void onRefresh(ActivityLoadFinishedEvent event) {
+  @Override
+  protected void onRefresh(Thought model) {
     this.name.requestFocus();
     this.description.setText("");
   }

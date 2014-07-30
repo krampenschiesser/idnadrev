@@ -14,16 +14,10 @@
  */
 package de.ks.idnadrev.task.view;
 
-import com.google.common.eventbus.Subscribe;
-import de.ks.activity.ActivityController;
-import de.ks.activity.ActivityLoadFinishedEvent;
-import de.ks.activity.context.ActivityStore;
-import de.ks.activity.initialization.ActivityInitialization;
+import de.ks.BaseController;
 import de.ks.activity.initialization.LoadInFXThread;
 import de.ks.activity.link.NavigationHint;
 import de.ks.datasource.DataSource;
-import de.ks.eventsystem.bus.HandlingThread;
-import de.ks.eventsystem.bus.Threading;
 import de.ks.file.FileStore;
 import de.ks.i18n.Localized;
 import de.ks.idnadrev.entity.Task;
@@ -40,7 +34,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.geometry.NodeOrientation;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
@@ -63,7 +56,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @LoadInFXThread
-public class ViewTasks implements Initializable {
+public class ViewTasks extends BaseController<List<Task>> {
   private static final Logger log = LoggerFactory.getLogger(ViewTasks.class);
   public static final String NEGATIVE_FUN_FACTOR = "negativeFunFactor";
   public static final String RECOVERING_EFFORT = "recoveringEffortFactor";
@@ -105,12 +98,6 @@ public class ViewTasks implements Initializable {
   protected Button delete;
 
   @Inject
-  ActivityStore store;
-  @Inject
-  ActivityController controller;
-  @Inject
-  ActivityInitialization initialization;
-  @Inject
   FileStore fileStore;
 
   protected ObservableList<Task> tasks = FXCollections.observableArrayList();
@@ -122,7 +109,7 @@ public class ViewTasks implements Initializable {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    initialization.loadAdditionalController(AsciiDocViewer.class).thenAcceptAsync(l -> {
+    activityInitialization.loadAdditionalController(AsciiDocViewer.class).thenAcceptAsync(l -> {
       asciiDocViewer = l.getController();
       asciiDocViewer.addPreProcessor(fileStore::replaceFileStoreDir);
       tasksView.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
@@ -272,15 +259,13 @@ public class ViewTasks implements Initializable {
     controller.reload();
   }
 
-  @Subscribe
-  @Threading(HandlingThread.JavaFX)
-  public void afterLoad(ActivityLoadFinishedEvent event) {
+  @Override
+  protected void onRefresh(List<Task> loaded) {
     DataSource noncast = store.getDatasource();
     @SuppressWarnings("unchecked") //
             ViewTasksDS datasource = (ViewTasksDS) noncast;
     Task taskToSelect = datasource.getTaskToSelect();
 
-    List<Task> loaded = event.getModel();
     tasks.clear();
     tasks.addAll(loaded);
     TreeItem<Task> root = buildTreeStructure(loaded);

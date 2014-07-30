@@ -14,11 +14,8 @@
  */
 package de.ks.idnadrev.thought.view;
 
-import com.google.common.eventbus.Subscribe;
-import de.ks.activity.ActivityController;
-import de.ks.activity.ActivityLoadFinishedEvent;
+import de.ks.BaseController;
 import de.ks.activity.ListBound;
-import de.ks.activity.initialization.ActivityInitialization;
 import de.ks.activity.link.NavigationHint;
 import de.ks.file.FileStore;
 import de.ks.idnadrev.entity.Thought;
@@ -29,7 +26,6 @@ import de.ks.text.view.AsciiDocViewer;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.DoubleBinding;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -44,12 +40,8 @@ import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 @ListBound(Thought.class)
-public class ViewThoughts implements Initializable {
+public class ViewThoughts extends BaseController<List<Thought>> {
   private static final Logger log = LoggerFactory.getLogger(ViewThoughts.class);
-  @Inject
-  ActivityController controller;
-  @Inject
-  ActivityInitialization initialization;
   @Inject
   FileStore fileStore;
 
@@ -72,7 +64,7 @@ public class ViewThoughts implements Initializable {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    initialization.loadAdditionalController(AsciiDocViewer.class).thenAcceptAsync(l -> {
+    activityInitialization.loadAdditionalController(AsciiDocViewer.class).thenAcceptAsync(l -> {
       asciiDocViewer = l.getController();
       asciiDocViewer.addPreProcessor(fileStore::replaceFileStoreDir);
       _this.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
@@ -170,9 +162,8 @@ public class ViewThoughts implements Initializable {
     controller.reload();
   }
 
-  @Subscribe
-  public void afterRefresh(ActivityLoadFinishedEvent e) {
-    List<Thought> thoughts = e.getModel();
+  @Override
+  protected void onRefresh(List<Thought> thoughts) {
     List<AsciiDocContent> asciiDocContents = thoughts.stream().map(t -> new AsciiDocContent(t.getName(), t.getDescription())).collect(Collectors.toList());
     this.asciiDocViewer.preload(asciiDocContents);
     _this.requestFocus();

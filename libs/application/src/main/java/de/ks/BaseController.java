@@ -18,6 +18,7 @@ import com.google.common.eventbus.Subscribe;
 import de.ks.activity.ActivityController;
 import de.ks.activity.ActivityLoadFinishedEvent;
 import de.ks.activity.context.ActivityStore;
+import de.ks.activity.initialization.ActivityInitialization;
 import de.ks.activity.initialization.DatasourceCallback;
 import de.ks.eventsystem.bus.HandlingThread;
 import de.ks.eventsystem.bus.Threading;
@@ -35,6 +36,8 @@ public abstract class BaseController<T> implements Initializable, DatasourceCall
   protected ActivityStore store;
   @Inject
   protected ValidationRegistry validationRegistry;
+  @Inject
+  protected ActivityInitialization activityInitialization;
 
   @Subscribe
   @Threading(HandlingThread.JavaFX)
@@ -46,10 +49,16 @@ public abstract class BaseController<T> implements Initializable, DatasourceCall
   public abstract void initialize(URL location, ResourceBundle resources);
 
   @Override
-  public abstract void duringLoad(T model);
+  public void duringLoad(T model) {
+    //
+  }
 
   @Override
-  public abstract void duringSave(T model);
+  public void duringSave(T model) {
+    //
+  }
 
-  protected abstract void onRefresh(T model);
+  protected void onRefresh(T model) {
+    //
+  }
 }

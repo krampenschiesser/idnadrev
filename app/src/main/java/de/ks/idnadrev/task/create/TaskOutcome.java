@@ -14,33 +14,21 @@
  */
 package de.ks.idnadrev.task.create;
 
-import de.ks.activity.ActivityController;
-import de.ks.activity.initialization.ActivityInitialization;
-import de.ks.activity.initialization.DatasourceCallback;
+import de.ks.BaseController;
 import de.ks.idnadrev.entity.Task;
 import de.ks.text.AsciiDocEditor;
-import de.ks.validation.ValidationRegistry;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 
-import javax.inject.Inject;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class TaskOutcome implements Initializable, DatasourceCallback<Task> {
+public class TaskOutcome extends BaseController<Task> {
   @FXML
   protected StackPane expectedOutcomeContainer;
   @FXML
   private Button saveButton;
-
-  @Inject
-  protected ActivityInitialization activityInitialization;
-  @Inject
-  protected ActivityController controller;
-  @Inject
-  protected ValidationRegistry validationRegistry;
 
   protected AsciiDocEditor expectedOutcome;
   protected Runnable saveRunnable;
