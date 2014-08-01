@@ -16,3 +16,4 @@ out/
 data/mathjax
 data/*.css
 files/**
+version.info
