@@ -22,6 +22,8 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 public class JPAService extends Service {
@@ -30,12 +32,17 @@ public class JPAService extends Service {
   public static String PERSISTENCE_UNIT_NAME = "persistence";
 
   protected EntityManagerFactory factory;
+  protected final Map<String, String> properties = new HashMap<>();
+
+  public void addProperty(String key, String value) {
+    properties.put(key, value);
+  }
 
   @Override
   protected void doStart() {
     readPersistenceUnitFromProperties();
     if (factory == null) {
-      factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+      factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
     }
   }
 
