@@ -112,7 +112,6 @@ public class LastExecutionGroup<T> implements Runnable {
           lastEvent = poll;
         }
       } catch (InterruptedException e) {
-        log.error("Got interrupted while polling on queue", e);
         if (lastEvent != null) {
           return lastEvent.getDelegate().get();
         } else {
