@@ -122,6 +122,6 @@ public class IdnadrevWindow extends MainWindow {
 
   @Override
   public String getApplicationTitle() {
-    return "Idnadrev Version 0.3";
+    return "Idnadrev Version " + Application.versioning.getVersionInfo().getVersionString();
   }
 }

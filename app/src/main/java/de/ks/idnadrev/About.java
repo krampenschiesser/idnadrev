@@ -34,6 +34,8 @@ public class About implements NodeProvider<StackPane> {
   public StackPane getNode() {
     String javaVersion = System.getProperty("java.version");
     StackPane view = new DefaultLoader<StackPane, Object>(getClass().getResource("about.fxml")).getView();
+    Label versionLabel = (Label) view.lookup("#idnadrevVersion");
+    versionLabel.setText(Application.versioning.getVersionInfo().getVersionString());
     Label lookup = (Label) view.lookup("#javaVersion");
     lookup.setText(javaVersion);
     return view;

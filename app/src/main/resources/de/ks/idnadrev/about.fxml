@@ -30,7 +30,7 @@
                 <Label text="%about.developer" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
                 <Label text="Christian Löhnert" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
                 <Label text="%about.version" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                <Label text="0.3" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                <Label fx:id="idnadrevVersion" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
                 <Label text="Idnadrev" GridPane.columnIndex="0" GridPane.rowIndex="0">
                     <font>
                         <Font name="System Bold" size="13.0"/>

@@ -17,9 +17,11 @@ package de.ks.idnadrev;
 
 import de.ks.launch.JavaFXService;
 import de.ks.launch.Launcher;
+import de.ks.version.Versioning;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -27,8 +29,13 @@ import java.util.concurrent.ExecutionException;
  */
 public class Application {
   private static final Logger log = LoggerFactory.getLogger(Application.class);
+  public static final Versioning versioning = new Versioning(getVersionFile(), Application.class);
+  ;
 
   public static void main(String[] args) throws ExecutionException, InterruptedException {
+    log.info("Starting {}, currentVersion={}, lastVersion = ", versioning.getVersionInfo().getDescription(), versioning.getCurrentVersion(), versioning.getLastVersion());
+    versioning.upgradeToCurrentVersion();
+
     Launcher launcher = Launcher.instance;
     launcher.startAll(args);
     launcher.awaitStart();
@@ -36,5 +43,18 @@ public class Application {
     launcher.stopAll();
     launcher.awaitStop();
     log.info("Finishing main");
+  }
+
+  protected static File getVersionFile() {
+    String classFilePath = Application.class.getProtectionDomain().getCodeSource().getLocation().getFile();
+    File file = new File(classFilePath);
+    return new File(discoverParentDir(file), "version.info");
+  }
+
+  private static File discoverParentDir(File file) {
+    File parent = null;
+    for (parent = file; !parent.isDirectory() || parent.getPath().contains("build"); parent = parent.getParentFile()) {
+    }
+    return parent;
   }
 }
