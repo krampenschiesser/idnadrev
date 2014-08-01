@@ -46,7 +46,7 @@ public class TaskOutcome extends BaseController<Task> {
 
   @Override
   public void duringLoad(Task model) {
-    expectedOutcome.setText(model.getOutcome().getExpectedOutcome());
+    controller.getJavaFXExecutor().submit(() -> expectedOutcome.setText(model.getOutcome().getExpectedOutcome()));
   }
 
   @Override
