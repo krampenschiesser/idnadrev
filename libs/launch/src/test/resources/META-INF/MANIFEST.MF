@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Implementation-Title: testing
+Implementation-Version: 0.2.3-SNAPSHOT
+Implementation-Vendor: krampenschiesser

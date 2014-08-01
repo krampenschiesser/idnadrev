@@ -15,18 +15,10 @@
 package de.ks.launch;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import de.ks.reflection.ReflectionUtil;
-import org.reflections.Reflections;
-import org.reflections.scanners.SubTypesScanner;
-import org.reflections.util.ClasspathHelper;
-import org.reflections.util.ConfigurationBuilder;
-import org.reflections.util.FilterBuilder;
+import de.ks.SubclassInstantiator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
@@ -45,73 +37,19 @@ public class Launcher {
   private final List<Service> services = new ArrayList<>();
   private final ExecutorService executorService = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(true).setNameFormat("launcher-%d").build());
   private final List<Throwable> startupExceptions = Collections.synchronizedList(new ArrayList<>());
-  private final boolean excludeTestResources;
+  private final SubclassInstantiator instantiator;
 
   private volatile CountDownLatch latch;
 
   protected Launcher(boolean excludeTestResources) {
-    this.excludeTestResources = excludeTestResources;
+    instantiator = new SubclassInstantiator(executorService, getClass().getPackage(), SERVICE_PROPERTIES_FILENAME, SERVICE_PACKAGES, PACKAGE_SEPARATOR);
+    instantiator.setExcludeTestResources(excludeTestResources);
   }
 
   public List<Service> discoverServices() {
-    ConfigurationBuilder builder = new ConfigurationBuilder();
-    builder.setExecutorService(executorService);
-
-    FilterBuilder filterBuilder = new FilterBuilder();
-
-    try (InputStream stream = getClass().getResourceAsStream(SERVICE_PROPERTIES_FILENAME)) {
-      addPackagesFromPropertyFile(builder, filterBuilder, stream);
-    } catch (IOException | NullPointerException e) {
-      addDefaultPackage(builder);
-    }
-    builder.filterInputsBy(filterBuilder);
-
-    Reflections reflections = builder.addScanners(new SubTypesScanner()).build();
-
-    ArrayList<Service> services = instantiateServices(reflections);
-    log.debug("Found {} services: {}", services.size(), services);
-
+    List<Service> services = instantiator.instantiateSubclasses(Service.class);
     services.sort((o1, o2) -> Integer.compare(o1.getPriority(), o2.getPriority()));
     return services;
-  }
-
-  private ArrayList<Service> instantiateServices(Reflections reflections) {
-    ArrayList<Service> services = new ArrayList<>();
-    reflections.getSubTypesOf(Service.class).stream()//
-            .filter((clazz) -> !Modifier.isAbstract(clazz.getModifiers())).//
-            forEach((clazz) -> {
-      Service service = ReflectionUtil.newInstance(clazz);
-      services.add(service);
-    });
-    return services;
-  }
-
-  private void addDefaultPackage(ConfigurationBuilder builder) {
-    String defaultPackage = getClass().getPackage().getName();
-    log.warn(SERVICE_PROPERTIES_FILENAME + " file not found. Will only use package '{}'", defaultPackage);
-    builder.addUrls(ClasspathHelper.forPackage(defaultPackage));
-  }
-
-  private void addPackagesFromPropertyFile(ConfigurationBuilder builder, FilterBuilder filterBuilder, InputStream stream) throws IOException {
-    log.debug("Reading properties {}", getClass().getResource(SERVICE_PROPERTIES_FILENAME));
-    Properties properties = new Properties();
-    properties.load(stream);
-    String property = properties.getProperty(SERVICE_PACKAGES);
-    Arrays.asList(property.split(PACKAGE_SEPARATOR))//
-            .forEach((pkg) -> {
-              log.info("Scanning package {} for services.", pkg);
-              filterBuilder.includePackage(pkg);
-              ClasspathHelper.forPackage(pkg).stream().filter((url) -> {
-                if (excludeTestResources) {
-                  return !url.toString().contains("classes/test");
-                } else {
-                  return true;
-                }
-              }).forEach((url) -> {
-                log.debug("Adding url {}", url);
-                builder.addUrls(url);
-              });
-            });
   }
 
   public List<Service> getServices() {
