@@ -20,6 +20,7 @@ import de.ks.activity.context.ActivityStore;
 import de.ks.idnadrev.entity.*;
 import de.ks.persistence.PersistentWork;
 import de.ks.persistence.entity.Sequence;
+import de.ks.scheduler.Schedule;
 import de.ks.text.AsciiDocEditor;
 import de.ks.util.FXPlatform;
 import org.junit.After;
@@ -29,6 +30,8 @@ import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -44,10 +47,11 @@ public class CreateTaskTest {
   private CreateTask createTask;
   private AsciiDocEditor expectedOutcomeEditor;
   private EffortInfo effortInfo;
+  private TaskSchedule taskSchedule;
 
   @Before
   public void setUp() throws Exception {
-    PersistentWork.deleteAllOf(FileReference.class, Sequence.class, WorkUnit.class, Task.class, Context.class, Tag.class, Thought.class);
+    PersistentWork.deleteAllOf(FileReference.class, Sequence.class, WorkUnit.class, Task.class, Schedule.class, Context.class, Tag.class, Thought.class);
     PersistentWork.persist(new Context("context"));
 
     activityController.start(CreateTaskActivity.class);
@@ -55,6 +59,7 @@ public class CreateTaskTest {
     createTask = activityController.<CreateTask>getCurrentController();
     controller = createTask.mainInfoController;
     effortInfo = activityController.getControllerInstance(EffortInfo.class);
+    taskSchedule = activityController.getControllerInstance(TaskSchedule.class);
     expectedOutcomeEditor = createTask.expectedOutcomeController.expectedOutcome;
   }
 
@@ -93,6 +98,8 @@ public class CreateTaskTest {
       effortInfo.funFactor.valueProperty().set(3);
       effortInfo.mentalEffort.valueProperty().set(5);
       effortInfo.physicalEffort.valueProperty().set(3);
+      taskSchedule.dueDate.setValue(LocalDate.now());
+      taskSchedule.dueTime.setText("11:35");
       expectedOutcomeEditor.setText("outcome123");
     });
     activityController.waitForTasks();
@@ -104,6 +111,9 @@ public class CreateTaskTest {
 
     List<Task> tasks = PersistentWork.from(Task.class, (t) -> {
       t.getContext().getName();
+      if (t.getSchedule() != null) {
+        t.getSchedule().getScheduledDate();
+      }
     });
     assertEquals(1, tasks.size());
     Task task = tasks.get(0);
@@ -115,6 +125,9 @@ public class CreateTaskTest {
     assertEquals(3, task.getFunFactor().getAmount());
     assertEquals(5, task.getMentalEffort().getAmount());
     assertEquals("outcome123", task.getOutcome().getExpectedOutcome());
+    assertNotNull(task.getSchedule());
+    assertEquals(LocalTime.of(11, 35), task.getSchedule().getScheduledTime());
+    assertEquals(LocalDate.now(), task.getSchedule().getScheduledDate());
 
     Duration estimatedTime = task.getEstimatedTime();
     assertNotNull(estimatedTime);

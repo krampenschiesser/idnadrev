@@ -32,6 +32,8 @@ public class CreateTask implements Initializable {
   EffortInfo effortInfoController;
   @FXML
   FileViewController fileViewController;
+  @FXML
+  TaskSchedule scheduleController;
 
   @Inject
   protected ActivityController controller;

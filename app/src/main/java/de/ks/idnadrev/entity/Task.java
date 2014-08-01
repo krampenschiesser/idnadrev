@@ -69,7 +69,7 @@ public class Task extends NamedPersistentObject<Task> implements FileContainer<T
   @Convert(converter = LocalTimeConverter.class)
   protected LocalTime dueTime;//if null, only date relevant
 
-  @ManyToOne(targetEntity = Task.class)
+  @ManyToOne(cascade = CascadeType.ALL)
   protected Schedule schedule;
 
   @OneToMany(cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH}, orphanRemoval = false, mappedBy = "task")
@@ -325,6 +325,14 @@ public class Task extends NamedPersistentObject<Task> implements FileContainer<T
       took = totalTime;
     }
     return took;
+  }
+
+  public Schedule getSchedule() {
+    return schedule;
+  }
+
+  public void setSchedule(Schedule schedule) {
+    this.schedule = schedule;
   }
 
   @Override

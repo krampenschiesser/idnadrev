@@ -23,7 +23,7 @@
     <tabs>
         <Tab text="%task.create.main.info">
             <content>
-                <StackPane prefHeight="150.0" prefWidth="200.0">
+                <StackPane>
                     <children>
                         <fx:include fx:id="mainInfo" source="MainTaskInfo.fxml"/>
                     </children>
@@ -32,7 +32,7 @@
         </Tab>
         <Tab text="%task.create.effort">
             <content>
-                <StackPane prefHeight="150.0" prefWidth="200.0">
+                <StackPane>
                     <children>
                         <fx:include fx:id="effortInfo" source="EffortInfo.fxml"/>
                     </children>
@@ -41,7 +41,7 @@
         </Tab>
         <Tab text="%task.create.files">
             <content>
-                <StackPane prefHeight="150.0" prefWidth="200.0">
+                <StackPane>
                     <children>
                         <fx:include fx:id="fileView" source="../../../file/FileView.fxml"/>
                     </children>
@@ -50,7 +50,11 @@
         </Tab>
         <Tab text="%task.create.schedule.info">
             <content>
-                <StackPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"/>
+                <StackPane>
+                    <children>
+                        <fx:include fx:id="schedule" source="TaskSchedule.fxml"/>
+                    </children>
+                </StackPane>
             </content>
         </Tab>
         <Tab text="%task.outcome.expected">

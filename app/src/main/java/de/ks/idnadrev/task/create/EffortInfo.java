@@ -33,7 +33,6 @@ public class EffortInfo extends BaseController<Task> {
   protected Slider physicalEffort;
   @FXML
   Button saveButton;
-
   private Runnable saveRunnable;
 
   @Override

@@ -20,10 +20,7 @@ import de.ks.persistence.converter.LocalTimeConverter;
 import de.ks.persistence.entity.AbstractPersistentObject;
 
 import javax.persistence.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Period;
+import java.time.*;
 import java.time.temporal.ChronoUnit;
 
 /**
@@ -42,7 +39,14 @@ public class Schedule extends AbstractPersistentObject<Schedule> {
   @Convert(converter = LocalTimeConverter.class)
   protected LocalTime scheduledTime;//if null, only date relevant
 
-  @Enumerated(value = EnumType.STRING)
+  @Enumerated(EnumType.STRING)
+  protected DayOfWeek proposedWeekDay;//should be done on this week day if possible
+  /**
+   * should be done in this week @see WeekFields#weekOfWeekBasedYear()
+   */
+  protected int proposedWeek;
+
+  @Enumerated(EnumType.STRING)
   protected RepetitionType repetition = null;
 
   public Schedule() {
@@ -125,6 +129,24 @@ public class Schedule extends AbstractPersistentObject<Schedule> {
 
   public Schedule setRepetition(RepetitionType repetition) {
     this.repetition = repetition;
+    return this;
+  }
+
+  public DayOfWeek getProposedWeekDay() {
+    return proposedWeekDay;
+  }
+
+  public Schedule setProposedWeekDay(DayOfWeek proposedWeekDay) {
+    this.proposedWeekDay = proposedWeekDay;
+    return this;
+  }
+
+  public int getProposedWeek() {
+    return proposedWeek;
+  }
+
+  public Schedule setProposedWeek(int proposedWeek) {
+    this.proposedWeek = proposedWeek;
     return this;
   }
 }

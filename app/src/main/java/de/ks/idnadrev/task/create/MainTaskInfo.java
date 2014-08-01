@@ -62,7 +62,6 @@ public class MainTaskInfo extends BaseController<Task> {
   protected CheckBox project;
   @FXML
   protected StackPane descriptionContainer;
-  protected AsciiDocEditor description;
   @FXML
   protected TextField estimatedTimeDuration;
   @FXML
@@ -70,8 +69,9 @@ public class MainTaskInfo extends BaseController<Task> {
   @FXML
   protected Button saveButton;
 
-  private DurationValidator durationValidator;
-  private Runnable saveRunnable;
+  protected AsciiDocEditor description;
+  protected DurationValidator durationValidator;
+  protected Runnable saveRunnable;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {

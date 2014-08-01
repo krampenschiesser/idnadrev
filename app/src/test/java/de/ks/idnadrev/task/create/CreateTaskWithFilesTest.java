@@ -23,6 +23,7 @@ import de.ks.file.FileViewController;
 import de.ks.idnadrev.entity.*;
 import de.ks.persistence.PersistentWork;
 import de.ks.persistence.entity.Sequence;
+import de.ks.scheduler.Schedule;
 import de.ks.text.AsciiDocEditor;
 import de.ks.util.FXPlatform;
 import org.junit.After;
@@ -53,7 +54,7 @@ public class CreateTaskWithFilesTest {
 
   @Before
   public void setUp() throws Exception {
-    PersistentWork.deleteAllOf(FileReference.class, Sequence.class, WorkUnit.class, Task.class, Context.class, Tag.class, Thought.class);
+    PersistentWork.deleteAllOf(FileReference.class, Sequence.class, WorkUnit.class, Task.class, Schedule.class, Context.class, Tag.class, Thought.class);
     PersistentWork.persist(new Context("context"));
 
     activityController.start(CreateTaskActivity.class);
