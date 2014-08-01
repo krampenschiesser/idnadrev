@@ -46,6 +46,12 @@ allprojects {
         }
     }
 
+    jar {
+        manifest {
+            attributes("Implementation-Version": "$version")
+        }
+    }
+
     dependencies {
         compile "org.slf4j:slf4j-api:$slf4j"
         compile("org.slf4j:slf4j-ext:$slf4j") {
@@ -78,6 +84,8 @@ allprojects {
         file('data/asciidoctor.css').delete();
         file('data/asciidoctor-coderay.css').delete();
         file('files').deleteDir();
+        file('db').deleteDir();
+        file('version.info').delete();
     }
 
     task cleanlog {

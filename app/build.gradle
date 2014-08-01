@@ -32,6 +32,13 @@ dependencies {
     testCompile "org.testfx:testfx-core:$testfx"
 }
 
+jar {
+    manifest {
+        attributes("Implementation-Title": "Idnadrev")
+        attributes("Implementation-Version": "$version")
+        attributes("Implementation-Vendor": "krampenschiesser")
+    }
+}
 
 applicationDistribution.from("../data") {
     into 'data'
