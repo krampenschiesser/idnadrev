@@ -15,6 +15,7 @@
 package de.ks;
 
 import de.ks.launch.Launcher;
+import de.ks.version.Versioning;
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunListener;
 import org.junit.runner.notification.RunNotifier;
@@ -25,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.CDI;
+import java.io.File;
 
 public class LauncherRunner extends BlockJUnit4ClassRunner {
   private static final Logger log = LoggerFactory.getLogger(LauncherRunner.class);
@@ -35,6 +37,10 @@ public class LauncherRunner extends BlockJUnit4ClassRunner {
 
   @Override
   public void run(RunNotifier notifier) {
+    File versionFile = new File(System.getProperty("user.dir"), "version.info");
+    Versioning versioning = new Versioning(versionFile, LauncherRunner.class);
+    versioning.upgradeToCurrentVersion();
+
     Launcher launcher = Launcher.instance;
     if (!launcher.isStarted()) {
       launcher.startAll();
