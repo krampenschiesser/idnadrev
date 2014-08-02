@@ -70,6 +70,8 @@ public class ViewTasks extends BaseController<List<Task>> {
   @FXML
   protected TreeTableColumn<Task, String> taskViewNameColumn;
   @FXML
+  protected TreeTableColumn<Task, String> taskViewEstimatedTimeColumn;
+  @FXML
   protected TreeTableColumn<Task, String> taskViewCreationTimeColumn;
   @FXML
   protected Label name;
@@ -143,6 +145,7 @@ public class ViewTasks extends BaseController<List<Task>> {
     ReadOnlyObjectProperty<TreeItem<Task>> selectedItemProperty = tasksView.getSelectionModel().selectedItemProperty();
     selectedItemProperty.addListener((p, o, n) -> applyTask(n));
     taskViewNameColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getValue().getName()));
+    taskViewEstimatedTimeColumn.setCellValueFactory(param -> new SimpleStringProperty(parseDuration(param.getValue().getValue().getEstimatedTime())));
     taskViewCreationTimeColumn.setCellValueFactory(param -> {
       TreeItem<Task> treeItem = param.getValue();
       Task task = treeItem.getValue();

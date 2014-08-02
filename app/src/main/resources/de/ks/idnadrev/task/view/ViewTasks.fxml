@@ -38,7 +38,9 @@
                                GridPane.rowIndex="1">
                     <columns>
                         <TreeTableColumn fx:id="taskViewNameColumn" prefWidth="271.0" text="%task.name"/>
-                        <TreeTableColumn fx:id="taskViewCreationTimeColumn" minWidth="0.0" prefWidth="181.0"
+                        <TreeTableColumn fx:id="taskViewEstimatedTimeColumn" minWidth="0.0" prefWidth="60.0"
+                                         text="%time"/>
+                        <TreeTableColumn fx:id="taskViewCreationTimeColumn" minWidth="0.0" prefWidth="140.0"
                                          text="%task.creationTime"/>
                     </columns>
                 </TreeTableView>
