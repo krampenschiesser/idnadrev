@@ -17,6 +17,7 @@ package de.ks.idnadrev.task.view;
 import de.ks.datasource.ListDataSource;
 import de.ks.idnadrev.entity.Task;
 import de.ks.persistence.PersistentWork;
+import de.ks.persistence.QueryConsumer;
 import de.ks.reflection.PropertyPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ import java.util.function.Consumer;
 public class ViewTasksDS implements ListDataSource<Task> {
   private static final Logger log = LoggerFactory.getLogger(ViewTasksDS.class);
   private Task taskToSelect;
+  private QueryConsumer<Task> filter;
 
   @Override
   public List<Task> loadModel(Consumer<List<Task>> furtherProcessing) {
@@ -34,6 +36,9 @@ public class ViewTasksDS implements ListDataSource<Task> {
       List<Task> from = PersistentWork.from(Task.class, (root, query, builder) -> {
         String finishTime = PropertyPath.property(Task.class, (t) -> t.getFinishTime());
         query.where(root.get(finishTime).isNull());
+        if (filter != null) {
+          filter.accept(root, query, builder);
+        }
       }, this::loadChildren);
 
       furtherProcessing.accept(from);
@@ -68,5 +73,9 @@ public class ViewTasksDS implements ListDataSource<Task> {
 
   public Task getTaskToSelect() {
     return taskToSelect;
+  }
+
+  public void setFilter(QueryConsumer<Task> filter) {
+    this.filter = filter;
   }
 }

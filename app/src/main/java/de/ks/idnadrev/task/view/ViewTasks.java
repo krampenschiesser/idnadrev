@@ -18,19 +18,24 @@ import de.ks.BaseController;
 import de.ks.activity.initialization.LoadInFXThread;
 import de.ks.activity.link.NavigationHint;
 import de.ks.datasource.DataSource;
+import de.ks.executor.group.LastExecutionGroup;
 import de.ks.file.FileStore;
 import de.ks.i18n.Localized;
+import de.ks.idnadrev.entity.Context;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.task.create.CreateTaskActivity;
 import de.ks.idnadrev.task.finish.FinishTaskActivity;
 import de.ks.idnadrev.task.work.WorkOnTaskActivity;
 import de.ks.persistence.PersistentWork;
+import de.ks.persistence.QueryConsumer;
+import de.ks.reflection.PropertyPath;
 import de.ks.text.view.AsciiDocContent;
 import de.ks.text.view.AsciiDocViewer;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -44,14 +49,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
 import java.net.URL;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -97,6 +102,11 @@ public class ViewTasks extends BaseController<List<Task>> {
   @FXML
   protected Button delete;
 
+  @FXML
+  protected TextField searchField;
+  @FXML
+  protected ComboBox<String> contextSelection;
+
   @Inject
   FileStore fileStore;
 
@@ -104,7 +114,6 @@ public class ViewTasks extends BaseController<List<Task>> {
   private Map<Task, TreeItem<Task>> task2TreeItem = new HashMap<>();
   private final SimpleBooleanProperty disable = new SimpleBooleanProperty(false);
   private AsciiDocViewer asciiDocViewer;
-
   private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern(Localized.get("fullDate"));
 
   @Override
@@ -122,6 +131,15 @@ public class ViewTasks extends BaseController<List<Task>> {
       description.getChildren().add(l.getView());
     }, controller.getJavaFXExecutor());
 
+    LastExecutionGroup<String> lastExecutionGroup = new LastExecutionGroup<>(300, controller.getCurrentExecutorService());
+    ChangeListener<String> listener = (observable, oldValue, newValue) -> {
+      ViewTasksDS datasource = (ViewTasksDS) store.getDatasource();
+      datasource.setFilter(createFilter());
+      lastExecutionGroup.schedule(() -> "").thenRunAsync(() -> controller.reload(), controller.getCurrentExecutorService());
+    };
+    searchField.textProperty().addListener(listener);
+    contextSelection.getSelectionModel().selectedItemProperty().addListener(listener);
+
     ReadOnlyObjectProperty<TreeItem<Task>> selectedItemProperty = tasksView.getSelectionModel().selectedItemProperty();
     selectedItemProperty.addListener((p, o, n) -> applyTask(n));
     taskViewNameColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getValue().getName()));
@@ -138,6 +156,30 @@ public class ViewTasks extends BaseController<List<Task>> {
     edit.disableProperty().bind(disable);
     show.disableProperty().bind(disable);
     delete.disableProperty().bind(disable);
+
+    CompletableFuture.supplyAsync(() -> PersistentWork.from(Context.class).stream().map(c -> c.getName()).collect(Collectors.toList()), controller.getCurrentExecutorService())//
+            .thenAcceptAsync(contextNames -> {
+              ObservableList<String> items = FXCollections.observableArrayList(contextNames);
+              items.add(0, "");
+              contextSelection.setItems(items);
+            }, controller.getJavaFXExecutor());
+  }
+
+  protected QueryConsumer<Task> createFilter() {
+    return (root, query, builder) -> {
+      ArrayList<Predicate> restrictions = new ArrayList<>();
+      if (query.getRestriction() != null) {
+        restrictions.add(query.getRestriction());
+      }
+      if (searchField.getText() != null) {
+        restrictions.add(builder.like(builder.lower(root.get("name")), "%" + searchField.getText().toLowerCase() + "%"));
+      }
+      if (contextSelection.getValue() != null && !contextSelection.getValue().trim().isEmpty()) {
+        Path<String> contextNamePath = root.get(PropertyPath.property(Task.class, t -> t.getContext())).<String>get("name");
+        restrictions.add(builder.equal(contextNamePath, contextSelection.getValue()));
+      }
+      query.where(restrictions.toArray(new Predicate[restrictions.size()]));
+    };
   }
 
   protected void applyTask(TreeItem<Task> taskTreeItem) {
