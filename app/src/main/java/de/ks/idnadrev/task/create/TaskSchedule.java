@@ -107,4 +107,8 @@ public class TaskSchedule extends BaseController<Task> {
   protected void onRefresh(Task model) {
     super.onRefresh(model);
   }
+
+  public void setSaveRunnable(Runnable run) {
+    this.saveRunnable = run;
+  }
 }

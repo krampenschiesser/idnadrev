@@ -48,5 +48,6 @@ public class CreateTask implements Initializable {
     expectedOutcomeController.setSaveRunnable(this::save);
     mainInfoController.setSaveRunnable(this::save);
     effortInfoController.setSaveRunnable(this::save);
+    scheduleController.setSaveRunnable(this::save);
   }
 }
