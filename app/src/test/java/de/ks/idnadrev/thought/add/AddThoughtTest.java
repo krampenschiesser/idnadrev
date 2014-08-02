@@ -108,7 +108,7 @@ public class AddThoughtTest {
   public void testClipboardSingleLineString() throws Exception {
     String clipboardText = "singleClip";
     copy2Clipboard(clipboardText);
-
+    FXPlatform.waitForFX();
     assertEquals(clipboardText, addThought.description.getText());
     assertEquals(clipboardText, addThought.name.getText());
   }
