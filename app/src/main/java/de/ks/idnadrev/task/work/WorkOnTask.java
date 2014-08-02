@@ -121,7 +121,11 @@ public class WorkOnTask extends BaseController<Task> {
 
       estimatedTime.setText(getHourMinutesString(time));
     }
+  }
 
+  @Override
+  public void duringSave(Task model) {
+    model.setDescription(description.getText());
   }
 
   public String getHourMinutesString(Duration duration) {

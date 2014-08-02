@@ -77,12 +77,14 @@ public class WorkOnTaskTest {
   @Test
   public void testStopWork() throws Exception {
     Thread.sleep(200);
+    FXPlatform.invokeLater(() -> controller.description.setText("desc"));
     controller.stopWork();
     List<Task> tasks = PersistentWork.from(Task.class, t -> t.getWorkUnits().forEach(u -> u.getDuration()));
     assertEquals(1, tasks.size());
     Task task = tasks.get(0);
     assertEquals(2, task.getWorkUnits().size());
     assertThat(task.getWorkUnits().last().getSpentMillis(), Matchers.greaterThan(100L));
+    assertEquals("desc", task.getDescription());
   }
 
   @Test

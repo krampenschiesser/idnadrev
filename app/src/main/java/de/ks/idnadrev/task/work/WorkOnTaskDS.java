@@ -32,9 +32,9 @@ public class WorkOnTaskDS implements DataSource<Task> {
   @Override
   public void saveModel(Task model, Consumer<Task> beforeSaving) {
     PersistentWork.run(em -> {
-      task = PersistentWork.reload(model);
-      beforeSaving.accept(model);
-      task.getWorkUnits().last().stop();
+      Task reloaded = PersistentWork.reload(model);
+      beforeSaving.accept(reloaded);
+      reloaded.getWorkUnits().last().stop();
     });
   }
 
