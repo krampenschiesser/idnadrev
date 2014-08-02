@@ -32,6 +32,8 @@
                 <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
             </rowConstraints>
             <children>
+                <TextField fx:id="searchField"/>
+                <ComboBox fx:id="contextSelection" prefWidth="150.0" GridPane.columnIndex="1"/>
                 <TreeTableView fx:id="tasksView" onKeyReleased="#onTableKeyReleased" GridPane.columnSpan="2147483647"
                                GridPane.rowIndex="1">
                     <columns>
@@ -40,8 +42,6 @@
                                          text="%task.creationTime"/>
                     </columns>
                 </TreeTableView>
-                <ComboBox fx:id="contextSelection" prefWidth="150.0" GridPane.columnIndex="1"/>
-                <TextField fx:id="searchField"/>
             </children>
         </GridPane>
         <GridPane hgap="5.0" vgap="5.0" HBox.hgrow="SOMETIMES">
