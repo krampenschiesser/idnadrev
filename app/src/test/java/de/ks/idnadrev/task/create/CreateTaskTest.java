@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
+import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -132,6 +133,33 @@ public class CreateTaskTest {
     Duration estimatedTime = task.getEstimatedTime();
     assertNotNull(estimatedTime);
     assertEquals(Duration.ofMinutes(15), estimatedTime);
+  }
+
+  @Test
+  public void testPersistProposedWeek() throws InterruptedException {
+    FXPlatform.invokeLater(() -> {
+      controller.name.setText("name");
+      taskSchedule.proposedWeek.setValue(LocalDate.of(2014, 1, 3));
+      taskSchedule.useProposedWeekDay.setSelected(true);
+    });
+    activityController.waitForTasks();
+    FXPlatform.waitForFX();
+    FXPlatform.invokeLater(() -> {
+      controller.save();
+    });
+    activityController.waitForDataSource();
+
+    List<Task> tasks = PersistentWork.from(Task.class, (t) -> {
+      if (t.getSchedule() != null) {
+        t.getSchedule().getScheduledDate();
+      }
+    });
+    assertEquals(1, tasks.size());
+    Task task = tasks.get(0);
+    assertEquals("name", task.getName());
+    assertNotNull(task.getSchedule());
+    assertEquals(1, task.getSchedule().getProposedWeek());
+    assertEquals(DayOfWeek.FRIDAY, task.getSchedule().getProposedWeekDay());
   }
 
   @Test
