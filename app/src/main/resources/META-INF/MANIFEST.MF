@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
 Implementation-Title: idnadrev
-Implementation-Version: 0.3-DEVEL
+Implementation-Version: 0.4-DEVEL
 Implementation-Vendor: krampenschiesser
