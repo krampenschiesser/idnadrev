@@ -12,20 +12,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.version;
 
-import de.ks.launch.JPAService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package de.ks.persistence;
 
-public class CreateSchema implements InitialImport {
-  private static final Logger log = LoggerFactory.getLogger(CreateSchema.class);
+import org.junit.Before;
+import org.junit.Test;
 
-  @Override
-  public void performInitialImport() {
-    log.info("Initial start of JPA, creating schema.");
-    JPAService jpaService = new JPAService();
-    jpaService.addProperty("hibernate.hbm2ddl.auto", "create");
-    jpaService.start();
+public class PersistentVersionUpgradeTest {
+  private PersistentVersionUpgrade persistentVersionUpgrade;
+
+  @Before
+  public void setUp() throws Exception {
+    persistentVersionUpgrade = new PersistentVersionUpgrade("") {
+
+      @Override
+      public int getVersion() {
+        return 0;
+      }
+
+      @Override
+      public void performUpgrade() {
+
+      }
+    };
+  }
+
+  @Test
+  public void testExecuteStatement() throws Exception {
+    persistentVersionUpgrade.executeStatement("select count(1) from DummyEntity");
   }
 }
