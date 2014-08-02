@@ -27,6 +27,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
+import javafx.scene.control.MenuBar;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
@@ -72,8 +73,10 @@ public class IdnadrevWindow extends MainWindow {
       VBox vBox = new VBox();
       vBox.setMinSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
       vBox.setMaxSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
-      vBox.getChildren().add(menuBarPresenter.getMenu("/main"));
-      borderPane.setTop(vBox);
+      MenuBar menu = menuBarPresenter.getMenu("/main");
+      menu.setMinSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
+      vBox.getChildren().add(menu);
+      borderPane.setTop(menu);
 
       DefaultLoader<VBox, ButtonBar> loader = new DefaultLoader<>(ButtonBar.class);
       buttonBar = loader.getController();
