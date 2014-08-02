@@ -27,8 +27,6 @@ import de.ks.idnadrev.task.create.CreateTaskActivity;
 import de.ks.idnadrev.task.finish.FinishTaskActivity;
 import de.ks.idnadrev.task.work.WorkOnTaskActivity;
 import de.ks.persistence.PersistentWork;
-import de.ks.persistence.QueryConsumer;
-import de.ks.reflection.PropertyPath;
 import de.ks.text.view.AsciiDocContent;
 import de.ks.text.view.AsciiDocViewer;
 import javafx.application.Platform;
@@ -49,14 +47,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
 import java.net.URL;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -112,11 +109,13 @@ public class ViewTasks extends BaseController<List<Task>> {
   @Inject
   FileStore fileStore;
 
-  protected ObservableList<Task> tasks = FXCollections.observableArrayList();
+  protected final ObservableList<Task> tasks = FXCollections.observableArrayList();
   private Map<Task, TreeItem<Task>> task2TreeItem = new HashMap<>();
   private final SimpleBooleanProperty disable = new SimpleBooleanProperty(false);
   private AsciiDocViewer asciiDocViewer;
   private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern(Localized.get("fullDate"));
+
+  private Predicate<Task> filter = t -> true;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -135,9 +134,10 @@ public class ViewTasks extends BaseController<List<Task>> {
 
     LastExecutionGroup<String> lastExecutionGroup = new LastExecutionGroup<>(300, controller.getCurrentExecutorService());
     ChangeListener<String> listener = (observable, oldValue, newValue) -> {
-      ViewTasksDS datasource = (ViewTasksDS) store.getDatasource();
-      datasource.setFilter(createFilter());
-      lastExecutionGroup.schedule(() -> "").thenRunAsync(() -> controller.reload(), controller.getCurrentExecutorService());
+      filter = createFilter();
+      TreeItem<Task> root = buildTreeStructure(new ArrayList<>(tasks));
+      tasksView.setRoot(root);
+      selectBest(root);
     };
     searchField.textProperty().addListener(listener);
     contextSelection.getSelectionModel().selectedItemProperty().addListener(listener);
@@ -168,20 +168,25 @@ public class ViewTasks extends BaseController<List<Task>> {
             }, controller.getJavaFXExecutor());
   }
 
-  protected QueryConsumer<Task> createFilter() {
-    return (root, query, builder) -> {
-      ArrayList<Predicate> restrictions = new ArrayList<>();
-      if (query.getRestriction() != null) {
-        restrictions.add(query.getRestriction());
-      }
-      if (searchField.getText() != null) {
-        restrictions.add(builder.like(builder.lower(root.get("name")), "%" + searchField.getText().toLowerCase() + "%"));
-      }
+  protected Predicate<Task> createFilter() {
+    return task -> {
       if (contextSelection.getValue() != null && !contextSelection.getValue().trim().isEmpty()) {
-        Path<String> contextNamePath = root.get(PropertyPath.property(Task.class, t -> t.getContext())).<String>get("name");
-        restrictions.add(builder.equal(contextNamePath, contextSelection.getValue()));
+        Context taskContext = task.getContext();
+        if (taskContext != null && taskContext.getName().equals(contextSelection.getValue().trim())) {
+          return true;
+        } else {
+          return false;
+        }
       }
-      query.where(restrictions.toArray(new Predicate[restrictions.size()]));
+      String nameSearch = searchField.textProperty().getValueSafe().trim().toLowerCase();
+      if (!nameSearch.isEmpty()) {
+        if (task.getName().toLowerCase().contains(nameSearch)) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+      return true;
     };
   }
 
@@ -306,15 +311,20 @@ public class ViewTasks extends BaseController<List<Task>> {
 
   @Override
   protected void onRefresh(List<Task> loaded) {
-    DataSource noncast = store.getDatasource();
-    @SuppressWarnings("unchecked") //
-            ViewTasksDS datasource = (ViewTasksDS) noncast;
-    Task taskToSelect = datasource.getTaskToSelect();
-
     tasks.clear();
     tasks.addAll(loaded);
     TreeItem<Task> root = buildTreeStructure(loaded);
     tasksView.setRoot(root);
+    selectBest(root);
+
+    List<AsciiDocContent> asciiDocContents = tasks.stream().map(t -> new AsciiDocContent(t.getName(), t.getDescription())).collect(Collectors.toList());
+    this.asciiDocViewer.preload(asciiDocContents);
+  }
+
+  private void selectBest(TreeItem<Task> root) {
+    DataSource noncast = store.getDatasource();
+    ViewTasksDS datasource = (ViewTasksDS) noncast;
+    Task taskToSelect = datasource.getTaskToSelect();
     Platform.runLater(() -> {
       if (!root.getChildren().isEmpty()) {
         root.setExpanded(true);
@@ -325,9 +335,6 @@ public class ViewTasks extends BaseController<List<Task>> {
         }
       }
     });
-
-    List<AsciiDocContent> asciiDocContents = tasks.stream().map(t -> new AsciiDocContent(t.getName(), t.getDescription())).collect(Collectors.toList());
-    this.asciiDocViewer.preload(asciiDocContents);
   }
 
   protected TreeItem<Task> buildTreeStructure(List<Task> loaded) {
@@ -337,6 +344,8 @@ public class ViewTasks extends BaseController<List<Task>> {
       }
     });
     task2TreeItem = new HashMap<>(loaded.size());
+
+    loaded = loaded.stream().filter(filter).collect(Collectors.toList());
     calculateTotalTime(loaded, root);
     loaded.forEach((task) -> {
       TreeItem<Task> treeItem = new TreeItem<>(task);
@@ -348,7 +357,9 @@ public class ViewTasks extends BaseController<List<Task>> {
       } else {
         TreeItem<Task> parentItem = task2TreeItem.get(task.getParent());
         TreeItem<Task> childItem = task2TreeItem.get(task);
-        parentItem.getChildren().add(childItem);
+        if (parentItem != null) {
+          parentItem.getChildren().add(childItem);
+        }
       }
     });
     return root;
