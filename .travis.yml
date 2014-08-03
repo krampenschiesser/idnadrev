@@ -8,10 +8,10 @@ jdk:
   - oraclejdk8
 
 install:
-  - TERM=dumb ./gradlew --info assemble
+  - TERM=dumb ./gradlew -S assemble
 
 script:
-  - TERM=dumb ./gradlew --info check
+  - TERM=dumb ./gradlew -S check
 
 before_install:
   - "export DISPLAY=:99.0"
