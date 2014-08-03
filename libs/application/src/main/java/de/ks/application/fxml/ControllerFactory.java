@@ -50,7 +50,7 @@ public class ControllerFactory implements Callback<Class<?>, Object> {
     if (instance.isUnsatisfied()) {
       List<Field> injectedFields = ReflectionUtil.getAllFields(clazz, (f) -> f.isAnnotationPresent(Inject.class));
       if (!injectedFields.isEmpty()) {
-        throw new IllegalArgumentException("Unable to instanitate class that defines injected fields but is no bean.");
+        throw new IllegalArgumentException("Unable to instanitate class " + clazz.getName() + " that defines injected fields but is no bean.");
       } else {
         Object newInstance = ReflectionUtil.newInstance(clazz, false);
         registerLoadedController(newInstance);
