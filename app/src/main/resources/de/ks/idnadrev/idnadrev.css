@@ -13,3 +13,10 @@
 .buttonBar {
     -fx-background-color: linear-gradient(to right, -fx-background, derive(-fx-background, -15%) 65%, derive(-fx-background, -45%) 100%)
 }
+
+.week-bg-even {
+    -fx-background-color: white;
+}
+.week-bg-odd {
+    /*-fx-background-color: derive(white, -2%);*/
+}
