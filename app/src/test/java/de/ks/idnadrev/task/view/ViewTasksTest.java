@@ -20,6 +20,7 @@ import de.ks.idnadrev.entity.*;
 import de.ks.persistence.PersistentWork;
 import de.ks.persistence.entity.Sequence;
 import de.ks.util.FXPlatform;
+import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
 import org.junit.After;
 import org.junit.Before;
@@ -33,7 +34,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(LauncherRunner.class)
-public class TaskOverViewTest {
+public class ViewTasksTest {
   @Inject
   ActivityController activityController;
   private ViewTasks controller;
@@ -92,5 +93,20 @@ public class TaskOverViewTest {
 
     from = PersistentWork.from(Task.class);
     assertEquals(1, from.size());
+  }
+
+  @Test
+  public void testFilter() throws Exception {
+    FXPlatform.invokeLater(() -> controller.searchField.setText("4"));
+
+    TreeItem<Task> root = controller.tasksView.getRoot();
+
+    ObservableList<TreeItem<Task>> children = root.getChildren();
+    assertEquals(1, children.size());
+    assertEquals("project1", children.get(0).getValue().getName());
+
+    children = children.get(0).getChildren();
+    assertEquals(1, children.size());
+    assertEquals("task4", children.get(0).getValue().getName());
   }
 }

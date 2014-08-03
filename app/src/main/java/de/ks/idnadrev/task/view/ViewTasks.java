@@ -331,10 +331,23 @@ public class ViewTasks extends BaseController<List<Task>> {
         if (taskToSelect != null && task2TreeItem.containsKey(taskToSelect)) {
           tasksView.getSelectionModel().select(task2TreeItem.get(taskToSelect));
         } else {
-          tasksView.getSelectionModel().select(root.getChildren().get(0));
+          Optional<Task> first = task2TreeItem.keySet().stream().filter(filter).findFirst();
+          if (first.isPresent()) {
+            TreeItem<Task> treeItem = task2TreeItem.get(first.get());
+            expandParents(treeItem);
+            tasksView.getSelectionModel().select(treeItem);
+          } else {
+            tasksView.getSelectionModel().select(root.getChildren().get(0));
+          }
         }
       }
     });
+  }
+
+  private void expandParents(TreeItem<Task> treeItem) {
+    for (; treeItem.getParent() != null; treeItem = treeItem.getParent()) {
+      treeItem.setExpanded(true);
+    }
   }
 
   protected TreeItem<Task> buildTreeStructure(List<Task> loaded) {
@@ -345,21 +358,22 @@ public class ViewTasks extends BaseController<List<Task>> {
     });
     task2TreeItem = new HashMap<>(loaded.size());
 
-    loaded = loaded.stream().filter(filter).collect(Collectors.toList());
     calculateTotalTime(loaded, root);
     loaded.forEach((task) -> {
       TreeItem<Task> treeItem = new TreeItem<>(task);
       task2TreeItem.put(task, treeItem);
     });
-    loaded.stream().sorted((o1, o2) -> o1.getName().compareTo(o2.getName())).forEach((task) -> {
-      if (task.getParent() == null) {
-        root.getChildren().add(task2TreeItem.get(task));
-      } else {
+    loaded.stream().filter(filter).sorted((o1, o2) -> o1.getName().compareTo(o2.getName())).forEach((task) -> {
+      for (; task.getParent() != null; task = task.getParent()) {
         TreeItem<Task> parentItem = task2TreeItem.get(task.getParent());
         TreeItem<Task> childItem = task2TreeItem.get(task);
-        if (parentItem != null) {
+        if (!parentItem.getChildren().contains(childItem)) {
           parentItem.getChildren().add(childItem);
         }
+      }
+      TreeItem<Task> treeItem = task2TreeItem.get(task);
+      if (!root.getChildren().contains(treeItem)) {
+        root.getChildren().add(treeItem);
       }
     });
     return root;
