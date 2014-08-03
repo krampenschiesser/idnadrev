@@ -114,10 +114,11 @@ public class AddThought extends BaseController<Thought> {
             (text == null || (text != null && text.isEmpty()))) {
       String clipboardString = clipboard.getString();
       int endOfFirstLine = clipboardString.indexOf("\n");
-      if (endOfFirstLine > 0 && this.name.textProperty().isEmpty().get()) {
+      boolean nameIsEmpty = this.name.textProperty().isEmpty().get();
+      if (endOfFirstLine > 0 && nameIsEmpty) {
         this.name.setText(clipboardString.substring(0, endOfFirstLine));
         this.save.requestFocus();
-      } else {
+      } else if (nameIsEmpty) {
         this.name.setText(clipboardString);
         this.name.requestFocus();
       }
