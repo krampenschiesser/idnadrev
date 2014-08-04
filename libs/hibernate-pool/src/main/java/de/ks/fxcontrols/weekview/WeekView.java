@@ -12,7 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.calendar.week;
+
+package de.ks.fxcontrols.weekview;
 
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -40,12 +41,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
-public class WeekView {
+public class WeekView extends GridPane {
   public static final int HEIGHT_OF_HOUR = 60;
   protected final ObservableList<WeekViewEntry> entries = FXCollections.observableArrayList();
   protected final SimpleIntegerProperty weekOfYear = new SimpleIntegerProperty();
   protected final SimpleIntegerProperty year = new SimpleIntegerProperty();
-  protected final GridPane rootPane = new GridPane();
   protected final GridPane contentPane = new GridPane();
   protected final List<Label> weekDayLabels = new LinkedList<>();
   protected final ScrollPane scrollPane = new ScrollPane();
@@ -101,36 +101,36 @@ public class WeekView {
   }
 
   protected void configureRootPane() {
-    rootPane.setMinSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
-    rootPane.setPrefSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
-    rootPane.setMaxSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
+    setMinSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
+    setPrefSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
+    setMaxSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
 
-    rootPane.getRowConstraints().add(new RowConstraints(50, 50, Control.USE_COMPUTED_SIZE, Priority.NEVER, VPos.BOTTOM, true));
-    rootPane.getRowConstraints().add(new RowConstraints(100, Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE, Priority.ALWAYS, VPos.TOP, true));
+    getRowConstraints().add(new RowConstraints(50, 50, Control.USE_COMPUTED_SIZE, Priority.NEVER, VPos.BOTTOM, true));
+    getRowConstraints().add(new RowConstraints(100, Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE, Priority.ALWAYS, VPos.TOP, true));
 
-    rootPane.getColumnConstraints().add(new ColumnConstraints(10, 50, Control.USE_PREF_SIZE, Priority.NEVER, HPos.RIGHT, true));
+    getColumnConstraints().add(new ColumnConstraints(10, 50, Control.USE_PREF_SIZE, Priority.NEVER, HPos.RIGHT, true));
 
     for (int i = 0; i < 7; i++) {
       ColumnConstraints constraints = new ColumnConstraints(10, 100, Double.MAX_VALUE, Priority.ALWAYS, HPos.CENTER, true);
       constraints.setPercentWidth(13);
-      rootPane.getColumnConstraints().add(constraints);
+      getColumnConstraints().add(constraints);
       Label label = new Label();
-      rootPane.add(label, i + 1, 0);
+      add(label, i + 1, 0);
       GridPane.setMargin(label, new Insets(0, 0, 5, 0));
       weekDayLabels.add(label);
     }
-    rootPane.getColumnConstraints().add(new ColumnConstraints(10, 30, 30, Priority.NEVER, HPos.RIGHT, true));
+    getColumnConstraints().add(new ColumnConstraints(10, 30, 30, Priority.NEVER, HPos.RIGHT, true));
 
-    rootPane.add(scrollPane, 0, 1, Integer.MAX_VALUE, 1);
+    add(scrollPane, 0, 1, Integer.MAX_VALUE, 1);
     scrollPane.setContent(contentPane);
 
-    rootPane.add(weekField, 0, 0);
+    add(weekField, 0, 0);
     GridPane.setMargin(weekField, new Insets(0, 0, 5, 0));
     GridPane.setHalignment(weekField, HPos.RIGHT);
   }
 
   protected void configureContentPane() {
-    ReadOnlyDoubleProperty width = rootPane.widthProperty();
+    ReadOnlyDoubleProperty width = widthProperty();
     contentPane.prefWidthProperty().bind(width);
     contentPane.minWidthProperty().bind(width);
     contentPane.maxWidthProperty().bind(width);
@@ -221,10 +221,6 @@ public class WeekView {
 
   public ObservableList<WeekViewEntry> getEntries() {
     return entries;
-  }
-
-  public GridPane getRootPane() {
-    return rootPane;
   }
 
   public ScrollPane getScrollPane() {

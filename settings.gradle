@@ -14,6 +14,8 @@
  */
 include "doc"
 
+include "libs:fxcontrols"
+
 include "libs:testutil", "libs:util", "libs:reflection"
 include "libs:launch"
 //PC stuff

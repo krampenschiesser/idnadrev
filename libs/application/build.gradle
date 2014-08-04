@@ -15,6 +15,7 @@
 
 dependencies {
     compile project(":libs:i18n")
+    compile project(":libs:fxcontrols")
     compile project(":libs:images")
     compile project(":libs:persistence")
     compile project(":libs:validation")

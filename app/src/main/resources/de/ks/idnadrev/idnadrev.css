@@ -15,8 +15,12 @@
 }
 
 .week-bg-even {
-    -fx-background-color: white;
+    -fx-background-color: derive(-fx-background, 100%);
 }
 .week-bg-odd {
-    /*-fx-background-color: derive(white, -2%);*/
+    -fx-background-color: derive(-fx-background, 0%);/*maybe use 95% later*/
+}
+
+.week-weekfield {
+  -fx-font-weight: bold;
 }
