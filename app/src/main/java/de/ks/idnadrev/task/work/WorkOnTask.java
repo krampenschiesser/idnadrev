@@ -16,7 +16,6 @@ package de.ks.idnadrev.task.work;
 
 import de.ks.BaseController;
 import de.ks.activity.ModelBound;
-import de.ks.activity.initialization.LoadInFXThread;
 import de.ks.activity.link.NavigationHint;
 import de.ks.executor.SuspendablePooledExecutorService;
 import de.ks.i18n.Localized;
@@ -43,7 +42,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 @ModelBound(Task.class)
-@LoadInFXThread
 public class WorkOnTask extends BaseController<Task> {
   private static final Logger log = LoggerFactory.getLogger(WorkOnTask.class);
   public static final String OVERTIME_STYLE_CLASS = "negativeFunFactor";

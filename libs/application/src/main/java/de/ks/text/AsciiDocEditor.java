@@ -18,7 +18,6 @@ import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import de.ks.activity.ActivityController;
 import de.ks.activity.initialization.ActivityInitialization;
-import de.ks.activity.initialization.LoadInFXThread;
 import de.ks.application.fxml.DefaultLoader;
 import de.ks.executor.group.LastExecutionGroup;
 import de.ks.i18n.Localized;
@@ -32,6 +31,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
@@ -58,7 +58,6 @@ import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-@LoadInFXThread
 public class AsciiDocEditor implements Initializable {
   public static CompletableFuture<DefaultLoader<Node, AsciiDocEditor>> load(Consumer<StackPane> viewConsumer, Consumer<AsciiDocEditor> controllerConsumer) {
     ActivityInitialization initialization = CDI.current().select(ActivityInitialization.class).get();
@@ -84,7 +83,7 @@ public class AsciiDocEditor implements Initializable {
   @FXML
   protected TextArea editor;
   @FXML
-  protected WebView preview;
+  protected Tab previewTab;
   @FXML
   protected Button help;
   @FXML
@@ -102,6 +101,7 @@ public class AsciiDocEditor implements Initializable {
 
   protected Dialog helpDialog;
   protected WebView helpView;
+  protected WebView preview;
   protected final SimpleStringProperty text = new SimpleStringProperty();
   protected LastExecutionGroup<String> renderGroup;
   protected String previewHtmlString;
@@ -114,8 +114,17 @@ public class AsciiDocEditor implements Initializable {
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     renderGroup = new LastExecutionGroup<>(500, controller.getCurrentExecutorService());
-    helpView = new WebView();
-    helpView.getEngine().load("http://powerman.name/doc/asciidoc");
+
+    CompletableFuture.supplyAsync(() -> new WebView(), controller.getJavaFXExecutor())//
+            .thenAccept(webView -> {
+              helpView = webView;
+              helpView.getEngine().load("http://powerman.name/doc/asciidoc");
+            });
+    CompletableFuture.supplyAsync(() -> new WebView(), controller.getJavaFXExecutor())//
+            .thenAccept(webView -> {
+              preview = webView;
+              previewTab.setContent(preview);
+            });
 
     text.bindBidirectional(editor.textProperty());
 

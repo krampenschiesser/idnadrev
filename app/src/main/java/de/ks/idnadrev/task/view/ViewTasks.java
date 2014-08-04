@@ -15,7 +15,6 @@
 package de.ks.idnadrev.task.view;
 
 import de.ks.BaseController;
-import de.ks.activity.initialization.LoadInFXThread;
 import de.ks.activity.link.NavigationHint;
 import de.ks.datasource.DataSource;
 import de.ks.executor.group.LastExecutionGroup;
@@ -57,7 +56,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-@LoadInFXThread
 public class ViewTasks extends BaseController<List<Task>> {
   private static final Logger log = LoggerFactory.getLogger(ViewTasks.class);
   public static final String NEGATIVE_FUN_FACTOR = "negativeFunFactor";

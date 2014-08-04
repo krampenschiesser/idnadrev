@@ -16,14 +16,15 @@ package de.ks.text.view;
 
 import de.ks.activity.ActivityController;
 import de.ks.activity.initialization.ActivityInitialization;
-import de.ks.activity.initialization.LoadInFXThread;
 import de.ks.application.fxml.DefaultLoader;
 import de.ks.executor.JavaFXExecutorService;
 import de.ks.executor.SuspendablePooledExecutorService;
 import de.ks.text.AsciiDocParser;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.Control;
 import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebView;
 import org.apache.commons.lang3.tuple.Pair;
@@ -32,17 +33,14 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.net.URL;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-@LoadInFXThread
-public class AsciiDocViewer {
+public class AsciiDocViewer implements Initializable {
   public static CompletableFuture<DefaultLoader<Node, AsciiDocViewer>> load(Consumer<StackPane> viewConsumer, Consumer<AsciiDocViewer> controllerConsumer) {
     ActivityInitialization initialization = CDI.current().select(ActivityInitialization.class).get();
     return initialization.loadAdditionalController(AsciiDocViewer.class)//
@@ -63,9 +61,20 @@ public class AsciiDocViewer {
   AsciiDocParser parser;
 
   @FXML
+  protected StackPane root;
   protected WebView webView;
 
   protected final SimpleStringProperty currentIdentifier = new SimpleStringProperty();
+
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    CompletableFuture.supplyAsync(() -> new WebView(), controller.getJavaFXExecutor()).thenAccept(view -> {
+      webView = view;
+      webView.setMinSize(100, 100);
+      webView.setPrefSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
+      root.getChildren().add(webView);
+    });
+  }
 
   public void reset() {
     webView.getEngine().loadContent("");
