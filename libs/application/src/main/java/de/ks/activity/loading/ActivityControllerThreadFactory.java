@@ -15,6 +15,7 @@
 package de.ks.activity.loading;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import de.ks.executor.LoggingUncaughtExceptionHandler;
 
 import java.util.concurrent.ThreadFactory;
 
@@ -24,7 +25,7 @@ public class ActivityControllerThreadFactory implements ThreadFactory {
   }
 
   private static ThreadLocal<Boolean> inLoadingThread = ThreadLocal.withInitial(() -> false);
-  protected final ThreadFactory delegate = new ThreadFactoryBuilder().setDaemon(true).setNameFormat(getClass().getSimpleName() + "%d").build();
+  protected final ThreadFactory delegate = new ThreadFactoryBuilder().setDaemon(true).setNameFormat(getClass().getSimpleName() + "%d").setUncaughtExceptionHandler(new LoggingUncaughtExceptionHandler()).build();
 
   @Override
   public Thread newThread(Runnable r) {
