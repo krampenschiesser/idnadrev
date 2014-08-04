@@ -125,7 +125,7 @@ public class ActivityController {
 
   @SuppressWarnings("unchecked")
   public void start(ActivityCfg activityCfg, NavigationHint navigationHint) {
-    loadInExecutor("couldn ot start " + activityCfg, () -> {
+    loadInExecutor("could not start " + activityCfg, () -> {
       lock.lock();
       try {
         Object dataSourceHint = null;
