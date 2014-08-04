@@ -29,7 +29,15 @@ import java.util.stream.Collectors;
 public class NodeLookup {
 
   public static Set<Node> getAllIdNodes(Node node) {
-    return getAllNodes(node, m -> m.getId() != null);
+    if (node == null) {
+      "".toLowerCase();
+    }
+    return getAllNodes(node, m -> {
+      if (m == null) {
+        "".toLowerCase();
+      }
+      return m.getId() != null;
+    });
   }
 
   public static Set<Node> getAllNodes(Node node, Predicate<Node> filter) {
@@ -50,7 +58,10 @@ public class NodeLookup {
     if (node instanceof TabPane) {
       ObservableList<Tab> tabs = ((TabPane) node).getTabs();
       for (Tab tab : tabs) {
-        allNodes.addAll(getAllNodes(tab.getContent(), filter));
+        Node content = tab.getContent();
+        if (content != null) {
+          allNodes.addAll(getAllNodes(content, filter));
+        }
       }
     }
     return allNodes;
