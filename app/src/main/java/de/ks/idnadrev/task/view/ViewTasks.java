@@ -164,6 +164,13 @@ public class ViewTasks extends BaseController<List<Task>> {
               items.add(0, "");
               contextSelection.setItems(items);
             }, controller.getJavaFXExecutor());
+
+    searchField.setOnKeyReleased(e -> {
+      if (e.getCode() == KeyCode.ESCAPE) {
+        searchField.setText("");
+        e.consume();
+      }
+    });
   }
 
   protected Predicate<Task> createFilter() {
