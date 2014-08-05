@@ -116,6 +116,7 @@ public class AddThoughtTest {
   private void copy2Clipboard(String clipboardText) {
     FXPlatform.invokeLater(() -> {
       Clipboard clipboard = Clipboard.getSystemClipboard();
+      clipboard.clear();
       HashMap<DataFormat, Object> content = new HashMap<>();
       content.put(DataFormat.PLAIN_TEXT, clipboardText);
       clipboard.setContent(content);

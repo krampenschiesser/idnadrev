@@ -220,6 +220,7 @@ public class FileViewController implements Initializable, DatasourceCallback<Fil
   public void onRefresh(ActivityLoadFinishedEvent event) {
     log.debug("Clearing files");
     files.clear();
+    fileReferences.clear();
     event.<FileContainer<?>>getModel().getFiles().forEach(f -> {
       File file = fileStore.getFile(f);
       fileReferences.put(file, CompletableFuture.completedFuture(f));
