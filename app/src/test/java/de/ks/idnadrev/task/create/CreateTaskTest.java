@@ -250,6 +250,7 @@ public class CreateTaskTest {
     assertEquals("Bla", controller.name.getText());
     assertEquals("description", controller.description.getText());
 
+    FXPlatform.invokeLater(() -> controller.name.setText("blubb"));
     FXPlatform.invokeLater(() -> controller.description.setText("hallo"));
     FXPlatform.waitForFX();
 
@@ -260,6 +261,7 @@ public class CreateTaskTest {
     List<Task> tasks = PersistentWork.from(Task.class);
     assertEquals(1, tasks.size());
     assertEquals("hallo", tasks.get(0).getDescription());
+    assertEquals("blubb", tasks.get(0).getName());
   }
 
 }

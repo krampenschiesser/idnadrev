@@ -79,6 +79,8 @@ public class MainTaskInfo extends BaseController<Task> {
 
     validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(Task.class, t -> t.getId() == store.<Task>getModel().getId()));
     description.hideActionBar();
+    StringProperty nameBinding = store.getBinding().getStringProperty(Task.class, t -> t.getName());
+    name.textProperty().bindBidirectional(nameBinding);
     StringProperty descriptionBinding = store.getBinding().getStringProperty(Task.class, t -> t.getDescription());
     descriptionBinding.bindBidirectional(description.textProperty());
 
