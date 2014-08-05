@@ -32,4 +32,5 @@
 
 .editorViewLabel {
     -fx-font-size: 1.25em;
+    -fx-font-weight: bold;
 }
