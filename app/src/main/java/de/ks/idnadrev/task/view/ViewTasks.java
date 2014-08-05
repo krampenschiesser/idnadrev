@@ -170,9 +170,7 @@ public class ViewTasks extends BaseController<List<Task>> {
     return task -> {
       if (contextSelection.getValue() != null && !contextSelection.getValue().trim().isEmpty()) {
         Context taskContext = task.getContext();
-        if (taskContext != null && taskContext.getName().equals(contextSelection.getValue().trim())) {
-          return true;
-        } else {
+        if (taskContext != null && !taskContext.getName().equals(contextSelection.getValue().trim())) {
           return false;
         }
       }
