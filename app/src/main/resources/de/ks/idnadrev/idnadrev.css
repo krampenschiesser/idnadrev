@@ -24,3 +24,12 @@
 .week-weekfield {
   -fx-font-weight: bold;
 }
+
+.webviewContainer {
+    -fx-border-color: darkgrey;
+    -fx-border-radius: 4;
+}
+
+.editorViewLabel {
+    -fx-font-size: 1.25em;
+}
