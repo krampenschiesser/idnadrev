@@ -110,7 +110,7 @@ public class SuspendablePooledExecutorServiceTest {
 
     executor.shutdownNow();
 
-    executor.awaitTermination(1, TimeUnit.SECONDS);
+    executor.awaitTermination(5, TimeUnit.SECONDS);
     assertEquals(1, adder.sum());
     // actually the first runnable got interrupted,
     // and although the thread is interrupted the second runnable is successfully executed,
