@@ -103,7 +103,7 @@ public class Versioning {
       Collections.sort(upgraders);
 
       upgraders.stream().filter(upgrader -> upgrader.getVersion() > getLastVersion()).forEach(upgrader -> {
-        log.info("Performing upgrade for version {} using {}", upgrader.getVersion(), upgrader.getClass().getSimpleName());
+        log.info("Performing upgrade from version {} to {} using {}", getLastVersion(), upgrader.getVersion(), upgrader.getClass().getSimpleName());
         upgrader.performUpgrade();
       });
       writeLastVersion(getCurrentVersion());
