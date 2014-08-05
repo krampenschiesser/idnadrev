@@ -175,9 +175,22 @@ public class ViewTasks extends BaseController<List<Task>> {
 
   protected Predicate<Task> createFilter() {
     return task -> {
-      if (contextSelection.getValue() != null && !contextSelection.getValue().trim().isEmpty()) {
+      boolean hasContextFilter = contextSelection.getValue() != null && !contextSelection.getValue().trim().isEmpty();
+      if (hasContextFilter) {
         Context taskContext = task.getContext();
-        if (taskContext != null && !taskContext.getName().equals(contextSelection.getValue().trim())) {
+        Predicate<Context> filter = ctx -> ctx.getName().equals(contextSelection.getValue().trim());
+        if (taskContext == null) {
+          boolean foundMatchingContext = false;
+          for (Task current = task; current.getParent() != null; current = current.getParent()) {
+            Context parentContext = current.getParent().getContext();
+            if (parentContext != null && filter.test(parentContext)) {
+              foundMatchingContext = true;
+            }
+          }
+          if (!foundMatchingContext) {
+            return false;
+          }
+        } else if (!taskContext.getName().equals(contextSelection.getValue().trim())) {
           return false;
         }
       }

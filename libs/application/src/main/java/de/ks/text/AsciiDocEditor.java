@@ -123,7 +123,9 @@ public class AsciiDocEditor implements Initializable {
     CompletableFuture.supplyAsync(() -> new WebView(), controller.getJavaFXExecutor())//
             .thenAccept(webView -> {
               preview = webView;
-              previewTab.setContent(preview);
+              StackPane pane = new StackPane(preview);
+              pane.getStyleClass().add("webviewContainer");
+              previewTab.setContent(pane);
             });
 
     text.bindBidirectional(editor.textProperty());

@@ -77,7 +77,6 @@
                 <Label text="%task.tags" GridPane.rowIndex="10"/>
                 <FlowPane fx:id="tagPane" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
                 <StackPane fx:id="description" prefHeight="-1.0" prefWidth="-1.0"
-                           style="-fx-border-radius: 4; -fx-border-color: darkgrey;" styleClass="webviewContainer"
                            GridPane.columnSpan="2147483647" GridPane.rowIndex="1"/>
                 <Label text="%task.estimatedTime" GridPane.rowIndex="3"/>
                 <Label text="%task.spendTime" GridPane.rowIndex="4"/>

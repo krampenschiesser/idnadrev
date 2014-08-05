@@ -80,7 +80,7 @@ public class IdnadrevWindow extends MainWindow {
 
       DefaultLoader<VBox, ButtonBar> loader = new DefaultLoader<>(ButtonBar.class);
       buttonBar = loader.getController();
-      borderPane.setRight(loader.getView());
+//      borderPane.setRight(loader.getView());
 
       StackPane contentPane = new StackPane();
       borderPane.setCenter(contentPane);

@@ -15,7 +15,9 @@
   ~ limitations under the License.
   -->
 
+
 <?import javafx.scene.layout.StackPane?>
-<StackPane fx:id="root" id="StackPane" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8"
-           xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.text.view.AsciiDocViewer">
+<StackPane id="StackPane" fx:id="root" minHeight="-Infinity" minWidth="-Infinity" styleClass="webviewContainer"
+           xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="de.ks.text.view.AsciiDocViewer">
 </StackPane>

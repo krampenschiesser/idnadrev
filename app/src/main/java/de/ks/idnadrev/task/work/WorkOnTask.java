@@ -24,7 +24,6 @@ import de.ks.idnadrev.entity.WorkUnit;
 import de.ks.idnadrev.task.finish.FinishTaskActivity;
 import de.ks.persistence.PersistentWork;
 import de.ks.text.AsciiDocEditor;
-import de.ks.text.AsciiDocParser;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
@@ -34,11 +33,9 @@ import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
 import java.net.URL;
 import java.time.Duration;
 import java.util.ResourceBundle;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 @ModelBound(Task.class)
@@ -56,10 +53,6 @@ public class WorkOnTask extends BaseController<Task> {
   @FXML
   protected StackPane descriptionView;
   protected AsciiDocEditor description;
-
-  @Inject
-  protected AsciiDocParser parser;
-  private ScheduledFuture<?> progressFuture;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -115,10 +108,11 @@ public class WorkOnTask extends BaseController<Task> {
       long refreshRate = time.toMillis() / 100;
       refreshRate = Math.min(60 * 1000, refreshRate);
       log.debug("Triggering progress updates at a rate of {}ms", refreshRate);
-      progressFuture = executorService.scheduleAtFixedRate(this::increaseProgress, 100, refreshRate, TimeUnit.MILLISECONDS);
+      executorService.scheduleAtFixedRate(this::increaseProgress, 100, refreshRate, TimeUnit.MILLISECONDS);
 
       estimatedTime.setText(getHourMinutesString(time));
     }
+    description.selectPreview();
   }
 
   @Override

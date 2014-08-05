@@ -66,7 +66,7 @@
                     </padding>
                 </HBox>
                 <Label fx:id="nameLabel" styleClass="title" text="Label" GridPane.columnSpan="2147483647"/>
-                <StackPane fx:id="description" styleClass="webviewContainer" GridPane.columnSpan="2147483647"
+                <StackPane fx:id="description" GridPane.columnSpan="2147483647"
                            GridPane.rowIndex="1"/>
             </children>
         </GridPane>

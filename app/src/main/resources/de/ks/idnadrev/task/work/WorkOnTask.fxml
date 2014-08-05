@@ -33,9 +33,8 @@
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
     </rowConstraints>
     <children>
-        <Label text="%task.name:" GridPane.columnSpan="2147483647"/>
-        <Label text="%task.description:" GridPane.columnSpan="2147483647" GridPane.rowIndex="2"/>
-        <Label fx:id="name" styleClass="title" text="Label" GridPane.columnSpan="2147483647" GridPane.rowIndex="1"/>
+        <Label fx:id="name" styleClass="title" text="Label" GridPane.columnSpan="2" GridPane.halignment="CENTER"
+               GridPane.rowSpan="3"/>
         <Button defaultButton="true" mnemonicParsing="false" onAction="#stopWork" text="%task.stop"
                 GridPane.rowIndex="4"/>
         <Button mnemonicParsing="false" onAction="#finishTask" text="%task.finish" GridPane.columnIndex="3"
