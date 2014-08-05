@@ -31,7 +31,6 @@ import de.ks.validation.validators.NamedEntityMustNotExistValidator;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
@@ -66,8 +65,6 @@ public class MainTaskInfo extends BaseController<Task> {
   protected TextField estimatedTimeDuration;
   @FXML
   protected FlowPane tagPane;
-  @FXML
-  protected Button saveButton;
 
   protected AsciiDocEditor description;
   protected DurationValidator durationValidator;
@@ -107,7 +104,6 @@ public class MainTaskInfo extends BaseController<Task> {
     project.selectedProperty().bindBidirectional(store.getBinding().getBooleanProperty(Task.class, (t) -> t.isProject()));
 
     tagAddController.setOnAction(e -> addTag(tagAddController.getInput().getText()));
-    saveButton.disableProperty().bind(validationRegistry.invalidProperty());
   }
 
   private Callback<AutoCompletionBinding.ISuggestionRequest, Collection<String>> getEstimatedTimeAutoCompletion() {
@@ -152,18 +148,8 @@ public class MainTaskInfo extends BaseController<Task> {
     }
   }
 
-  @FXML
-  void save() {
-    saveRunnable.run();
-  }
-
   public Duration getEstimatedDuration() {
     return durationValidator.getDuration();
-  }
-
-  @Override
-  public void duringLoad(Task model) {
-    //
   }
 
   @Override
@@ -194,39 +180,11 @@ public class MainTaskInfo extends BaseController<Task> {
     }
   }
 
-  public void setSaveRunnable(Runnable run) {
-    this.saveRunnable = run;
-  }
-
   public TextField getName() {
     return name;
   }
 
-  public CheckBox getProject() {
-    return project;
-  }
-
   public AsciiDocEditor getDescription() {
     return description;
-  }
-
-  public TextField getEstimatedTimeDuration() {
-    return estimatedTimeDuration;
-  }
-
-  public Button getSaveButton() {
-    return saveButton;
-  }
-
-  public NamedPersistentObjectSelection<Tag> getTagAddController() {
-    return tagAddController;
-  }
-
-  public NamedPersistentObjectSelection<Context> getContextController() {
-    return contextController;
-  }
-
-  public NamedPersistentObjectSelection<Task> getParentProjectController() {
-    return parentProjectController;
   }
 }

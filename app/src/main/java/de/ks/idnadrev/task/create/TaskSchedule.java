@@ -19,7 +19,6 @@ import de.ks.idnadrev.entity.Task;
 import de.ks.persistence.PersistentWork;
 import de.ks.scheduler.Schedule;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
@@ -46,29 +45,13 @@ public class TaskSchedule extends BaseController<Task> {
   @FXML
   TextField dueTime;
 
-  @FXML
-  Button saveButton;
-  private Runnable saveRunnable;
-
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    saveButton.disableProperty().bind(validationRegistry.invalidProperty());
-
     proposedWeek.disableProperty().bind(dueDate.valueProperty().isNotNull());
     useProposedWeekDay.disableProperty().bind(dueDate.valueProperty().isNotNull());
 
     dueDate.disableProperty().bind(proposedWeek.valueProperty().isNotNull());
     dueTime.disableProperty().bind(proposedWeek.valueProperty().isNotNull());
-  }
-
-  @FXML
-  void save() {
-    saveRunnable.run();
-  }
-
-  @Override
-  public void duringLoad(Task model) {
-    super.duringLoad(model);
   }
 
   @Override
@@ -101,14 +84,5 @@ public class TaskSchedule extends BaseController<Task> {
         schedule.setProposedWeekDay(proposedWeekDay.getDayOfWeek());
       }
     }
-  }
-
-  @Override
-  protected void onRefresh(Task model) {
-    super.onRefresh(model);
-  }
-
-  public void setSaveRunnable(Runnable run) {
-    this.saveRunnable = run;
   }
 }

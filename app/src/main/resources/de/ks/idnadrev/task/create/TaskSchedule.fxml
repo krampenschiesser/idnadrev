@@ -35,10 +35,9 @@
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS"/>
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
     </rowConstraints>
     <children>
-        <Label styleClass="title" stylesheets="@../../idnadrev.css" text="%thought.totask.schedule.title"
+        <Label styleClass="title" stylesheets="@../../idnadrev.css" text="%task.create.schedule.info"
                GridPane.columnSpan="2147483647"/>
         <Separator prefWidth="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="1">
             <effect>
@@ -57,7 +56,5 @@
                     showWeekNumbers="true" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
         <Label text="%task.schedule.propose.specificWeekday" GridPane.rowIndex="8"/>
         <CheckBox fx:id="useProposedWeekDay" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
-        <Button fx:id="saveButton" defaultButton="true" mnemonicParsing="false" onAction="#save" text="%save"
-                GridPane.columnIndex="1" GridPane.rowIndex="10"/>
     </children>
 </GridPane>

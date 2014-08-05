@@ -16,8 +16,10 @@ package de.ks.idnadrev.task.create;
 
 import de.ks.activity.ActivityController;
 import de.ks.file.FileViewController;
+import de.ks.validation.ValidationRegistry;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 
 import javax.inject.Inject;
 import java.net.URL;
@@ -34,10 +36,15 @@ public class CreateTask implements Initializable {
   FileViewController fileViewController;
   @FXML
   TaskSchedule scheduleController;
+  @FXML
+  Button saveBtn;
 
   @Inject
   protected ActivityController controller;
+  @Inject
+  protected ValidationRegistry validationRegistry;
 
+  @FXML
   public void save() {
     controller.save();
     controller.resumePreviousActivity();
@@ -45,9 +52,6 @@ public class CreateTask implements Initializable {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    expectedOutcomeController.setSaveRunnable(this::save);
-    mainInfoController.setSaveRunnable(this::save);
-    effortInfoController.setSaveRunnable(this::save);
-    scheduleController.setSaveRunnable(this::save);
+    saveBtn.disableProperty().bind(validationRegistry.invalidProperty());
   }
 }

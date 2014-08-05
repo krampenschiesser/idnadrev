@@ -106,7 +106,7 @@ public class CreateTaskTest {
     activityController.waitForTasks();
     FXPlatform.waitForFX();
     FXPlatform.invokeLater(() -> {
-      controller.save();
+      createTask.save();
     });
     activityController.waitForDataSource();
 
@@ -145,7 +145,7 @@ public class CreateTaskTest {
     activityController.waitForTasks();
     FXPlatform.waitForFX();
     FXPlatform.invokeLater(() -> {
-      controller.save();
+      createTask.save();
     });
     activityController.waitForDataSource();
 
@@ -181,7 +181,7 @@ public class CreateTaskTest {
     activityController.waitForTasks();
     FXPlatform.waitForFX();
     FXPlatform.invokeLater(() -> {
-      controller.save();
+      createTask.save();
     });
     activityController.waitForDataSource();
   }
@@ -226,7 +226,7 @@ public class CreateTaskTest {
     activityController.getCurrentExecutorService().waitForAllTasksDone();
 
     FXPlatform.invokeLater(() -> {
-      controller.save();
+      createTask.save();
     });
     activityController.waitForDataSource();
 

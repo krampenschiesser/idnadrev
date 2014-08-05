@@ -17,54 +17,67 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<TabPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"
-         tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-         fx:controller="de.ks.idnadrev.task.create.CreateTask">
-    <tabs>
-        <Tab text="%task.create.main.info">
-            <content>
-                <StackPane>
-                    <children>
-                        <fx:include fx:id="mainInfo" source="MainTaskInfo.fxml"/>
-                    </children>
-                </StackPane>
-            </content>
-        </Tab>
-        <Tab text="%task.create.effort">
-            <content>
-                <StackPane>
-                    <children>
-                        <fx:include fx:id="effortInfo" source="EffortInfo.fxml"/>
-                    </children>
-                </StackPane>
-            </content>
-        </Tab>
-        <Tab text="%task.create.files">
-            <content>
-                <StackPane>
-                    <children>
-                        <fx:include fx:id="fileView" source="../../../file/FileView.fxml"/>
-                    </children>
-                </StackPane>
-            </content>
-        </Tab>
-        <Tab text="%task.create.schedule.info">
-            <content>
-                <StackPane>
-                    <children>
-                        <fx:include fx:id="schedule" source="TaskSchedule.fxml"/>
-                    </children>
-                </StackPane>
-            </content>
-        </Tab>
-        <Tab text="%task.outcome.expected">
-            <content>
-                <StackPane>
-                    <children>
-                        <fx:include fx:id="expectedOutcome" source="TaskOutcome.fxml"/>
-                    </children>
-                </StackPane>
-            </content>
-        </Tab>
-    </tabs>
-</TabPane>
+<GridPane vgap="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="de.ks.idnadrev.task.create.CreateTask">
+    <columnConstraints>
+        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0"/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
+        <RowConstraints minHeight="10.0" vgrow="NEVER"/>
+    </rowConstraints>
+    <children>
+        <TabPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+                 minWidth="-Infinity" tabClosingPolicy="UNAVAILABLE">
+            <tabs>
+                <Tab text="%task.create.main.info">
+                    <content>
+                        <StackPane>
+                            <children>
+                                <fx:include fx:id="mainInfo" source="MainTaskInfo.fxml"/>
+                            </children>
+                        </StackPane>
+                    </content>
+                </Tab>
+                <Tab text="%task.create.effort">
+                    <content>
+                        <StackPane>
+                            <children>
+                                <fx:include fx:id="effortInfo" source="EffortInfo.fxml"/>
+                            </children>
+                        </StackPane>
+                    </content>
+                </Tab>
+                <Tab text="%task.create.files">
+                    <content>
+                        <StackPane>
+                            <children>
+                                <fx:include fx:id="fileView" source="../../../file/FileView.fxml"/>
+                            </children>
+                        </StackPane>
+                    </content>
+                </Tab>
+                <Tab text="%task.create.schedule.info">
+                    <content>
+                        <StackPane>
+                            <children>
+                                <fx:include fx:id="schedule" source="TaskSchedule.fxml"/>
+                            </children>
+                        </StackPane>
+                    </content>
+                </Tab>
+                <Tab text="%task.outcome.expected">
+                    <content>
+                        <StackPane>
+                            <children>
+                                <fx:include fx:id="expectedOutcome" source="TaskOutcome.fxml"/>
+                            </children>
+                        </StackPane>
+                    </content>
+                </Tab>
+            </tabs>
+        </TabPane>
+        <Button fx:id="saveBtn" defaultButton="true" mnemonicParsing="false" onAction="#save" text="%save"
+                GridPane.rowIndex="1"/>
+    </children>
+</GridPane>

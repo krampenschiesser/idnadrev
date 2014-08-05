@@ -42,8 +42,6 @@
         <Slider fx:id="funFactor" blockIncrement="1.0" majorTickUnit="1.0" max="5.0" min="-5.0" minorTickCount="0"
                 showTickLabels="true" showTickMarks="true" snapToTicks="true" GridPane.columnIndex="1"
                 GridPane.rowIndex="4"/>
-        <Button fx:id="saveButton" defaultButton="true" mnemonicParsing="false" onAction="#save" text="%save"
-                GridPane.columnIndex="1" GridPane.rowIndex="5"/>
     </children>
     <columnConstraints>
         <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="10.0"/>
@@ -58,6 +56,5 @@
         <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER"/>
         <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="NEVER"/>
         <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="NEVER"/>
-        <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="TOP" vgrow="NEVER"/>
     </rowConstraints>
 </GridPane>

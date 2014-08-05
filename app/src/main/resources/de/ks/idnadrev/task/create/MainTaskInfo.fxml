@@ -34,10 +34,9 @@
         <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER"/>
         <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER"/>
         <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="NEVER"/>
-        <RowConstraints minHeight="10.0" valignment="TOP" vgrow="SOMETIMES"/>
+        <RowConstraints minHeight="10.0" valignment="TOP" vgrow="ALWAYS"/>
         <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER"/>
-        <RowConstraints minHeight="10.0" valignment="TOP" vgrow="NEVER"/>
-        <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="TOP" vgrow="NEVER"/>
+        <RowConstraints minHeight="30.0" valignment="TOP" vgrow="SOMETIMES"/>
     </rowConstraints>
     <children>
         <Label styleClass="title" stylesheets="@../../idnadrev.css" text="%task.create.main.title"
@@ -82,8 +81,6 @@
         </StackPane>
 
         <FlowPane fx:id="tagPane" hgap="5.0" vgap="5.0" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
-        <Button fx:id="saveButton" defaultButton="true" mnemonicParsing="false" onAction="#save" text="%save"
-                GridPane.columnIndex="1" GridPane.rowIndex="10"/>
 
     </children>
     <padding>

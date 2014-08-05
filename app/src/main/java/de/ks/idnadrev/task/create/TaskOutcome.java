@@ -18,7 +18,6 @@ import de.ks.BaseController;
 import de.ks.idnadrev.entity.Task;
 import de.ks.text.AsciiDocEditor;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 
 import java.net.URL;
@@ -27,11 +26,8 @@ import java.util.ResourceBundle;
 public class TaskOutcome extends BaseController<Task> {
   @FXML
   protected StackPane expectedOutcomeContainer;
-  @FXML
-  private Button saveButton;
 
   protected AsciiDocEditor expectedOutcome;
-  protected Runnable saveRunnable;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -40,8 +36,6 @@ public class TaskOutcome extends BaseController<Task> {
       expectedOutcomeContainer.getChildren().add(loader.getView());
       expectedOutcome.hideActionBar();
     }, controller.getJavaFXExecutor());
-
-    saveButton.disableProperty().bind(validationRegistry.invalidProperty());
   }
 
   @Override
@@ -52,14 +46,5 @@ public class TaskOutcome extends BaseController<Task> {
   @Override
   public void duringSave(Task model) {
     model.getOutcome().setExpectedOutcome(expectedOutcome.getText());
-  }
-
-  @FXML
-  void save() {
-    saveRunnable.run();
-  }
-
-  public void setSaveRunnable(Runnable run) {
-    this.saveRunnable = run;
   }
 }
