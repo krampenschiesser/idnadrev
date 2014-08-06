@@ -214,7 +214,7 @@ public class ViewTasks extends BaseController<List<Task>> {
     moreBtn.sceneProperty().addListener((p, o, n) -> {
       if (n == null && popOver != null) {
         popOver.hide();
-      } else {
+      } else if (n != null) {
         ReadOnlyBooleanProperty focused = moreBtn.getScene().getWindow().focusedProperty();
         focused.removeListener(this.hideOnFocusLeave);
         focused.addListener(this.hideOnFocusLeave);
