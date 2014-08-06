@@ -36,6 +36,9 @@ public class Upgrade041 extends PersistentVersionUpgrade {
     log.info("Create schedule table and reference to task for version upgrade from 0.4.0 to 0.4.1");
 
     String addScheduleColumn = "alter table task add state varchar(255)\n";
+    String fillColumn = "update task set state = 'NONE'\n";
+
     executeStatement(addScheduleColumn);
+    executeStatement(fillColumn);
   }
 }
