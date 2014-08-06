@@ -38,6 +38,7 @@ public class ActivityCfg {
   protected final List<ViewLink> viewLinks = new ArrayList<>();
   protected final List<TaskLink> taskLinks = new ArrayList<>();
   protected final List<ActivityLink> activityLinks = new ArrayList<>();
+  protected final List<Class<?>> additionalControllers = new ArrayList<>();
 
   private Class<?> currentController;
   private NavigationHint navigationHint;
@@ -119,6 +120,14 @@ public class ActivityCfg {
 
   public List<ActivityLink> getActivityLinks() {
     return activityLinks;
+  }
+
+  public List<Class<?>> getAdditionalControllers() {
+    return additionalControllers;
+  }
+
+  public void addAdditionalController(Class<?> controller) {
+    additionalControllers.add(controller);
   }
 
   public Class<? extends DataSource<?>> getDataSource() {

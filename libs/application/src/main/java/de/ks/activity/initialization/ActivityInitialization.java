@@ -73,6 +73,7 @@ public class ActivityInitialization {
       loadController(next.getSourceController());
       loadController(next.getTargetController());
     }
+    activityCfg.getAdditionalControllers().forEach(c -> loadController(c));
     preloads.values().forEach(l -> l.join());
   }
 
@@ -186,11 +187,12 @@ public class ActivityInitialization {
     return controllers.get(targetController).getRight();
   }
 
-  public Object getControllerInstance(Class<?> targetController) {
+  @SuppressWarnings("unchecked")
+  public <T> T getControllerInstance(Class<T> targetController) {
     if (!controllers.containsKey(targetController)) {
       throw new IllegalArgumentException("Controller " + targetController + " is not registered. Registered are " + controllers.keySet());
     }
-    return controllers.get(targetController).getLeft();
+    return (T) controllers.get(targetController).getLeft();
   }
 
   public Collection<Object> getControllers() {
