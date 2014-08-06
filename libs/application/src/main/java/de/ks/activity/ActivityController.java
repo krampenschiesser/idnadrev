@@ -65,7 +65,7 @@ public class ActivityController {
   protected final Deque<ActivityCfg> activities = new LinkedList<>();
   protected final Map<String, ActivityCfg> registeredActivities = new HashMap<>();
   protected final ReentrantLock lock = new ReentrantLock(true);
-  private CompletableFuture<?> finishingFutures;
+  private volatile CompletableFuture<?> finishingFutures;
 
   public void resumePreviousActivity() {
     resumePreviousActivity(null);
