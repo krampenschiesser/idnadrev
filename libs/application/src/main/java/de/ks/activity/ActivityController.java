@@ -357,26 +357,28 @@ public class ActivityController {
 
   @SuppressWarnings("unchecked")
   public void reload() {
-    waitForDataSource();
-    DataSource dataSource = store.getDatasource();
-    SuspendablePooledExecutorService executorService = getCurrentExecutorService();
-    JavaFXExecutorService javafxExecutor = getJavaFXExecutor();
+    loadInExecutor("reload", () -> {
+      waitForDataSource();
+      DataSource dataSource = store.getDatasource();
+      SuspendablePooledExecutorService executorService = getCurrentExecutorService();
+      JavaFXExecutorService javafxExecutor = getJavaFXExecutor();
 
-    CompletableFuture<Object> load = CompletableFuture.supplyAsync(() -> dataSource.loadModel(m -> {
-      initialization.getDataStoreCallbacks().forEach(c -> c.duringLoad(m));
-    }), executorService);
-    finishingFutures = load.thenApplyAsync((value) -> {
-      log.debug("Loaded model '{}'", value);
-      CDI.current().select(ActivityStore.class).get().setModel(value);
-      return value;
-    }, javafxExecutor).thenAcceptAsync((value) -> {
-      EventBus eventBus = CDI.current().select(EventBus.class).get();
-      eventBus.post(new ActivityLoadFinishedEvent(value));
-    }, javafxExecutor);
+      CompletableFuture<Object> load = CompletableFuture.supplyAsync(() -> dataSource.loadModel(m -> {
+        initialization.getDataStoreCallbacks().forEach(c -> c.duringLoad(m));
+      }), executorService);
+      finishingFutures = load.thenApplyAsync((value) -> {
+        log.debug("Loaded model '{}'", value);
+        CDI.current().select(ActivityStore.class).get().setModel(value);
+        return value;
+      }, javafxExecutor).thenAcceptAsync((value) -> {
+        EventBus eventBus = CDI.current().select(EventBus.class).get();
+        eventBus.post(new ActivityLoadFinishedEvent(value));
+      }, javafxExecutor);
 
-    load.exceptionally((t) -> {
-      log.error("Could not load DataSource {} for activity {}", dataSource, getCurrentActivityId(), t);
-      return null;
+      load.exceptionally((t) -> {
+        log.error("Could not load DataSource {} for activity {}", dataSource, getCurrentActivityId(), t);
+        return null;
+      });
     });
   }
 
