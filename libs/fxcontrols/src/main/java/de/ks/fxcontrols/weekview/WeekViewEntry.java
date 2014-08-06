@@ -12,7 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.calendar.week;
+
+package de.ks.fxcontrols.weekview;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
@@ -25,7 +26,7 @@ public class WeekViewEntry {
 
   protected LocalDateTime start;
   protected Duration duration;
-  private Button node;
+  protected Button node;
 
   public WeekViewEntry(String title, LocalDateTime start, Duration duration) {
     this.title = title;

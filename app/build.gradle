@@ -18,6 +18,7 @@ apply plugin: 'application'
 mainClassName = "de.ks.idnadrev.Application"
 
 dependencies {
+    compile project(":libs:fxcontrols")
     compile project(":libs:application")
     compile project(":libs:scheduler")
     compile "commons-codec:commons-codec:$commonscodec"

@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-package de.ks.calendar.week;
+package de.ks.fxcontrols.weekview;
 
-import de.ks.LauncherRunner;
+import de.ks.FXTestRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -23,8 +23,9 @@ import java.time.LocalDate;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(LauncherRunner.class)
+@RunWith(FXTestRunner.class)
 public class WeekViewTest {
+
   @Test
   public void testGetFirstDayOfWeek() throws Exception {
     WeekView weekView = new WeekView();
