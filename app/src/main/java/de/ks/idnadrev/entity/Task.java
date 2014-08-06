@@ -81,6 +81,8 @@ public class Task extends NamedPersistentObject<Task> implements FileContainer<T
   @OneToMany(mappedBy = "parent", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
   protected Set<Task> children = new HashSet<>();
 
+  @Enumerated(EnumType.STRING)
+  protected TaskState state = TaskState.NONE;
   protected String delegationReason;
 
   @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
@@ -173,8 +175,9 @@ public class Task extends NamedPersistentObject<Task> implements FileContainer<T
     }
   }
 
-  public void setFinished(boolean finished) {
+  public Task setFinished(boolean finished) {
     this.finishTime = LocalDateTime.now();
+    return this;
   }
 
   public boolean isFinished() {
@@ -206,12 +209,22 @@ public class Task extends NamedPersistentObject<Task> implements FileContainer<T
     parent.addChild(this);
   }
 
+  public TaskState getState() {
+    return state;
+  }
+
+  public Task setState(TaskState state) {
+    this.state = state;
+    return this;
+  }
+
   public String getDelegationReason() {
     return delegationReason;
   }
 
-  public void setDelegationReason(String delegationReason) {
+  public Task setDelegationReason(String delegationReason) {
     this.delegationReason = delegationReason;
+    return this;
   }
 
   public Context getContext() {

@@ -34,6 +34,7 @@
         <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER"/>
         <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER"/>
         <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="NEVER"/>
+        <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="NEVER"/>
         <RowConstraints minHeight="10.0" valignment="TOP" vgrow="ALWAYS"/>
         <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER"/>
         <RowConstraints minHeight="30.0" valignment="TOP" vgrow="SOMETIMES"/>
@@ -67,20 +68,22 @@
             </children>
         </StackPane>
 
-        <Label text="%task.estimatedTime" GridPane.rowIndex="6"/>
-        <TextField fx:id="estimatedTimeDuration" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+        <Label text="%task.estimatedTime" GridPane.rowIndex="7"/>
+        <TextField fx:id="estimatedTimeDuration" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
 
-        <Label text="%description" GridPane.rowIndex="7"/>
-        <StackPane fx:id="descriptionContainer" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+        <Label text="%description" GridPane.rowIndex="8"/>
+        <StackPane fx:id="descriptionContainer" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
 
-        <Label text="%tags" GridPane.rowIndex="8"/>
-        <StackPane GridPane.columnIndex="1" GridPane.rowIndex="8" GridPane.valignment="TOP" GridPane.vgrow="NEVER">
+        <Label text="%tags" GridPane.rowIndex="9"/>
+        <StackPane GridPane.columnIndex="1" GridPane.rowIndex="9" GridPane.valignment="TOP" GridPane.vgrow="NEVER">
             <children>
                 <fx:include fx:id="tagAdd" source="../../selection/NamedPersistentObjectSelection.fxml"/>
             </children>
         </StackPane>
 
-        <FlowPane fx:id="tagPane" hgap="5.0" vgap="5.0" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
+        <FlowPane fx:id="tagPane" hgap="5.0" vgap="5.0" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
+        <Label text="%task.state" GridPane.rowIndex="6"/>
+        <ComboBox fx:id="state" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
 
     </children>
     <padding>

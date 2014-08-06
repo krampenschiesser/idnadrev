@@ -96,6 +96,7 @@ public class CreateTaskTest {
       controller.description.setText("description");
       controller.contextController.getInput().setText("context");
       controller.estimatedTimeDuration.setText("15min");
+      controller.state.setValue(TaskState.ASAP);
       effortInfo.funFactor.valueProperty().set(3);
       effortInfo.mentalEffort.valueProperty().set(5);
       effortInfo.physicalEffort.valueProperty().set(3);
@@ -119,6 +120,7 @@ public class CreateTaskTest {
     assertEquals(1, tasks.size());
     Task task = tasks.get(0);
     assertEquals("name", task.getName());
+    assertEquals(TaskState.ASAP, task.getState());
     assertEquals("description", task.getDescription());
     assertNotNull(task.getContext());
     assertEquals("context", task.getContext().getName());

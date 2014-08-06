@@ -20,6 +20,7 @@ import de.ks.application.fxml.DefaultLoader;
 import de.ks.idnadrev.entity.Context;
 import de.ks.idnadrev.entity.Tag;
 import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.entity.TaskState;
 import de.ks.idnadrev.selection.NamedPersistentObjectSelection;
 import de.ks.idnadrev.tag.TagInfo;
 import de.ks.persistence.PersistentWork;
@@ -30,8 +31,11 @@ import de.ks.validation.validators.DurationValidator;
 import de.ks.validation.validators.NamedEntityMustNotExistValidator;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
@@ -65,10 +69,13 @@ public class MainTaskInfo extends BaseController<Task> {
   protected TextField estimatedTimeDuration;
   @FXML
   protected FlowPane tagPane;
+  @FXML
+  protected ComboBox<TaskState> state;
 
   protected AsciiDocEditor description;
   protected DurationValidator durationValidator;
   protected Runnable saveRunnable;
+  protected final ObservableList<TaskState> states = FXCollections.observableArrayList();
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -104,6 +111,12 @@ public class MainTaskInfo extends BaseController<Task> {
     project.selectedProperty().bindBidirectional(store.getBinding().getBooleanProperty(Task.class, (t) -> t.isProject()));
 
     tagAddController.setOnAction(e -> addTag(tagAddController.getInput().getText()));
+
+    state.setItems(states);
+    states.add(TaskState.NONE);
+    states.add(TaskState.ASAP);
+    states.add(TaskState.DELEGATED);
+    states.add(TaskState.LATER);
   }
 
   private Callback<AutoCompletionBinding.ISuggestionRequest, Collection<String>> getEstimatedTimeAutoCompletion() {
@@ -136,6 +149,7 @@ public class MainTaskInfo extends BaseController<Task> {
   @Override
   protected void onRefresh(Task model) {
     this.name.requestFocus();
+    this.state.setValue(model.getState());
 
     Duration estimatedTime = model.getEstimatedTime();
 
@@ -163,6 +177,7 @@ public class MainTaskInfo extends BaseController<Task> {
     }
 
     task.setEstimatedTime(getEstimatedDuration());
+    task.setState(state.getValue());
 
     tagPane.getChildren().stream().map(c -> new Tag(c.getId())).forEach(tag -> {
       Tag readTag = PersistentWork.forName(Tag.class, tag.getName());
