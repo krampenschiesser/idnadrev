@@ -22,6 +22,7 @@ import de.ks.file.FileStore;
 import de.ks.i18n.Localized;
 import de.ks.idnadrev.entity.Context;
 import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.entity.TaskState;
 import de.ks.idnadrev.task.create.CreateTaskActivity;
 import de.ks.idnadrev.task.finish.FinishTaskActivity;
 import de.ks.idnadrev.task.work.WorkOnTaskActivity;
@@ -29,19 +30,20 @@ import de.ks.persistence.PersistentWork;
 import de.ks.text.view.AsciiDocContent;
 import de.ks.text.view.AsciiDocViewer;
 import javafx.application.Platform;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.NodeOrientation;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.StackPane;
+import org.controlsfx.control.PopOver;
+import org.controlsfx.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +65,7 @@ public class ViewTasks extends BaseController<List<Task>> {
   @FXML
   protected TreeTableView<Task> tasksView;
   @FXML
-  protected TreeTableColumn<Task, String> taskViewNameColumn;
+  protected TreeTableColumn<Task, Task> taskViewNameColumn;
   @FXML
   protected TreeTableColumn<Task, String> taskViewEstimatedTimeColumn;
   @FXML
@@ -76,6 +78,8 @@ public class ViewTasks extends BaseController<List<Task>> {
   protected Label estimatedTime;
   @FXML
   protected Label spentTime;
+  @FXML
+  protected Label state;
   @FXML
   protected Hyperlink parentProject;
   @FXML
@@ -98,6 +102,12 @@ public class ViewTasks extends BaseController<List<Task>> {
   protected Button show;
   @FXML
   protected Button delete;
+  @FXML
+  protected Button later;
+  @FXML
+  protected Button asap;
+  @FXML
+  protected Button moreBtn;
 
   @FXML
   protected TextField searchField;
@@ -114,6 +124,9 @@ public class ViewTasks extends BaseController<List<Task>> {
   private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern(Localized.get("fullDate"));
 
   private Predicate<Task> filter = t -> true;
+  private Dialog dialog;
+  private PopOver popOver;
+  private ChangeListener<Boolean> hideOnFocusLeave;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -132,17 +145,36 @@ public class ViewTasks extends BaseController<List<Task>> {
 
     LastExecutionGroup<String> lastExecutionGroup = new LastExecutionGroup<>(300, controller.getCurrentExecutorService());
     ChangeListener<String> listener = (observable, oldValue, newValue) -> {
-      filter = createFilter();
-      TreeItem<Task> root = buildTreeStructure(new ArrayList<>(tasks));
-      tasksView.setRoot(root);
-      selectBest(root);
+      refreshFilter();
     };
     searchField.textProperty().addListener(listener);
     contextSelection.getSelectionModel().selectedItemProperty().addListener(listener);
 
     ReadOnlyObjectProperty<TreeItem<Task>> selectedItemProperty = tasksView.getSelectionModel().selectedItemProperty();
     selectedItemProperty.addListener((p, o, n) -> applyTask(n));
-    taskViewNameColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getValue().getName()));
+    taskViewNameColumn.setCellFactory(param -> {
+      TreeTableCell<Task, Task> cell = new TreeTableCell<Task, Task>() {
+        @Override
+        protected void updateItem(Task item, boolean empty) {
+          super.updateItem(item, empty);
+          if (item != null) {
+            setText(item.getName());
+            if (item.isFinished()) {
+              getTreeTableRow().getStyleClass().add("taskViewFinished");
+            } else {
+              getTreeTableRow().getStyleClass().remove("taskViewFinished");
+            }
+          } else {
+            setText("");
+            getTreeTableRow().getStyleClass().remove("taskViewFinished");
+          }
+        }
+      };
+
+      return cell;
+    });
+    taskViewNameColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getValue()));
+
     taskViewEstimatedTimeColumn.setCellValueFactory(param -> new SimpleStringProperty(parseDuration(param.getValue().getValue().getEstimatedTime())));
     taskViewCreationTimeColumn.setCellValueFactory(param -> {
       TreeItem<Task> treeItem = param.getValue();
@@ -157,6 +189,8 @@ public class ViewTasks extends BaseController<List<Task>> {
     edit.disableProperty().bind(disable);
     show.disableProperty().bind(disable);
     delete.disableProperty().bind(disable);
+    later.disableProperty().bind(disable);
+    asap.disableProperty().bind(disable);
 
     CompletableFuture.supplyAsync(() -> PersistentWork.from(Context.class).stream().map(c -> c.getName()).collect(Collectors.toList()), controller.getCurrentExecutorService())//
             .thenAcceptAsync(contextNames -> {
@@ -171,9 +205,33 @@ public class ViewTasks extends BaseController<List<Task>> {
         e.consume();
       }
     });
+
+    this.hideOnFocusLeave = (fp, fo, fn) -> {
+      if (!fn && popOver != null) {
+        popOver.hide();
+      }
+    };
+    moreBtn.sceneProperty().addListener((p, o, n) -> {
+      if (n == null && popOver != null) {
+        popOver.hide();
+      } else {
+        ReadOnlyBooleanProperty focused = moreBtn.getScene().getWindow().focusedProperty();
+        focused.removeListener(this.hideOnFocusLeave);
+        focused.addListener(this.hideOnFocusLeave);
+      }
+    });
+  }
+
+  protected void refreshFilter() {
+    filter = createFilter();
+    TreeItem<Task> root = buildTreeStructure(new ArrayList<>(tasks));
+    tasksView.setRoot(root);
+    selectBest(root);
   }
 
   protected Predicate<Task> createFilter() {
+    TaskFilterView filterView = activityInitialization.getControllerInstance(TaskFilterView.class);
+
     return task -> {
       boolean hasContextFilter = contextSelection.getValue() != null && !contextSelection.getValue().trim().isEmpty();
       if (hasContextFilter) {
@@ -221,7 +279,7 @@ public class ViewTasks extends BaseController<List<Task>> {
       spentTime.setText(parseDuration(task.getTotalWorkDuration()));
       parentProject.setText(task.getParent() != null ? task.getParent().getName() : null);
 
-
+      state.setText(task.getState().name());
       setEffortProgress(task.getPhysicalEffort().getAmount(), physicalEffort, RECOVERING_EFFORT);
       setEffortProgress(task.getMentalEffort().getAmount(), mentalEffort, RECOVERING_EFFORT);
       setEffortProgress(task.getFunFactor().getAmount(), funFactor, NEGATIVE_FUN_FACTOR);
@@ -325,6 +383,33 @@ public class ViewTasks extends BaseController<List<Task>> {
     controller.reload();
   }
 
+  @FXML
+  public void scheduleAsap() {
+    PersistentWork.run(em -> {
+      Task task = tasksView.getSelectionModel().getSelectedItem().getValue();
+      PersistentWork.reload(task).setState(TaskState.ASAP);
+    });
+  }
+
+  @FXML
+  public void scheduleLater() {
+    PersistentWork.run(em -> {
+      Task task = tasksView.getSelectionModel().getSelectedItem().getValue();
+      PersistentWork.reload(task).setState(TaskState.LATER);
+    });
+  }
+
+  @FXML
+  public void showMoreFilters() {
+    TaskFilterView filter = activityInitialization.getControllerInstance(TaskFilterView.class);
+    Node filterView = activityInitialization.getViewForController(TaskFilterView.class);
+    popOver = new PopOver(filterView);
+    popOver.setDetachable(true);
+    popOver.setDetached(true);
+    popOver.setCornerRadius(4);
+    popOver.show(moreBtn);
+  }
+
   @Override
   protected void onRefresh(List<Task> loaded) {
     tasks.clear();
@@ -381,6 +466,7 @@ public class ViewTasks extends BaseController<List<Task>> {
     });
     loaded.stream().filter(filter).sorted((o1, o2) -> o1.getName().compareTo(o2.getName())).forEach((task) -> {
       for (; task.getParent() != null; task = task.getParent()) {
+        task2TreeItem.putIfAbsent(task.getParent(), new TreeItem<>(task.getParent()));
         TreeItem<Task> parentItem = task2TreeItem.get(task.getParent());
         TreeItem<Task> childItem = task2TreeItem.get(task);
         if (!parentItem.getChildren().contains(childItem)) {
@@ -402,4 +488,5 @@ public class ViewTasks extends BaseController<List<Task>> {
     }
     root.getValue().setEstimatedTime(total);
   }
+
 }

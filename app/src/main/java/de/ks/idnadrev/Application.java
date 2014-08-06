@@ -30,7 +30,6 @@ import java.util.concurrent.ExecutionException;
 public class Application {
   private static final Logger log = LoggerFactory.getLogger(Application.class);
   public static final Versioning versioning = new Versioning(getVersionFile(), Application.class);
-  ;
 
   public static void main(String[] args) throws ExecutionException, InterruptedException {
     log.info("Starting {}, currentVersion={}, lastVersion = ", versioning.getVersionInfo().getDescription(), versioning.getCurrentVersion(), versioning.getLastVersion());

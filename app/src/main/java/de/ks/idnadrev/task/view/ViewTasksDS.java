@@ -14,14 +14,15 @@
  */
 package de.ks.idnadrev.task.view;
 
+import de.ks.activity.initialization.ActivityInitialization;
 import de.ks.datasource.ListDataSource;
 import de.ks.idnadrev.entity.Task;
 import de.ks.persistence.PersistentWork;
 import de.ks.persistence.QueryConsumer;
-import de.ks.reflection.PropertyPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.enterprise.inject.spi.CDI;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -32,10 +33,11 @@ public class ViewTasksDS implements ListDataSource<Task> {
 
   @Override
   public List<Task> loadModel(Consumer<List<Task>> furtherProcessing) {
+    TaskFilterView taskFilterView = CDI.current().select(ActivityInitialization.class).get().getControllerInstance(TaskFilterView.class);
+    taskFilterView.applyFilterOnDS(this);
+
     return PersistentWork.wrap(() -> {
       List<Task> from = PersistentWork.from(Task.class, (root, query, builder) -> {
-        String finishTime = PropertyPath.property(Task.class, (t) -> t.getFinishTime());
-        query.where(root.get(finishTime).isNull());
         if (filter != null) {
           filter.accept(root, query, builder);
         }

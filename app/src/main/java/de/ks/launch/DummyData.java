@@ -83,6 +83,8 @@ public class DummyData extends Service {
       effort.getFunFactor().setAmount(4);
 
       persist(effort);
+
+      persist(new Task("finished task").setDescription("yes it is done").setFinished(true));
     }
   }
 

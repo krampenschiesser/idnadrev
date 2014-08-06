@@ -34,3 +34,8 @@
     -fx-font-size: 1.25em;
     -fx-font-weight: bold;
 }
+
+.taskViewFinished {
+    -fx-font-style: italic;
+    -fx-text-fill: derive(black, 10%);
+}
