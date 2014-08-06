@@ -1,0 +1,23 @@
+.week-bg-even {
+    -fx-background-color: derive(-fx-background, 100%);
+}
+.week-bg-odd {
+    -fx-background-color: derive(-fx-background, 0%);/*maybe use 95% later*/
+}
+
+.week-weekfield {
+  -fx-font-weight: bold;
+}
+.week-yearfield {
+  -fx-font-weight: bold;
+}
+
+.webviewContainer {
+    -fx-border-color: darkgrey;
+    -fx-border-radius: 4;
+}
+
+.editorViewLabel {
+    -fx-font-size: 1.25em;
+    -fx-font-weight: bold;
+}
