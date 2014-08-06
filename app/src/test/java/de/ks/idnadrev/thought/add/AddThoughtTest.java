@@ -106,6 +106,7 @@ public class AddThoughtTest {
 
   @Test
   public void testClipboardSingleLineString() throws Exception {
+    FXPlatform.waitForFX();
     String clipboardText = "singleClip";
     copy2Clipboard(clipboardText);
     FXPlatform.waitForFX();
