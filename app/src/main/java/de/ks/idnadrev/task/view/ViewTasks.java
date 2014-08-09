@@ -152,6 +152,7 @@ public class ViewTasks extends BaseController<List<Task>> {
 
     ReadOnlyObjectProperty<TreeItem<Task>> selectedItemProperty = tasksView.getSelectionModel().selectedItemProperty();
     selectedItemProperty.addListener((p, o, n) -> applyTask(n));
+
     taskViewNameColumn.setCellFactory(param -> {
       TreeTableCell<Task, Task> cell = new TreeTableCell<Task, Task>() {
         @Override
@@ -389,6 +390,7 @@ public class ViewTasks extends BaseController<List<Task>> {
       Task task = tasksView.getSelectionModel().getSelectedItem().getValue();
       PersistentWork.reload(task).setState(TaskState.ASAP);
     });
+    controller.reload();
   }
 
   @FXML
@@ -397,6 +399,7 @@ public class ViewTasks extends BaseController<List<Task>> {
       Task task = tasksView.getSelectionModel().getSelectedItem().getValue();
       PersistentWork.reload(task).setState(TaskState.LATER);
     });
+    controller.reload();
   }
 
   @FXML

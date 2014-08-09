@@ -18,34 +18,46 @@ import de.ks.BaseController;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.TaskState;
 import de.ks.reflection.PropertyPath;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.ResourceBundle;
 
 public class TaskFilterView extends BaseController<Void> {
   @FXML
   protected TextField description;
+
   @FXML
-  protected ComboBox<TaskState> state;
+  protected CheckBox showAsap;
+  @FXML
+  protected CheckBox showLater;
+  @FXML
+  protected CheckBox showDelegated;
   @FXML
   protected CheckBox showFinished;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    state.setItems(FXCollections.observableList(Arrays.asList(TaskState.NONE, TaskState.LATER, TaskState.ASAP, TaskState.DELEGATED)));
-    state.setValue(TaskState.NONE);
+    description.setOnKeyReleased(e -> {
+      if (e.getCode() == KeyCode.ESCAPE) {
+        if (!description.textProperty().getValueSafe().trim().isEmpty()) {
+          description.setText("");
+          e.consume();
+        }
+      }
+    });
+
 
     description.textProperty().addListener((p, o, n) -> triggerFilter());
-    state.valueProperty().addListener((p, o, n) -> triggerFilter());
+    showAsap.selectedProperty().addListener((p, o, n) -> triggerFilter());
+    showLater.selectedProperty().addListener((p, o, n) -> triggerFilter());
+    showDelegated.selectedProperty().addListener((p, o, n) -> triggerFilter());
     showFinished.selectedProperty().addListener((p, o, n) -> triggerFilter());
   }
 
@@ -65,8 +77,20 @@ public class TaskFilterView extends BaseController<Void> {
       }
 
       Path<String> statePath = root.get(PropertyPath.property(Task.class, t -> t.getState()));
-      Predicate stateEquals = builder.equal(statePath, state.getValue());
-      predicates.add(stateEquals);
+      ArrayList<Predicate> stateOrCombination = new ArrayList<>();
+
+      stateOrCombination.add(builder.equal(statePath, TaskState.NONE));
+      if (showAsap.isSelected()) {
+        stateOrCombination.add(builder.equal(statePath, TaskState.ASAP));
+      }
+      if (showLater.isSelected()) {
+        stateOrCombination.add(builder.equal(statePath, TaskState.LATER));
+      }
+      if (showDelegated.isSelected()) {
+        stateOrCombination.add(builder.equal(statePath, TaskState.DELEGATED));
+      }
+      Predicate or = builder.or(stateOrCombination.toArray(new Predicate[stateOrCombination.size()]));
+      predicates.add(or);
 
       String finishTime = PropertyPath.property(Task.class, (t) -> t.getFinishTime());
       if (!showFinished.isSelected()) {
