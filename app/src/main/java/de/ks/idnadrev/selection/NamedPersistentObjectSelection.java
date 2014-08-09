@@ -18,6 +18,7 @@ import com.google.common.base.Ascii;
 import de.ks.activity.ActivityController;
 import de.ks.executor.JavaFXExecutorService;
 import de.ks.executor.SuspendablePooledExecutorService;
+import de.ks.executor.group.LastTextChange;
 import de.ks.i18n.Localized;
 import de.ks.javafx.FxCss;
 import de.ks.persistence.PersistentWork;
@@ -44,6 +45,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import org.controlsfx.dialog.Dialog;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.CDI;
@@ -55,6 +58,7 @@ import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 
 public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> implements Initializable {
+  private static final Logger log = LoggerFactory.getLogger(NamedPersistentObjectSelection.class);
   @FXML
   protected TextField input;
   @FXML
@@ -70,6 +74,8 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
   private Dialog dialog;
   private CustomAutoCompletionBinding autoCompletion;
   private EventHandler<ActionEvent> onAction;
+  private NamedPersistentObjectAutoCompletion<T> namedPersistentObjectAutoCompletion;
+  private LastTextChange lastInputTextChange;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -99,7 +105,11 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
 
     browse.disableProperty().bind(input.disabledProperty());
 
-    selectedValue.bind(tableView.getSelectionModel().selectedItemProperty());
+    tableView.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
+      if (n != null) {
+        selectedValue.set(n);
+      }
+    });
     selectedValue.addListener((p, o, n) -> {
       if (n != null) {
         input.setText(n.getName());
@@ -107,6 +117,14 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
           onAction.handle(new ActionEvent());
         }
       }
+    });
+  }
+
+  protected void findAndSetLastValue(String name) {
+    T namedObject = PersistentWork.forName(entityClass, name);
+
+    controller.getJavaFXExecutor().submit(() -> {
+      setSelectedValue(namedObject);
     });
   }
 
@@ -119,7 +137,12 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
     this.entityClass = namedEntity;
     this.filter = filter;
     Platform.runLater(() -> {
-      autoCompletion = new CustomAutoCompletionBinding(input, new NamedPersistentObjectAutoCompletion<T>(entityClass, filter));
+      namedPersistentObjectAutoCompletion = new NamedPersistentObjectAutoCompletion<>(entityClass, filter);
+      autoCompletion = new CustomAutoCompletionBinding(input, namedPersistentObjectAutoCompletion);
+    });
+    lastInputTextChange = new LastTextChange(input, controller.getCurrentExecutorService());
+    lastInputTextChange.registerHandler(cf -> {
+      cf.thenAccept(this::findAndSetLastValue);
     });
     return this;
   }

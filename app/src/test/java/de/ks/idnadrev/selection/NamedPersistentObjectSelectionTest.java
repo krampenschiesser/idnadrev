@@ -44,6 +44,7 @@ public class NamedPersistentObjectSelectionTest {
   private NamedPersistentObjectSelection<Thought> selection;
   private SuspendablePooledExecutorService executorService;
   private JavaFXExecutorService fxExecutorService;
+  private ActivityController mock;
 
   @Before
   public void setUp() throws Exception {
@@ -52,8 +53,14 @@ public class NamedPersistentObjectSelectionTest {
 
     executorService = new SuspendablePooledExecutorService("test");
     fxExecutorService = new JavaFXExecutorService();
+
     DefaultLoader<Node, NamedPersistentObjectSelection<Thought>> loader = new DefaultLoader<>(NamedPersistentObjectSelection.class);
     selection = loader.getController();
+
+    mock = Mockito.mock(ActivityController.class);
+    Mockito.when(mock.getCurrentExecutorService()).thenReturn(executorService);
+    Mockito.when(mock.getJavaFXExecutor()).thenReturn(fxExecutorService);
+    selection.controller = mock;
 
     selection.from(Thought.class);
   }
@@ -135,12 +142,18 @@ public class NamedPersistentObjectSelectionTest {
   }
 
   @Test
-  public void testOpenTable() throws Exception {
-    ActivityController mock = Mockito.mock(ActivityController.class);
-    Mockito.when(mock.getCurrentExecutorService()).thenReturn(executorService);
-    Mockito.when(mock.getJavaFXExecutor()).thenReturn(fxExecutorService);
-    selection.controller = mock;
+  public void testSelectedValueByName() throws Exception {
+    FXPlatform.invokeLater(() -> {
+      selection.input.setText("test1");
+    });
+    while (selection.getSelectedValue() == null) {
+      Thread.sleep(100);
+    }
+    assertNotNull(selection.getSelectedValue());
+  }
 
+  @Test
+  public void testOpenTable() throws Exception {
     FXPlatform.invokeLater(() -> selection.showBrowser());
     executorService.waitForAllTasksDoneAndDrain();
     ObservableList<Thought> items = selection.tableView.getItems();
@@ -154,7 +167,6 @@ public class NamedPersistentObjectSelectionTest {
     assertSame(selectedItem, selection.selectedValue.get());
     assertEquals(selectedItem.getName(), selection.input.textProperty().getValueSafe());
 
-    Mockito.verify(mock);
   }
 
 }
