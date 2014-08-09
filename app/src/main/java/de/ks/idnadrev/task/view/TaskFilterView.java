@@ -18,12 +18,12 @@ import de.ks.BaseController;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.TaskState;
 import de.ks.idnadrev.selection.NamedPersistentObjectSelection;
+import de.ks.javafx.ClearTextOnEscape;
 import de.ks.persistence.PersistentWork;
 import de.ks.reflection.PropertyPath;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
 
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
@@ -47,20 +47,14 @@ public class TaskFilterView extends BaseController<Void> {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    description.setOnKeyReleased(e -> {
-      if (e.getCode() == KeyCode.ESCAPE) {
-        if (!description.textProperty().getValueSafe().trim().isEmpty()) {
-          description.setText("");
-          e.consume();
-        }
-      }
-    });
+    description.setOnKeyReleased(new ClearTextOnEscape());
 
     String projectKey = PropertyPath.property(Task.class, (t) -> t.isProject());
     parentProjectController.from(Task.class, (root, query, builder) -> {
       query.where(builder.isTrue(root.get(projectKey)));
     }).enableValidation();
     parentProjectController.hideBrowserBtn();
+    parentProjectController.getInput().setOnKeyReleased(new ClearTextOnEscape());
 
 
     parentProjectController.selectedValueProperty().addListener((p, o, n) -> triggerFilter());
@@ -129,4 +123,5 @@ public class TaskFilterView extends BaseController<Void> {
     }
     return parentProjectController.getSelectedValue();
   }
+
 }
