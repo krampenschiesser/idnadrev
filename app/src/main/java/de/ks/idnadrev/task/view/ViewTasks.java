@@ -174,7 +174,7 @@ public class ViewTasks extends BaseController<List<Task>> {
     });
     taskViewNameColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getValue()));
 
-    taskViewEstimatedTimeColumn.setCellValueFactory(param -> new SimpleStringProperty(parseDuration(param.getValue().getValue().getEstimatedTime())));
+    taskViewEstimatedTimeColumn.setCellValueFactory(param -> new SimpleStringProperty(parseDuration(param.getValue().getValue().getEstimatedTime(), false)));
     taskViewCreationTimeColumn.setCellValueFactory(param -> {
       TreeItem<Task> treeItem = param.getValue();
       Task task = treeItem.getValue();
@@ -283,8 +283,8 @@ public class ViewTasks extends BaseController<List<Task>> {
       }
       name.setText(task.getName());
       context.setText(task.getContext() != null ? task.getContext().getName() : "");
-      estimatedTime.setText(parseDuration(task.isProject() ? task.getTotalEstimatedTime() : task.getEstimatedTime()));
-      spentTime.setText(parseDuration(task.getTotalWorkDuration()));
+      estimatedTime.setText(parseDuration(task.isProject() ? task.getTotalEstimatedTime() : task.getEstimatedTime(), true));
+      spentTime.setText(parseDuration(task.getTotalWorkDuration(), true));
       parentProject.setText(task.getParent() != null ? task.getParent().getName() : null);
 
       state.setText(task.getState().name());
@@ -309,16 +309,16 @@ public class ViewTasks extends BaseController<List<Task>> {
     }
   }
 
-  private String parseDuration(Duration duration) {
+  private String parseDuration(Duration duration, boolean useShortFormat) {
     if (duration == null) {
       return null;
     } else {
       long hours = duration.toHours();
-      if (hours == 0) {
+      if (hours == 0 && useShortFormat) {
         return duration.toMinutes() + Localized.get("duration.minutes");
       } else {
         long remainingMinutes = duration.minus(Duration.ofHours(hours)).toMinutes();
-        return hours + ":" + remainingMinutes + Localized.get("duration.hours.short");
+        return String.format("%02d", hours) + ":" + String.format("%02d", remainingMinutes) + Localized.get("duration.hours.short");
       }
     }
   }
