@@ -70,14 +70,9 @@
             </rowConstraints>
             <children>
                 <Label text="%task.context" GridPane.rowIndex="2"/>
-                <Label text="%task.parent" GridPane.rowIndex="5"/>
-                <Hyperlink fx:id="parentProject" graphicTextGap="0.0" onAction="#selectParentProject"
-                           styleClass="editorViewLabel" text="Hyperlink" GridPane.columnIndex="1"
-                           GridPane.rowIndex="5"/>
                 <Label fx:id="name" styleClass="title" text="Label" GridPane.columnSpan="2147483647"/>
                 <Label fx:id="context" styleClass="editorViewLabel" text="Label" GridPane.columnIndex="1"
                        GridPane.rowIndex="2"/>
-                <Label text="%task.physicalEffort" GridPane.rowIndex="8"/>
                 <Label text="%task.tags" GridPane.rowIndex="11"/>
                 <FlowPane fx:id="tagPane" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="11"/>
                 <StackPane fx:id="description" prefHeight="-1.0" prefWidth="-1.0" GridPane.columnSpan="2147483647"
@@ -100,6 +95,11 @@
                         <Label fx:id="spentTime" styleClass="editorViewLabel" text="Label"/>
                     </children>
                 </GridPane>
+                <Label text="%task.parent" GridPane.rowIndex="5"/>
+                <Hyperlink fx:id="parentProject" graphicTextGap="0.0" onAction="#selectParentProject"
+                           styleClass="editorViewLabel" text="Hyperlink" GridPane.columnIndex="1"
+                           GridPane.rowIndex="5"/>
+                <Label text="%task.physicalEffort" GridPane.rowIndex="8"/>
                 <ProgressBar fx:id="physicalEffort" maxWidth="1.7976931348623157E308" progress="0.75"
                              GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="8"/>
                 <Label text="%task.mentalEffort" GridPane.rowIndex="9"/>
