@@ -12,25 +12,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.javafx;
+package de.ks.javafx.event;
 
+import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 
-public class ClearTextOnEscape implements EventHandler<KeyEvent> {
+import java.util.Arrays;
+import java.util.List;
+
+public class ChainedEventHandler<T extends Event> implements EventHandler<T> {
+  protected final List<EventHandler<T>> chain;
+
+  public ChainedEventHandler(EventHandler<T> first, EventHandler<T> second) {
+    chain = Arrays.asList(first, second);
+  }
+
+  public ChainedEventHandler(EventHandler<T>... handlers) {
+    chain = Arrays.asList(handlers);
+  }
+
   @Override
-  public void handle(KeyEvent e) {
-    if (e.getCode() == KeyCode.ESCAPE) {
-      Object source = e.getSource();
-      if (source instanceof TextField) {
-        TextField textField = (TextField) source;
-        if (!textField.textProperty().getValueSafe().trim().isEmpty()) {
-          textField.setText("");
-          e.consume();
-        }
+  public void handle(T event) {
+    chain.forEach(h -> {
+      if (!event.isConsumed()) {
+        h.handle(event);
       }
-    }
+    });
   }
 }
