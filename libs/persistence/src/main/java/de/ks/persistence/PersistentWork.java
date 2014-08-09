@@ -173,7 +173,7 @@ public class PersistentWork {
 
   public static <T> List<T> from(Class<T> clazz, QueryConsumer<T> consumer, Consumer<T> resultWalker) {
     return read((em) -> {
-      CriteriaQuery<T> query = (CriteriaQuery<T>) em.getCriteriaBuilder().createQuery(clazz);
+      CriteriaQuery<T> query = em.getCriteriaBuilder().createQuery(clazz);
 
       Root<T> root = query.from(clazz);
       query.select(root);
