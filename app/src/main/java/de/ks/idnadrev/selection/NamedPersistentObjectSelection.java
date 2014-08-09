@@ -65,7 +65,6 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
   protected TableView<T> tableView;
 
   protected SimpleObjectProperty<T> selectedValue = new SimpleObjectProperty<>();
-  //  protected Stage stage;
   protected ActivityController controller = CDI.current().select(ActivityController.class).get();
   protected QueryConsumer<T> filter;
   private Dialog dialog;
@@ -109,7 +108,6 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
         }
       }
     });
-
   }
 
   public NamedPersistentObjectSelection<T> from(Class<T> namedEntity) {
@@ -209,5 +207,28 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
 
   public EventHandler<ActionEvent> getOnAction() {
     return onAction;
+  }
+
+  public boolean isSelectingProject() {
+    return dialog != null && dialog.getWindow() != null && dialog.getWindow().isShowing();
+  }
+
+  public void hideBrowserBtn() {
+    if (root.getChildren().contains(browse)) {
+      root.getChildren().remove(browse);
+    }
+    root.setHgap(0.0D);
+  }
+
+  public T getSelectedValue() {
+    return selectedValue.get();
+  }
+
+  public SimpleObjectProperty<T> selectedValueProperty() {
+    return selectedValue;
+  }
+
+  public void setSelectedValue(T selectedValue) {
+    this.selectedValue.set(selectedValue);
   }
 }
