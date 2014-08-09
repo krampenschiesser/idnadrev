@@ -204,6 +204,15 @@ public class Task extends NamedPersistentObject<Task> implements FileContainer<T
     return parent;
   }
 
+  public boolean hasParent(Task possibleParent) {
+    for (Task current = this; current.getParent() != null; current = current.getParent()) {
+      if (current.getParent().getId() == possibleParent.getId()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   public void setParent(Task parent) {
     this.parent = parent;
     parent.addChild(this);
