@@ -18,9 +18,11 @@ import de.ks.activity.ActivityController;
 import de.ks.imagecache.Images;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.geometry.Dimension2D;
 import javafx.geometry.HPos;
 import javafx.scene.Cursor;
+import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -32,13 +34,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.net.URL;
+import java.util.*;
 import java.util.concurrent.Future;
 
-public class SelectImageController {
+public class SelectImageController implements Initializable {
   private static final Logger log = LoggerFactory.getLogger(SelectImageController.class);
   @FXML
   private FlowPane imagePane;
@@ -58,13 +58,16 @@ public class SelectImageController {
 
   private void addImageToPane(Image image, String name, String path) {
     ImageView view = new ImageView(image);
+    view.setPreserveRatio(true);
     view.setFitHeight(defaultSize.getHeight());
     view.setFitWidth(defaultSize.getWidth());
     view.setCursor(Cursor.HAND);
-    view.setOnMouseClicked(e -> selectedImagePath.set(path));
+    Button btn = new Button("", view);
+    btn.setOnAction(e -> selectedImagePath.set(path));
+    btn.setPrefSize(defaultSize.getWidth(), defaultSize.getHeight());
 
     GridPane grid = new GridPane();
-    grid.add(view, 0, 0);
+    grid.add(btn, 0, 0);
     grid.add(new Label(name), 0, 1);
     grid.setPrefHeight(Control.USE_COMPUTED_SIZE);
     grid.setPrefWidth(Control.USE_COMPUTED_SIZE);
@@ -109,5 +112,10 @@ public class SelectImageController {
 
   public List<Future<?>> getLoadingFutures() {
     return loadingFutures;
+  }
+
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    imagePane.setPrefSize(800, 600);
   }
 }
