@@ -14,6 +14,12 @@
  */
 
 /**
+ * = Basic persistence api
  *
+ * == With some details
+ *
+ * . first
+ * . second
+ * . third
  */
 package de.ks.persistence;

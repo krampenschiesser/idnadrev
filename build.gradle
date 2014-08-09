@@ -52,7 +52,13 @@ allprojects {
         }
     }
 
+    configurations {
+        asciidoclet
+    }
+
     dependencies {
+        asciidoclet "org.asciidoctor:asciidoclet:$asciidocJavaIntegration"
+
         compile "org.slf4j:slf4j-api:$slf4j"
         compile("org.slf4j:slf4j-ext:$slf4j") {
             exclude module: "cal10n-api"
@@ -90,6 +96,12 @@ allprojects {
 
     task cleanlog {
         file('log').listFiles().findAll { it.name.endsWith('.log') }.collect { println("deleting $it"); it.delete() }
+    }
+
+
+    javadoc {
+        options.docletpath = configurations.asciidoclet.files.asType(List)
+        options.doclet = 'org.asciidoctor.Asciidoclet'
     }
 }
 
