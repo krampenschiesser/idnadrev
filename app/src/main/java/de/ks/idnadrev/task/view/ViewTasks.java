@@ -17,7 +17,6 @@ package de.ks.idnadrev.task.view;
 import de.ks.BaseController;
 import de.ks.activity.link.NavigationHint;
 import de.ks.datasource.DataSource;
-import de.ks.executor.group.LastExecutionGroup;
 import de.ks.file.FileStore;
 import de.ks.i18n.Localized;
 import de.ks.idnadrev.entity.Context;
@@ -143,7 +142,6 @@ public class ViewTasks extends BaseController<List<Task>> {
       description.getChildren().add(l.getView());
     }, controller.getJavaFXExecutor());
 
-    LastExecutionGroup<String> lastExecutionGroup = new LastExecutionGroup<>(300, controller.getCurrentExecutorService());
     ChangeListener<String> listener = (observable, oldValue, newValue) -> {
       refreshFilter();
     };
