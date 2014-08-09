@@ -46,6 +46,7 @@ public class WeekView extends GridPane {
   protected final SimpleIntegerProperty weekOfYear = new SimpleIntegerProperty();
   protected final SimpleIntegerProperty year = new SimpleIntegerProperty();
   protected final GridPane contentPane = new GridPane();
+  protected final GridPane titlePane = new GridPane();
   protected final List<Label> weekDayLabels = new LinkedList<>();
   protected final ScrollPane scrollPane = new ScrollPane();
   protected final ComboBox<Integer> weekField = new ComboBox<>();
@@ -135,6 +136,7 @@ public class WeekView extends GridPane {
     setMaxSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
 
     getRowConstraints().add(new RowConstraints(Control.USE_PREF_SIZE, 60, Control.USE_PREF_SIZE, Priority.NEVER, VPos.BOTTOM, true));
+    getRowConstraints().add(new RowConstraints(Control.USE_PREF_SIZE, 60, Control.USE_PREF_SIZE, Priority.NEVER, VPos.BOTTOM, true));
     getRowConstraints().add(new RowConstraints(100, Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE, Priority.ALWAYS, VPos.TOP, true));
 
     getColumnConstraints().add(new ColumnConstraints(WIDTH_OF_TIMECOLUMN, WIDTH_OF_TIMECOLUMN, Control.USE_PREF_SIZE, Priority.NEVER, HPos.RIGHT, true));
@@ -144,14 +146,15 @@ public class WeekView extends GridPane {
       constraints.setPercentWidth(13);
       getColumnConstraints().add(constraints);
       Label label = new Label();
-      add(label, i + 1, 0);
+      add(label, i + 1, 1);
       GridPane.setMargin(label, new Insets(0, 0, 5, 0));
       weekDayLabels.add(label);
     }
     getColumnConstraints().add(new ColumnConstraints(10, 30, 30, Priority.NEVER, HPos.RIGHT, true));
 
-    add(scrollPane, 0, 1, Integer.MAX_VALUE, 1);
+    add(scrollPane, 0, 2, Integer.MAX_VALUE, 1);
     scrollPane.setContent(contentPane);
+
 
     add(weekField, 0, 0);
     GridPane.setMargin(weekField, new Insets(0, 0, 5, 0));
