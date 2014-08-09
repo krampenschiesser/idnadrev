@@ -18,12 +18,15 @@ import de.ks.BaseController;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.TaskState;
 import de.ks.idnadrev.selection.NamedPersistentObjectSelection;
-import de.ks.javafx.ClearTextOnEscape;
+import de.ks.javafx.event.ChainedEventHandler;
+import de.ks.javafx.event.ClearTextOnEscape;
 import de.ks.persistence.PersistentWork;
 import de.ks.reflection.PropertyPath;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
@@ -47,14 +50,19 @@ public class TaskFilterView extends BaseController<Void> {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    description.setOnKeyReleased(new ClearTextOnEscape());
+    ChainedEventHandler<KeyEvent> clearOrHide = new ChainedEventHandler<>(new ClearTextOnEscape(), e -> {
+      if (e.getCode() == KeyCode.ESCAPE) {
+        description.getScene().getWindow().hide();
+      }
+    });
+    description.setOnKeyReleased(clearOrHide);
+    parentProjectController.getInput().setOnKeyReleased(clearOrHide);
 
     String projectKey = PropertyPath.property(Task.class, (t) -> t.isProject());
     parentProjectController.from(Task.class, (root, query, builder) -> {
       query.where(builder.isTrue(root.get(projectKey)));
     }).enableValidation();
     parentProjectController.hideBrowserBtn();
-    parentProjectController.getInput().setOnKeyReleased(new ClearTextOnEscape());
 
 
     parentProjectController.selectedValueProperty().addListener((p, o, n) -> triggerFilter());
