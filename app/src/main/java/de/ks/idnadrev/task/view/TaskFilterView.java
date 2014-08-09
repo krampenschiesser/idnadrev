@@ -17,6 +17,8 @@ package de.ks.idnadrev.task.view;
 import de.ks.BaseController;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.TaskState;
+import de.ks.idnadrev.selection.NamedPersistentObjectSelection;
+import de.ks.persistence.PersistentWork;
 import de.ks.reflection.PropertyPath;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
@@ -32,7 +34,8 @@ import java.util.ResourceBundle;
 public class TaskFilterView extends BaseController<Void> {
   @FXML
   protected TextField description;
-
+  @FXML
+  protected NamedPersistentObjectSelection<Task> parentProjectController;
   @FXML
   protected CheckBox showAsap;
   @FXML
@@ -53,12 +56,25 @@ public class TaskFilterView extends BaseController<Void> {
       }
     });
 
+    String projectKey = PropertyPath.property(Task.class, (t) -> t.isProject());
+    parentProjectController.from(Task.class, (root, query, builder) -> {
+      query.where(builder.isTrue(root.get(projectKey)));
+    }).enableValidation();
+    parentProjectController.hideBrowserBtn();
 
+
+    parentProjectController.selectedValueProperty().addListener((p, o, n) -> triggerFilter());
+    parentProjectController.getInput().textProperty().addListener((p, o, n) -> triggerFilter());
     description.textProperty().addListener((p, o, n) -> triggerFilter());
     showAsap.selectedProperty().addListener((p, o, n) -> triggerFilter());
     showLater.selectedProperty().addListener((p, o, n) -> triggerFilter());
     showDelegated.selectedProperty().addListener((p, o, n) -> triggerFilter());
     showFinished.selectedProperty().addListener((p, o, n) -> triggerFilter());
+
+  }
+
+  public boolean needsToKeepFocus() {
+    return parentProjectController.isSelectingProject();
   }
 
   private void triggerFilter() {
@@ -96,8 +112,21 @@ public class TaskFilterView extends BaseController<Void> {
       if (!showFinished.isSelected()) {
         predicates.add(root.get(finishTime).isNull());
       }
+
+      if (parentProjectController.getSelectedValue() != null) {
+        Predicate parentNotNull = root.get(PropertyPath.property(Task.class, t -> t.getParent())).isNotNull();
+        Predicate isParent = builder.equal(root.get("id"), parentProjectController.getSelectedValue().getId());
+        predicates.add(builder.or(parentNotNull, isParent));
+      }
       query.where(predicates.toArray(new Predicate[predicates.size()]));
     });
   }
 
+  public Task getParentTask() {
+    String parentProjectName = parentProjectController.getInput().textProperty().getValueSafe().trim();
+    if (parentProjectController.getSelectedValue() == null && !parentProjectName.isEmpty()) {
+      return PersistentWork.forName(Task.class, parentProjectName);
+    }
+    return parentProjectController.getSelectedValue();
+  }
 }

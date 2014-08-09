@@ -209,7 +209,10 @@ public class ViewTasks extends BaseController<List<Task>> {
 
     this.hideOnFocusLeave = (fp, fo, fn) -> {
       if (!fn && popOver != null) {
-        popOver.hide();
+        boolean needsToKeepFocus = activityInitialization.getControllerInstance(TaskFilterView.class).needsToKeepFocus();
+        if (!needsToKeepFocus) {
+          popOver.hide();
+        }
       }
     };
     moreBtn.sceneProperty().addListener((p, o, n) -> {
@@ -217,6 +220,7 @@ public class ViewTasks extends BaseController<List<Task>> {
         popOver.hide();
       } else if (n != null) {
         ReadOnlyBooleanProperty focused = moreBtn.getScene().getWindow().focusedProperty();
+        log.info("Hiding popover because focus left scene");
         focused.removeListener(this.hideOnFocusLeave);
         focused.addListener(this.hideOnFocusLeave);
       }
@@ -242,8 +246,13 @@ public class ViewTasks extends BaseController<List<Task>> {
           boolean foundMatchingContext = false;
           for (Task current = task; current.getParent() != null; current = current.getParent()) {
             Context parentContext = current.getParent().getContext();
-            if (parentContext != null && filter.test(parentContext)) {
-              foundMatchingContext = true;
+            try {
+              if (parentContext != null && filter.test(parentContext)) {
+                foundMatchingContext = true;
+              }
+            } catch (Exception e) {
+              log.error("Could not get context of {}", current.getParent().getName());
+              throw e;
             }
           }
           if (!foundMatchingContext) {

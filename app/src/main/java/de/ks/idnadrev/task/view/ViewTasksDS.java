@@ -23,8 +23,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.spi.CDI;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class ViewTasksDS implements ListDataSource<Task> {
   private static final Logger log = LoggerFactory.getLogger(ViewTasksDS.class);
@@ -37,12 +41,28 @@ public class ViewTasksDS implements ListDataSource<Task> {
     taskFilterView.applyFilterOnDS(this);
 
     return PersistentWork.wrap(() -> {
-      List<Task> from = PersistentWork.from(Task.class, (root, query, builder) -> {
+      List<Task> from = PersistentWork.read((em) -> {
+        CriteriaBuilder builder = em.getCriteriaBuilder();
+        CriteriaQuery<Task> query = builder.createQuery(Task.class);
+
+        Root<Task> root = query.from(Task.class);
+        query.select(root);
+
         if (filter != null) {
           filter.accept(root, query, builder);
         }
-      }, this::loadChildren);
 
+        List<Task> resultList = em.createQuery(query).getResultList();
+        Task parentTask = PersistentWork.reload(taskFilterView.getParentTask());
+        if (parentTask != null) {
+          resultList = resultList.stream().filter(t -> t.hasParent(parentTask)).collect(Collectors.toList());
+          if (!resultList.contains(parentTask)) {
+            resultList.add(parentTask);
+          }
+        }
+        resultList.forEach(this::loadChildren);
+        return resultList;
+      });
       furtherProcessing.accept(from);
       return from;
     });
