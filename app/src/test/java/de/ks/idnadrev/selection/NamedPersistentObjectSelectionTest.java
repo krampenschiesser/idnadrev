@@ -58,7 +58,7 @@ public class NamedPersistentObjectSelectionTest {
     selection = loader.getController();
 
     mock = Mockito.mock(ActivityController.class);
-    Mockito.when(mock.getCurrentExecutorService()).thenReturn(executorService);
+    Mockito.when(mock.getExecutorService()).thenReturn(executorService);
     Mockito.when(mock.getJavaFXExecutor()).thenReturn(fxExecutorService);
     selection.controller = mock;
 

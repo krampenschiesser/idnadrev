@@ -220,12 +220,12 @@ public class CreateTaskTest {
       controller.tagAddController.getInput().setText("tag1");
       controller.tagAddController.getOnAction().handle(null);
     });
-    activityController.getCurrentExecutorService().waitForAllTasksDone();
+    activityController.getExecutorService().waitForAllTasksDone();
     FXPlatform.invokeLater(() -> {
       controller.tagAddController.getInput().setText("tag2");
       controller.tagAddController.getOnAction().handle(null);
     });
-    activityController.getCurrentExecutorService().waitForAllTasksDone();
+    activityController.getExecutorService().waitForAllTasksDone();
 
     FXPlatform.invokeLater(() -> {
       createTask.save();

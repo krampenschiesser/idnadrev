@@ -179,7 +179,7 @@ public class AddThoughtTest {
     });
     Thread.sleep(100);
     controller.waitForDataSource();
-    controller.getCurrentExecutorService().waitForAllTasksDone();
+    controller.getExecutorService().waitForAllTasksDone();
 
 
     List<Thought> thoughts = PersistentWork.from(Thought.class, thought -> thought.getFiles().size());
@@ -218,7 +218,7 @@ public class AddThoughtTest {
       addThought.fileViewController.removeFile(null);
       addThought.save.getOnAction().handle(new ActionEvent());
     });
-    controller.getCurrentExecutorService().waitForAllTasksDone();
+    controller.getExecutorService().waitForAllTasksDone();
 
 
     List<Thought> thoughts = PersistentWork.from(Thought.class, thought -> thought.getFiles().size());
