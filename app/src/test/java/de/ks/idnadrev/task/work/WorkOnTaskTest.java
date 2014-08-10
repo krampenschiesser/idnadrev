@@ -63,7 +63,7 @@ public class WorkOnTaskTest {
     activityController.waitForDataSource();
     FXPlatform.waitForFX();
     ActivityHint hint = new ActivityHint(activityController.getCurrentActivity()).setDataSourceHint(() -> task);
-    activityController.start(WorkOnTaskActivity.class, hint);
+    activityController.startOrResume(hint);
     activityController.waitForDataSource();
     controller = activityController.getControllerInstance(WorkOnTask.class);
   }

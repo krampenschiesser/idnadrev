@@ -371,7 +371,7 @@ public class ViewTasks extends BaseController<List<Task>> {
     activityHint.setDataSourceHint(currentSelection);
     activityHint.setReturnToDatasourceHint(currentSelection);
 
-    controller.start(activityHint);
+    controller.startOrResume(activityHint);
   }
 
   @FXML
@@ -379,7 +379,7 @@ public class ViewTasks extends BaseController<List<Task>> {
     ActivityHint activityHint = new ActivityHint(FinishTaskActivity.class, controller.getCurrentActivity());
     activityHint.setDataSourceHint(() -> tasksView.getSelectionModel().getSelectedItem().getValue());
 
-    controller.start(activityHint);
+    controller.startOrResume(activityHint);
   }
 
   @FXML

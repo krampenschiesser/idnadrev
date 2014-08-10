@@ -48,7 +48,7 @@ public class SelectImageControllerTest {
     JavaFXService service = Launcher.instance.getService(JavaFXService.class);
     Navigator.registerWithBorderPane(service.getStage());
 
-    activityController.start(new ActivityHint(SelectImageActivity.class));
+    activityController.startOrResume(new ActivityHint(SelectImageActivity.class));
 
     controller = activityController.getControllerInstance(SelectImageController.class);
     imagesView = controller.getImagePane();

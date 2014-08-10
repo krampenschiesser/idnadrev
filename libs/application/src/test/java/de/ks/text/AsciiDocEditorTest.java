@@ -56,7 +56,7 @@ public class AsciiDocEditorTest {
     Navigator.registerWithBorderPane(service.getStage());
 
 
-    activityController.start(new ActivityHint(AscidoctTestActivity.class));
+    activityController.startOrResume(new ActivityHint(AscidoctTestActivity.class));
     adocEditor = activityController.getControllerInstance(AsciiDocEditor.class);
   }
 

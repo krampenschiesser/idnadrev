@@ -77,10 +77,6 @@ public class ActivityController {
   protected final ReentrantLock lock = new ReentrantLock(true);
   private volatile CompletableFuture<?> finishingFutures;
 
-  public void start(ActivityHint activityHint) {
-    startOrResume(activityHint);
-  }
-
   public void startOrResume(ActivityHint activityHint) {
     loadInExecutor("could not start activityhint " + activityHint, () -> {
       try (LockSupport lockSupport = new LockSupport(lock)) {
