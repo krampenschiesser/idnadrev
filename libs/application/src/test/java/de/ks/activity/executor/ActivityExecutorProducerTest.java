@@ -38,6 +38,8 @@ public class ActivityExecutorProducerTest {
     assertEquals("test", executor.getName());
     ctx.startActivity("other");
     assertEquals("other", executor.getName());
+
+    executor.waitForAllTasksDone();
   }
 
 }
