@@ -52,7 +52,7 @@ public class InitializeTaskLinks extends LoaderCallback {
         Task<?> task = cdi.select(taskLink.getTask()).get();
         ActivityController activityController = cdi.select(ActivityController.class).get();
         if (taskLink.isEnd()) {
-          Supplier returnConverter = activityCfg.getNavigationHint().getReturnToDatasourceHint();
+          Supplier returnConverter = activityCfg.getActivityHint().getReturnToDatasourceHint();
           task.setOnSucceeded((e) -> {
             if (returnConverter != null) {
               Object hint = returnConverter.get();
@@ -62,7 +62,7 @@ public class InitializeTaskLinks extends LoaderCallback {
             }
           });
         }
-        activityController.getCurrentExecutorService().submit(task);
+        activityController.getExecutorService().submit(task);
       };
       addHandlerToNode(node, taskLink.getId(), handler);
       log.debug("done with task-link {} for controller {}", taskLink.getId(), controller);

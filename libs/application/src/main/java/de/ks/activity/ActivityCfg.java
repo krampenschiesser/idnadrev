@@ -15,8 +15,8 @@
 
 package de.ks.activity;
 
+import de.ks.activity.link.ActivityHint;
 import de.ks.activity.link.ActivityLink;
-import de.ks.activity.link.NavigationHint;
 import de.ks.activity.link.TaskLink;
 import de.ks.activity.link.ViewLink;
 import de.ks.application.Navigator;
@@ -41,7 +41,7 @@ public class ActivityCfg {
   protected final List<Class<?>> additionalControllers = new ArrayList<>();
 
   private Class<?> currentController;
-  private NavigationHint navigationHint;
+  private ActivityHint activityHint;
 
   public ActivityCfg(Class<? extends DataSource<?>> dataSource, Class<?> initialController) {
     this.dataSource = dataSource;
@@ -100,7 +100,7 @@ public class ActivityCfg {
     return this;
   }
 
-  public <T, R> ActivityCfg withActivity(Class<?> sourceController, String id, Class<? extends ActivityCfg> next, NavigationHint hint) {
+  public <T, R> ActivityCfg withActivity(Class<?> sourceController, String id, Class<? extends ActivityCfg> next, ActivityHint hint) {
     ActivityLink activityLink = ActivityLink.from(sourceController).with(id).start(next).navigationHint(hint).build();
     activityLinks.add(activityLink);
     return this;
@@ -146,11 +146,11 @@ public class ActivityCfg {
     return currentController;
   }
 
-  public void setNavigationHint(NavigationHint navigationHint) {
-    this.navigationHint = navigationHint;
+  public void setActivityHint(ActivityHint activityHint) {
+    this.activityHint = activityHint;
   }
 
-  public NavigationHint getNavigationHint() {
-    return navigationHint;
+  public ActivityHint getActivityHint() {
+    return activityHint;
   }
 }

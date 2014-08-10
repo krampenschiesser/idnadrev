@@ -19,7 +19,7 @@ import de.ks.activity.ActivityCfg;
 import de.ks.activity.ActivityController;
 import de.ks.activity.context.ActivityContext;
 import de.ks.activity.context.ActivityStore;
-import de.ks.activity.link.NavigationHint;
+import de.ks.activity.link.ActivityHint;
 import de.ks.application.Navigator;
 import de.ks.launch.JavaFXService;
 import de.ks.launch.Launcher;
@@ -63,7 +63,7 @@ public class ActivityLinkTest {
       ActivityAModel model = store.getModel();
       return new ActivityBModel(model.getId());
     };
-    NavigationHint hintAtoB = new NavigationHint(activityCfgA, null, supplier);
+    ActivityHint hintAtoB = new ActivityHint(activityCfgA, null, supplier);
     activityCfgA.withActivity(ActivityAController.class, STANDARD_HINT, ActivityB.class, hintAtoB);
 
 
@@ -75,7 +75,7 @@ public class ActivityLinkTest {
       ActivityBModel model = store.getModel();
       return new ActivityAModel(model.getDescription() + " Sauerland");
     };
-    NavigationHint hintBtoA = new NavigationHint(activityCfgA, supplierB, supplierA);
+    ActivityHint hintBtoA = new ActivityHint(activityCfgA, supplierB, supplierA);
     activityCfgA.withActivity(ActivityAController.class, RETURN_HINT, ActivityB.class, hintBtoA);
   }
 

@@ -25,7 +25,7 @@ public class ActivityLink {
     private final Class<?> sourceController;
     private String id;
     private Class<? extends ActivityCfg> nextActivity;
-    private NavigationHint navigationHint;
+    private ActivityHint activityHint;
 
     public ActivityLinkBuilder(Class<?> sourceController) {
       this.sourceController = sourceController;
@@ -41,13 +41,13 @@ public class ActivityLink {
       return this;
     }
 
-    public ActivityLinkBuilder navigationHint(NavigationHint hint) {
-      this.navigationHint = hint;
+    public ActivityLinkBuilder navigationHint(ActivityHint hint) {
+      this.activityHint = hint;
       return this;
     }
 
     public ActivityLink build() {
-      return new ActivityLink(sourceController, id, nextActivity, navigationHint);
+      return new ActivityLink(sourceController, id, nextActivity, activityHint);
     }
   }
 
@@ -58,13 +58,13 @@ public class ActivityLink {
   protected final Class<?> sourceController;
   protected final String id;
   protected final Class<? extends ActivityCfg> nextActivity;
-  protected final NavigationHint navigationHint;
+  protected final ActivityHint activityHint;
 
-  private ActivityLink(Class<?> sourceController, String id, Class<? extends ActivityCfg> nextActivity, NavigationHint hint) {
+  private ActivityLink(Class<?> sourceController, String id, Class<? extends ActivityCfg> nextActivity, ActivityHint hint) {
     this.sourceController = sourceController;
     this.id = id;
     this.nextActivity = nextActivity;
-    this.navigationHint = hint;
+    this.activityHint = hint;
   }
 
   public Class<?> getSourceController() {
@@ -79,7 +79,7 @@ public class ActivityLink {
     return nextActivity;
   }
 
-  public NavigationHint getNavigationHint() {
-    return navigationHint;
+  public ActivityHint getActivityHint() {
+    return activityHint;
   }
 }

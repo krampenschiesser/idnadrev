@@ -21,26 +21,20 @@ import javax.enterprise.inject.spi.CDI;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class NavigationHint {
+public class ActivityHint {
+  private final Class<? extends ActivityCfg> nextActivity;
+  private final String nextActivityId;
   protected ActivityCfg returnToActivity;
   protected Supplier returnToDatasourceHint;
   protected Supplier dataSourceHint;
 
-  public NavigationHint() {
+  public ActivityHint(Class<? extends ActivityCfg> activity) {
+    this(activity, activity.getSimpleName(), null);
   }
 
-  public NavigationHint(ActivityCfg returnToActivity, Supplier returnToDatasourceHint) {
-    this.returnToDatasourceHint = returnToDatasourceHint;
-    this.returnToActivity = returnToActivity;
-  }
-
-  public NavigationHint(ActivityCfg returnToActivity, Supplier returnToDatasourceHint, Supplier dataSourceHint) {
-    this.dataSourceHint = dataSourceHint;
-    this.returnToDatasourceHint = returnToDatasourceHint;
-    this.returnToActivity = returnToActivity;
-  }
-
-  public NavigationHint(ActivityCfg returnToActivity) {
+  public ActivityHint(Class<? extends ActivityCfg> nextActivity, String nextActivityId, ActivityCfg returnToActivity) {
+    this.nextActivity = nextActivity;
+    this.nextActivityId = nextActivityId;
     this.returnToActivity = returnToActivity;
   }
 
@@ -48,7 +42,7 @@ public class NavigationHint {
     return returnToActivity;
   }
 
-  public NavigationHint setReturnToActivity(ActivityCfg returnToActivity) {
+  public ActivityHint setReturnToActivity(ActivityCfg returnToActivity) {
     this.returnToActivity = returnToActivity;
     return this;
   }
@@ -57,13 +51,13 @@ public class NavigationHint {
     return returnToDatasourceHint;
   }
 
-  public NavigationHint setReturnToDatasourceHint(Supplier returnToDatasourceHint) {
+  public ActivityHint setReturnToDatasourceHint(Supplier returnToDatasourceHint) {
     this.returnToDatasourceHint = returnToDatasourceHint;
     return this;
   }
 
   @SuppressWarnings("unchecked")
-  public <M> NavigationHint setReturnToModelHint(Function<M, Object> modelFunction) {
+  public <M> ActivityHint setReturnToModelHint(Function<M, Object> modelFunction) {
     Object model = CDI.current().select(ActivityStore.class).get().getModel();
     this.returnToDatasourceHint = () -> modelFunction.apply((M) model);
     return this;
@@ -73,24 +67,38 @@ public class NavigationHint {
     return dataSourceHint;
   }
 
-  public NavigationHint setDataSourceHint(Supplier dataSourceHint) {
+  public ActivityHint setDataSourceHint(Supplier dataSourceHint) {
     this.dataSourceHint = dataSourceHint;
     return this;
   }
 
   @SuppressWarnings("unchecked")
-  public <M> NavigationHint setModelHint(Function<M, Object> modelFunction) {
+  public <M> ActivityHint setModelHint(Function<M, Object> modelFunction) {
     Object model = CDI.current().select(ActivityStore.class).get().getModel();
     this.dataSourceHint = () -> modelFunction.apply((M) model);
     return this;
   }
 
+  public Class<? extends ActivityCfg> getNextActivity() {
+    return nextActivity;
+  }
+
+  public String getNextActivityId() {
+    return nextActivityId;
+  }
+
   @Override
   public String toString() {
-    return "NavigationHint{" +
-            "returnToActivity=" + returnToActivity +
+    return "ActivityHint{" +
+            "nextActivity=" + nextActivity +
+            ", nextActivityId='" + nextActivityId + '\'' +
+            ", returnToActivity=" + returnToActivity +
             ", returnToDatasourceHint=" + returnToDatasourceHint +
             ", dataSourceHint=" + dataSourceHint +
             '}';
+  }
+
+  public boolean needsReload() {
+    return true;
   }
 }
