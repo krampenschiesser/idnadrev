@@ -86,7 +86,7 @@ public class AddThoughtTest {
   @After
   public void tearDown() throws Exception {
     FXPlatform.waitForFX();
-    controller.stop(AddThoughtActivity.class.getSimpleName());
+    controller.stop(AddThoughtActivity.class.getSimpleName(), false);
   }
 
   @Test
@@ -108,16 +108,25 @@ public class AddThoughtTest {
 
   @Test
   public void testClipboardSingleLineString() throws Exception {
-    FXPlatform.invokeLater(() -> {
-      Clipboard clipboard = Clipboard.getSystemClipboard();
-      clipboard.clear();
-    });
+    clearClipBoard();
     FXPlatform.waitForFX();
+    FXPlatform.invokeLater(() -> {
+      addThought.name.setText("");
+      addThought.description.setText("");
+    });
+    clearClipBoard();
     String clipboardText = "singleClip";
     copy2Clipboard(clipboardText);
     FXPlatform.waitForFX();
     assertEquals(clipboardText, addThought.description.getText());
     assertEquals(clipboardText, addThought.name.getText());
+  }
+
+  protected void clearClipBoard() {
+    FXPlatform.invokeLater(() -> {
+      Clipboard clipboard = Clipboard.getSystemClipboard();
+      clipboard.clear();
+    });
   }
 
   private void copy2Clipboard(String clipboardText) {

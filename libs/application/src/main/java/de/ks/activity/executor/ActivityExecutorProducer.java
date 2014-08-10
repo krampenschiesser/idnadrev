@@ -16,12 +16,16 @@ package de.ks.activity.executor;
 
 import de.ks.activity.context.ActivityContext;
 import de.ks.activity.context.ActivityScoped;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import java.util.concurrent.TimeUnit;
 
 public class ActivityExecutorProducer {
+  private static final Logger log = LoggerFactory.getLogger(ActivityExecutorProducer.class);
+
   @Produces
   @ActivityScoped
   public ActivityExecutor createExecutorService(ActivityContext context) {
@@ -29,11 +33,14 @@ public class ActivityExecutorProducer {
   }
 
   public void shutdownActivityExecutor(@Disposes ActivityExecutor executor) {
-    executor.shutdownNow();
-    try {
-      executor.awaitTermination(5, TimeUnit.SECONDS);
-    } catch (InterruptedException e) {
-      //
+    if (!executor.isShutdown()) {
+      log.debug("Shutting down executor {}", executor.getName());
+      executor.shutdownNow();
+      try {
+        executor.awaitTermination(5, TimeUnit.SECONDS);
+      } catch (InterruptedException e) {
+        //
+      }
     }
   }
 }

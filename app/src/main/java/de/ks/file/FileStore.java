@@ -14,6 +14,7 @@
  */
 package de.ks.file;
 
+import de.ks.activity.executor.ActivityExecutor;
 import de.ks.idnadrev.entity.FileContainer;
 import de.ks.idnadrev.entity.FileReference;
 import de.ks.option.Options;
@@ -33,7 +34,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
 
 public class FileStore {
   private static final Logger log = LoggerFactory.getLogger(FileStore.class);
@@ -41,7 +41,7 @@ public class FileStore {
   private final FileOptions options;
 
   @Inject
-  ExecutorService executorService;
+  ActivityExecutor executorService;
 
   public FileStore() {
     options = Options.get(FileOptions.class);

@@ -52,7 +52,7 @@ public class ControllerBindingTest {
 
   @After
   public void tearDown() throws Exception {
-    controller.stop(BindingActivity.class.getSimpleName());
+    controller.stop(BindingActivity.class.getSimpleName(), false);
   }
 
   @Test

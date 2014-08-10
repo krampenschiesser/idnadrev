@@ -48,7 +48,7 @@ public class ActivityExecutor implements ScheduledExecutorService {
   }
 
   public void waitForAllTasksDone() {
-    while (delegate.getActiveCount() > 0 || !delegate.getQueue().isEmpty()) {
+    while (!delegate.isShutdown() && delegate.getActiveCount() > 0 || !delegate.getQueue().isEmpty()) {
       try {
         TimeUnit.MILLISECONDS.sleep(100);
       } catch (InterruptedException e) {

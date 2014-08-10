@@ -70,8 +70,8 @@ public class WorkOnTaskTest {
 
   @After
   public void tearDown() throws Exception {
-    activityController.stop(WorkOnTaskActivity.class.getSimpleName());
-    activityController.stop(ViewTasksActvity.class.getSimpleName());
+    activityController.stop(WorkOnTaskActivity.class.getSimpleName(), false);
+    activityController.stop(ViewTasksActvity.class.getSimpleName(), false);
   }
 
   @Test

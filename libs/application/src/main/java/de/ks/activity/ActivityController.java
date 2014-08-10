@@ -18,7 +18,9 @@ package de.ks.activity;
 import de.ks.activity.context.ActivityContext;
 import de.ks.activity.context.ActivityStore;
 import de.ks.activity.executor.ActivityExecutor;
+import de.ks.activity.executor.ActivityExecutorProducer;
 import de.ks.activity.executor.ActivityJavaFXExecutor;
+import de.ks.activity.executor.ActivityJavaFXExecutorProducer;
 import de.ks.activity.initialization.ActivityCallback;
 import de.ks.activity.initialization.ActivityInitialization;
 import de.ks.activity.loading.ActivityLoadingExecutor;
@@ -77,13 +79,21 @@ public class ActivityController {
   protected final ReentrantLock lock = new ReentrantLock(true);
   private volatile CompletableFuture<?> finishingFutures;
 
+  public void stopCurrentStartNew(ActivityHint activityHint) {
+    loadInExecutor("could not start activityhint " + activityHint, () -> {
+      stopCurrent();
+      startOrResume(activityHint);
+    });
+  }
+
   public void startOrResume(ActivityHint activityHint) {
     loadInExecutor("could not start activityhint " + activityHint, () -> {
       try (LockSupport lockSupport = new LockSupport(lock)) {
+        log.debug("Begin with start/resume of {} on lock {}", activityHint.getNextActivity().getSimpleName(), System.identityHashCode(lock));
 
         Object dataSourceHint = null;
         Object returnHint = null;
-        if (context.hasCurrentActivity()) {
+        if (hasCurrentActivity()) {
           if (activityHint.getDataSourceHint() != null) {
             dataSourceHint = activityHint.getDataSourceHint().get();
           }
@@ -124,6 +134,12 @@ public class ActivityController {
           currentActivity.set(id);
           log.info("Started activity {}", id);
         }
+      } catch (Exception e) {
+        log.error("Failed to start {} because of ", activityHint.getNextActivity().getSimpleName(), e);
+        context.stopActivity(activityHint.getNextActivityId());
+        throw e;
+      } finally {
+        log.debug("Done with start/resume of {} on lock {}", activityHint.getNextActivity().getSimpleName(), System.identityHashCode(lock));
       }
     });
   }
@@ -143,36 +159,60 @@ public class ActivityController {
     initialization.getActivityCallbacks().forEach(ActivityCallback::onResume);
     if (reload) {
       reload();
+//      finishingFutures.join();
     }
     currentActivity.set(id);
     log.info("Resumed activity {}", id);
   }
 
   protected void suspendCurrent() {
+    log.debug("Suspending activity {}", getCurrentActivityId());
     initialization.getActivityCallbacks().forEach(ActivityCallback::onSuspend);
 
-    context.cleanupSingleBean(ActivityExecutor.class);
-    context.cleanupSingleBean(ActivityJavaFXExecutor.class);
+    shutdownExecutors();
+    //I want to cleanup the executors themselves, but during registering, I sadly don't know that it is a producer
+    //the cdi api doesn't provide that information :(
+    context.cleanupSingleBean(ActivityExecutorProducer.class);
+    context.cleanupSingleBean(ActivityJavaFXExecutorProducer.class);
 
     initialization.getControllers().forEach((controller) -> eventBus.unregister(controller));
   }
 
-  public void stopCurrent() {
-    stop(getCurrentActivityId());
+  private void shutdownExecutors() {
+    executor.shutdownNow();
+    javaFXExecutor.shutdownNow();
+    try {
+      executor.awaitTermination(5, TimeUnit.SECONDS);
+      javaFXExecutor.awaitTermination(5, TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+      //
+    }
   }
 
-  public void stop(String id) {
-    loadInExecutor("could not stop activity " + id, () -> {
+  public void stopCurrent() {
+    stop(getCurrentActivityId(), false);
+  }
+
+  public void stop(String id, boolean wait) {
+    if (!registeredActivities.containsKey(id)) {
+      return;
+    }
+    Future<?> future = loadInExecutor("could not stop activity " + id, () -> {
       try (LockSupport lockSupport = new LockSupport(lock)) {
-
+        log.debug("Stopping activity {}", id);
         Object returnHint = null;
+        String returnToActivity = null;
 
-        ActivityHint activityHint = getCurrentActivity().getActivityHint();
-        if (activityHint.getReturnToDatasourceHint() != null) {
-          returnHint = activityHint.getReturnToDatasourceHint().get();
+        if (getCurrentActivity() != null) {
+          ActivityHint activityHint = getCurrentActivity().getActivityHint();
+          if (activityHint.getReturnToDatasourceHint() != null) {
+            returnHint = activityHint.getReturnToDatasourceHint().get();
+          }
+          activityHint.getReturnToActivity();
         }
-        String returnToActivity = activityHint.getReturnToActivity();
 
+        context.startActivity(id);
+        shutdownExecutors();
         initialization.getActivityCallbacks().forEach(ActivityCallback::onStop);
         initialization.getControllers().forEach((controller) -> eventBus.unregister(controller));
         registeredActivities.remove(id);
@@ -181,20 +221,30 @@ public class ActivityController {
         if (id.equals(currentActivity.get())) {
           currentActivity.set(null);
         }
+        log.debug("Stopped activity {}", id);
 
         if (returnToActivity != null) {
           resume(returnToActivity, true, returnHint);
         }
+      } catch (Exception e) {
+        log.error("Could not stop activity {}", id, e);
       }
     });
+    if (wait) {
+      try {
+        future.get();
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
   }
 
   public void stopAll() {
     HashSet<String> ids = new HashSet<>(registeredActivities.keySet());
-    ids.forEach(id -> stop(id));
+    ids.forEach(id -> stop(id, true));
   }
 
-  protected void loadInExecutor(String errorMsg, Runnable runnable) {
+  protected Future<?> loadInExecutor(String errorMsg, Runnable runnable) {
     Future<?> submit = loadingExecutor.submit(runnable);
     if (!Platform.isFxApplicationThread()) {
       try {
@@ -206,6 +256,7 @@ public class ActivityController {
         throw new RuntimeException(e);
       }
     }
+    return submit;
   }
 
   public void select(ActivityCfg activityCfg, Class<?> targetController, String presentationArea) {
@@ -215,8 +266,10 @@ public class ActivityController {
   }
 
   public void waitForTasks() {
-    executor.waitForAllTasksDone();
-    javaFXExecutor.waitForAllTasksDone();
+    if (context.hasCurrentActivity()) {
+      executor.waitForAllTasksDone();
+      javaFXExecutor.waitForAllTasksDone();
+    }
   }
 
   public ActivityCfg getCurrentActivity() {
@@ -226,6 +279,10 @@ public class ActivityController {
     } else {
       return registeredActivities.get(id);
     }
+  }
+
+  public boolean hasCurrentActivity() {
+    return getCurrentActivity() != null;
   }
 
   public String getCurrentActivityId() {
@@ -263,7 +320,7 @@ public class ActivityController {
 
   @SuppressWarnings("unchecked")
   public void save() {
-    waitForTasks();
+//    waitForTasks();
     DataSource dataSource = store.getDatasource();
 
     Object model = store.getModel();

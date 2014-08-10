@@ -24,6 +24,7 @@ import de.ks.text.view.AsciiDocContent;
 import de.ks.text.view.AsciiDocViewer;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.DoubleBinding;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
@@ -162,6 +163,7 @@ public class ViewThoughts extends BaseController<List<Thought>> {
 
   @Override
   protected void onRefresh(List<Thought> thoughts) {
+    thoughtTable.setItems(FXCollections.observableList(thoughts));
     List<AsciiDocContent> asciiDocContents = thoughts.stream().map(t -> new AsciiDocContent(t.getName(), t.getDescription())).collect(Collectors.toList());
     this.asciiDocViewer.preload(asciiDocContents);
     thoughtTable.requestFocus();

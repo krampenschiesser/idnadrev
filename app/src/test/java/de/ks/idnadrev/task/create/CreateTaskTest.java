@@ -67,7 +67,7 @@ public class CreateTaskTest {
 
   @After
   public void tearDown() throws Exception {
-    activityController.stop(CreateTaskActivity.class.getSimpleName());
+    activityController.stop(CreateTaskActivity.class.getSimpleName(), false);
   }
 
   @Test

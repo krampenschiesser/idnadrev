@@ -71,7 +71,7 @@ public class ViewThoughtsTest {
   @After
   public void tearDown() throws Exception {
     FXPlatform.waitForFX();
-    controller.stop(ViewThoughtsActivity.class.getSimpleName());
+    controller.stop(ViewThoughtsActivity.class.getSimpleName(), false);
   }
 
   @Test

@@ -80,8 +80,10 @@ public class AddThought extends BaseController<Thought> {
     });
 
     description.hideActionBar();
+    StringProperty nameBinding = store.getBinding().getStringProperty(Thought.class, t -> t.getName());
+    nameBinding.bindBidirectional(name.textProperty());
     StringProperty descriptionBinding = store.getBinding().getStringProperty(Thought.class, t -> t.getDescription());
-    descriptionBinding.bind(description.textProperty());
+    descriptionBinding.bindBidirectional(description.textProperty());
 
     fileViewController.setImageData(description.getImages());
 

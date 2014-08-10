@@ -67,7 +67,7 @@ public class ViewTasksTest {
 
   @After
   public void tearDown() throws Exception {
-    activityController.stop(ViewTasksActvity.class.getSimpleName());
+    activityController.stop(ViewTasksActvity.class.getSimpleName(), false);
     FXPlatform.waitForFX();
   }
 

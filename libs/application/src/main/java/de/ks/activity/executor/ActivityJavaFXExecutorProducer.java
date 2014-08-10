@@ -15,12 +15,16 @@
 package de.ks.activity.executor;
 
 import de.ks.activity.context.ActivityScoped;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import java.util.concurrent.TimeUnit;
 
 public class ActivityJavaFXExecutorProducer {
+  private static final Logger log = LoggerFactory.getLogger(ActivityJavaFXExecutorProducer.class);
+
   @Produces
   @ActivityScoped
   public ActivityJavaFXExecutor createFXExecutorService() {
@@ -28,11 +32,14 @@ public class ActivityJavaFXExecutorProducer {
   }
 
   public void shutdownActivityFXExecutor(@Disposes ActivityJavaFXExecutor executor) {
-    executor.shutdownNow();
-    try {
-      executor.awaitTermination(5, TimeUnit.SECONDS);
-    } catch (InterruptedException e) {
-      //
+    if (!executor.isShutdown()) {
+      log.debug("Shutting down javafx executor ");
+      executor.shutdownNow();
+      try {
+        executor.awaitTermination(5, TimeUnit.SECONDS);
+      } catch (InterruptedException e) {
+        //
+      }
     }
   }
 }

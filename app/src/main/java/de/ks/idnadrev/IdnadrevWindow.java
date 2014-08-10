@@ -24,6 +24,7 @@ import de.ks.javafx.NodeLookup;
 import de.ks.menu.presenter.MenuBarPresenter;
 import de.ks.menu.sink.ContentSink;
 import de.ks.menu.sink.PopupSink;
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -89,9 +90,19 @@ public class IdnadrevWindow extends MainWindow {
 
       borderPane.setOnKeyReleased(this::checkShortcut);
 
-      activityController.startOrResume(new ActivityHint(AddThoughtActivity.class));
+      Platform.runLater(this::startInitialActivity);
     }
     return borderPane;
+  }
+
+  protected void startInitialActivity() {
+    activityController.startOrResume(new ActivityHint(AddThoughtActivity.class));
+    try {
+      Thread.sleep(100);
+    } catch (InterruptedException e) {
+      //
+    }
+    activityController.waitForTasks();
   }
 
   private void checkShortcut(KeyEvent event) {

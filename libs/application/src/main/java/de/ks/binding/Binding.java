@@ -49,7 +49,9 @@ public class Binding {
   protected void resetProperties() {
     properties.entrySet().forEach(entry -> {
       @SuppressWarnings("unchecked") Property<Object> property = (Property<Object>) entry.getValue();
-      property.setValue(null);
+      if (!property.isBound()) {
+        property.setValue(null);
+      }
     });
   }
 
