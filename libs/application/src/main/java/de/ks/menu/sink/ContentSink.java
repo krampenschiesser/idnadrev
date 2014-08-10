@@ -18,9 +18,9 @@ package de.ks.menu.sink;
 import de.ks.NodeProvider;
 import de.ks.activity.ActivityCfg;
 import de.ks.activity.ActivityController;
+import de.ks.activity.link.ActivityHint;
 import de.ks.application.Navigator;
 import de.ks.eventsystem.bus.EventBus;
-import de.ks.executor.ExecutorService;
 import de.ks.menu.MenuItemDescriptor;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
@@ -36,8 +36,6 @@ public class ContentSink extends AbstractSink<ContentSink> {
   private static final Logger log = LoggerFactory.getLogger(ContentSink.class);
 
   protected Pane pane;
-  @Inject
-  protected ExecutorService executorService;
 
   @Inject
   public ContentSink(EventBus bus, ActivityController controller) {
@@ -45,21 +43,27 @@ public class ContentSink extends AbstractSink<ContentSink> {
   }
 
   @Override
-  protected void showMenuItem(Object menuItem, MenuItemDescriptor item) {
+  protected void showMenuItem(MenuItemDescriptor menuItemDescriptor) {
     Navigator navigator = Navigator.getNavigator(pane);
     if (navigator == null) {
-      log.error("No navigator registered, can't show item {}", item);
+      log.error("No navigator registered, can't show item {}", menuItemDescriptor);
       return;
     }
-    if (menuItem instanceof Node) {
-      navigator.presentInMain((Node) menuItem);
-    } else if (menuItem instanceof NodeProvider) {
-      NodeProvider nodeProvider = (NodeProvider) menuItem;
-      navigator.presentInMain(nodeProvider.getNode());
-    } else if (menuItem instanceof ActivityCfg) {
-      executorService.submit(() -> controller.start((ActivityCfg) menuItem));
+
+    Class<?> target = menuItemDescriptor.getTarget();
+    if (ActivityCfg.class.isAssignableFrom(target)) {
+      @SuppressWarnings("unchecked") Class<? extends ActivityCfg> activity = (Class<? extends ActivityCfg>) target;
+      controller.startOrResume(new ActivityHint(activity));
     } else {
-      log.error("Could not handle MenuItemClickedEvent because {} is not a {}", menuItem.getClass(), Node.class.getName());
+      Object menuItem = menuItemProvider.select(target).get();
+      if (menuItem instanceof Node) {
+        navigator.presentInMain((Node) menuItem);
+      } else if (menuItem instanceof NodeProvider) {
+        NodeProvider nodeProvider = (NodeProvider) menuItem;
+        navigator.presentInMain(nodeProvider.getNode());
+      } else {
+        log.error("Could not handle MenuItemClickedEvent because {} is not a {}", menuItem.getClass(), Node.class.getName());
+      }
     }
   }
 

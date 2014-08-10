@@ -39,7 +39,7 @@ public abstract class AbstractSink<T extends AbstractSink> {
 
   @Inject
   @MenuItem("")
-  Instance<Object> menuItem;
+  protected Instance<Object> menuItemProvider;
 
   @Inject
   public AbstractSink(EventBus bus, ActivityController controller) {
@@ -76,15 +76,13 @@ public abstract class AbstractSink<T extends AbstractSink> {
   public boolean onEvent(MenuItemClickedEvent event) {
     if (getMenuPath() != null) {
       if (event.getItem().getMenuPath().startsWith(getMenuPath())) {
-        Instance<?> select = menuItem.select(event.getTarget());
-        Object menuItem = select.get();
 
-        showMenuItem(menuItem, event.getItem());
+        showMenuItem(event.getItem());
         return true;
       }
     }
     return false;
   }
 
-  protected abstract void showMenuItem(Object menuItem, MenuItemDescriptor item);
+  protected abstract void showMenuItem(MenuItemDescriptor menuItem);
 }
