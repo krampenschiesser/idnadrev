@@ -8,11 +8,14 @@ jdk:
   - oraclejdk8
 
 install:
-  - TERM=dumb ./gradlew -S assemble
+  - TERM=dumb ./gradlew assemble
 
 script:
-  - TERM=dumb ./gradlew -S check
+  - TERM=dumb ./gradlew check
 
 before_install:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
+
+after_failure:
+  - find . -name idnadrev.log -exec tail -n 500 {} \;
