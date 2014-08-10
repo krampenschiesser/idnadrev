@@ -17,6 +17,9 @@ package de.ks.activity.executor;
 import de.ks.activity.context.ActivityScoped;
 import de.ks.executor.JavaFXExecutorService;
 
+import javax.enterprise.inject.Vetoed;
+
+@Vetoed
 @ActivityScoped
 public class ActivityJavaFXExecutor extends JavaFXExecutorService {
 }
