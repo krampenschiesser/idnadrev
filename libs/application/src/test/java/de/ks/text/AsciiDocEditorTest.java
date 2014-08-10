@@ -27,6 +27,7 @@ import de.ks.text.command.InsertImage;
 import de.ks.util.FXPlatform;
 import javafx.application.Platform;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -114,7 +115,8 @@ public class AsciiDocEditorTest {
 
     FXPlatform.invokeLater(() -> {
       GridPane grid = (GridPane) command.getSelectImageController().getImagePane().getChildren().get(0);
-      grid.getChildren().get(0).getOnMouseClicked().handle(null);
+      Button node = (Button) grid.getChildren().get(0);
+      node.getOnAction().handle(null);
     });
 
     assertThat(adocEditor.editor.getText(), Matchers.containsString("image::file:////de/ks/images/keymap.jpg"));
