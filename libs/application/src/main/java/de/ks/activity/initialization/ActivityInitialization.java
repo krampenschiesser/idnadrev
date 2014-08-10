@@ -18,11 +18,11 @@ import de.ks.activity.ActivityCfg;
 import de.ks.activity.ActivityController;
 import de.ks.activity.callback.*;
 import de.ks.activity.context.ActivityScoped;
+import de.ks.activity.executor.ActivityExecutor;
 import de.ks.activity.link.ViewLink;
 import de.ks.application.fxml.DefaultLoader;
 import de.ks.eventsystem.bus.EventBus;
 import de.ks.executor.JavaFXExecutorService;
-import de.ks.executor.SuspendablePooledExecutorService;
 import javafx.fxml.LoadException;
 import javafx.scene.Node;
 import org.apache.commons.lang3.tuple.Pair;
@@ -48,6 +48,7 @@ public class ActivityInitialization {
   protected final Map<Class<?>, CompletableFuture<DefaultLoader<Node, Object>>> preloads = new HashMap<>();
   protected final ThreadLocal<List<Object>> currentlyLoadedControllers = ThreadLocal.withInitial(ArrayList::new);
   protected final List<DatasourceCallback> dataStoreCallbacks = new ArrayList<>();
+  protected final List<ActivityCallback> activityCallbacks = new ArrayList<>();
 
   @Inject
   ActivityController controller;
@@ -103,7 +104,7 @@ public class ActivityInitialization {
     if (shouldLoadInFXThread(controllerClass)) {
       executorService = javaFXExecutor;
     } else {
-      executorService = controller.getCurrentExecutorService();
+      executorService = controller.getExecutorService();
     }
 
     if (!preloads.containsKey(controllerClass)) {
@@ -153,11 +154,13 @@ public class ActivityInitialization {
     doChangesInFXThread();
     dataStoreCallbacks.clear();
     dataStoreCallbacks.addAll(controllers.values().stream().map(p -> p.getLeft()).filter(o -> o instanceof DatasourceCallback).map(o -> (DatasourceCallback) o).collect(Collectors.toList()));
+    activityCallbacks.clear();
+    activityCallbacks.addAll(controllers.values().stream().map(p -> p.getLeft()).filter(o -> o instanceof ActivityCallback).map(o -> (ActivityCallback) o).collect(Collectors.toList()));
     Collections.sort(dataStoreCallbacks);
   }
 
   protected void scanControllers() {
-    SuspendablePooledExecutorService executorService = controller.getCurrentExecutorService();
+    ActivityExecutor executorService = controller.getExecutorService();
 
     Profiler time1 = new Profiler("time1");
     time1.setLogger(log);
@@ -201,5 +204,9 @@ public class ActivityInitialization {
 
   public List<DatasourceCallback> getDataStoreCallbacks() {
     return dataStoreCallbacks;
+  }
+
+  public List<ActivityCallback> getActivityCallbacks() {
+    return activityCallbacks;
   }
 }
