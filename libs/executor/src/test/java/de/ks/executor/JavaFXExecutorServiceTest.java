@@ -49,21 +49,18 @@ public class JavaFXExecutorServiceTest {
   }
 
   @Test
-  public void testSuspend() throws Exception {
+  public void testShutdown() throws Exception {
     int total = 10;
     for (int i = 0; i < total; i++) {
       executor.submit(createSleepingRunnable(100));
     }
     Thread.sleep(100);
-    executor.suspend();
+    executor.shutdown();
     int activeCount = executor.getActiveCount();
     assertThat(activeCount, Matchers.lessThan(20));
     Thread.sleep(200);
     assertEquals(activeCount, executor.getActiveCount());
-    executor.resume();
-    executor.waitForAllTasksDone();
-    assertEquals(0, executor.getActiveCount());
-    assertEquals(total, adder.sum());
+
   }
 
   @Test(timeout = 200)
@@ -75,7 +72,7 @@ public class JavaFXExecutorServiceTest {
   @Test(timeout = 2000)
   public void testLongRunningTimeout() throws Exception {
     executor.submit(createSleepingRunnable(10000));
-    executor.suspend();
+    executor.shutdown();
   }
 
   int count;

@@ -357,7 +357,7 @@ public class ViewTasks extends BaseController<List<Task>> {
   @FXML
   void editTask() {
     ActivityHint hint = new ActivityHint(CreateTaskActivity.class);
-    hint.setReturnToActivity(controller.getCurrentActivity());
+    hint.setReturnToActivity(controller.getCurrentActivityId());
     hint.setReturnToDatasourceHint(() -> tasksView.getSelectionModel().getSelectedItem().getValue());
     hint.setDataSourceHint(() -> tasksView.getSelectionModel().getSelectedItem().getValue());
     controller.startOrResume(hint);
@@ -367,7 +367,7 @@ public class ViewTasks extends BaseController<List<Task>> {
   void startWork() {
     Supplier currentSelection = () -> tasksView.getSelectionModel().getSelectedItem().getValue();
 
-    ActivityHint activityHint = new ActivityHint(WorkOnTaskActivity.class, controller.getCurrentActivity());
+    ActivityHint activityHint = new ActivityHint(WorkOnTaskActivity.class, controller.getCurrentActivityId());
     activityHint.setDataSourceHint(currentSelection);
     activityHint.setReturnToDatasourceHint(currentSelection);
 
@@ -376,7 +376,7 @@ public class ViewTasks extends BaseController<List<Task>> {
 
   @FXML
   void finishTask() {
-    ActivityHint activityHint = new ActivityHint(FinishTaskActivity.class, controller.getCurrentActivity());
+    ActivityHint activityHint = new ActivityHint(FinishTaskActivity.class, controller.getCurrentActivityId());
     activityHint.setDataSourceHint(() -> tasksView.getSelectionModel().getSelectedItem().getValue());
 
     controller.startOrResume(activityHint);

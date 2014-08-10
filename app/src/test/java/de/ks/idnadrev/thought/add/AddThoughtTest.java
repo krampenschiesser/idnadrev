@@ -75,7 +75,7 @@ public class AddThoughtTest {
     Stage stage = service.getStage();
     scene = stage.getScene();
     controller.startOrResume(new ActivityHint(AddThoughtActivity.class));
-    controller.waitForDataSource();
+    controller.waitForTasks();
 
     addThought = controller.getCurrentController();
     FXPlatform.invokeLater(() -> {
@@ -179,7 +179,7 @@ public class AddThoughtTest {
       addThought.save.getOnAction().handle(new ActionEvent());
     });
     Thread.sleep(100);
-    controller.waitForDataSource();
+    controller.waitForTasks();
     controller.getExecutorService().waitForAllTasksDone();
 
 
@@ -259,7 +259,7 @@ public class AddThoughtTest {
 
     controller.save();
     Thread.sleep(100);
-    controller.waitForDataSource();
+    controller.waitForTasks();
     controller.waitForTasks();
 
     PersistentWork.wrap(() -> {

@@ -145,7 +145,7 @@ public class ViewThoughts extends BaseController<List<Thought>> {
   @FXML
   void convertToTask() {
     ActivityHint activityHint = new ActivityHint(CreateTaskActivity.class);
-    activityHint.setReturnToActivity(controller.getCurrentActivity());
+    activityHint.setReturnToActivity(controller.getCurrentActivityId());
     activityHint.setDataSourceHint(this::getSelectedThought);
 
     controller.startOrResume(activityHint);

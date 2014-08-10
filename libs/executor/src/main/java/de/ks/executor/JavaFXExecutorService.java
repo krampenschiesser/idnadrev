@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.Vetoed;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.*;
@@ -27,12 +27,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Vetoed
-public class JavaFXExecutorService extends AbstractExecutorService implements SuspendableExecutorService {
+public class JavaFXExecutorService extends AbstractExecutorService {
   private static final Logger log = LoggerFactory.getLogger(JavaFXExecutorService.class);
   final ExecutorService mock;
 
   protected final Queue<Runnable> queue = new ConcurrentLinkedQueue<>();
-  protected volatile boolean suspended = false;
   protected volatile boolean shutdown = false;
   protected final AtomicReference<QueueListener> queueListener = new AtomicReference<>();
 
@@ -47,14 +46,12 @@ public class JavaFXExecutorService extends AbstractExecutorService implements Su
   @Override
   public void shutdown() {
     shutdown = true;
-    waitForAllTasksDoneAndDrain();
   }
 
   @Override
   public List<Runnable> shutdownNow() {
     shutdown = true;
-    waitForAllTasksDoneAndDrain();
-    return Collections.emptyList();
+    return new ArrayList<>(queue);
   }
 
   @Override
@@ -111,29 +108,6 @@ public class JavaFXExecutorService extends AbstractExecutorService implements Su
     }
   }
 
-  @Override
-  public void suspend() {
-    suspended = true;
-    waitForAllTasksDone();
-  }
-
-  @Override
-  public void resume() {
-    suspended = false;
-    triggerQueueReading();
-  }
-
-  @Override
-  public boolean isSuspended() {
-    return suspended;
-  }
-
-  @Override
-  public void waitForAllTasksDoneAndDrain() {
-    waitInternal(true);
-  }
-
-  @Override
   public void waitForAllTasksDone() {
     waitInternal(false);
   }
@@ -171,11 +145,6 @@ public class JavaFXExecutorService extends AbstractExecutorService implements Su
         log.trace("Got Interrupted while waiting for tasks.", e);
       }
     }
-  }
-
-  @Override
-  public List<Runnable> getSuspendedTasks() {
-    return null;
   }
 
   public Queue<Runnable> getQueue() {
@@ -247,7 +216,7 @@ public class JavaFXExecutorService extends AbstractExecutorService implements Su
     }
 
     private boolean serviceIsRunning() {
-      return !service.isShutdown() && !service.isSuspended();
+      return !service.isShutdown();
     }
 
     public void reschedule() {

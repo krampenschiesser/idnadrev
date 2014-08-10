@@ -60,11 +60,11 @@ public class WorkOnTaskTest {
     PersistentWork.persist(context, task, workUnit);
 
     activityController.startOrResume(new ActivityHint(ViewTasksActvity.class));
-    activityController.waitForDataSource();
+    activityController.waitForTasks();
     FXPlatform.waitForFX();
-    ActivityHint hint = new ActivityHint(activityController.getCurrentActivity()).setDataSourceHint(() -> task);
+    ActivityHint hint = new ActivityHint(WorkOnTaskActivity.class, activityController.getCurrentActivityId()).setDataSourceHint(() -> task);
     activityController.startOrResume(hint);
-    activityController.waitForDataSource();
+    activityController.waitForTasks();
     controller = activityController.getControllerInstance(WorkOnTask.class);
   }
 

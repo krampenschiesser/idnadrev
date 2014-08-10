@@ -63,7 +63,7 @@ public class ViewThoughtsTest {
     scene = stage.getScene();
 
     controller.startOrResume(new ActivityHint(ViewThoughtsActivity.class));
-    controller.waitForDataSource();
+    controller.waitForTasks();
 
     viewThoughts = controller.getCurrentController();
   }
@@ -76,7 +76,7 @@ public class ViewThoughtsTest {
 
   @Test
   public void testDeleteThought() throws Exception {
-    controller.waitForDataSource();
+    controller.waitForTasks();
     assertEquals(1, viewThoughts.thoughtTable.getItems().size());
     FXPlatform.invokeLater(() -> viewThoughts.thoughtTable.getSelectionModel().select(0));
 

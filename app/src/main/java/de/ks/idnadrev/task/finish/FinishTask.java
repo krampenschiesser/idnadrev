@@ -15,6 +15,7 @@
 package de.ks.idnadrev.task.finish;
 
 import de.ks.BaseController;
+import de.ks.activity.ActivityHint;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.task.view.ViewTasksActvity;
 import de.ks.text.AsciiDocEditor;
@@ -71,6 +72,7 @@ public class FinishTask extends BaseController<Task> {
   @FXML
   void onSave(ActionEvent event) {
     controller.save();
-    controller.stopCurrentStart(ViewTasksActvity.class);
+    controller.stopCurrent();
+    controller.startOrResume(new ActivityHint(ViewTasksActvity.class));
   }
 }

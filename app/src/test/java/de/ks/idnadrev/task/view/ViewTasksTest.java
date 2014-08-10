@@ -61,7 +61,7 @@ public class ViewTasksTest {
     PersistentWork.persist(context, project1, other);
 
     activityController.startOrResume(new ActivityHint(ViewTasksActvity.class));
-    activityController.waitForDataSource();
+    activityController.waitForTasks();
     controller = activityController.getControllerInstance(ViewTasks.class);
   }
 

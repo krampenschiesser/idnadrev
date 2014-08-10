@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 public class ActivityHint {
   private final Class<? extends ActivityCfg> nextActivity;
   private final String nextActivityId;
-  protected ActivityCfg returnToActivity;
+  protected String returnToActivity;
   protected Supplier returnToDatasourceHint;
   protected Supplier dataSourceHint;
 
@@ -31,20 +31,21 @@ public class ActivityHint {
     this(activity, activity.getSimpleName(), null);
   }
 
-  public ActivityHint(Class<? extends ActivityCfg> activity, ActivityCfg returnToActivity) {
+  public ActivityHint(Class<? extends ActivityCfg> activity, String returnToActivity) {
     this(activity, activity.getSimpleName(), returnToActivity);
   }
-  public ActivityHint(Class<? extends ActivityCfg> nextActivity, String nextActivityId, ActivityCfg returnToActivity) {
+
+  public ActivityHint(Class<? extends ActivityCfg> nextActivity, String nextActivityId, String returnToActivity) {
     this.nextActivity = nextActivity;
     this.nextActivityId = nextActivityId;
     this.returnToActivity = returnToActivity;
   }
 
-  public ActivityCfg getReturnToActivity() {
+  public String getReturnToActivity() {
     return returnToActivity;
   }
 
-  public ActivityHint setReturnToActivity(ActivityCfg returnToActivity) {
+  public ActivityHint setReturnToActivity(String returnToActivity) {
     this.returnToActivity = returnToActivity;
     return this;
   }

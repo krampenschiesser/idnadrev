@@ -47,7 +47,7 @@ public class CreateTask implements Initializable {
   @FXML
   public void save() {
     controller.save();
-    controller.resumePreviousActivity();
+    controller.stopCurrent();
   }
 
   @Override

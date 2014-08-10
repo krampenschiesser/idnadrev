@@ -59,7 +59,7 @@ public class CreateTaskWithFilesTest {
     PersistentWork.persist(new Context("context"));
 
     activityController.startOrResume(new ActivityHint(CreateTaskActivity.class));
-    activityController.waitForDataSource();
+    activityController.waitForTasks();
     createTask = activityController.<CreateTask>getCurrentController();
     controller = createTask.mainInfoController;
     expectedOutcomeEditor = createTask.expectedOutcomeController.expectedOutcome;
@@ -77,13 +77,13 @@ public class CreateTaskWithFilesTest {
     @SuppressWarnings("unchecked") CreateTaskDS datasource = (CreateTaskDS) store.getDatasource();
     datasource.fromThought = bla;
     activityController.reload();
-    activityController.waitForDataSource();
+    activityController.waitForTasks();
     FXPlatform.waitForFX();
     assertEquals("Bla", controller.name.getText());
     assertEquals("description", controller.description.getText());
 
     activityController.save();
-    activityController.waitForDataSource();
+    activityController.waitForTasks();
 
     assertNull(datasource.fromThought);
     assertEquals(0, PersistentWork.from(Thought.class).size());
@@ -105,7 +105,7 @@ public class CreateTaskWithFilesTest {
 
     @SuppressWarnings("unchecked") CreateTaskDS datasource = (CreateTaskDS) store.getDatasource();
     activityController.reload();
-    activityController.waitForDataSource();
+    activityController.waitForTasks();
     FXPlatform.waitForFX();
     FXPlatform.invokeLater(() -> {
       controller.name.setText("test");
@@ -115,7 +115,7 @@ public class CreateTaskWithFilesTest {
 
     activityController.save();
     Thread.sleep(100);
-    activityController.waitForDataSource();
+    activityController.waitForTasks();
 
     PersistentWork.wrap(() -> {
       List<FileReference> fileReferences = PersistentWork.from(FileReference.class);

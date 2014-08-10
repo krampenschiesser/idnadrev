@@ -57,7 +57,7 @@ public class CreateTaskTest {
     PersistentWork.persist(new Context("context"));
 
     activityController.startOrResume(new ActivityHint(CreateTaskActivity.class));
-    activityController.waitForDataSource();
+    activityController.waitForTasks();
     createTask = activityController.<CreateTask>getCurrentController();
     controller = createTask.mainInfoController;
     effortInfo = activityController.getControllerInstance(EffortInfo.class);
@@ -78,13 +78,13 @@ public class CreateTaskTest {
     @SuppressWarnings("unchecked") CreateTaskDS datasource = (CreateTaskDS) store.getDatasource();
     datasource.fromThought = bla;
     activityController.reload();
-    activityController.waitForDataSource();
+    activityController.waitForTasks();
     FXPlatform.waitForFX();
     assertEquals("Bla", controller.name.getText());
     assertEquals("description", controller.description.getText());
 
     activityController.save();
-    activityController.waitForDataSource();
+    activityController.waitForTasks();
 
     assertNull(datasource.fromThought);
     assertEquals(0, PersistentWork.from(Thought.class).size());
@@ -110,7 +110,7 @@ public class CreateTaskTest {
     FXPlatform.invokeLater(() -> {
       createTask.save();
     });
-    activityController.waitForDataSource();
+    activityController.waitForTasks();
 
     List<Task> tasks = PersistentWork.from(Task.class, (t) -> {
       t.getContext().getName();
@@ -150,7 +150,7 @@ public class CreateTaskTest {
     FXPlatform.invokeLater(() -> {
       createTask.save();
     });
-    activityController.waitForDataSource();
+    activityController.waitForTasks();
 
     List<Task> tasks = PersistentWork.from(Task.class, (t) -> {
       if (t.getSchedule() != null) {
@@ -186,7 +186,7 @@ public class CreateTaskTest {
     FXPlatform.invokeLater(() -> {
       createTask.save();
     });
-    activityController.waitForDataSource();
+    activityController.waitForTasks();
   }
 
   @Test
@@ -231,7 +231,7 @@ public class CreateTaskTest {
     FXPlatform.invokeLater(() -> {
       createTask.save();
     });
-    activityController.waitForDataSource();
+    activityController.waitForTasks();
 
     List<Task> tasks = PersistentWork.from(Task.class, (t) -> {
       t.getTags().toString();
@@ -248,7 +248,7 @@ public class CreateTaskTest {
     @SuppressWarnings("unchecked") CreateTaskDS datasource = (CreateTaskDS) store.getDatasource();
     datasource.fromTask = bla;
     activityController.reload();
-    activityController.waitForDataSource();
+    activityController.waitForTasks();
     FXPlatform.waitForFX();
     assertEquals("Bla", controller.name.getText());
     assertEquals("description", controller.description.getText());
@@ -258,7 +258,7 @@ public class CreateTaskTest {
     FXPlatform.waitForFX();
 
     activityController.save();
-    activityController.waitForDataSource();
+    activityController.waitForTasks();
 
     assertNull(datasource.fromTask);
     List<Task> tasks = PersistentWork.from(Task.class);

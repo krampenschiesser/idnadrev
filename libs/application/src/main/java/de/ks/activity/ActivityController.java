@@ -82,19 +82,23 @@ public class ActivityController {
       try (LockSupport lockSupport = new LockSupport(lock)) {
 
         Object dataSourceHint = null;
+        Object returnHint = null;
         if (context.hasCurrentActivity()) {
           if (activityHint.getDataSourceHint() != null) {
             dataSourceHint = activityHint.getDataSourceHint().get();
+          }
+          ActivityHint currentHint = getCurrentActivity().getActivityHint();
+          if (currentHint.getReturnToDatasourceHint() != null) {
+            returnHint = currentHint.getReturnToDatasourceHint().get();
           }
           suspendCurrent();
         }
 
         String id = activityHint.getNextActivityId();
-        context.startActivity(id);
-
         if (registeredActivities.containsKey(id)) {
-          resume(activityHint, dataSourceHint);
+          resume(id, activityHint.needsReload(), returnHint);
         } else {
+          context.startActivity(id);
           ActivityCfg activityCfg = CDI.current().select(activityHint.getNextActivity()).get();
 
           registeredActivities.put(id, activityCfg);
@@ -117,29 +121,31 @@ public class ActivityController {
           if (activityHint.needsReload()) {
             reload();
           }
+          currentActivity.set(id);
           log.info("Started activity {}", id);
         }
-        currentActivity.set(id);
       }
     });
   }
 
-  protected void resume(ActivityHint hint, Object dataSourceHint) {
-    log.info("Resuming activity {}", hint);
+  protected void resume(String id, boolean reload, Object returnHint) {
+    context.startActivity(id);
+    log.info("Resuming activity {}", id);
 
-    store.getDatasource().setLoadingHint(dataSourceHint);
+    store.getDatasource().setLoadingHint(returnHint);
 
-    ActivityCfg activityCfg = registeredActivities.get(hint.getNextActivityId());
+    ActivityCfg activityCfg = registeredActivities.get(id);
 
     initialization.getControllers().forEach(eventBus::register);
 
     select(activityCfg, activityCfg.getInitialController(), Navigator.MAIN_AREA);
 
     initialization.getActivityCallbacks().forEach(ActivityCallback::onResume);
-    if (hint.needsReload()) {
+    if (reload) {
       reload();
     }
-    log.info("Resumed activity {}", hint);
+    currentActivity.set(id);
+    log.info("Resumed activity {}", id);
   }
 
   protected void suspendCurrent() {
@@ -149,12 +155,24 @@ public class ActivityController {
     context.cleanupSingleBean(ActivityJavaFXExecutor.class);
 
     initialization.getControllers().forEach((controller) -> eventBus.unregister(controller));
+  }
 
+  public void stopCurrent() {
+    stop(getCurrentActivityId());
   }
 
   public void stop(String id) {
     loadInExecutor("could not stop activity " + id, () -> {
       try (LockSupport lockSupport = new LockSupport(lock)) {
+
+        Object returnHint = null;
+
+        ActivityHint activityHint = getCurrentActivity().getActivityHint();
+        if (activityHint.getReturnToDatasourceHint() != null) {
+          returnHint = activityHint.getReturnToDatasourceHint().get();
+        }
+        String returnToActivity = activityHint.getReturnToActivity();
+
         initialization.getActivityCallbacks().forEach(ActivityCallback::onStop);
         initialization.getControllers().forEach((controller) -> eventBus.unregister(controller));
         registeredActivities.remove(id);
@@ -163,6 +181,8 @@ public class ActivityController {
         if (id.equals(currentActivity.get())) {
           currentActivity.set(null);
         }
+
+        resume(returnToActivity, true, returnHint);
       }
     });
   }
@@ -300,4 +320,5 @@ public class ActivityController {
       //i dont care
     }
   }
+
 }

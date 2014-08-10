@@ -74,13 +74,13 @@ public class WorkOnTask extends BaseController<Task> {
   @FXML
   void stopWork() {
     controller.save();
-    controller.resumePreviousActivity();
+    controller.stopCurrent();
   }
 
   @FXML
   void finishTask() {
     controller.save();
-    ActivityHint hint = new ActivityHint(FinishTaskActivity.class, controller.getCurrentActivity());
+    ActivityHint hint = new ActivityHint(FinishTaskActivity.class, controller.getCurrentActivityId());
     hint.setModelHint(PersistentWork::reload);
     controller.startOrResume(hint);
   }
