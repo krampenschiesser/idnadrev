@@ -31,6 +31,9 @@ public class ActivityHint {
     this(activity, activity.getSimpleName(), null);
   }
 
+  public ActivityHint(Class<? extends ActivityCfg> activity, ActivityCfg returnToActivity) {
+    this(activity, activity.getSimpleName(), returnToActivity);
+  }
   public ActivityHint(Class<? extends ActivityCfg> nextActivity, String nextActivityId, ActivityCfg returnToActivity) {
     this.nextActivity = nextActivity;
     this.nextActivityId = nextActivityId;

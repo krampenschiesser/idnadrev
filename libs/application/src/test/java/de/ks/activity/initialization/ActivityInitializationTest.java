@@ -43,7 +43,7 @@ public class ActivityInitializationTest {
   @Test
   public void testLoadAdditionalController() throws Exception {
     controller.start(InitializationActivity.class);
-    controller.waitForDataSource();
+    controller.waitForTasks();
     assertTrue(controller.getControllerInstance(InitalizationController.class).didLoadOtherController);
     assertNotNull(controller.getControllerInstance(InitalizationController.class).other);
     assertNotNull(controller.getControllerInstance(OtherController.class));

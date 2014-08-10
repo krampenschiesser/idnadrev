@@ -38,6 +38,7 @@ import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -76,6 +77,14 @@ public class ActivityController {
   protected final ReentrantLock lock = new ReentrantLock(true);
   private volatile CompletableFuture<?> finishingFutures;
 
+  @Deprecated
+  public void start(Class<? extends ActivityCfg> clazz) {
+    startOrResume(new ActivityHint(clazz));
+  }
+
+  public void start(ActivityHint activityHint) {
+    startOrResume(activityHint);
+  }
   public void startOrResume(ActivityHint activityHint) {
     loadInExecutor("could not start activityhint " + activityHint, () -> {
       try (LockSupport lockSupport = new LockSupport(lock)) {
@@ -164,6 +173,11 @@ public class ActivityController {
         }
       }
     });
+  }
+
+  public void stopAll() {
+    HashSet<String> ids = new HashSet<>(registeredActivities.keySet());
+    ids.forEach(id -> stop(id));
   }
 
   protected void loadInExecutor(String errorMsg, Runnable runnable) {
