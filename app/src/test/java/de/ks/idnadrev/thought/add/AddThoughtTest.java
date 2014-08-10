@@ -27,6 +27,7 @@ import de.ks.text.command.InsertImage;
 import de.ks.util.FXPlatform;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
@@ -240,7 +241,8 @@ public class AddThoughtTest {
 
     FXPlatform.invokeLater(() -> {
       GridPane grid = (GridPane) command.getSelectImageController().getImagePane().getChildren().get(0);
-      grid.getChildren().get(0).getOnMouseClicked().handle(null);
+      Button node = (Button) grid.getChildren().get(0);
+      node.getOnAction().handle(null);
     });
 
     FXPlatform.waitForFX();
