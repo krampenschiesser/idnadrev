@@ -107,6 +107,10 @@ public class AddThoughtTest {
 
   @Test
   public void testClipboardSingleLineString() throws Exception {
+    FXPlatform.invokeLater(() -> {
+      Clipboard clipboard = Clipboard.getSystemClipboard();
+      clipboard.clear();
+    });
     FXPlatform.waitForFX();
     String clipboardText = "singleClip";
     copy2Clipboard(clipboardText);
@@ -119,6 +123,8 @@ public class AddThoughtTest {
     FXPlatform.invokeLater(() -> {
       Clipboard clipboard = Clipboard.getSystemClipboard();
       clipboard.clear();
+      clipboard.getFiles().clear();
+
       HashMap<DataFormat, Object> content = new HashMap<>();
       content.put(DataFormat.PLAIN_TEXT, clipboardText);
       clipboard.setContent(content);
