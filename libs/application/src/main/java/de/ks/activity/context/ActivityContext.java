@@ -120,14 +120,13 @@ public class ActivityContext implements Context {
     Class<?> beanClass = bean.getBeanClass();
     Annotation annotation = beanClass.getAnnotation(ActivityScoped.class);
 
-    if (annotation != null) {
-      if (currentActivity == null) {
-        throw new IllegalStateException("No activity currently active!");
-      }
-      return Pair.of(currentActivity, beanClass);
-    } else {
-      throw new IllegalStateException("Unable to retrieve " + ActivityScoped.class.getName() + " from " + beanClass);
+    if (annotation == null) {//might be a producer method, only warn
+      log.warn("Unable to retrieve " + ActivityScoped.class.getName() + " from " + beanClass);
     }
+    if (currentActivity == null) {
+      throw new IllegalStateException("No activity currently active!");
+    }
+    return Pair.of(currentActivity, beanClass);
   }
 
   public void cleanupSingleActivity(String id) {
