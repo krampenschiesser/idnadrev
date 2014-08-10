@@ -112,7 +112,9 @@ public class WorkOnTask extends BaseController<Task> {
 
       estimatedTime.setText(getHourMinutesString(time));
     }
-    description.selectPreview();
+    if (!description.getText().isEmpty()) {
+      description.selectPreview();
+    }
   }
 
   @Override
