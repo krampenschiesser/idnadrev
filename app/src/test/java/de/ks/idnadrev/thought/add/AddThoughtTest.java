@@ -137,18 +137,20 @@ public class AddThoughtTest {
     FXPlatform.invokeLater(() -> {
       Clipboard.getSystemClipboard().clear();
       addThought.name.setText("name");
-      addThought.description.setText("description");
-
+    });
+    Thread.sleep(50);
+    controller.waitForTasks();
+    FXPlatform.invokeLater(() -> {
       addThought.save.getOnAction().handle(new ActionEvent());
     });
-    controller.getCurrentExecutorService().waitForAllTasksDone();
+    controller.waitForTasks();
 
     List<Thought> thoughts = PersistentWork.from(Thought.class);
     assertEquals(1, thoughts.size());
 
     Thought thought = thoughts.get(0);
     assertEquals("name", thought.getName());
-    assertEquals("description", thought.getDescription());
+    assertEquals("= name\n", thought.getDescription());
   }
 
   @Test

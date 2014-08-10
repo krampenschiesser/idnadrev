@@ -17,6 +17,7 @@ package de.ks.idnadrev.thought.add;
 
 import de.ks.BaseController;
 import de.ks.activity.ModelBound;
+import de.ks.executor.group.LastTextChange;
 import de.ks.file.FileViewController;
 import de.ks.idnadrev.entity.Thought;
 import de.ks.text.AsciiDocEditor;
@@ -61,6 +62,7 @@ public class AddThought extends BaseController<Thought> {
   protected FileViewController fileViewController;
   @FXML
   protected GridPane fileView;
+  private LastTextChange lastTextChange;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -83,6 +85,16 @@ public class AddThought extends BaseController<Thought> {
     descriptionBinding.bind(description.textProperty());
 
     fileViewController.setImageData(description.getImages());
+
+    lastTextChange = new LastTextChange(name, controller.getCurrentExecutorService());
+    lastTextChange.registerHandler(cf -> {
+      cf.thenAcceptAsync(name -> {
+        String desc = description.textProperty().getValueSafe().trim();
+        if (desc.isEmpty() || (desc.startsWith("= ") && name.contains(desc.substring(2)))) {
+          description.setText("= " + name + "\n");
+        }
+      }, controller.getJavaFXExecutor());
+    });
   }
 
   private void bindValidation() {

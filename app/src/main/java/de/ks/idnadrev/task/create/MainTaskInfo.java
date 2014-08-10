@@ -17,6 +17,7 @@ package de.ks.idnadrev.task.create;
 import de.ks.BaseController;
 import de.ks.activity.ModelBound;
 import de.ks.application.fxml.DefaultLoader;
+import de.ks.executor.group.LastTextChange;
 import de.ks.idnadrev.entity.Context;
 import de.ks.idnadrev.entity.Tag;
 import de.ks.idnadrev.entity.Task;
@@ -76,6 +77,7 @@ public class MainTaskInfo extends BaseController<Task> {
   protected DurationValidator durationValidator;
   protected Runnable saveRunnable;
   protected final ObservableList<TaskState> states = FXCollections.observableArrayList();
+  private LastTextChange lastNameChange;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -117,6 +119,16 @@ public class MainTaskInfo extends BaseController<Task> {
     states.add(TaskState.ASAP);
     states.add(TaskState.DELEGATED);
     states.add(TaskState.LATER);
+
+    lastNameChange = new LastTextChange(name, controller.getCurrentExecutorService());
+    lastNameChange.registerHandler(cf -> {
+      cf.thenAcceptAsync(name -> {
+        String desc = description.textProperty().getValueSafe().trim();
+        if (desc.isEmpty() || (desc.startsWith("= ") && name.contains(desc.substring(2)))) {
+          description.setText("= " + name + "\n");
+        }
+      }, controller.getJavaFXExecutor());
+    });
   }
 
   private Callback<AutoCompletionBinding.ISuggestionRequest, Collection<String>> getEstimatedTimeAutoCompletion() {
