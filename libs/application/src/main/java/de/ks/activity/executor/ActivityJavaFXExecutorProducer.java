@@ -20,7 +20,6 @@ import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import java.util.concurrent.TimeUnit;
 
-@ActivityScoped
 public class ActivityJavaFXExecutorProducer {
   @Produces
   @ActivityScoped
