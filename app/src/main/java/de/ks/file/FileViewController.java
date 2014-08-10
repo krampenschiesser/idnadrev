@@ -98,7 +98,7 @@ public class FileViewController implements Initializable, DatasourceCallback<Fil
       FileContainer thought = store.getModel();
 
       files.forEach(file -> {
-        if (!fileReferences.containsKey(file)) {
+        if (!fileReferences.containsKey(file) && file.exists()) {
           fileReferences.put(file, fileStore.getReference(thought, file));
         }
       });
