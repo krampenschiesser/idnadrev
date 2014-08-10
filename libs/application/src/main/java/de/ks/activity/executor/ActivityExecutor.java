@@ -20,19 +20,27 @@ import de.ks.executor.LoggingUncaughtExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import javax.enterprise.inject.Vetoed;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.*;
 
 @ActivityScoped
-public class ActivityExecutor extends ScheduledThreadPoolExecutor {
+@Vetoed
+public class ActivityExecutor implements ScheduledExecutorService {
   private static final Logger log = LoggerFactory.getLogger(ActivityExecutor.class);
   private final String name;
+  private final ScheduledThreadPoolExecutor delegate;
+
+  protected ActivityExecutor() {
+    this("NeverCalled", 2, 4);
+  }
 
   public ActivityExecutor(String name, int corePoolSize, int maximumPoolSize) {
-    super(corePoolSize, new ThreadFactoryBuilder().setDaemon(true).setNameFormat(name + "-%d").setUncaughtExceptionHandler(new LoggingUncaughtExceptionHandler()).build());
+    delegate = new ScheduledThreadPoolExecutor(corePoolSize, new ThreadFactoryBuilder().setDaemon(true).setNameFormat(name + "-%d").setUncaughtExceptionHandler(new LoggingUncaughtExceptionHandler()).build());
     this.name = name;
-    setMaximumPoolSize(maximumPoolSize);
-    setKeepAliveTime(1, TimeUnit.MINUTES);
+    delegate.setMaximumPoolSize(maximumPoolSize);
+    delegate.setKeepAliveTime(1, TimeUnit.MINUTES);
   }
 
   public String getName() {
@@ -40,12 +48,101 @@ public class ActivityExecutor extends ScheduledThreadPoolExecutor {
   }
 
   public void waitForAllTasksDone() {
-    while (getActiveCount() > 0 || !getQueue().isEmpty()) {
+    while (delegate.getActiveCount() > 0 || !delegate.getQueue().isEmpty()) {
       try {
         TimeUnit.MILLISECONDS.sleep(100);
       } catch (InterruptedException e) {
         log.trace("Got interrupted while waiting for tasks.", e);
       }
     }
+  }
+
+  @Override
+  public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
+    return delegate.schedule(command, delay, unit);
+  }
+
+  @Override
+  public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit) {
+    return delegate.schedule(callable, delay, unit);
+  }
+
+  @Override
+  public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit) {
+    return delegate.scheduleAtFixedRate(command, initialDelay, period, unit);
+  }
+
+  @Override
+  public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit) {
+    return delegate.scheduleWithFixedDelay(command, initialDelay, delay, unit);
+  }
+
+  @Override
+  public void execute(Runnable command) {
+    delegate.execute(command);
+  }
+
+  @Override
+  public Future<?> submit(Runnable task) {
+    return delegate.submit(task);
+  }
+
+  @Override
+  public <T> Future<T> submit(Runnable task, T result) {
+    return delegate.submit(task, result);
+  }
+
+  @Override
+  public <T> Future<T> submit(Callable<T> task) {
+    return delegate.submit(task);
+  }
+
+  @Override
+  public void shutdown() {
+    delegate.shutdown();
+  }
+
+  @Override
+  public List<Runnable> shutdownNow() {
+    return delegate.shutdownNow();
+  }
+
+  @Override
+  public <T> T invokeAny(Collection<? extends Callable<T>> tasks) throws InterruptedException, ExecutionException {
+    return delegate.invokeAny(tasks);
+  }
+
+  @Override
+  public <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+    return delegate.invokeAny(tasks, timeout, unit);
+  }
+
+  @Override
+  public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks) throws InterruptedException {
+    return delegate.invokeAll(tasks);
+  }
+
+  @Override
+  public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException {
+    return delegate.invokeAll(tasks, timeout, unit);
+  }
+
+  @Override
+  public boolean isShutdown() {
+    return delegate.isShutdown();
+  }
+
+  @Override
+  public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
+    return delegate.awaitTermination(timeout, unit);
+  }
+
+  public boolean isTerminating() {
+    return delegate.isTerminating();
+  }
+
+  @Override
+  public boolean isTerminated() {
+    return delegate.isTerminated();
   }
 }
