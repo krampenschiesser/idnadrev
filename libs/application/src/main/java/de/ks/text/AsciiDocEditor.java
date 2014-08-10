@@ -232,7 +232,7 @@ public class AsciiDocEditor implements Initializable {
   }
 
   public String getText() {
-    return text.get();
+    return text.getValueSafe();
   }
 
   public void setText(String text) {
