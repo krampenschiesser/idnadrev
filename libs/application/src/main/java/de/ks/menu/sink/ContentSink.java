@@ -18,7 +18,7 @@ package de.ks.menu.sink;
 import de.ks.NodeProvider;
 import de.ks.activity.ActivityCfg;
 import de.ks.activity.ActivityController;
-import de.ks.activity.link.ActivityHint;
+import de.ks.activity.ActivityHint;
 import de.ks.application.Navigator;
 import de.ks.eventsystem.bus.EventBus;
 import de.ks.menu.MenuItemDescriptor;

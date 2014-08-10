@@ -16,10 +16,8 @@ package de.ks.activity.initialization;
 
 import de.ks.activity.ActivityCfg;
 import de.ks.activity.ActivityController;
-import de.ks.activity.callback.*;
 import de.ks.activity.context.ActivityScoped;
 import de.ks.activity.executor.ActivityExecutor;
-import de.ks.activity.link.ViewLink;
 import de.ks.application.fxml.DefaultLoader;
 import de.ks.eventsystem.bus.EventBus;
 import de.ks.executor.JavaFXExecutorService;
@@ -56,24 +54,11 @@ public class ActivityInitialization {
   public void loadActivity(ActivityCfg activityCfg) {
     currentlyLoadedControllers.get().clear();
     loadControllers(activityCfg);
-    setupDefaultCallbacks(activityCfg);
     initalizeControllers();
-  }
-
-  private void setupDefaultCallbacks(ActivityCfg activityCfg) {
-    callbacks.add(new InitializeViewLinks(activityCfg));
-    callbacks.add(new InitializeActivityLinks(activityCfg));
-    callbacks.add(new InitializeTaskLinks(activityCfg));
-    callbacks.add(new InitializeModelBindings(activityCfg));
-    callbacks.add(new InitializeListBindings(activityCfg));
   }
 
   protected void loadControllers(ActivityCfg activityCfg) {
     loadController(activityCfg.getInitialController());
-    for (ViewLink next : activityCfg.getViewLinks()) {
-      loadController(next.getSourceController());
-      loadController(next.getTargetController());
-    }
     activityCfg.getAdditionalControllers().forEach(c -> loadController(c));
     preloads.values().forEach(l -> l.join());
   }

@@ -21,8 +21,6 @@ import de.ks.activity.executor.ActivityExecutor;
 import de.ks.activity.executor.ActivityJavaFXExecutor;
 import de.ks.activity.initialization.ActivityCallback;
 import de.ks.activity.initialization.ActivityInitialization;
-import de.ks.activity.link.ActivityHint;
-import de.ks.activity.link.ViewLink;
 import de.ks.activity.loading.ActivityLoadingExecutor;
 import de.ks.application.Navigator;
 import de.ks.datasource.DataSource;
@@ -180,10 +178,6 @@ public class ActivityController {
         throw new RuntimeException(e);
       }
     }
-  }
-
-  public void select(ActivityCfg activityCfg, ViewLink link) {
-    select(activityCfg, link.getTargetController(), link.getPresentationArea());
   }
 
   public void select(ActivityCfg activityCfg, Class<?> targetController, String presentationArea) {

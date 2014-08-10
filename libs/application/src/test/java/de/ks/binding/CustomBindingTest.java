@@ -52,7 +52,7 @@ public class CustomBindingTest {
     testObject.getSetValue().add("bla");
     testObject.setTimestamp(new Timestamp(700000));
 
-    binding.applyModelToCustomProperties(testObject);
+    binding.applyModelToProperties(testObject);
 
     assertFalse(booleanProperty.get());
     assertEquals(13.67F, floatProperty.get(), 0.01F);
