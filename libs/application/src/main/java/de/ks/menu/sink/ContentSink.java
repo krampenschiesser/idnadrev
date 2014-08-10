@@ -51,14 +51,11 @@ public class ContentSink extends AbstractSink<ContentSink> {
       log.error("No navigator registered, can't show item {}", item);
       return;
     }
-    //  pane.getChildren().clear();
     if (menuItem instanceof Node) {
       navigator.presentInMain((Node) menuItem);
-      //pane.getChildren().add((Node) menuItem);
     } else if (menuItem instanceof NodeProvider) {
       NodeProvider nodeProvider = (NodeProvider) menuItem;
       navigator.presentInMain(nodeProvider.getNode());
-      //pane.getChildren().add(nodeProvider.getNode());
     } else if (menuItem instanceof ActivityCfg) {
       executorService.submit(() -> controller.start((ActivityCfg) menuItem));
     } else {
