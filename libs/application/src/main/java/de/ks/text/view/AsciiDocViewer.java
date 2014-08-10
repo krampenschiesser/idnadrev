@@ -15,10 +15,10 @@
 package de.ks.text.view;
 
 import de.ks.activity.ActivityController;
+import de.ks.activity.executor.ActivityExecutor;
 import de.ks.activity.initialization.ActivityInitialization;
 import de.ks.application.fxml.DefaultLoader;
 import de.ks.executor.JavaFXExecutorService;
-import de.ks.executor.SuspendablePooledExecutorService;
 import de.ks.text.AsciiDocParser;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
@@ -93,7 +93,7 @@ public class AsciiDocViewer implements Initializable {
   }
 
   public void preload(Collection<AsciiDocContent> load) {
-    SuspendablePooledExecutorService executorService = controller.getCurrentExecutorService();
+    ActivityExecutor executorService = controller.getExecutorService();
     JavaFXExecutorService javaFXExecutor = controller.getJavaFXExecutor();
     load.forEach(t -> {
       CompletableFuture<Pair<String, String>> completableFuture = CompletableFuture.supplyAsync(() -> preProcess(t.getAdoc()), executorService)//

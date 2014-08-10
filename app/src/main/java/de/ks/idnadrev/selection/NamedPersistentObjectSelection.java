@@ -140,7 +140,7 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
       namedPersistentObjectAutoCompletion = new NamedPersistentObjectAutoCompletion<>(entityClass, filter);
       autoCompletion = new CustomAutoCompletionBinding(input, namedPersistentObjectAutoCompletion);
     });
-    lastInputTextChange = new LastTextChange(input, controller.getCurrentExecutorService());
+    lastInputTextChange = new LastTextChange(input, controller.getExecutorService());
     lastInputTextChange.registerHandler(cf -> {
       cf.thenAccept(this::findAndSetLastValue);
     });
@@ -157,7 +157,7 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
 
   @FXML
   void showBrowser() {
-    SuspendablePooledExecutorService executorService = controller.getCurrentExecutorService();
+    SuspendablePooledExecutorService executorService = controller.getExecutorService();
     JavaFXExecutorService javaFXExecutor = controller.getJavaFXExecutor();
     CompletableFuture.supplyAsync(this::readEntities, executorService)//
             .thenAcceptAsync(this::setTableItems, javaFXExecutor);
