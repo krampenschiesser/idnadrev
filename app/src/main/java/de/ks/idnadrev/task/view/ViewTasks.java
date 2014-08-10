@@ -15,7 +15,7 @@
 package de.ks.idnadrev.task.view;
 
 import de.ks.BaseController;
-import de.ks.activity.link.NavigationHint;
+import de.ks.activity.link.ActivityHint;
 import de.ks.datasource.DataSource;
 import de.ks.file.FileStore;
 import de.ks.i18n.Localized;
@@ -191,7 +191,7 @@ public class ViewTasks extends BaseController<List<Task>> {
     later.disableProperty().bind(disable);
     asap.disableProperty().bind(disable);
 
-    CompletableFuture.supplyAsync(() -> PersistentWork.from(Context.class).stream().map(c -> c.getName()).collect(Collectors.toList()), controller.getCurrentExecutorService())//
+    CompletableFuture.supplyAsync(() -> PersistentWork.from(Context.class).stream().map(c -> c.getName()).collect(Collectors.toList()), controller.getExecutorService())//
             .thenAcceptAsync(contextNames -> {
               ObservableList<String> items = FXCollections.observableArrayList(contextNames);
               items.add(0, "");
@@ -356,7 +356,7 @@ public class ViewTasks extends BaseController<List<Task>> {
 
   @FXML
   void editTask() {
-    NavigationHint hint = new NavigationHint();
+    ActivityHint hint = new ActivityHint();
     hint.setReturnToActivity(controller.getCurrentActivity());
     hint.setReturnToDatasourceHint(() -> tasksView.getSelectionModel().getSelectedItem().getValue());
     hint.setDataSourceHint(() -> tasksView.getSelectionModel().getSelectedItem().getValue());
@@ -367,19 +367,19 @@ public class ViewTasks extends BaseController<List<Task>> {
   void startWork() {
     Supplier currentSelection = () -> tasksView.getSelectionModel().getSelectedItem().getValue();
 
-    NavigationHint navigationHint = new NavigationHint(controller.getCurrentActivity());
-    navigationHint.setDataSourceHint(currentSelection);
-    navigationHint.setReturnToDatasourceHint(currentSelection);
+    ActivityHint activityHint = new ActivityHint(controller.getCurrentActivity());
+    activityHint.setDataSourceHint(currentSelection);
+    activityHint.setReturnToDatasourceHint(currentSelection);
 
-    controller.start(WorkOnTaskActivity.class, navigationHint);
+    controller.start(WorkOnTaskActivity.class, activityHint);
   }
 
   @FXML
   void finishTask() {
-    NavigationHint navigationHint = new NavigationHint(controller.getCurrentActivity());
-    navigationHint.setDataSourceHint(() -> tasksView.getSelectionModel().getSelectedItem().getValue());
+    ActivityHint activityHint = new ActivityHint(controller.getCurrentActivity());
+    activityHint.setDataSourceHint(() -> tasksView.getSelectionModel().getSelectedItem().getValue());
 
-    controller.start(FinishTaskActivity.class, navigationHint);
+    controller.start(FinishTaskActivity.class, activityHint);
   }
 
   @FXML

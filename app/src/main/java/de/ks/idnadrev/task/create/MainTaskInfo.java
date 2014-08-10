@@ -121,7 +121,7 @@ public class MainTaskInfo extends BaseController<Task> {
     states.add(TaskState.DELEGATED);
     states.add(TaskState.LATER);
 
-    lastNameChange = new LastTextChange(name, controller.getCurrentExecutorService());
+    lastNameChange = new LastTextChange(name, controller.getExecutorService());
     lastNameChange.registerHandler(cf -> {
       cf.thenAcceptAsync(name -> {
         String desc = description.textProperty().getValueSafe().trim();
@@ -150,7 +150,7 @@ public class MainTaskInfo extends BaseController<Task> {
       DefaultLoader<GridPane, TagInfo> loader = new DefaultLoader<>(TagInfo.class);
       loader.load();
       return loader;
-    }, controller.getCurrentExecutorService()).thenAcceptAsync((loader) -> {
+    }, controller.getExecutorService()).thenAcceptAsync((loader) -> {
       TagInfo ctrller = loader.getController();
       ctrller.getName().setText(tag);
       GridPane view = loader.getView();

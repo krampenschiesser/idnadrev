@@ -16,7 +16,7 @@ package de.ks.idnadrev.thought.view;
 
 import de.ks.BaseController;
 import de.ks.activity.ListBound;
-import de.ks.activity.link.NavigationHint;
+import de.ks.activity.link.ActivityHint;
 import de.ks.file.FileStore;
 import de.ks.idnadrev.entity.Thought;
 import de.ks.idnadrev.task.create.CreateTaskActivity;
@@ -146,11 +146,11 @@ public class ViewThoughts extends BaseController<List<Thought>> {
 
   @FXML
   void convertToTask() {
-    NavigationHint navigationHint = new NavigationHint();
-    navigationHint.setReturnToActivity(controller.getCurrentActivity());
-    navigationHint.setDataSourceHint(this::getSelectedThought);
+    ActivityHint activityHint = new ActivityHint();
+    activityHint.setReturnToActivity(controller.getCurrentActivity());
+    activityHint.setDataSourceHint(this::getSelectedThought);
 
-    controller.start(CreateTaskActivity.class, navigationHint);
+    controller.start(CreateTaskActivity.class, activityHint);
   }
 
   @FXML

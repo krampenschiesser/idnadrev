@@ -87,7 +87,7 @@ public class AddThought extends BaseController<Thought> {
 
     fileViewController.setImageData(description.getImages());
 
-    lastTextChange = new LastTextChange(name, controller.getCurrentExecutorService());
+    lastTextChange = new LastTextChange(name, controller.getExecutorService());
     lastTextChange.registerHandler(cf -> {
       cf.thenAcceptAsync(name -> {
         String desc = description.textProperty().getValueSafe().trim();

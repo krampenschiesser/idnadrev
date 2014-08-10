@@ -16,7 +16,7 @@ package de.ks.idnadrev.task.work;
 
 import de.ks.BaseController;
 import de.ks.activity.ModelBound;
-import de.ks.activity.link.NavigationHint;
+import de.ks.activity.link.ActivityHint;
 import de.ks.executor.SuspendablePooledExecutorService;
 import de.ks.i18n.Localized;
 import de.ks.idnadrev.entity.Task;
@@ -82,7 +82,7 @@ public class WorkOnTask extends BaseController<Task> {
   @FXML
   void finishTask() {
     controller.save();
-    NavigationHint hint = new NavigationHint(controller.getCurrentActivity());
+    ActivityHint hint = new ActivityHint(controller.getCurrentActivity());
     hint.setModelHint(PersistentWork::reload);
     controller.start(FinishTaskActivity.class, hint);
   }
@@ -92,7 +92,7 @@ public class WorkOnTask extends BaseController<Task> {
     String descriptionContent = task.getDescription();
     description.setText(descriptionContent);
 
-    SuspendablePooledExecutorService executorService = controller.getCurrentExecutorService();
+    SuspendablePooledExecutorService executorService = controller.getExecutorService();
     PersistentWork.runAsync(em -> {
       Task reloaded = PersistentWork.byId(Task.class, task.getId());
       WorkUnit workUnit = new WorkUnit(reloaded);
