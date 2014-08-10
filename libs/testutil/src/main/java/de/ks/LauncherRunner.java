@@ -37,6 +37,7 @@ public class LauncherRunner extends BlockJUnit4ClassRunner {
 
   @Override
   public void run(RunNotifier notifier) {
+    System.setProperty("initialActivtiy", "");
     File versionFile = new File(System.getProperty("user.dir"), "version.info");
     Versioning versioning = new Versioning(versionFile, LauncherRunner.class);
     versioning.upgradeToCurrentVersion();

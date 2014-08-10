@@ -212,9 +212,6 @@ public class PropertyPath {
   }
 
   public void setValue(Object source, Object value) {
-    if (!isSetter()) {
-      log.error("Declared path [{}]is no setter", this);
-    }
     Object instance = source;
     Method lastMethod = methodPath.get(methodPath.size() - 1);
     for (Method method : methodPath) {

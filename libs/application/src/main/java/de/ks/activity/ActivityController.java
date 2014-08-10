@@ -42,10 +42,7 @@ import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -159,7 +156,7 @@ public class ActivityController {
     initialization.getActivityCallbacks().forEach(ActivityCallback::onResume);
     if (reload) {
       reload();
-//      finishingFutures.join();
+      finishingFutures.join();
     }
     currentActivity.set(id);
     log.info("Resumed activity {}", id);
@@ -190,7 +187,11 @@ public class ActivityController {
   }
 
   public void stopCurrent() {
-    stop(getCurrentActivityId(), false);
+    if (getCurrentActivity().getActivityHint().getReturnToActivity() != null) {
+      stop(getCurrentActivityId(), false);
+    } else {
+      reload();
+    }
   }
 
   public void stop(String id, boolean wait) {
@@ -267,8 +268,38 @@ public class ActivityController {
 
   public void waitForTasks() {
     if (context.hasCurrentActivity()) {
+      waitForDataSource();
       executor.waitForAllTasksDone();
       javaFXExecutor.waitForAllTasksDone();
+    }
+  }
+
+  public void waitForDataSource() {
+    if (finishingFutures == null || finishingFutures.isDone()) {
+      return;
+    }
+    try (LockSupport support = new LockSupport(lock)) {
+      try {
+        long start = System.currentTimeMillis();
+        boolean loop = true;
+        while (loop) {
+          try {
+            finishingFutures.get(100, TimeUnit.MILLISECONDS);
+            loop = false;
+          } catch (TimeoutException e) {
+            if (executor.isShutdown()) {
+              loop = false;
+            } else {
+              loop = true;
+            }
+            if (System.currentTimeMillis() - start > TimeUnit.SECONDS.toMillis(10)) {
+              throw new IllegalStateException("Waited for 10s for datasource, did not return.");
+            }
+          }
+        }
+      } catch (InterruptedException | ExecutionException e) {
+        throw new RuntimeException(e);
+      }
     }
   }
 
@@ -320,7 +351,7 @@ public class ActivityController {
 
   @SuppressWarnings("unchecked")
   public void save() {
-//    waitForTasks();
+    waitForDataSource();
     DataSource dataSource = store.getDatasource();
 
     Object model = store.getModel();
@@ -347,7 +378,7 @@ public class ActivityController {
   @SuppressWarnings("unchecked")
   public void reload() {
     loadInExecutor("reload", () -> {
-      waitForTasks();
+      waitForDataSource();
       DataSource dataSource = store.getDatasource();
       JavaFXExecutorService javafxExecutor = getJavaFXExecutor();
 

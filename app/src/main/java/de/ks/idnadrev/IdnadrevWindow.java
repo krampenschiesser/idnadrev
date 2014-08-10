@@ -15,6 +15,7 @@
 
 package de.ks.idnadrev;
 
+import de.ks.activity.ActivityCfg;
 import de.ks.activity.ActivityController;
 import de.ks.activity.ActivityHint;
 import de.ks.application.MainWindow;
@@ -46,6 +47,7 @@ import java.util.Set;
  *
  */
 public class IdnadrevWindow extends MainWindow {
+  public static final String PROPERTY_INITIAL_ACTIVITY = "initialActivtiy";
   private static final Logger log = LoggerFactory.getLogger(IdnadrevWindow.class);
 
   @Inject
@@ -96,13 +98,21 @@ public class IdnadrevWindow extends MainWindow {
   }
 
   protected void startInitialActivity() {
-    activityController.startOrResume(new ActivityHint(AddThoughtActivity.class));
-    try {
-      Thread.sleep(100);
-    } catch (InterruptedException e) {
-      //
+    String activityClass = System.getProperty(PROPERTY_INITIAL_ACTIVITY, AddThoughtActivity.class.getName());
+    if (!activityClass.isEmpty()) {
+      try {
+        @SuppressWarnings("unchecked") Class<? extends ActivityCfg> clazz = (Class<? extends ActivityCfg>) Class.forName(activityClass);
+        activityController.startOrResume(new ActivityHint(clazz));
+        try {
+          Thread.sleep(100);
+        } catch (InterruptedException e) {
+          //
+        }
+        activityController.waitForTasks();
+      } catch (ClassNotFoundException e) {
+        log.error("Could not load activity class {}", activityClass, e);
+      }
     }
-    activityController.waitForTasks();
   }
 
   private void checkShortcut(KeyEvent event) {

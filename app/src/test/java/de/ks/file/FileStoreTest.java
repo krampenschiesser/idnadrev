@@ -16,13 +16,17 @@ package de.ks.file;
 
 import com.google.common.base.Charsets;
 import de.ks.LauncherRunner;
+import de.ks.activity.ActivityController;
+import de.ks.activity.ActivityHint;
 import de.ks.idnadrev.entity.FileReference;
 import de.ks.idnadrev.entity.Thought;
+import de.ks.idnadrev.thought.add.AddThoughtActivity;
 import de.ks.option.Option;
 import de.ks.option.Options;
 import de.ks.persistence.PersistentWork;
 import de.ks.persistence.entity.Sequence;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,12 +52,16 @@ public class FileStoreTest {
 
   @Inject
   FileStore fileStore;
+  @Inject
+  ActivityController controller;
   private String fileStoreDir;
   private static final String md5 = DigestUtils.md5Hex("hello world");
   private static final String content = "hello world";
 
   @Before
   public void setUp() throws Exception {
+    controller.startOrResume(new ActivityHint(AddThoughtActivity.class));
+
     PersistentWork.deleteAllOf(Sequence.class, FileReference.class, Thought.class, Option.class);
     fileStoreDir = TMPDIR + File.separator + "idnadrevTestStore";
     Options.store(fileStoreDir, FileOptions.class).getFileStoreDir();
@@ -73,6 +81,11 @@ public class FileStoreTest {
         }
       });
     }
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    controller.stopAll();
   }
 
   protected File createTmpFile() throws IOException {
