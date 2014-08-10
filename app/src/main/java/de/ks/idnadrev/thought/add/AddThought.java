@@ -35,6 +35,7 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,7 +91,8 @@ public class AddThought extends BaseController<Thought> {
     lastTextChange.registerHandler(cf -> {
       cf.thenAcceptAsync(name -> {
         String desc = description.textProperty().getValueSafe().trim();
-        if (desc.isEmpty() || (desc.startsWith("= ") && name.contains(desc.substring(2)))) {
+        int newLines = StringUtils.countMatches(desc, "\n");
+        if (desc.isEmpty() || (desc.startsWith("= ") && newLines <= 1)) {
           description.setText("= " + name + "\n");
         }
       }, controller.getJavaFXExecutor());

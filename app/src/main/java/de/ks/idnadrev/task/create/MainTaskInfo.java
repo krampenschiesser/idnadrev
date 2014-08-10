@@ -42,6 +42,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.util.Callback;
+import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
 
@@ -124,7 +125,8 @@ public class MainTaskInfo extends BaseController<Task> {
     lastNameChange.registerHandler(cf -> {
       cf.thenAcceptAsync(name -> {
         String desc = description.textProperty().getValueSafe().trim();
-        if (desc.isEmpty() || (desc.startsWith("= ") && name.contains(desc.substring(2)))) {
+        int newLines = StringUtils.countMatches(desc, "\n");
+        if (desc.isEmpty() || (desc.startsWith("= ") && newLines == 1)) {
           description.setText("= " + name + "\n");
         }
       }, controller.getJavaFXExecutor());
