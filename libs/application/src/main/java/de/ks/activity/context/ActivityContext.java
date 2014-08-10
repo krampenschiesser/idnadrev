@@ -121,7 +121,13 @@ public class ActivityContext implements Context {
     Annotation annotation = beanClass.getAnnotation(ActivityScoped.class);
 
     if (annotation == null) {//might be a producer method, only warn
-      log.warn("Unable to retrieve " + ActivityScoped.class.getName() + " from " + beanClass);
+
+      String msg = "Unable to retrieve " + ActivityScoped.class.getName() + " from " + beanClass;
+      if (bean.getClass().getName().contains("Producer")) {
+        log.trace(msg);
+      } else {
+        log.warn(msg);
+      }
     }
     if (currentActivity == null) {
       throw new IllegalStateException("No activity currently active!");
