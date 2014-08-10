@@ -147,6 +147,21 @@ public class ActivityContext implements Context {
     }
   }
 
+  public void cleanupSingleBean(Class<?> clazz) {
+    lock.writeLock().lock();
+    try {
+      ActivityHolder activityHolder = activities.get(getCurrentActivity());
+
+      StoredBean storedBean = activityHolder.objectStore.get(clazz);
+      storedBean.destroy();
+      activityHolder.objectStore.remove(clazz);
+      log.debug("Cleaned up bean {} of activity {}", clazz.getName(), activityHolder.getId());
+      log.debug("Cleaned up bean {} of activity {}", clazz.getName(), activityHolder.getId());
+    } finally {
+      lock.writeLock().unlock();
+    }
+  }
+
   public ActivityHolder startActivity(String id) {
     lock.writeLock().lock();
     try {
