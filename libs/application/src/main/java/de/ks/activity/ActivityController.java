@@ -182,7 +182,9 @@ public class ActivityController {
           currentActivity.set(null);
         }
 
-        resume(returnToActivity, true, returnHint);
+        if (returnToActivity != null) {
+          resume(returnToActivity, true, returnHint);
+        }
       }
     });
   }
