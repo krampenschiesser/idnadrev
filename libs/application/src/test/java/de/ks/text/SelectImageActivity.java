@@ -12,27 +12,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.activity;
 
-public class DetailItem {
-  protected String name;
-  protected String description;
+package de.ks.text;
 
-  public String getName() {
-    return name;
-  }
+import de.ks.activity.ActivityCfg;
+import de.ks.activity.DummyTestDataSource;
 
-  public DetailItem setName(String name) {
-    this.name = name;
-    return this;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public DetailItem setDescription(String description) {
-    this.description = description;
-    return this;
+public class SelectImageActivity extends ActivityCfg {
+  public SelectImageActivity() {
+    super(DummyTestDataSource.class, SelectImageController.class);
   }
 }

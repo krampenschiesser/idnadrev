@@ -16,8 +16,8 @@ package de.ks.idnadrev.selection;
 
 import com.google.common.base.Ascii;
 import de.ks.activity.ActivityController;
+import de.ks.activity.executor.ActivityExecutor;
 import de.ks.executor.JavaFXExecutorService;
-import de.ks.executor.SuspendablePooledExecutorService;
 import de.ks.executor.group.LastTextChange;
 import de.ks.i18n.Localized;
 import de.ks.javafx.FxCss;
@@ -157,7 +157,7 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
 
   @FXML
   void showBrowser() {
-    SuspendablePooledExecutorService executorService = controller.getExecutorService();
+    ActivityExecutor executorService = controller.getExecutorService();
     JavaFXExecutorService javaFXExecutor = controller.getJavaFXExecutor();
     CompletableFuture.supplyAsync(this::readEntities, executorService)//
             .thenAcceptAsync(this::setTableItems, javaFXExecutor);

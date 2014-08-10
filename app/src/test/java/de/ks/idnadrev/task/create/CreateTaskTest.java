@@ -16,6 +16,7 @@ package de.ks.idnadrev.task.create;
 
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityController;
+import de.ks.activity.ActivityHint;
 import de.ks.activity.context.ActivityStore;
 import de.ks.idnadrev.entity.*;
 import de.ks.persistence.PersistentWork;
@@ -55,7 +56,7 @@ public class CreateTaskTest {
     PersistentWork.deleteAllOf(FileReference.class, Sequence.class, WorkUnit.class, Task.class, Schedule.class, Context.class, Tag.class, Thought.class);
     PersistentWork.persist(new Context("context"));
 
-    activityController.start(CreateTaskActivity.class);
+    activityController.startOrResume(new ActivityHint(CreateTaskActivity.class));
     activityController.waitForDataSource();
     createTask = activityController.<CreateTask>getCurrentController();
     controller = createTask.mainInfoController;
@@ -66,7 +67,7 @@ public class CreateTaskTest {
 
   @After
   public void tearDown() throws Exception {
-    activityController.stop(CreateTaskActivity.class);
+    activityController.stop(CreateTaskActivity.class.getSimpleName());
   }
 
   @Test

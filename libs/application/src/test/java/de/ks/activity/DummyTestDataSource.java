@@ -20,15 +20,15 @@ import org.slf4j.LoggerFactory;
 
 import java.util.function.Consumer;
 
-public class DummyTestDataSource extends NewInstanceDataSource<ActivityModel> {
+public class DummyTestDataSource extends NewInstanceDataSource<Object> {
   private static final Logger log = LoggerFactory.getLogger(DummyTestDataSource.class);
 
   public DummyTestDataSource() {
-    super(ActivityModel.class);
+    super(Object.class);
   }
 
   @Override
-  public void saveModel(ActivityModel model, Consumer<ActivityModel> beforeSaving) {
+  public void saveModel(Object model, Consumer<Object> beforeSaving) {
     log.info("Writing back {}", model);
   }
 }

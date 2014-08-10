@@ -15,8 +15,7 @@
 package de.ks.idnadrev.thought.view;
 
 import de.ks.BaseController;
-import de.ks.activity.ListBound;
-import de.ks.activity.link.ActivityHint;
+import de.ks.activity.ActivityHint;
 import de.ks.file.FileStore;
 import de.ks.idnadrev.entity.Thought;
 import de.ks.idnadrev.task.create.CreateTaskActivity;
@@ -39,14 +38,13 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
-@ListBound(Thought.class)
 public class ViewThoughts extends BaseController<List<Thought>> {
   private static final Logger log = LoggerFactory.getLogger(ViewThoughts.class);
   @Inject
   FileStore fileStore;
 
   @FXML
-  TableView<Thought> _this;
+  TableView<Thought> thoughtTable;
   @FXML
   private Label nameLabel;
   @FXML
@@ -67,7 +65,7 @@ public class ViewThoughts extends BaseController<List<Thought>> {
     activityInitialization.loadAdditionalController(AsciiDocViewer.class).thenAcceptAsync(l -> {
       asciiDocViewer = l.getController();
       asciiDocViewer.addPreProcessor(fileStore::replaceFileStoreDir);
-      _this.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
+      thoughtTable.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
         if (n == null) {
           asciiDocViewer.reset();
         } else {
@@ -77,23 +75,23 @@ public class ViewThoughts extends BaseController<List<Thought>> {
       description.getChildren().add(l.getView());
     }, controller.getJavaFXExecutor());
 
-    @SuppressWarnings("unchecked") TableColumn<Thought, String> nameColumn = (TableColumn<Thought, String>) _this.getColumns().get(0);
+    @SuppressWarnings("unchecked") TableColumn<Thought, String> nameColumn = (TableColumn<Thought, String>) thoughtTable.getColumns().get(0);
 
-    DoubleBinding width100 = _this.widthProperty().multiply(1D);
+    DoubleBinding width100 = thoughtTable.widthProperty().multiply(1D);
     nameColumn.prefWidthProperty().bind(width100);
 
-    _this.setRowFactory((view) -> {
+    thoughtTable.setRowFactory((view) -> {
       TableRow<Thought> thoughtTableRow = new TableRow<Thought>();
       thoughtTableRow.setMaxHeight(25);
       thoughtTableRow.setPrefHeight(25);
       return thoughtTableRow;
     });
 
-    _this.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
+    thoughtTable.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
       updateSelection(n);
     });
 
-    BooleanBinding disable = _this.getSelectionModel().selectedItemProperty().isNull();
+    BooleanBinding disable = thoughtTable.getSelectionModel().selectedItemProperty().isNull();
     toTask.disableProperty().bind(disable);
     toInfo.disableProperty().bind(disable);
     later.disableProperty().bind(disable);
@@ -101,7 +99,7 @@ public class ViewThoughts extends BaseController<List<Thought>> {
   }
 
   public void postPone() {
-    Thought selectedItem = _this.getSelectionModel().getSelectedItem();
+    Thought selectedItem = thoughtTable.getSelectionModel().getSelectedItem();
     if (selectedItem != null) {
 
       PersistentWork.runAsync((em) -> em.find(Thought.class, selectedItem.getId()).postPone())//
@@ -113,10 +111,10 @@ public class ViewThoughts extends BaseController<List<Thought>> {
   }
 
   public Thought getSelectedThought() {
-    Thought selectedItem = _this.getSelectionModel().getSelectedItem();
+    Thought selectedItem = thoughtTable.getSelectionModel().getSelectedItem();
     if (selectedItem == null) {
-      TablePosition focusedCell = this._this.getFocusModel().getFocusedCell();
-      selectedItem = _this.getFocusModel().getFocusedItem();
+      TablePosition focusedCell = this.thoughtTable.getFocusModel().getFocusedCell();
+      selectedItem = thoughtTable.getFocusModel().getFocusedItem();
     }
     return selectedItem;
   }
@@ -146,17 +144,17 @@ public class ViewThoughts extends BaseController<List<Thought>> {
 
   @FXML
   void convertToTask() {
-    ActivityHint activityHint = new ActivityHint();
+    ActivityHint activityHint = new ActivityHint(CreateTaskActivity.class);
     activityHint.setReturnToActivity(controller.getCurrentActivity());
     activityHint.setDataSourceHint(this::getSelectedThought);
 
-    controller.start(CreateTaskActivity.class, activityHint);
+    controller.startOrResume(activityHint);
   }
 
   @FXML
   void delete() {
     PersistentWork.run(em -> {
-      Thought thought = _this.getSelectionModel().getSelectedItem();
+      Thought thought = thoughtTable.getSelectionModel().getSelectedItem();
       em.remove(PersistentWork.reload(thought));
     });
     controller.reload();
@@ -166,12 +164,12 @@ public class ViewThoughts extends BaseController<List<Thought>> {
   protected void onRefresh(List<Thought> thoughts) {
     List<AsciiDocContent> asciiDocContents = thoughts.stream().map(t -> new AsciiDocContent(t.getName(), t.getDescription())).collect(Collectors.toList());
     this.asciiDocViewer.preload(asciiDocContents);
-    _this.requestFocus();
-    controller.getJavaFXExecutor().submit(() -> _this.getSelectionModel().select(0));
+    thoughtTable.requestFocus();
+    controller.getJavaFXExecutor().submit(() -> thoughtTable.getSelectionModel().select(0));
   }
 
   public TableView<Thought> getTable() {
-    return _this;
+    return thoughtTable;
   }
 
   public Button getToTask() {

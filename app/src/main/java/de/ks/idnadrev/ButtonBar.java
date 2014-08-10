@@ -15,6 +15,7 @@
 package de.ks.idnadrev;
 
 import de.ks.activity.ActivityController;
+import de.ks.activity.ActivityHint;
 import de.ks.idnadrev.task.create.CreateTaskActivity;
 import de.ks.idnadrev.task.view.ViewTasksActvity;
 import de.ks.idnadrev.thought.add.AddThoughtActivity;
@@ -37,22 +38,22 @@ public class ButtonBar implements Initializable {
 
   @FXML
   void addThought() {
-    controller.start(AddThoughtActivity.class);
+    controller.startOrResume(new ActivityHint(AddThoughtActivity.class));
   }
 
   @FXML
   void viewThoughts() {
-    controller.start(ViewThoughtsActivity.class);
+    controller.startOrResume(new ActivityHint(ViewThoughtsActivity.class));
   }
 
   @FXML
   void createTask() {
-    controller.start(CreateTaskActivity.class);
+    controller.startOrResume(new ActivityHint(CreateTaskActivity.class));
   }
 
   @FXML
   void viewTasks() {
-    controller.start(ViewTasksActvity.class);
+    controller.startOrResume(new ActivityHint(ViewTasksActvity.class));
   }
 
 }

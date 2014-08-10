@@ -17,6 +17,7 @@ package de.ks.idnadrev.thought.add;
 import de.ks.LauncherRunner;
 import de.ks.TempFileRule;
 import de.ks.activity.ActivityController;
+import de.ks.activity.ActivityHint;
 import de.ks.idnadrev.entity.FileReference;
 import de.ks.idnadrev.entity.Thought;
 import de.ks.launch.JavaFXService;
@@ -73,7 +74,7 @@ public class AddThoughtTest {
     JavaFXService service = Launcher.instance.getService(JavaFXService.class);
     Stage stage = service.getStage();
     scene = stage.getScene();
-    controller.start(AddThoughtActivity.class);
+    controller.startOrResume(new ActivityHint(AddThoughtActivity.class));
     controller.waitForDataSource();
 
     addThought = controller.getCurrentController();
@@ -85,7 +86,7 @@ public class AddThoughtTest {
   @After
   public void tearDown() throws Exception {
     FXPlatform.waitForFX();
-    controller.stop(AddThoughtActivity.class);
+    controller.stop(AddThoughtActivity.class.getSimpleName());
   }
 
   @Test

@@ -16,6 +16,7 @@ package de.ks.idnadrev.task.view;
 
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityController;
+import de.ks.activity.ActivityHint;
 import de.ks.idnadrev.entity.*;
 import de.ks.persistence.PersistentWork;
 import de.ks.persistence.entity.Sequence;
@@ -59,14 +60,14 @@ public class ViewTasksTest {
 
     PersistentWork.persist(context, project1, other);
 
-    activityController.start(ViewTasksActvity.class);
+    activityController.startOrResume(new ActivityHint(ViewTasksActvity.class));
     activityController.waitForDataSource();
     controller = activityController.getControllerInstance(ViewTasks.class);
   }
 
   @After
   public void tearDown() throws Exception {
-    activityController.stop(ViewTasksActvity.class);
+    activityController.stop(ViewTasksActvity.class.getSimpleName());
     FXPlatform.waitForFX();
   }
 

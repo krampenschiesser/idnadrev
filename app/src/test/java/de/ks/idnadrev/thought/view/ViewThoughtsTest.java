@@ -18,6 +18,7 @@ package de.ks.idnadrev.thought.view;
 import de.ks.LauncherRunner;
 import de.ks.TempFileRule;
 import de.ks.activity.ActivityController;
+import de.ks.activity.ActivityHint;
 import de.ks.idnadrev.entity.FileReference;
 import de.ks.idnadrev.entity.Thought;
 import de.ks.launch.JavaFXService;
@@ -61,7 +62,7 @@ public class ViewThoughtsTest {
     Stage stage = service.getStage();
     scene = stage.getScene();
 
-    controller.start(ViewThoughtsActivity.class);
+    controller.startOrResume(new ActivityHint(ViewThoughtsActivity.class));
     controller.waitForDataSource();
 
     viewThoughts = controller.getCurrentController();
@@ -70,14 +71,14 @@ public class ViewThoughtsTest {
   @After
   public void tearDown() throws Exception {
     FXPlatform.waitForFX();
-    controller.stop(ViewThoughtsActivity.class);
+    controller.stop(ViewThoughtsActivity.class.getSimpleName());
   }
 
   @Test
   public void testDeleteThought() throws Exception {
     controller.waitForDataSource();
-    assertEquals(1, viewThoughts._this.getItems().size());
-    FXPlatform.invokeLater(() -> viewThoughts._this.getSelectionModel().select(0));
+    assertEquals(1, viewThoughts.thoughtTable.getItems().size());
+    FXPlatform.invokeLater(() -> viewThoughts.thoughtTable.getSelectionModel().select(0));
 
     viewThoughts.delete();
 

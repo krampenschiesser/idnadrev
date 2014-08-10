@@ -16,7 +16,6 @@
 package de.ks.idnadrev.thought.add;
 
 import de.ks.BaseController;
-import de.ks.activity.ModelBound;
 import de.ks.executor.group.LastTextChange;
 import de.ks.file.FileViewController;
 import de.ks.idnadrev.entity.Thought;
@@ -46,7 +45,6 @@ import java.util.ResourceBundle;
 /**
  *
  */
-@ModelBound(Thought.class)
 public class AddThought extends BaseController<Thought> {
   private static final Logger log = LoggerFactory.getLogger(AddThought.class);
 

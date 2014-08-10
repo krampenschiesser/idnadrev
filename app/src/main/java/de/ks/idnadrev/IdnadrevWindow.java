@@ -16,6 +16,7 @@
 package de.ks.idnadrev;
 
 import de.ks.activity.ActivityController;
+import de.ks.activity.ActivityHint;
 import de.ks.application.MainWindow;
 import de.ks.application.fxml.DefaultLoader;
 import de.ks.idnadrev.thought.add.AddThoughtActivity;
@@ -88,7 +89,7 @@ public class IdnadrevWindow extends MainWindow {
 
       borderPane.setOnKeyReleased(this::checkShortcut);
 
-      activityController.start(AddThoughtActivity.class);
+      activityController.startOrResume(new ActivityHint(AddThoughtActivity.class));
     }
     return borderPane;
   }

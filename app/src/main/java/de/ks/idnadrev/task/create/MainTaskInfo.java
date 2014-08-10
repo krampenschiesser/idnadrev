@@ -15,7 +15,6 @@
 package de.ks.idnadrev.task.create;
 
 import de.ks.BaseController;
-import de.ks.activity.ModelBound;
 import de.ks.application.fxml.DefaultLoader;
 import de.ks.executor.group.LastTextChange;
 import de.ks.idnadrev.entity.Context;
@@ -52,7 +51,6 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-@ModelBound(Task.class)
 public class MainTaskInfo extends BaseController<Task> {
   @FXML
   protected NamedPersistentObjectSelection<Task> parentProjectController;

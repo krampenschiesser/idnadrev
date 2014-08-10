@@ -16,6 +16,7 @@ package de.ks.activity.controllerbinding;
 
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityController;
+import de.ks.activity.ActivityHint;
 import de.ks.application.Navigator;
 import de.ks.launch.JavaFXService;
 import de.ks.launch.Launcher;
@@ -45,17 +46,17 @@ public class ControllerBindingTest {
 
     PersistentWork.deleteAllOf(Option.class);
     PersistentWork.persist(new Option("test").setValue(42));
-    controller.start(BindingActivity.class);
+    controller.startOrResume(new ActivityHint(BindingActivity.class));
   }
 
   @After
   public void tearDown() throws Exception {
-    controller.stop(BindingActivity.class);
+    controller.stop(BindingActivity.class.getSimpleName());
   }
 
   @Test
   public void testNameBinding() throws Exception {
-    controller.waitForDataSource();
+    controller.waitForTasks();
     GridPane gridPane = controller.getCurrentNode();
     TextField name = (TextField) gridPane.lookup("#name");
     assertEquals("test", name.getText());
@@ -63,7 +64,7 @@ public class ControllerBindingTest {
     name.setText("Hello");
     TestBindingController ctrl = controller.getCurrentController();
     ctrl.save();
-    controller.waitForDataSource();
+    controller.waitForTasks();
 
     Option hello = PersistentWork.forName(Option.class, "Hello");
     assertNotNull(hello);

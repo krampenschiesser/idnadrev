@@ -17,6 +17,7 @@ package de.ks.activity.initialization;
 
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityController;
+import de.ks.activity.ActivityHint;
 import de.ks.application.Navigator;
 import de.ks.launch.JavaFXService;
 import de.ks.launch.Launcher;
@@ -42,7 +43,7 @@ public class ActivityInitializationTest {
 
   @Test
   public void testLoadAdditionalController() throws Exception {
-    controller.start(InitializationActivity.class);
+    controller.startOrResume(new ActivityHint(InitializationActivity.class));
     controller.waitForTasks();
     assertTrue(controller.getControllerInstance(InitalizationController.class).didLoadOtherController);
     assertNotNull(controller.getControllerInstance(InitalizationController.class).other);

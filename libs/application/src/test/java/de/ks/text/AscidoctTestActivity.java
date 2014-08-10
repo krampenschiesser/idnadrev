@@ -12,31 +12,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package de.ks.text;
 
-package de.ks.activity;
+import de.ks.activity.ActivityCfg;
+import de.ks.activity.DummyTestDataSource;
 
-import javafx.concurrent.Task;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.inject.Singleton;
-
-/**
- *
- */
-@Singleton
-public class ActivityAction extends Task<Void> {
-  private static final Logger log = LoggerFactory.getLogger(ActivityAction.class);
-  protected boolean executed = false;
-
-  @Override
-  protected Void call() throws Exception {
-    this.executed = true;
-    log.info("Pressed test button {}", ActivityAction.class.getSimpleName());
-    return null;
-  }
-
-  public boolean isExecuted() {
-    return executed;
+public class AscidoctTestActivity extends ActivityCfg {
+  public AscidoctTestActivity() {
+    super(DummyTestDataSource.class, AsciiDocEditor.class);
   }
 }

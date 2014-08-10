@@ -17,8 +17,8 @@ package de.ks.idnadrev.task.work;
 
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityController;
+import de.ks.activity.ActivityHint;
 import de.ks.activity.context.ActivityStore;
-import de.ks.activity.link.ActivityHint;
 import de.ks.idnadrev.entity.*;
 import de.ks.idnadrev.task.view.ViewTasksActvity;
 import de.ks.persistence.PersistentWork;
@@ -59,7 +59,7 @@ public class WorkOnTaskTest {
     task.setEstimatedTime(Duration.ofMinutes(10));
     PersistentWork.persist(context, task, workUnit);
 
-    activityController.start(ViewTasksActvity.class);
+    activityController.startOrResume(new ActivityHint(ViewTasksActvity.class));
     activityController.waitForDataSource();
     FXPlatform.waitForFX();
     ActivityHint hint = new ActivityHint(activityController.getCurrentActivity()).setDataSourceHint(() -> task);
@@ -70,8 +70,8 @@ public class WorkOnTaskTest {
 
   @After
   public void tearDown() throws Exception {
-    activityController.stop(WorkOnTaskActivity.class);
-    activityController.stop(ViewTasksActvity.class);
+    activityController.stop(WorkOnTaskActivity.class.getSimpleName());
+    activityController.stop(ViewTasksActvity.class.getSimpleName());
   }
 
   @Test

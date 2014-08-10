@@ -15,7 +15,7 @@
 package de.ks.idnadrev.task.view;
 
 import de.ks.BaseController;
-import de.ks.activity.link.ActivityHint;
+import de.ks.activity.ActivityHint;
 import de.ks.datasource.DataSource;
 import de.ks.file.FileStore;
 import de.ks.i18n.Localized;
@@ -356,30 +356,30 @@ public class ViewTasks extends BaseController<List<Task>> {
 
   @FXML
   void editTask() {
-    ActivityHint hint = new ActivityHint();
+    ActivityHint hint = new ActivityHint(CreateTaskActivity.class);
     hint.setReturnToActivity(controller.getCurrentActivity());
     hint.setReturnToDatasourceHint(() -> tasksView.getSelectionModel().getSelectedItem().getValue());
     hint.setDataSourceHint(() -> tasksView.getSelectionModel().getSelectedItem().getValue());
-    controller.start(CreateTaskActivity.class, hint);
+    controller.startOrResume(hint);
   }
 
   @FXML
   void startWork() {
     Supplier currentSelection = () -> tasksView.getSelectionModel().getSelectedItem().getValue();
 
-    ActivityHint activityHint = new ActivityHint(controller.getCurrentActivity());
+    ActivityHint activityHint = new ActivityHint(WorkOnTaskActivity.class, controller.getCurrentActivity());
     activityHint.setDataSourceHint(currentSelection);
     activityHint.setReturnToDatasourceHint(currentSelection);
 
-    controller.start(WorkOnTaskActivity.class, activityHint);
+    controller.start(activityHint);
   }
 
   @FXML
   void finishTask() {
-    ActivityHint activityHint = new ActivityHint(controller.getCurrentActivity());
+    ActivityHint activityHint = new ActivityHint(FinishTaskActivity.class, controller.getCurrentActivity());
     activityHint.setDataSourceHint(() -> tasksView.getSelectionModel().getSelectedItem().getValue());
 
-    controller.start(FinishTaskActivity.class, activityHint);
+    controller.start(activityHint);
   }
 
   @FXML

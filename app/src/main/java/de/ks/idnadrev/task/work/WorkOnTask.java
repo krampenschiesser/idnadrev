@@ -15,9 +15,8 @@
 package de.ks.idnadrev.task.work;
 
 import de.ks.BaseController;
-import de.ks.activity.ModelBound;
-import de.ks.activity.link.ActivityHint;
-import de.ks.executor.SuspendablePooledExecutorService;
+import de.ks.activity.ActivityHint;
+import de.ks.activity.executor.ActivityExecutor;
 import de.ks.i18n.Localized;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.WorkUnit;
@@ -38,7 +37,6 @@ import java.time.Duration;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
 
-@ModelBound(Task.class)
 public class WorkOnTask extends BaseController<Task> {
   private static final Logger log = LoggerFactory.getLogger(WorkOnTask.class);
   public static final String OVERTIME_STYLE_CLASS = "negativeFunFactor";
@@ -82,9 +80,9 @@ public class WorkOnTask extends BaseController<Task> {
   @FXML
   void finishTask() {
     controller.save();
-    ActivityHint hint = new ActivityHint(controller.getCurrentActivity());
+    ActivityHint hint = new ActivityHint(FinishTaskActivity.class, controller.getCurrentActivity());
     hint.setModelHint(PersistentWork::reload);
-    controller.start(FinishTaskActivity.class, hint);
+    controller.startOrResume(hint);
   }
 
   @Override
@@ -92,7 +90,7 @@ public class WorkOnTask extends BaseController<Task> {
     String descriptionContent = task.getDescription();
     description.setText(descriptionContent);
 
-    SuspendablePooledExecutorService executorService = controller.getExecutorService();
+    ActivityExecutor executorService = controller.getExecutorService();
     PersistentWork.runAsync(em -> {
       Task reloaded = PersistentWork.byId(Task.class, task.getId());
       WorkUnit workUnit = new WorkUnit(reloaded);

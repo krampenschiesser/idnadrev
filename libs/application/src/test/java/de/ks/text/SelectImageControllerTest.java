@@ -18,7 +18,7 @@ package de.ks.text;
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityCfg;
 import de.ks.activity.ActivityController;
-import de.ks.activity.DummyTestDataSource;
+import de.ks.activity.ActivityHint;
 import de.ks.application.Navigator;
 import de.ks.launch.JavaFXService;
 import de.ks.launch.Launcher;
@@ -47,8 +47,8 @@ public class SelectImageControllerTest {
   public void setUp() throws Exception {
     JavaFXService service = Launcher.instance.getService(JavaFXService.class);
     Navigator.registerWithBorderPane(service.getStage());
-    wrapper = new ActivityCfg(DummyTestDataSource.class, SelectImageController.class);
-    activityController.start(wrapper);
+
+    activityController.start(new ActivityHint(SelectImageActivity.class));
 
     controller = activityController.getControllerInstance(SelectImageController.class);
     imagesView = controller.getImagePane();
@@ -56,7 +56,7 @@ public class SelectImageControllerTest {
 
   @After
   public void tearDown() throws Exception {
-    activityController.stop(wrapper);
+    activityController.stopAll();
   }
 
   @Test
