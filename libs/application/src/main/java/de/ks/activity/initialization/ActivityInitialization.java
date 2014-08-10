@@ -17,7 +17,6 @@ package de.ks.activity.initialization;
 import de.ks.activity.ActivityCfg;
 import de.ks.activity.ActivityController;
 import de.ks.activity.context.ActivityScoped;
-import de.ks.activity.executor.ActivityExecutor;
 import de.ks.application.fxml.DefaultLoader;
 import de.ks.eventsystem.bus.EventBus;
 import de.ks.executor.JavaFXExecutorService;
@@ -26,7 +25,6 @@ import javafx.scene.Node;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.profiler.Profiler;
 
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
@@ -42,7 +40,6 @@ public class ActivityInitialization {
   private static final Logger log = LoggerFactory.getLogger(ActivityInitialization.class);
 
   protected final ConcurrentHashMap<Class<?>, Pair<Object, Node>> controllers = new ConcurrentHashMap<>();
-  protected final List<LoaderCallback> callbacks = new ArrayList<>();
   protected final Map<Class<?>, CompletableFuture<DefaultLoader<Node, Object>>> preloads = new HashMap<>();
   protected final ThreadLocal<List<Object>> currentlyLoadedControllers = ThreadLocal.withInitial(ArrayList::new);
   protected final List<DatasourceCallback> dataStoreCallbacks = new ArrayList<>();
@@ -125,47 +122,16 @@ public class ActivityInitialization {
     };
   }
 
-  public ActivityInitialization addCallback(LoaderCallback callback) {
-    callbacks.add(callback);
-    return this;
-  }
-
   public void addControllerToInitialize(Object controller) {
     currentlyLoadedControllers.get().add(controller);
   }
 
   public void initalizeControllers() {
-    scanControllers();
-    doChangesInFXThread();
     dataStoreCallbacks.clear();
     dataStoreCallbacks.addAll(controllers.values().stream().map(p -> p.getLeft()).filter(o -> o instanceof DatasourceCallback).map(o -> (DatasourceCallback) o).collect(Collectors.toList()));
     activityCallbacks.clear();
     activityCallbacks.addAll(controllers.values().stream().map(p -> p.getLeft()).filter(o -> o instanceof ActivityCallback).map(o -> (ActivityCallback) o).collect(Collectors.toList()));
     Collections.sort(dataStoreCallbacks);
-  }
-
-  protected void scanControllers() {
-    ActivityExecutor executorService = controller.getExecutorService();
-
-    Profiler time1 = new Profiler("time1");
-    time1.setLogger(log);
-    Optional<CompletableFuture<Void>> future = callbacks.stream().map((c) -> CompletableFuture.runAsync(() -> //
-            controllers.values().forEach((pair) -> c.accept(pair.getLeft(), pair.getRight())), executorService))//
-            .reduce((first, second) -> CompletableFuture.allOf(first, second));
-    future.get().join();
-    log.debug("Done with initialization of {} controllers for activity {}. Took {}ns", controllers.size(), controller.getCurrentActivityId(), time1.stop().elapsedTime());
-  }
-
-  protected void doChangesInFXThread() {
-    JavaFXExecutorService javaFXExecutor = controller.getJavaFXExecutor();
-
-    Profiler time1 = new Profiler("time1");
-    time1.setLogger(log);
-    Optional<CompletableFuture<Void>> future = callbacks.stream().map((c) -> CompletableFuture.runAsync(() -> //
-            controllers.values().forEach((pair) -> c.doInFXThread(pair.getLeft(), pair.getRight())), javaFXExecutor))//
-            .reduce((first, second) -> CompletableFuture.allOf(first, second));
-    future.get().join();
-    log.debug("Done with submitting changes to FX Thread of {} controllers for activity {}. Took {}ns", controllers.size(), controller.getCurrentActivityId(), time1.stop().elapsedTime());
   }
 
   public Node getViewForController(Class<?> targetController) {
