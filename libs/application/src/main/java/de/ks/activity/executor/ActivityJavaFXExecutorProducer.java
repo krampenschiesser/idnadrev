@@ -14,7 +14,6 @@
  */
 package de.ks.activity.executor;
 
-import de.ks.activity.context.ActivityContext;
 import de.ks.activity.context.ActivityScoped;
 
 import javax.enterprise.inject.Disposes;
@@ -22,14 +21,14 @@ import javax.enterprise.inject.Produces;
 import java.util.concurrent.TimeUnit;
 
 @ActivityScoped
-public class ActivityExecutorProducer {
+public class ActivityJavaFXExecutorProducer {
   @Produces
   @ActivityScoped
-  public ActivityExecutor createExecutorService(ActivityContext context) {
-    return new ActivityExecutor(context.getCurrentActivity(), 2, Runtime.getRuntime().availableProcessors());
+  public ActivityJavaFXExecutor createFXExecutorService() {
+    return new ActivityJavaFXExecutor();
   }
 
-  public void shutdownActivityExecutor(@Disposes ActivityExecutor executor) {
+  public void shutdownActivityFXExecutor(@Disposes ActivityJavaFXExecutor executor) {
     executor.shutdownNow();
     try {
       executor.awaitTermination(5, TimeUnit.SECONDS);

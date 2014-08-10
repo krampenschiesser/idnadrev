@@ -126,7 +126,7 @@ public class ActivityContext implements Context {
       }
       return Pair.of(currentActivity, beanClass);
     } else {
-      throw new IllegalStateException("Unable to retrieve " + ActivityScoped.class.getName());
+      throw new IllegalStateException("Unable to retrieve " + ActivityScoped.class.getName() + " from " + beanClass);
     }
   }
 

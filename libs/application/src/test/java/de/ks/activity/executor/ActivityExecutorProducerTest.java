@@ -12,29 +12,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.ks.activity.executor;
 
+import de.ks.LauncherRunner;
 import de.ks.activity.context.ActivityContext;
-import de.ks.activity.context.ActivityScoped;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import javax.enterprise.inject.Disposes;
-import javax.enterprise.inject.Produces;
-import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
 
-@ActivityScoped
-public class ActivityExecutorProducer {
-  @Produces
-  @ActivityScoped
-  public ActivityExecutor createExecutorService(ActivityContext context) {
-    return new ActivityExecutor(context.getCurrentActivity(), 2, Runtime.getRuntime().availableProcessors());
+import static org.junit.Assert.assertEquals;
+
+@RunWith(LauncherRunner.class)
+public class ActivityExecutorProducerTest {
+
+  @Inject
+  ActivityContext ctx;
+  @Inject
+  ActivityExecutor executor;
+
+  @Test
+  public void testInjection() throws Exception {
+    ctx.startActivity("test");
+    assertEquals("test", executor.getName());
+    ctx.startActivity("other");
+    assertEquals("other", executor.getName());
   }
 
-  public void shutdownActivityExecutor(@Disposes ActivityExecutor executor) {
-    executor.shutdownNow();
-    try {
-      executor.awaitTermination(5, TimeUnit.SECONDS);
-    } catch (InterruptedException e) {
-      //
-    }
-  }
 }
