@@ -22,6 +22,7 @@ import de.ks.launch.JavaFXService;
 import de.ks.launch.Launcher;
 import de.ks.option.Option;
 import de.ks.persistence.PersistentWork;
+import de.ks.util.FXPlatform;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import org.junit.After;
@@ -61,7 +62,7 @@ public class ControllerBindingTest {
     TextField name = (TextField) gridPane.lookup("#name");
     assertEquals("test", name.getText());
 
-    name.setText("Hello");
+    FXPlatform.invokeLater(() -> name.setText("Hello"));
     TestBindingController ctrl = controller.getCurrentController();
     ctrl.save();
     controller.waitForTasks();
