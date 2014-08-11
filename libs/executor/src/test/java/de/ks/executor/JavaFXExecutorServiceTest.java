@@ -15,7 +15,6 @@
 
 package de.ks.executor;
 
-import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +26,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
 public class JavaFXExecutorServiceTest {
@@ -54,13 +52,9 @@ public class JavaFXExecutorServiceTest {
     for (int i = 0; i < total; i++) {
       executor.submit(createSleepingRunnable(100));
     }
-    Thread.sleep(100);
+    Thread.sleep(150);
     executor.shutdown();
-    int activeCount = executor.getActiveCount();
-    assertThat(activeCount, Matchers.lessThan(20));
-    Thread.sleep(200);
-    assertEquals(activeCount, executor.getActiveCount());
-
+    assertEquals(9, executor.getActiveCount());
   }
 
   @Test(timeout = 200)
