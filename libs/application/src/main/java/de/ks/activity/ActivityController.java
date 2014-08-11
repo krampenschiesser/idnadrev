@@ -98,7 +98,7 @@ public class ActivityController {
 
         String id = activityHint.getNextActivityId();
         if (registeredActivities.containsKey(id)) {
-          resume(id, activityHint.needsReload(), dataSourceHint);
+          resume(id, activityHint.needsReload(), dataSourceHint, activityHint);
         } else {
           context.startActivity(id);
           ActivityCfg activityCfg = CDI.current().select(activityHint.getNextActivity()).get();
@@ -136,13 +136,16 @@ public class ActivityController {
     });
   }
 
-  protected void resume(String id, boolean reload, Object returnHint) {
+  protected void resume(String id, boolean reload, Object returnHint, ActivityHint activityHint) {
     context.startActivity(id);
     log.info("Resuming activity {}", id);
 
     store.getDatasource().setLoadingHint(returnHint);
 
     ActivityCfg activityCfg = registeredActivities.get(id);
+    if (activityHint != null) {
+      activityCfg.setActivityHint(activityHint);
+    }
 
     initialization.getControllers().forEach(eventBus::register);
 
@@ -220,7 +223,7 @@ public class ActivityController {
         log.debug("Stopped activity {}", id);
 
         if (returnToActivity != null) {
-          resume(returnToActivity, true, returnHint);
+          resume(returnToActivity, true, returnHint, null);
         }
       } catch (Exception e) {
         log.error("Could not stop activity {}", id, e);

@@ -86,9 +86,16 @@ public class ActivityDatasourceTest {
 
     ActivityHint returnToInitial = new ActivityHint(DatasourceActivity.class);
     returnToInitial.setDataSourceHint(() -> "PCT");
+    returnToInitial.setReturnToActivity("other");
+    returnToInitial.setReturnToDatasourceHint(() -> "I'll be back");
     controller.startOrResume(returnToInitial);
 
     TestDataSource datasource = (TestDataSource) store.getDatasource();
     assertEquals("PCT", datasource.getDataSourceHint());
+
+    controller.stopCurrent();
+
+    datasource = (TestDataSource) store.getDatasource();
+    assertEquals("I'll be back", datasource.getDataSourceHint());
   }
 }
