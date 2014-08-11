@@ -74,4 +74,21 @@ public class ActivityDatasourceTest {
 
     assertEquals("back", initialDS.getDataSourceHint());
   }
+
+  @Test
+  public void testResume() throws Exception {
+    ActivityHint activityHint = new ActivityHint(DatasourceActivity.class);
+    controller.startOrResume(activityHint);
+
+    ActivityHint nextActivity = new ActivityHint(DatasourceActivity.class);
+    nextActivity.setNextActivityId("other");
+    controller.startOrResume(nextActivity);
+
+    ActivityHint returnToInitial = new ActivityHint(DatasourceActivity.class);
+    returnToInitial.setDataSourceHint(() -> "PCT");
+    controller.startOrResume(returnToInitial);
+
+    TestDataSource datasource = (TestDataSource) store.getDatasource();
+    assertEquals("PCT", datasource.getDataSourceHint());
+  }
 }

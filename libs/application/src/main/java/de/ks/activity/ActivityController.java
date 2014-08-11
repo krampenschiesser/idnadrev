@@ -89,21 +89,16 @@ public class ActivityController {
         log.debug("Begin with start/resume of {} ", activityHint.getDescription());
 
         Object dataSourceHint = null;
-        Object returnHint = null;
         if (hasCurrentActivity() && context.hasCurrentActivity()) {
           if (activityHint.getDataSourceHint() != null) {
             dataSourceHint = activityHint.getDataSourceHint().get();
-          }
-          ActivityHint currentHint = getCurrentActivity().getActivityHint();
-          if (currentHint.getReturnToDatasourceHint() != null) {
-            returnHint = currentHint.getReturnToDatasourceHint().get();
           }
           suspendCurrent();
         }
 
         String id = activityHint.getNextActivityId();
         if (registeredActivities.containsKey(id)) {
-          resume(id, activityHint.needsReload(), returnHint);
+          resume(id, activityHint.needsReload(), dataSourceHint);
         } else {
           context.startActivity(id);
           ActivityCfg activityCfg = CDI.current().select(activityHint.getNextActivity()).get();
