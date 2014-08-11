@@ -21,8 +21,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class ActivityHint {
-  private final Class<? extends ActivityCfg> nextActivity;
-  private final String nextActivityId;
+  private Class<? extends ActivityCfg> nextActivity;
+  private String nextActivityId;
   protected String returnToActivity;
   protected Supplier returnToDatasourceHint;
   protected Supplier dataSourceHint;
@@ -43,6 +43,10 @@ public class ActivityHint {
 
   public String getReturnToActivity() {
     return returnToActivity;
+  }
+
+  public void setNextActivityId(String nextActivityId) {
+    this.nextActivityId = nextActivityId;
   }
 
   public ActivityHint setReturnToActivity(String returnToActivity) {
@@ -103,5 +107,9 @@ public class ActivityHint {
 
   public boolean needsReload() {
     return true;
+  }
+
+  public String getDescription() {
+    return nextActivity.getSimpleName() + "-" + nextActivityId;
   }
 }
