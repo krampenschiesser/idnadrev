@@ -24,6 +24,7 @@ import de.ks.text.view.AsciiDocContent;
 import de.ks.text.view.AsciiDocViewer;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.DoubleBinding;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -45,21 +46,23 @@ public class ViewThoughts extends BaseController<List<Thought>> {
   FileStore fileStore;
 
   @FXML
-  TableView<Thought> thoughtTable;
+  protected TableView<Thought> thoughtTable;
   @FXML
-  private Label nameLabel;
+  protected TableColumn<Thought, String> nameColumn;
   @FXML
-  private StackPane description;
+  protected Label nameLabel;
   @FXML
-  private Button toTask;
+  protected StackPane description;
   @FXML
-  private Button toInfo;
+  protected Button toTask;
   @FXML
-  private Button later;
+  protected Button toInfo;
   @FXML
-  private Button deleteBtn;
+  protected Button later;
+  @FXML
+  protected Button deleteBtn;
 
-  private AsciiDocViewer asciiDocViewer;
+  protected AsciiDocViewer asciiDocViewer;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -87,7 +90,7 @@ public class ViewThoughts extends BaseController<List<Thought>> {
       thoughtTableRow.setPrefHeight(25);
       return thoughtTableRow;
     });
-
+    this.nameColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getName()));
     thoughtTable.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
       updateSelection(n);
     });
