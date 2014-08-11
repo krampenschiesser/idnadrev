@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 public class ActivityLoadingExecutor extends ThreadPoolExecutor {
 
   public ActivityLoadingExecutor() {
-    super(2, Integer.MAX_VALUE, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(), new ActivityControllerThreadFactory());
+    super(1, 1, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(), new ActivityControllerThreadFactory());
   }
 
   @Override
