@@ -358,8 +358,11 @@ public class ViewTasks extends BaseController<List<Task>> {
   void editTask() {
     ActivityHint hint = new ActivityHint(CreateTaskActivity.class);
     hint.setReturnToActivity(controller.getCurrentActivityId());
-    hint.setReturnToDatasourceHint(() -> tasksView.getSelectionModel().getSelectedItem().getValue());
-    hint.setDataSourceHint(() -> tasksView.getSelectionModel().getSelectedItem().getValue());
+
+    Supplier supplier = () -> tasksView.getSelectionModel().getSelectedItem().getValue();
+    hint.setReturnToDatasourceHint(supplier);
+    hint.setDataSourceHint(supplier);
+
     controller.startOrResume(hint);
   }
 
