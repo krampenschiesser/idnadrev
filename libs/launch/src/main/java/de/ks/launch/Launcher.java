@@ -129,8 +129,12 @@ public class Launcher {
     try {
       latch.await();
       if (!startupExceptions.isEmpty()) {
-        startupExceptions.forEach((t) -> log.error("Failed startup.", t));
-        throw new RuntimeException("Startup failed");
+        RuntimeException runtimeException = new RuntimeException("Startup failed");
+        startupExceptions.forEach((t) -> {
+          log.error("Failed startup.", t);
+          runtimeException.addSuppressed(t);
+        });
+        throw runtimeException;
       }
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
