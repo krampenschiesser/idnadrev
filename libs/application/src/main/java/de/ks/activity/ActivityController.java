@@ -86,7 +86,7 @@ public class ActivityController {
   public void startOrResume(ActivityHint activityHint) {
     loadInExecutor("could not start activityhint " + activityHint, () -> {
       try (LockSupport lockSupport = new LockSupport(lock)) {
-        log.debug("Begin with start/resume of {} on lock {}", activityHint.getNextActivity().getSimpleName(), System.identityHashCode(lock));
+        log.debug("Begin with start/resume of {} on lock {}", activityHint.getDescription(), System.identityHashCode(lock));
 
         Object dataSourceHint = null;
         Object returnHint = null;
@@ -132,11 +132,11 @@ public class ActivityController {
           log.info("Started activity {}", id);
         }
       } catch (Exception e) {
-        log.error("Failed to start {} because of ", activityHint.getNextActivity().getSimpleName(), e);
+        log.error("Failed to start {} because of ", activityHint.getDescription(), e);
         context.stopActivity(activityHint.getNextActivityId());
         throw e;
       } finally {
-        log.debug("Done with start/resume of {} on lock {}", activityHint.getNextActivity().getSimpleName(), System.identityHashCode(lock));
+        log.debug("Done with start/resume of {} on lock {}", activityHint.getDescription(), System.identityHashCode(lock));
       }
     });
   }
