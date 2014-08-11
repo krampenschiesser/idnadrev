@@ -52,7 +52,7 @@ public class Navigator {
     if (navigators.size() == 1) {
       return navigators.entrySet().iterator().next().getValue();
     }
-    throw new IllegalStateException("Could not resovle the current navigator. Registered: " + navigators.values());
+    throw new IllegalStateException("Could not resolve the current navigator. Registered: " + navigators.values());
   }
 
   /**
