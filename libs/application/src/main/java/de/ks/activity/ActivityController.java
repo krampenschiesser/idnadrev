@@ -86,7 +86,7 @@ public class ActivityController {
   public void startOrResume(ActivityHint activityHint) {
     loadInExecutor("could not start activityhint " + activityHint, () -> {
       try (LockSupport lockSupport = new LockSupport(lock)) {
-        log.debug("Begin with start/resume of {} on lock {}", activityHint.getDescription(), System.identityHashCode(lock));
+        log.debug("Begin with start/resume of {} ", activityHint.getDescription());
 
         Object dataSourceHint = null;
         Object returnHint = null;
@@ -136,7 +136,7 @@ public class ActivityController {
         context.stopActivity(activityHint.getNextActivityId());
         throw e;
       } finally {
-        log.debug("Done with start/resume of {} on lock {}", activityHint.getDescription(), System.identityHashCode(lock));
+        log.debug("Done with start/resume of {} ", activityHint.getDescription());
       }
     });
   }
@@ -209,7 +209,7 @@ public class ActivityController {
           if (activityHint.getReturnToDatasourceHint() != null) {
             returnHint = activityHint.getReturnToDatasourceHint().get();
           }
-          activityHint.getReturnToActivity();
+          returnToActivity = activityHint.getReturnToActivity();
         }
 
         context.startActivity(id);
