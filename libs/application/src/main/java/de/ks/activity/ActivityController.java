@@ -90,7 +90,7 @@ public class ActivityController {
 
         Object dataSourceHint = null;
         Object returnHint = null;
-        if (hasCurrentActivity()) {
+        if (hasCurrentActivity() && context.hasCurrentActivity()) {
           if (activityHint.getDataSourceHint() != null) {
             dataSourceHint = activityHint.getDataSourceHint().get();
           }
