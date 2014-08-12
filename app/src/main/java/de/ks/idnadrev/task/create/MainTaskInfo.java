@@ -172,6 +172,16 @@ public class MainTaskInfo extends BaseController<Task> {
       long minutes = estimatedTime.toMinutes() % 60;
       estimatedTimeDuration.setText(hours + ":" + String.format("%02d", minutes));
     }
+    if (model.getContext() != null) {
+      contextController.getInput().setText(model.getContext().getName());
+    } else {
+      contextController.getInput().setText("");
+    }
+    if (model.getParent() != null) {
+      parentProjectController.getInput().setText(model.getParent().getName());
+    } else {
+      parentProjectController.getInput().setText("");
+    }
   }
 
   public Duration getEstimatedDuration() {
