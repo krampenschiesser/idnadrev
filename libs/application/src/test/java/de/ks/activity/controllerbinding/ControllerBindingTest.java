@@ -17,6 +17,7 @@ package de.ks.activity.controllerbinding;
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityController;
 import de.ks.activity.ActivityHint;
+import de.ks.activity.context.ActivityStore;
 import de.ks.application.Navigator;
 import de.ks.launch.JavaFXService;
 import de.ks.launch.Launcher;
@@ -39,6 +40,8 @@ import static org.junit.Assert.assertNotNull;
 public class ControllerBindingTest {
   @Inject
   ActivityController controller;
+  @Inject
+  ActivityStore store;
 
   @Before
   public void setUp() throws Exception {
@@ -48,16 +51,16 @@ public class ControllerBindingTest {
     PersistentWork.deleteAllOf(Option.class);
     PersistentWork.persist(new Option("test").setValue(42));
     controller.startOrResume(new ActivityHint(BindingActivity.class));
+    controller.waitForTasks();
   }
 
   @After
   public void tearDown() throws Exception {
-    controller.stop(BindingActivity.class.getSimpleName(), false);
+    controller.stopAll();
   }
 
   @Test
   public void testNameBinding() throws Exception {
-    controller.waitForTasks();
     GridPane gridPane = controller.getCurrentNode();
     TextField name = (TextField) gridPane.lookup("#name");
     assertEquals("test", name.getText());
@@ -69,5 +72,20 @@ public class ControllerBindingTest {
 
     Option hello = PersistentWork.forName(Option.class, "Hello");
     assertNotNull(hello);
+  }
+
+  @Test
+  public void testClearOnRefresh() throws Exception {
+    GridPane gridPane = controller.getCurrentNode();
+    TextField name = (TextField) gridPane.lookup("#name");
+    assertEquals("test", name.getText());
+
+    store.getBinding().registerClearOnRefresh(name);
+    FXPlatform.invokeLater(() -> store.getBinding().getStringProperty(Option.class, o -> o.getName()).unbindBidirectional(name.textProperty()));
+
+    controller.reload();
+    controller.waitForDataSource();
+
+    assertEquals("", name.getText());
   }
 }

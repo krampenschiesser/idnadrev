@@ -21,14 +21,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.collections.ObservableSet;
+import javafx.scene.control.TextInputControl;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -36,8 +34,11 @@ public class Binding {
   private static final Logger log = LoggerFactory.getLogger(Binding.class);
   private final Map<PropertyPath, Property<?>> properties = new HashMap<>();
   private final Map<Property<?>, Pair<Function, Function>> converters = new HashMap<>();
+  private final Set<TextInputControl> clearOnRefresh = new HashSet<>();
 
   public void bindChangedModel(ObservableValue<?> observable, Object oldValue, Object newValue) {
+    clearOnRefresh.forEach(c -> c.textProperty().set(""));
+
     log.debug("Binding changed model old={}, new={}", oldValue, newValue);
     if (newValue != null) {
       applyModelToProperties(newValue);
@@ -50,9 +51,32 @@ public class Binding {
     properties.entrySet().forEach(entry -> {
       @SuppressWarnings("unchecked") Property<Object> property = (Property<Object>) entry.getValue();
       if (!property.isBound()) {
-        property.setValue(null);
+        Object defaultValue = getDefaultValue(property);
+        property.setValue(defaultValue);
       }
     });
+  }
+
+  private Object getDefaultValue(Property property) {
+    if (property instanceof DoubleProperty) {
+      return 0.0D;
+    }
+    if (property instanceof FloatProperty) {
+      return 0.0F;
+    }
+    if (property instanceof LongProperty) {
+      return 0L;
+    }
+    if (property instanceof IntegerProperty) {
+      return 0;
+    }
+    if (property instanceof BooleanProperty) {
+      return false;
+    }
+    if (property instanceof StringProperty) {
+      return "";
+    }
+    return null;
   }
 
   @SuppressWarnings("unchecked")
@@ -132,5 +156,9 @@ public class Binding {
       }
     }
     return (T) properties.get(path);
+  }
+
+  public void registerClearOnRefresh(TextInputControl control) {
+    clearOnRefresh.add(control);
   }
 }
