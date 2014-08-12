@@ -84,9 +84,16 @@ public class ActivityController {
   }
 
   public void startOrResume(ActivityHint activityHint) {
+    String previousActivity = context.getCurrentActivity();
     loadInExecutor("could not start activityhint " + activityHint, () -> {
       try (LockSupport lockSupport = new LockSupport(lock)) {
         log.debug("Begin with start/resume of {} ", activityHint.getDescription());
+
+        if (isCurrentActivity(activityHint)) {
+          log.debug("skip starting activity {} because it is already active");
+          reload();
+          return;
+        }
 
         Object dataSourceHint = null;
         if (hasCurrentActivity() && context.hasCurrentActivity()) {
@@ -129,11 +136,24 @@ public class ActivityController {
       } catch (Exception e) {
         log.error("Failed to start {} because of ", activityHint.getDescription(), e);
         context.stopActivity(activityHint.getNextActivityId());
+        if (previousActivity != null) {
+          context.startActivity(previousActivity);
+          currentActivity.set(previousActivity);
+        }
         throw e;
       } finally {
         log.debug("Done with start/resume of {} ", activityHint.getDescription());
       }
     });
+  }
+
+  protected boolean isCurrentActivity(ActivityHint activityHint) {
+    String currentActivityId = getCurrentActivityId();
+    if (hasCurrentActivity() && context.hasCurrentActivity()) {
+      return currentActivityId.equals(activityHint.getNextActivityId());
+    } else {
+      return false;
+    }
   }
 
   protected void resume(String id, boolean reload, Object returnHint, ActivityHint activityHint) {

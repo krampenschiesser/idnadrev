@@ -14,18 +14,29 @@
  */
 package de.ks.activity;
 
+import de.ks.activity.initialization.ActivityCallback;
 import javafx.fxml.Initializable;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class Dummy implements Initializable {
+public class Dummy implements Initializable, ActivityCallback {
   public static boolean fail = false;
+  private boolean resumed;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     if (fail) {
       throw new RuntimeException("Failing as requested");
     }
+  }
+
+  @Override
+  public void onResume() {
+    this.resumed = true;
+  }
+
+  public boolean isResumed() {
+    return resumed;
   }
 }

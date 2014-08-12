@@ -32,7 +32,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
 public class ActivityControllerTest {
@@ -101,9 +101,23 @@ public class ActivityControllerTest {
   public void testFailedStart() throws Exception {
     Dummy.fail = true;
     ActivityHint activityHint = new ActivityHint(DummyActivity.class);
-    activityHint.setDataSourceHint(() -> {
-      throw new RuntimeException("BLA");
-    });
+    try {
+      controller.startOrResume(activityHint);
+    } catch (Exception e) {
+      //
+    }
+    assertNull(context.getCurrentActivity());
+  }
+
+  @Test
+  public void testFailedStartResumePrevious() throws Exception {
+    ActivityHint initialHint = new ActivityHint(DummyActivity.class);
+    initialHint.setNextActivityId("init");
+    controller.startOrResume(initialHint);
+
+
+    Dummy.fail = true;
+    ActivityHint activityHint = new ActivityHint(DummyActivity.class);
     try {
       controller.startOrResume(activityHint);
     } catch (Exception e) {
@@ -111,6 +125,18 @@ public class ActivityControllerTest {
     }
 
 
-    assertNull(context.getCurrentActivity());
+    assertNotNull(context.getCurrentActivity());
+    assertEquals("init", context.getCurrentActivity());
+    assertEquals("init", controller.getCurrentActivityId());
+  }
+
+  @Test
+  public void testNoDuplicateStart() throws Exception {
+    ActivityHint activityHint = new ActivityHint(DummyActivity.class);
+    controller.startOrResume(activityHint);
+    assertFalse(controller.getControllerInstance(Dummy.class).isResumed());
+    controller.startOrResume(activityHint);
+    assertFalse(controller.getControllerInstance(Dummy.class).isResumed());
+
   }
 }
