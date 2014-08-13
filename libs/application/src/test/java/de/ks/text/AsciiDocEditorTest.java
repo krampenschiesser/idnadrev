@@ -67,6 +67,7 @@ public class AsciiDocEditorTest {
 
   @Test
   public void testShowHelp() throws Exception {
+    FXPlatform.waitForFX();
     Node current = activityController.getCurrentNode();
     assertNotNull(current);
     assertNotNull("needs scene", current.getScene());
