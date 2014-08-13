@@ -45,6 +45,7 @@ public class ActivityControllerTest {
 
   @Before
   public void setUp() throws Exception {
+    Dummy.fail = false;
     JavaFXService service = Launcher.instance.getService(JavaFXService.class);
     Navigator.registerWithBorderPane(service.getStage());
     executorService = Executors.newCachedThreadPool();
@@ -78,10 +79,10 @@ public class ActivityControllerTest {
 
   @After
   public void tearDown() throws Exception {
+    Dummy.fail = false;
     controller.stopAll();
     executorService.shutdown();
     executorService.awaitTermination(5, TimeUnit.SECONDS);
-    Dummy.fail = false;
   }
 
   @Test
