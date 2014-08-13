@@ -43,7 +43,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -69,8 +68,6 @@ public class ActivityController {
   protected ActivityExecutor executor;
   @Inject
   protected ActivityJavaFXExecutor javaFXExecutor;
-
-  protected final AtomicReference<String> currentActivity = new AtomicReference<>();
 
   protected final Map<String, ActivityCfg> registeredActivities = new HashMap<>();
   protected final ReentrantLock lock = new ReentrantLock(true);
@@ -130,7 +127,6 @@ public class ActivityController {
           if (activityHint.needsReload()) {
             reload();
           }
-          currentActivity.set(id);
           log.info("Started activity {}", id);
         }
       } catch (Exception e) {
@@ -138,7 +134,6 @@ public class ActivityController {
         context.stopActivity(activityHint.getNextActivityId());
         if (previousActivity != null) {
           context.startActivity(previousActivity);
-          currentActivity.set(previousActivity);
         }
         throw e;
       } finally {
@@ -176,7 +171,6 @@ public class ActivityController {
       reload();
       finishingFutures.join();
     }
-    currentActivity.set(id);
     log.info("Resumed activity {}", id);
   }
 
@@ -237,9 +231,6 @@ public class ActivityController {
         registeredActivities.remove(id);
 
         context.stopActivity(id);
-        if (id.equals(currentActivity.get())) {
-          currentActivity.set(null);
-        }
         log.debug("Stopped activity {}", id);
 
         if (returnToActivity != null) {
@@ -335,7 +326,7 @@ public class ActivityController {
   }
 
   public String getCurrentActivityId() {
-    return currentActivity.get();
+    return context.getCurrentActivity();
   }
 
   public ActivityExecutor getExecutorService() {
