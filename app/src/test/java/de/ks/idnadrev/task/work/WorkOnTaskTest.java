@@ -21,6 +21,8 @@ import de.ks.activity.ActivityHint;
 import de.ks.activity.context.ActivityStore;
 import de.ks.idnadrev.entity.*;
 import de.ks.idnadrev.task.view.ViewTasksActvity;
+import de.ks.idnadrev.thought.add.AddThought;
+import de.ks.idnadrev.thought.add.AddThoughtActivity;
 import de.ks.persistence.PersistentWork;
 import de.ks.persistence.entity.Sequence;
 import de.ks.util.FXPlatform;
@@ -49,7 +51,7 @@ public class WorkOnTaskTest {
 
   @Before
   public void setUp() throws Exception {
-    PersistentWork.deleteAllOf(FileReference.class, Sequence.class, WorkUnit.class, Task.class, Context.class, Tag.class);
+    PersistentWork.deleteAllOf(FileReference.class, Thought.class, Sequence.class, WorkUnit.class, Task.class, Context.class, Tag.class);
     Context context = new Context("context");
     Task task = new Task("task").setProject(true);
     task.setContext(context);
@@ -89,8 +91,35 @@ public class WorkOnTaskTest {
   }
 
   @Test
+  public void testStopWorkOnSuspend() throws Exception {
+    Thread.sleep(200);
+    FXPlatform.invokeLater(() -> controller.createThought());
+    FXPlatform.waitForFX();
+    activityController.waitForTasks();
+
+    assertEquals(AddThoughtActivity.class.getSimpleName(), activityController.getCurrentActivityId());
+
+    AddThought addThought = activityController.getControllerInstance(AddThought.class);
+    FXPlatform.invokeLater(() -> addThought.getName().setText("testThought"));
+    FXPlatform.invokeLater(() -> addThought.getSave().getOnAction().handle(null));
+    FXPlatform.waitForFX();
+    activityController.waitForTasks();
+
+    assertEquals(WorkOnTaskActivity.class.getSimpleName(), activityController.getCurrentActivityId());
+
+    List<Thought> thoughts = PersistentWork.from(Thought.class);
+    assertEquals(1, thoughts.size());
+    assertEquals("testThought", thoughts.get(0).getName());
+    List<Task> tasks = PersistentWork.from(Task.class, t -> t.getWorkUnits().forEach(u -> u.getDuration()));
+    assertEquals(1, tasks.size());
+    Task task = tasks.get(0);
+    assertEquals(3, task.getWorkUnits().size());
+  }
+
+  @Test
   public void testExistingWorkUnits() throws Exception {
     FXPlatform.waitForFX();
     assertThat(controller.estimatedTimeBar.getProgress(), Matchers.greaterThan(0.69));
   }
+
 }

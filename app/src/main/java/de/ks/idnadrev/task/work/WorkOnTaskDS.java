@@ -25,7 +25,11 @@ public class WorkOnTaskDS implements DataSource<Task> {
 
   @Override
   public Task loadModel(Consumer<Task> furtherProcessing) {
-    furtherProcessing.accept(task);
+    PersistentWork.run(em -> {
+      Task reloaded = PersistentWork.reload(task);
+      furtherProcessing.accept(reloaded);
+      task = reloaded;
+    });
     return task;
   }
 

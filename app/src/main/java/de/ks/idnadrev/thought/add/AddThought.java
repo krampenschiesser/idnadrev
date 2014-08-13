@@ -152,7 +152,7 @@ public class AddThought extends BaseController<Thought> {
   @FXML
   void onSave() {
     controller.save();
-    controller.reload();
+    controller.stopCurrent();
   }
 
   @Override

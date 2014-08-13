@@ -15,6 +15,7 @@
   ~ limitations under the License.
   -->
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <GridPane hgap="5.0" prefHeight="600.0" prefWidth="800.0" vgap="5.0" xmlns="http://javafx.com/javafx/8"
@@ -30,7 +31,7 @@
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS"/>
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+        <RowConstraints minHeight="10.0" vgrow="NEVER"/>
     </rowConstraints>
     <children>
         <Label fx:id="name" styleClass="title" text="Label" GridPane.columnSpan="2" GridPane.halignment="CENTER"
@@ -39,8 +40,6 @@
                 GridPane.rowIndex="4"/>
         <Button mnemonicParsing="false" onAction="#finishTask" text="%task.finish" GridPane.columnIndex="3"
                 GridPane.halignment="RIGHT" GridPane.rowIndex="4"/>
-        <Button disable="true" mnemonicParsing="false" text="%task.addnote" GridPane.columnIndex="1"
-                GridPane.rowIndex="4"/>
         <ProgressBar fx:id="estimatedTimeBar" maxWidth="1.7976931348623157E308" progress="0.0" GridPane.columnIndex="2"
                      GridPane.columnSpan="2147483647"/>
         <Label text="%task.estimatedTime:" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
@@ -49,5 +48,14 @@
         <Label fx:id="overTime" styleClass="title" GridPane.columnIndex="3" GridPane.rowIndex="2"/>
         <StackPane fx:id="descriptionView" prefHeight="150.0" prefWidth="200.0" GridPane.columnSpan="2147483647"
                    GridPane.rowIndex="3"/>
+        <FlowPane hgap="5.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+            <children>
+                <Button disable="true" mnemonicParsing="false" text="%task.addnote"/>
+                <Button mnemonicParsing="false" onAction="#createThought" text="%create.thought.return"/>
+            </children>
+        </FlowPane>
     </children>
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+    </padding>
 </GridPane>

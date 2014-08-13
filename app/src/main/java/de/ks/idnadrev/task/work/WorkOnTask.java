@@ -21,6 +21,7 @@ import de.ks.i18n.Localized;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.WorkUnit;
 import de.ks.idnadrev.task.finish.FinishTaskActivity;
+import de.ks.idnadrev.thought.add.AddThoughtActivity;
 import de.ks.persistence.PersistentWork;
 import de.ks.text.AsciiDocEditor;
 import javafx.application.Platform;
@@ -56,6 +57,9 @@ public class WorkOnTask extends BaseController<Task> {
   public void initialize(URL location, ResourceBundle resources) {
     AsciiDocEditor.load(descriptionView.getChildren()::add, ade -> this.description = ade);
 
+    StringProperty nameBinding = store.getBinding().getStringProperty(Task.class, t -> t.getName());
+    name.textProperty().bind(nameBinding);
+
     description.hideActionBar();
     StringProperty descriptionBinding = store.getBinding().getStringProperty(Task.class, t -> t.getDescription());
     descriptionBinding.bind(description.textProperty());
@@ -71,10 +75,22 @@ public class WorkOnTask extends BaseController<Task> {
     });
   }
 
+  @Override
+  public void onSuspend() {
+    log.info("#Saving on suspend");
+    controller.save();
+  }
+
   @FXML
   void stopWork() {
     controller.save();
     controller.stopCurrent();
+  }
+
+  @FXML
+  void createThought() {
+    ActivityHint hint = new ActivityHint(AddThoughtActivity.class, controller.getCurrentActivityId());
+    controller.startOrResume(hint);
   }
 
   @FXML
