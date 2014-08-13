@@ -15,8 +15,10 @@
 package de.ks.fxcontrols.weekview;
 
 import javafx.geometry.HPos;
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
+import javafx.scene.control.Label;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -25,13 +27,17 @@ import javafx.scene.layout.RowConstraints;
 import java.util.function.Supplier;
 
 public class WeekTitle extends GridPane {
+  private final Label week = new Label();
+  private final Label month = new Label();
+  private final Label year = new Label();
 
   public WeekTitle() {
+    setPadding(new Insets(20));
     getRowConstraints().add(new RowConstraints(10, Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE));
 
     Supplier<ColumnConstraints> buttonColumn = () -> new ColumnConstraints(25, Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE, Priority.NEVER, HPos.CENTER, true);
     Supplier<ColumnConstraints> weekColumn = () -> new ColumnConstraints(25, 75, Control.USE_COMPUTED_SIZE, Priority.SOMETIMES, HPos.CENTER, true);
-    Supplier<ColumnConstraints> monthColumn = () -> new ColumnConstraints(25, 75, Control.USE_COMPUTED_SIZE, Priority.SOMETIMES, HPos.CENTER, true);
+    Supplier<ColumnConstraints> monthColumn = () -> new ColumnConstraints(25, 75, Control.USE_COMPUTED_SIZE, Priority.ALWAYS, HPos.CENTER, true);
     Supplier<ColumnConstraints> yearColumn = () -> new ColumnConstraints(25, 75, Control.USE_COMPUTED_SIZE, Priority.SOMETIMES, HPos.CENTER, true);
     getColumnConstraints().add(buttonColumn.get());
     getColumnConstraints().add(weekColumn.get());
@@ -43,9 +49,16 @@ public class WeekTitle extends GridPane {
 
     Button button = new Button("<");
     add(button, 0, 0);
-//    add(weekField, 1, 0);
+    add(week, 1, 0);
     button = new Button(">");
     add(button, 2, 0);
 
+    add(month, 3, 0);
+
+    button = new Button("<");
+    add(button, 4, 0);
+    add(year, 5, 0);
+    button = new Button(">");
+    add(button, 6, 0);
   }
 }

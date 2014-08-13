@@ -46,7 +46,7 @@ public class WeekView extends GridPane {
   protected final SimpleIntegerProperty weekOfYear = new SimpleIntegerProperty();
   protected final SimpleIntegerProperty year = new SimpleIntegerProperty();
   protected final GridPane contentPane = new GridPane();
-  protected final GridPane titlePane = new GridPane();
+  protected final WeekTitle title = new WeekTitle();
   protected final List<Label> weekDayLabels = new LinkedList<>();
   protected final ScrollPane scrollPane = new ScrollPane();
   protected final ComboBox<Integer> weekField = new ComboBox<>();
@@ -155,16 +155,16 @@ public class WeekView extends GridPane {
     add(scrollPane, 0, 2, Integer.MAX_VALUE, 1);
     scrollPane.setContent(contentPane);
 
-
-    add(weekField, 0, 0);
-    GridPane.setMargin(weekField, new Insets(0, 0, 5, 0));
-    GridPane.setHalignment(weekField, HPos.CENTER);
-    GridPane.setValignment(weekField, VPos.BOTTOM);
-    GridPane.setHgrow(weekField, Priority.ALWAYS);
-    add(yearField, 0, 0);
-    GridPane.setHalignment(yearField, HPos.CENTER);
-    GridPane.setValignment(yearField, VPos.TOP);
-    GridPane.setHgrow(yearField, Priority.ALWAYS);
+    add(title, 0, 0, GridPane.REMAINING, 1);
+//    add(weekField, 0, 0);
+//    GridPane.setMargin(weekField, new Insets(0, 0, 5, 0));
+//    GridPane.setHalignment(weekField, HPos.CENTER);
+//    GridPane.setValignment(weekField, VPos.BOTTOM);
+//    GridPane.setHgrow(weekField, Priority.ALWAYS);
+//    add(yearField, 0, 0);
+//    GridPane.setHalignment(yearField, HPos.CENTER);
+//    GridPane.setValignment(yearField, VPos.TOP);
+//    GridPane.setHgrow(yearField, Priority.ALWAYS);
   }
 
   protected void configureContentPane() {
