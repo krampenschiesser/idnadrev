@@ -147,6 +147,7 @@ public class AddThoughtTest {
     FXPlatform.invokeLater(() -> {
       Clipboard.getSystemClipboard().clear();
       addThought.name.setText("name");
+      addThought.description.setText("desc");
     });
     Thread.sleep(50);
     controller.waitForTasks();
@@ -160,7 +161,7 @@ public class AddThoughtTest {
 
     Thought thought = thoughts.get(0);
     assertEquals("name", thought.getName());
-    assertEquals("= name\n", thought.getDescription());
+    assertEquals("desc", thought.getDescription());
   }
 
   @Test

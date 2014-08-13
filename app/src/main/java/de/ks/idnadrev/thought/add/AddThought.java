@@ -16,7 +16,6 @@
 package de.ks.idnadrev.thought.add;
 
 import de.ks.BaseController;
-import de.ks.executor.group.LastTextChange;
 import de.ks.file.FileViewController;
 import de.ks.idnadrev.entity.Thought;
 import de.ks.text.AsciiDocEditor;
@@ -34,7 +33,6 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +59,6 @@ public class AddThought extends BaseController<Thought> {
   protected FileViewController fileViewController;
   @FXML
   protected GridPane fileView;
-  private LastTextChange lastTextChange;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -87,16 +84,6 @@ public class AddThought extends BaseController<Thought> {
 
     fileViewController.setImageData(description.getImages());
 
-    lastTextChange = new LastTextChange(name, controller.getExecutorService());
-    lastTextChange.registerHandler(cf -> {
-      cf.thenAcceptAsync(name -> {
-        String desc = description.textProperty().getValueSafe().trim();
-        int newLines = StringUtils.countMatches(desc, "\n");
-        if (desc.isEmpty() || (desc.startsWith("= ") && newLines <= 1)) {
-          description.setText("= " + name + "\n");
-        }
-      }, controller.getJavaFXExecutor());
-    });
   }
 
   private void bindValidation() {

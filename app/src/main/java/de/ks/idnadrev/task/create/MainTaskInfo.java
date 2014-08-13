@@ -16,7 +16,6 @@ package de.ks.idnadrev.task.create;
 
 import de.ks.BaseController;
 import de.ks.application.fxml.DefaultLoader;
-import de.ks.executor.group.LastTextChange;
 import de.ks.idnadrev.entity.Context;
 import de.ks.idnadrev.entity.Tag;
 import de.ks.idnadrev.entity.Task;
@@ -41,7 +40,6 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.util.Callback;
-import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
 
@@ -76,7 +74,6 @@ public class MainTaskInfo extends BaseController<Task> {
   protected DurationValidator durationValidator;
   protected Runnable saveRunnable;
   protected final ObservableList<TaskState> states = FXCollections.observableArrayList();
-  private LastTextChange lastNameChange;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -119,16 +116,6 @@ public class MainTaskInfo extends BaseController<Task> {
     states.add(TaskState.DELEGATED);
     states.add(TaskState.LATER);
 
-    lastNameChange = new LastTextChange(name, controller.getExecutorService());
-    lastNameChange.registerHandler(cf -> {
-      cf.thenAcceptAsync(name -> {
-        String desc = description.textProperty().getValueSafe().trim();
-        int newLines = StringUtils.countMatches(desc, "\n");
-        if (desc.isEmpty() || (desc.startsWith("= ") && newLines == 1)) {
-          description.setText("= " + name + "\n");
-        }
-      }, controller.getJavaFXExecutor());
-    });
   }
 
   private Callback<AutoCompletionBinding.ISuggestionRequest, Collection<String>> getEstimatedTimeAutoCompletion() {
