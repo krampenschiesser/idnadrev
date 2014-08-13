@@ -228,7 +228,8 @@ public class AddThoughtTest {
       addThought.fileViewController.removeFile(null);
       addThought.save.getOnAction().handle(new ActionEvent());
     });
-    controller.getExecutorService().waitForAllTasksDone();
+    controller.waitForDataSource();
+    controller.waitForTasks();
 
 
     List<Thought> thoughts = PersistentWork.from(Thought.class, thought -> thought.getFiles().size());
