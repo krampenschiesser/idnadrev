@@ -31,6 +31,9 @@ import de.ks.executor.JavaFXExecutorService;
 import de.ks.util.LockSupport;
 import javafx.application.Platform;
 import javafx.scene.Node;
+import javafx.scene.control.Control;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,12 +88,12 @@ public class ActivityController {
     loadInExecutor("could not start activityhint " + activityHint, () -> {
       try (LockSupport lockSupport = new LockSupport(lock)) {
         log.debug("Begin with start/resume of {} ", activityHint.getDescription());
-
         if (isCurrentActivity(activityHint)) {
           log.debug("skip starting activity {} because it is already active");
           reload();
           return;
         }
+        showBusy();
 
         Object dataSourceHint = null;
         if (hasCurrentActivity() && context.hasCurrentActivity()) {
@@ -212,6 +215,7 @@ public class ActivityController {
     }
     Future<?> future = loadInExecutor("could not stop activity " + id, () -> {
       try (LockSupport lockSupport = new LockSupport(lock)) {
+        showBusy();
         log.debug("Stopping activity {}", id);
         Object returnHint = null;
         String returnToActivity = null;
@@ -247,6 +251,17 @@ public class ActivityController {
         throw new RuntimeException(e);
       }
     }
+  }
+
+  protected void showBusy() {
+    StackPane container = new StackPane();
+
+    ProgressBar progress = new ProgressBar(-1);
+    progress.setPrefSize(300, 25);
+    progress.setMaxSize(Control.USE_PREF_SIZE, Control.USE_PREF_SIZE);
+    container.getChildren().add(progress);
+
+    navigator.get().presentInMain(container);
   }
 
   public void stopAll() {
@@ -287,6 +302,9 @@ public class ActivityController {
     if (finishingFutures == null || finishingFutures.isDone()) {
       return;
     }
+    if (Platform.isFxApplicationThread()) {
+      return;
+    }
     try (LockSupport support = new LockSupport(lock)) {
       try {
         long start = System.currentTimeMillis();
@@ -302,7 +320,8 @@ public class ActivityController {
               loop = true;
             }
             if (System.currentTimeMillis() - start > TimeUnit.SECONDS.toMillis(10)) {
-              throw new IllegalStateException("Waited for 10s for datasource, did not return.");
+              log.warn("Waited for 10s for datasource, did not return.");
+              return;
             }
           }
         }
