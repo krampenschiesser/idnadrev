@@ -137,7 +137,7 @@ public class Navigator {
   }
 
   public void present(String area, Node node) {
-    executorService.invokeInJavaFXThread(() -> {
+    executorService.executeInJavaFXThread(() -> {
       presentationAreas.get(area).setCurrentNode(node);
     });
   }
