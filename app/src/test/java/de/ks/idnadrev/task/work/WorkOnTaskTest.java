@@ -38,6 +38,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+import static de.ks.JunitMatchers.withRetry;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
@@ -97,6 +98,7 @@ public class WorkOnTaskTest {
     FXPlatform.waitForFX();
     activityController.waitForTasks();
 
+    withRetry(() -> AddThoughtActivity.class.getSimpleName().equals(activityController.getCurrentActivityId()));
     assertEquals(AddThoughtActivity.class.getSimpleName(), activityController.getCurrentActivityId());
 
     AddThought addThought = activityController.getControllerInstance(AddThought.class);
@@ -105,6 +107,7 @@ public class WorkOnTaskTest {
     FXPlatform.waitForFX();
     activityController.waitForTasks();
 
+    withRetry(() -> WorkOnTaskActivity.class.getSimpleName().equals(activityController.getCurrentActivityId()));
     assertEquals(WorkOnTaskActivity.class.getSimpleName(), activityController.getCurrentActivityId());
 
     List<Thought> thoughts = PersistentWork.from(Thought.class);
