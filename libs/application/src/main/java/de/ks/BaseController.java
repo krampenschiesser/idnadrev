@@ -18,6 +18,7 @@ import com.google.common.eventbus.Subscribe;
 import de.ks.activity.ActivityController;
 import de.ks.activity.ActivityLoadFinishedEvent;
 import de.ks.activity.context.ActivityStore;
+import de.ks.activity.initialization.ActivityCallback;
 import de.ks.activity.initialization.ActivityInitialization;
 import de.ks.activity.initialization.DatasourceCallback;
 import de.ks.eventsystem.bus.HandlingThread;
@@ -29,7 +30,7 @@ import javax.inject.Inject;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public abstract class BaseController<T> implements Initializable, DatasourceCallback<T> {
+public abstract class BaseController<T> implements Initializable, DatasourceCallback<T>, ActivityCallback {
   @Inject
   protected ActivityController controller;
   @Inject
