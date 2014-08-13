@@ -79,6 +79,7 @@ public class WorkOnTaskTest {
     Thread.sleep(200);
     FXPlatform.invokeLater(() -> controller.description.setText("desc"));
     controller.stopWork();
+    activityController.waitForTasks();
     List<Task> tasks = PersistentWork.from(Task.class, t -> t.getWorkUnits().forEach(u -> u.getDuration()));
     assertEquals(1, tasks.size());
     Task task = tasks.get(0);
