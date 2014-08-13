@@ -189,10 +189,9 @@ public class MainTaskInfo extends BaseController<Task> {
   public void duringSave(Task task) {
     String contextName = contextController.getInput().textProperty().getValueSafe().trim();
     setToOne(task, Context.class, contextName, task::setContext);
+
     String parentProject = parentProjectController.getInput().textProperty().getValueSafe().trim();
-    if (!parentProject.isEmpty()) {
-      setToOne(task, Task.class, parentProject, task::setParent);
-    }
+    setToOne(task, Task.class, parentProject, task::setParent);
 
     task.setEstimatedTime(getEstimatedDuration());
     task.setState(state.getValue());
@@ -204,12 +203,14 @@ public class MainTaskInfo extends BaseController<Task> {
     });
   }
 
-  private <T extends NamedPersistentObject<T>> void setToOne(Task model, Class<T> clazz, String contextName, Consumer<T> consumer) {
-    if (!contextName.isEmpty()) {
-      Optional<T> first = PersistentWork.forNameLike(clazz, contextName).stream().findFirst();
+  private <T extends NamedPersistentObject<T>> void setToOne(Task model, Class<T> clazz, String name, Consumer<T> consumer) {
+    if (!name.isEmpty()) {
+      Optional<T> first = PersistentWork.forNameLike(clazz, name).stream().findFirst();
       if (first.isPresent()) {
         consumer.accept(first.get());
       }
+    } else {
+      consumer.accept(null);
     }
   }
 
