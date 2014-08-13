@@ -108,7 +108,7 @@ public class AsciiDocEditor implements Initializable {
   protected Button insertImage = null;
   protected final ObservableList<ImageData> images = FXCollections.observableArrayList();
   protected SelectImageController selectImageController;
-
+  protected boolean focusOnEditor = true;
   protected final Map<Class<?>, AsciiDocEditorCommand> commands = new HashMap<>();
 
   @Override
@@ -144,8 +144,12 @@ public class AsciiDocEditor implements Initializable {
     tabPane.focusedProperty().addListener((p, o, n) -> {
       if (n) {
         if (tabPane.getSelectionModel().getSelectedIndex() == 0) {
-          editor.requestFocus();
+          if (focusOnEditor) {
+            editor.requestFocus();
+          }
         }
+      } else {
+        focusOnEditor = true;
       }
     });
 
@@ -175,6 +179,11 @@ public class AsciiDocEditor implements Initializable {
     CDI.current().select(AsciiDocEditorCommand.class).forEach(c -> {
       Button button = new Button();
       button.setMnemonicParsing(true);
+      button.focusedProperty().addListener((p, o, n) -> {
+        if (n) {
+          focusOnEditor = false;
+        }
+      });
       c.initialize(this, button);
       this.commands.put(c.getClass(), c);
       button.setText(Localized.get(c.getName()));
