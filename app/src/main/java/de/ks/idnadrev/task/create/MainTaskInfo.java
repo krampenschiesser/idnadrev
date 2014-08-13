@@ -189,8 +189,17 @@ public class MainTaskInfo extends BaseController<Task> {
   }
 
   @Override
-  public void duringSave(Task task) {
+  public void duringLoad(Task model) {
+    if (model.getContext() != null) {
+      model.getContext().getName();
+    }
+    if (model.getParent() != null) {
+      model.getParent().getName();
+    }
+  }
 
+  @Override
+  public void duringSave(Task task) {
     String contextName = contextController.getInput().textProperty().getValueSafe().trim();
     setToOne(task, Context.class, contextName, task::setContext);
     String parentProject = parentProjectController.getInput().textProperty().getValueSafe().trim();

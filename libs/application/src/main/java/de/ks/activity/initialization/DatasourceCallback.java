@@ -17,6 +17,11 @@ package de.ks.activity.initialization;
 public interface DatasourceCallback<M> extends Comparable<DatasourceCallback<M>> {
   public static final int DEFAULT_PRIORITY = 10;
 
+  /**
+   * Called only when the found model is not null
+   *
+   * @param model
+   */
   void duringLoad(M model);
 
   void duringSave(M model);

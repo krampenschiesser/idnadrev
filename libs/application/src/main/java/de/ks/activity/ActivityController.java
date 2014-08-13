@@ -401,7 +401,9 @@ public class ActivityController {
       JavaFXExecutorService javafxExecutor = getJavaFXExecutor();
 
       CompletableFuture<Object> load = CompletableFuture.supplyAsync(() -> dataSource.loadModel(m -> {
-        initialization.getDataStoreCallbacks().forEach(c -> c.duringLoad(m));
+        if (m != null) {
+          initialization.getDataStoreCallbacks().forEach(c -> c.duringLoad(m));
+        }
       }), executor);
       finishingFutures = load.thenApplyAsync((value) -> {
         log.debug("Loaded model '{}'", value);
@@ -421,6 +423,7 @@ public class ActivityController {
 
   @PreDestroy
   private void shutdown() {
+    stopAll();
     loadingExecutor.shutdown();
     try {
       loadingExecutor.awaitTermination(5, TimeUnit.SECONDS);
