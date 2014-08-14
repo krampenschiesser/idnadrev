@@ -14,6 +14,7 @@
  */
 package de.ks.fxcontrols.weekview;
 
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -30,8 +31,15 @@ public class WeekTitle extends GridPane {
   private final Label week = new Label();
   private final Label month = new Label();
   private final Label year = new Label();
+  private SimpleIntegerProperty weekOfYearProperty;
+  private SimpleIntegerProperty yearProperty;
 
-  public WeekTitle() {
+  public WeekTitle(SimpleIntegerProperty weekOfYearProperty, SimpleIntegerProperty yearProperty) {
+    this.weekOfYearProperty = weekOfYearProperty;
+    this.yearProperty = yearProperty;
+
+    week.textProperty().bind(weekOfYearProperty.asString());
+    year.textProperty().bind(yearProperty.asString());
     setPadding(new Insets(20));
     getRowConstraints().add(new RowConstraints(10, Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE));
 
@@ -48,17 +56,21 @@ public class WeekTitle extends GridPane {
     getColumnConstraints().add(buttonColumn.get());
 
     Button button = new Button("<");
+    button.setOnAction(e -> weekOfYearProperty.set(weekOfYearProperty.getValue() - 1));
     add(button, 0, 0);
     add(week, 1, 0);
     button = new Button(">");
+    button.setOnAction(e -> weekOfYearProperty.set(weekOfYearProperty.getValue() + 1));
     add(button, 2, 0);
 
     add(month, 3, 0);
 
     button = new Button("<");
+    button.setOnAction(e -> yearProperty.set(yearProperty.getValue() - 1));
     add(button, 4, 0);
     add(year, 5, 0);
     button = new Button(">");
+    button.setOnAction(e -> yearProperty.set(yearProperty.getValue() + 1));
     add(button, 6, 0);
   }
 }

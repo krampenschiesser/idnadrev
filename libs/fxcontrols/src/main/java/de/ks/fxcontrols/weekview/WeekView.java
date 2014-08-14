@@ -24,13 +24,15 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.VPos;
-import javafx.scene.control.*;
+import javafx.scene.control.Control;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Separator;
 import javafx.scene.layout.*;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.Year;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalField;
@@ -45,12 +47,11 @@ public class WeekView extends GridPane {
   protected final ObservableList<WeekViewEntry> entries = FXCollections.observableArrayList();
   protected final SimpleIntegerProperty weekOfYear = new SimpleIntegerProperty();
   protected final SimpleIntegerProperty year = new SimpleIntegerProperty();
+
   protected final GridPane contentPane = new GridPane();
-  protected final WeekTitle title = new WeekTitle();
+  protected final WeekTitle title = new WeekTitle(weekOfYear, year);
   protected final List<Label> weekDayLabels = new LinkedList<>();
   protected final ScrollPane scrollPane = new ScrollPane();
-  protected final ComboBox<Integer> weekField = new ComboBox<>();
-  protected final TextField yearField = new TextField();
 
   public WeekView() {
     sceneProperty().addListener((p, o, n) -> {
@@ -71,19 +72,11 @@ public class WeekView extends GridPane {
     scrollPane.setMinSize(Control.USE_COMPUTED_SIZE, HEIGHT_OF_HOUR);
     scrollPane.setPrefSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
 
-    weekField.getStyleClass().add("week-weekfield");
-    weekField.setPrefWidth(Control.USE_COMPUTED_SIZE);
-    weekField.setMaxWidth(Double.MAX_VALUE);
-
-    yearField.getStyleClass().add("week-yearfield");
-
     weekOfYear.addListener((p, o, n) -> {
-      updateWeekDays();
-      updateWeekField();
+      recompute();
     });
     year.addListener((p, o, n) -> {
-      updateWeekDays();
-      updateWeekField();
+      recompute();
     });
     LocalDate now = LocalDate.now();
     year.set(now.getYear());
@@ -91,23 +84,6 @@ public class WeekView extends GridPane {
     weekOfYear.set(now.get(weekOfYearField));
 
     entries.addListener(this::recreateEntries);
-  }
-
-  private void updateWeekField() {
-    Year currentYear = Year.of(this.year.get());
-    LocalDate begin = currentYear.atDay(1);
-    LocalDate end = currentYear.atDay(currentYear.isLeap() ? 366 : 365);
-
-    long weeksInYear = begin.until(end, ChronoUnit.WEEKS);
-
-    ObservableList<Integer> observableList = FXCollections.observableArrayList();
-    for (int i = 1; i <= weeksInYear; i++) {
-      observableList.add(i);
-    }
-    weekField.setItems(observableList);
-
-    weekField.setValue(weekOfYear.getValue());
-    yearField.setText(String.valueOf(this.year.getValue()));
   }
 
   private void recreateEntries(ListChangeListener.Change<? extends WeekViewEntry> c) {
@@ -135,8 +111,8 @@ public class WeekView extends GridPane {
     setPrefSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
     setMaxSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
 
-    getRowConstraints().add(new RowConstraints(Control.USE_PREF_SIZE, 60, Control.USE_PREF_SIZE, Priority.NEVER, VPos.BOTTOM, true));
-    getRowConstraints().add(new RowConstraints(Control.USE_PREF_SIZE, 60, Control.USE_PREF_SIZE, Priority.NEVER, VPos.BOTTOM, true));
+    getRowConstraints().add(new RowConstraints(Control.USE_PREF_SIZE, Control.USE_COMPUTED_SIZE, Control.USE_PREF_SIZE, Priority.NEVER, VPos.BOTTOM, true));
+    getRowConstraints().add(new RowConstraints(Control.USE_PREF_SIZE, Control.USE_COMPUTED_SIZE, Control.USE_PREF_SIZE, Priority.NEVER, VPos.BOTTOM, true));
     getRowConstraints().add(new RowConstraints(100, Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE, Priority.ALWAYS, VPos.TOP, true));
 
     getColumnConstraints().add(new ColumnConstraints(WIDTH_OF_TIMECOLUMN, WIDTH_OF_TIMECOLUMN, Control.USE_PREF_SIZE, Priority.NEVER, HPos.RIGHT, true));
@@ -156,15 +132,6 @@ public class WeekView extends GridPane {
     scrollPane.setContent(contentPane);
 
     add(title, 0, 0, GridPane.REMAINING, 1);
-//    add(weekField, 0, 0);
-//    GridPane.setMargin(weekField, new Insets(0, 0, 5, 0));
-//    GridPane.setHalignment(weekField, HPos.CENTER);
-//    GridPane.setValignment(weekField, VPos.BOTTOM);
-//    GridPane.setHgrow(weekField, Priority.ALWAYS);
-//    add(yearField, 0, 0);
-//    GridPane.setHalignment(yearField, HPos.CENTER);
-//    GridPane.setValignment(yearField, VPos.TOP);
-//    GridPane.setHgrow(yearField, Priority.ALWAYS);
   }
 
   protected void configureContentPane() {
@@ -205,6 +172,14 @@ public class WeekView extends GridPane {
       contentPane.add(separator, i + 1, 0, 1, Integer.MAX_VALUE);
       GridPane.setHalignment(separator, HPos.LEFT);
     }
+  }
+
+  protected void recompute() {
+    if (weekOfYear.getValue() <= 0) {
+      weekOfYear.set(52);
+      year.set(year.getValue() - 1);
+    }
+    updateWeekDays();
   }
 
   protected void updateWeekDays() {

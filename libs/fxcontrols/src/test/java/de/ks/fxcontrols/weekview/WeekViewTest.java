@@ -16,10 +16,13 @@
 package de.ks.fxcontrols.weekview;
 
 import de.ks.FXTestRunner;
+import de.ks.util.FXPlatform;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.time.LocalDate;
+import java.time.Year;
+import java.time.temporal.WeekFields;
 
 import static org.junit.Assert.assertEquals;
 
@@ -34,5 +37,21 @@ public class WeekViewTest {
     assertEquals(LocalDate.of(2013, 12, 23), weekView.getFirstDayOfWeek(2013, 52));
     assertEquals(LocalDate.of(2013, 12, 30), weekView.getFirstDayOfWeek(2014, 1));
     assertEquals(LocalDate.of(2014, 1, 6), weekView.getFirstDayOfWeek(2014, 2));
+  }
+
+  @Test
+  public void testWeek0() throws Exception {
+    WeekView weekView = new WeekView();
+    weekView.setYear(2014);
+    weekView.setWeekOfYear(22);
+    FXPlatform.invokeLater(() -> weekView.weekOfYear.set(0));
+
+    Year previous = Year.of(2014).minusYears(1);
+    LocalDate lastDayInYear = LocalDate.ofYearDay(previous.getValue(), previous.isLeap() ? 366 : 365);
+    int weekOfYear = lastDayInYear.get(WeekFields.ISO.weekOfWeekBasedYear());
+    weekOfYear = weekOfYear == 1 ? 52 : weekOfYear;
+    assertEquals(weekOfYear, weekView.getWeekOfYear());
+
+    assertEquals(previous.getValue(), weekView.getYear());
   }
 }
