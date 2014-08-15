@@ -158,7 +158,8 @@ public class ActivityController {
     context.startActivity(id);
     log.info("Resuming activity {}", id);
 
-    store.getDatasource().setLoadingHint(returnHint);
+    DataSource<?> datasource = store.getDatasource();
+    datasource.setLoadingHint(returnHint);
 
     ActivityCfg activityCfg = registeredActivities.get(id);
     if (activityHint != null) {
@@ -291,6 +292,13 @@ public class ActivityController {
   }
 
   public void waitForTasks() {
+    while (!loadingExecutor.isShutdown() && loadingExecutor.getActiveCount() > 0) {
+      try {
+        TimeUnit.MILLISECONDS.sleep(100);
+      } catch (InterruptedException e) {
+        log.trace("Got interrupted while waiting for tasks.", e);
+      }
+    }
     if (context.hasCurrentActivity()) {
       waitForDataSource();
       executor.waitForAllTasksDone();
