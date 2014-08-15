@@ -21,6 +21,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.collections.ObservableSet;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextInputControl;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -34,10 +35,10 @@ public class Binding {
   private static final Logger log = LoggerFactory.getLogger(Binding.class);
   private final Map<PropertyPath, Property<?>> properties = new HashMap<>();
   private final Map<Property<?>, Pair<Function, Function>> converters = new HashMap<>();
-  private final Set<TextInputControl> clearOnRefresh = new HashSet<>();
+  private final Set<StringProperty> clearOnRefresh = new HashSet<>();
 
   public void bindChangedModel(ObservableValue<?> observable, Object oldValue, Object newValue) {
-    clearOnRefresh.forEach(c -> c.textProperty().set(""));
+    clearOnRefresh.forEach(c -> c.set(""));
 
     log.debug("Binding changed model old={}, new={}", oldValue, newValue);
     if (newValue != null) {
@@ -159,6 +160,10 @@ public class Binding {
   }
 
   public void registerClearOnRefresh(TextInputControl control) {
-    clearOnRefresh.add(control);
+    clearOnRefresh.add(control.textProperty());
+  }
+
+  public void registerClearOnRefresh(Label overTime) {
+    clearOnRefresh.add(overTime.textProperty());
   }
 }

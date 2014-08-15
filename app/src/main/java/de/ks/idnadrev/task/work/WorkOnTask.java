@@ -73,6 +73,7 @@ public class WorkOnTask extends BaseController<Task> {
         estimatedTimeBar.getStyleClass().remove(OVERTIME_STYLE_CLASS);
       }
     });
+    store.getBinding().registerClearOnRefresh(overTime);
   }
 
   @Override
