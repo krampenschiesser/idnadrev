@@ -18,6 +18,8 @@ import de.ks.LauncherRunner;
 import de.ks.activity.ActivityController;
 import de.ks.activity.ActivityHint;
 import de.ks.idnadrev.entity.*;
+import de.ks.idnadrev.task.create.CreateTaskActivity;
+import de.ks.idnadrev.task.create.MainTaskInfo;
 import de.ks.persistence.PersistentWork;
 import de.ks.persistence.entity.Sequence;
 import de.ks.util.FXPlatform;
@@ -27,15 +29,18 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static de.ks.JunitMatchers.withRetry;
+import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
 public class ViewTasksTest {
+  private static final Logger log = LoggerFactory.getLogger(ViewTasksTest.class);
   @Inject
   ActivityController activityController;
   private ViewTasks controller;
@@ -67,7 +72,7 @@ public class ViewTasksTest {
 
   @After
   public void tearDown() throws Exception {
-    activityController.stop(ViewTasksActvity.class.getSimpleName(), false);
+    activityController.stopAll();
     FXPlatform.waitForFX();
   }
 
@@ -109,5 +114,59 @@ public class ViewTasksTest {
     children = children.get(0).getChildren();
     assertEquals(1, children.size());
     assertEquals("task4", children.get(0).getValue().getName());
+  }
+
+  @Test
+  public void testCreateSubtaskFromProject() throws Exception {
+    TreeItem<Task> project = controller.tasksView.getRoot().getChildren().get(1);//they are sorted
+    Task value = project.getValue();
+    assertEquals("project1", value.getName());
+
+    FXPlatform.invokeLater(() -> controller.tasksView.getSelectionModel().select(project));
+    FXPlatform.invokeLater(() -> controller.createSubtask());
+
+    withRetry(() -> CreateTaskActivity.class.getSimpleName().equals(activityController.getCurrentActivityId()));
+    activityController.waitForTasks();
+
+    log.info("Retrieving {}", MainTaskInfo.class.getSimpleName());
+    MainTaskInfo mainTaskInfo = activityController.getControllerInstance(MainTaskInfo.class);
+    FXPlatform.invokeLater(() -> mainTaskInfo.getName().setText("steak"));
+    activityController.save();
+
+    withRetry(() -> ViewTasksActvity.class.getSimpleName().equals(activityController.getCurrentActivityId()));
+    activityController.waitForTasks();
+    PersistentWork.wrap(() -> {
+      Task child = PersistentWork.forName(Task.class, "steak");
+      assertNotNull(child.getParent());
+      assertEquals("project1", child.getParent().getName());
+    });
+  }
+
+  @Test
+  public void testCreateSubtaskFromTask() throws Exception {
+    TreeItem<Task> other = controller.tasksView.getRoot().getChildren().get(0);//they are sorted
+    Task value = other.getValue();
+    assertEquals("other", value.getName());
+
+    FXPlatform.invokeLater(() -> controller.tasksView.getSelectionModel().select(other));
+    FXPlatform.invokeLater(() -> controller.createSubtask());
+
+    withRetry(() -> CreateTaskActivity.class.getSimpleName().equals(activityController.getCurrentActivityId()));
+    activityController.waitForTasks();
+
+    log.info("Retrieving {}", MainTaskInfo.class.getSimpleName());
+    MainTaskInfo mainTaskInfo = activityController.getControllerInstance(MainTaskInfo.class);
+    FXPlatform.invokeLater(() -> mainTaskInfo.getName().setText("steak"));
+    activityController.save();
+
+    withRetry(() -> ViewTasksActvity.class.getSimpleName().equals(activityController.getCurrentActivityId()));
+    activityController.waitForTasks();
+    PersistentWork.wrap(() -> {
+      Task child = PersistentWork.forName(Task.class, "steak");
+      Task parent = child.getParent();
+      assertNotNull(parent);
+      assertEquals("other", parent.getName());
+      assertTrue(parent.isProject());
+    });
   }
 }

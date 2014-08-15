@@ -114,6 +114,8 @@
                                 text="%task.startwork" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
                         <Button fx:id="finish" mnemonicParsing="false" onAction="#finishTask" text="%task.finish"/>
                         <Button fx:id="edit" mnemonicParsing="false" onAction="#editTask" text="%edit"/>
+                        <Button fx:id="createSubtaskBtn" mnemonicParsing="false" onAction="#createSubtask"
+                                text="%task.create.subtask"/>
                         <Button fx:id="delete" mnemonicParsing="false" onAction="#deleteTask" text="%delete"/>
                         <Button fx:id="later" mnemonicParsing="false" onAction="#scheduleLater" text="%later"/>
                         <Button fx:id="asap" mnemonicParsing="false" onAction="#scheduleAsap" text="%asap"/>

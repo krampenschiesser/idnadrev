@@ -57,7 +57,7 @@ public class CreateTaskDS extends NewInstanceDataSource<Task> {
           task.getFiles().addAll(reloaded.getFiles());
           reloaded.getFiles().forEach(f -> f.setOwner(task));
         }
-        task.setEstimatedTime(Duration.ofMinutes(5));
+        task.setEstimatedTime(Duration.ofMinutes(5));//fixme remove later
         task.setProject(false);
         furtherProcessing.accept(task);
         return task;

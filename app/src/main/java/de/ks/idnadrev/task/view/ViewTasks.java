@@ -98,6 +98,8 @@ public class ViewTasks extends BaseController<List<Task>> {
   @FXML
   protected Button edit;
   @FXML
+  protected Button createSubtaskBtn;
+  @FXML
   protected Button show;
   @FXML
   protected Button delete;
@@ -360,6 +362,24 @@ public class ViewTasks extends BaseController<List<Task>> {
     hint.setReturnToActivity(controller.getCurrentActivityId());
 
     Supplier supplier = () -> tasksView.getSelectionModel().getSelectedItem().getValue();
+    hint.setReturnToDatasourceHint(supplier);
+    hint.setDataSourceHint(supplier);
+
+    controller.startOrResume(hint);
+  }
+
+  @FXML
+  void createSubtask() {
+    ActivityHint hint = new ActivityHint(CreateTaskActivity.class);
+    hint.setReturnToActivity(controller.getCurrentActivityId());
+
+    Supplier supplier = () -> {
+      Task parent = tasksView.getSelectionModel().getSelectedItem().getValue();
+      Task child = new Task("");
+      child.setParent(parent);
+      child.setContext(parent.getContext());
+      return child;
+    };
     hint.setReturnToDatasourceHint(supplier);
     hint.setDataSourceHint(supplier);
 
