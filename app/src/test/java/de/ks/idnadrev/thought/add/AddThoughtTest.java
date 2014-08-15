@@ -216,6 +216,8 @@ public class AddThoughtTest {
 
       addThought.processClipboard(clipboard);
     });
+    FXPlatform.waitForFX();
+    controller.waitForTasks();
 
     assertFalse(addThought.name.textProperty().isEmpty().get());
     assertFalse(addThought.description.getText().isEmpty());
@@ -229,6 +231,7 @@ public class AddThoughtTest {
       addThought.fileViewController.removeFile(null);
       addThought.save.getOnAction().handle(new ActionEvent());
     });
+    FXPlatform.waitForFX();
     controller.waitForDataSource();
     controller.waitForTasks();
 
