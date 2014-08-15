@@ -86,9 +86,6 @@ public class MainTaskInfo extends BaseController<Task> {
     StringProperty descriptionBinding = store.getBinding().getStringProperty(Task.class, t -> t.getDescription());
     descriptionBinding.bindBidirectional(description.textProperty());
 
-    parentProjectController.disableProperty().bind(project.selectedProperty());
-    project.disableProperty().bind(parentProjectController.getInput().textProperty().isNotEmpty());
-
     String projectKey = PropertyPath.property(Task.class, (t) -> t.isProject());
     parentProjectController.from(Task.class, (root, query, builder) -> {
       query.where(builder.isTrue(root.get(projectKey)));
