@@ -99,6 +99,7 @@ public class WorkOnTaskTest {
     activityController.waitForTasks();
 
     withRetry(() -> AddThoughtActivity.class.getSimpleName().equals(activityController.getCurrentActivityId()));
+    activityController.waitForTasks();
     assertEquals(AddThoughtActivity.class.getSimpleName(), activityController.getCurrentActivityId());
 
     AddThought addThought = activityController.getControllerInstance(AddThought.class);
@@ -108,6 +109,7 @@ public class WorkOnTaskTest {
     activityController.waitForTasks();
 
     withRetry(() -> WorkOnTaskActivity.class.getSimpleName().equals(activityController.getCurrentActivityId()));
+    activityController.waitForTasks();
     assertEquals(WorkOnTaskActivity.class.getSimpleName(), activityController.getCurrentActivityId());
 
     List<Thought> thoughts = PersistentWork.from(Thought.class);
