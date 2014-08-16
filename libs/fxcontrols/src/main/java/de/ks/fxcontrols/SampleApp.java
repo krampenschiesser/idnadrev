@@ -15,7 +15,7 @@
 package de.ks.fxcontrols;
 
 import de.ks.fxcontrols.weekview.WeekView;
-import de.ks.fxcontrols.weekview.WeekViewEntry;
+import de.ks.fxcontrols.weekview.WeekViewAppointment;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
@@ -27,6 +27,8 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class SampleApp extends Application {
@@ -36,18 +38,8 @@ public class SampleApp extends Application {
   public void start(Stage primaryStage) throws Exception {
     primaryStage.setTitle("Sample app");
 
-    WeekView weekView = new WeekView("Today");
+    WeekView weekView = new WeekView("Today", this::getNextEntries);
     weekView.setOnAppointmentCreation(dateTime -> log.info("Creating new appointment beginning at {}", dateTime));
-    LocalDate firstDayOfWeek = weekView.getFirstDayOfWeek();
-    for (int i = 0; i < 7; i++) {
-      LocalDate now = firstDayOfWeek.plusDays(i);
-      LocalTime time = LocalTime.of(6 + i, 0);
-
-      int minutes = Math.max(15, ThreadLocalRandom.current().nextInt(12) * 15);
-      Duration duration = Duration.ofMinutes(minutes);
-      LocalDateTime localDateTime = LocalDateTime.of(now, time);
-      weekView.getEntries().add(new WeekViewEntry("test entry" + i + " " + minutes + "m", localDateTime, duration));
-    }
 
 
     StackPane pane = new StackPane(weekView);
@@ -55,6 +47,25 @@ public class SampleApp extends Application {
     Scene scene = new Scene(pane);
     primaryStage.setScene(scene);
     primaryStage.show();
+  }
+
+  private List<WeekViewAppointment> getNextEntries(LocalDate begin, LocalDate end) {
+    ThreadLocalRandom random = ThreadLocalRandom.current();
+
+    LinkedList<WeekViewAppointment> retval = new LinkedList<>();
+    LocalDate firstDayOfWeek = begin;
+    for (int i = 0; i < 7; i++) {
+      LocalDate current = firstDayOfWeek.plusDays(i);
+      LocalTime time = LocalTime.of(random.nextInt(6, 18), 0);
+
+      int minutes = Math.max(15, random.nextInt(12) * 15);
+      Duration duration = Duration.ofMinutes(minutes);
+      LocalDateTime localDateTime = LocalDateTime.of(current, time);
+
+      WeekViewAppointment appointment = new WeekViewAppointment("test entry" + i + " " + minutes + "m", localDateTime, duration, btn -> log.info("Clicking on appointment{}", btn.getText()));
+      retval.add(appointment);
+    }
+    return retval;
   }
 
   public static void main(String[] args) throws Exception {

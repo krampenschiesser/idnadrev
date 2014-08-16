@@ -103,4 +103,9 @@ public class WeekHelper {
     LocalDate firstDayOfWeek1InYear = getFirstDayOfWeek1InYear(year);
     return firstDayOfWeek1InYear.plusWeeks(week - 1);
   }
+
+  public LocalDate getLastDayOfWeek(int year, int week) {
+    LocalDate firstDayOfWeek1InYear = getFirstDayOfWeek1InYear(year);
+    return getLastDayOfWeek(firstDayOfWeek1InYear.plusWeeks(week - 1));
+  }
 }

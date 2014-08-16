@@ -23,7 +23,6 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -50,7 +49,7 @@ public class WeekView extends GridPane {
   public static final int HEIGHT_OF_HOUR = 60;
   public static final int WIDTH_OF_TIMECOLUMN = 80;
 
-  protected final ObservableList<WeekViewEntry> entries = FXCollections.observableArrayList();
+  protected final ObservableList<WeekViewAppointment> entries = FXCollections.observableArrayList();
   protected final SimpleIntegerProperty weekOfYear = new SimpleIntegerProperty();
   protected final SimpleIntegerProperty year = new SimpleIntegerProperty();
   protected final ObjectProperty<Consumer<LocalDateTime>> onAppointmentCreation = new SimpleObjectProperty<>();
@@ -61,11 +60,13 @@ public class WeekView extends GridPane {
   protected final ScrollPane scrollPane = new ScrollPane();
   protected final WeekHelper helper = new WeekHelper();
   protected final Table<Integer, Integer, StackPane> cells = HashBasedTable.create();
+  protected final AppointmentResolver appointmentResolver;
 
   protected boolean recomupting = false;
   protected int lastRow = -1;
 
-  public WeekView(String today) {
+  public WeekView(String today, AppointmentResolver appointmentResolver) {
+    this.appointmentResolver = appointmentResolver;
     title = new WeekTitle(today, weekOfYear, year);
     sceneProperty().addListener((p, o, n) -> {
       String styleSheetPath = WeekView.class.getResource("weekview.css").toExternalForm();
@@ -95,28 +96,29 @@ public class WeekView extends GridPane {
     weekOfYear.set(helper.getWeek(now));
     year.set(now.getYear());
 
-    entries.addListener(this::recreateEntries);
     Platform.runLater(() -> scrollPane.setVvalue(0.5));
   }
 
-  private void recreateEntries(ListChangeListener.Change<? extends WeekViewEntry> c) {
-    while (c.next()) {
-      List<? extends WeekViewEntry> removed = c.getRemoved();
-      removed.forEach(e -> contentPane.getChildren().remove(e.getControl()));
-      List<? extends WeekViewEntry> added = c.getAddedSubList();
-      added.forEach(e -> {
-        LocalDate firstDayOfWeek = helper.getFirstDayOfWeek(year.getValue(), weekOfYear.get());
-        long between = ChronoUnit.DAYS.between(firstDayOfWeek, e.getStart());
-        if (between >= 0 && between < 7) {
-          long hours = ChronoUnit.HOURS.between(LocalTime.of(0, 0), e.getStart());
-          Control node = e.getControl();
-          int insetsTop = e.getStart().getMinute();
-          node.setPrefHeight(e.getDuration().toMinutes());
-          contentPane.add(node, (int) between + 1, (int) hours, 1, Integer.MAX_VALUE);
-          GridPane.setMargin(node, new Insets(1 + insetsTop, 0, 0, 2));
-        }
-      });
-    }
+  private void recreateEntries() {
+    LocalDate firstDayOfWeek = helper.getFirstDayOfWeek(year.getValue(), weekOfYear.getValue());
+    LocalDate lastDayOfWeek = helper.getLastDayOfWeek(year.getValue(), weekOfYear.getValue());
+
+    entries.forEach(e -> contentPane.getChildren().remove(e.getControl()));
+    entries.clear();
+
+    List<WeekViewAppointment> weekViewAppointments = appointmentResolver.resolve(firstDayOfWeek, helper.getLastDayOfWeek(year.getValue(), weekOfYear.getValue()));
+    weekViewAppointments.forEach(e -> {
+      entries.add(e);
+      long between = ChronoUnit.DAYS.between(firstDayOfWeek, e.getStart());
+      if (between >= 0 && between < 7) {
+        long hours = ChronoUnit.HOURS.between(LocalTime.of(0, 0), e.getStart());
+        Control node = e.getControl();
+        int insetsTop = e.getStart().getMinute();
+        node.setPrefHeight(e.getDuration().toMinutes());
+        contentPane.add(node, (int) between + 1, (int) hours, 1, Integer.MAX_VALUE);
+        GridPane.setMargin(node, new Insets(1 + insetsTop, 0, 0, 2));
+      }
+    });
   }
 
   protected void configureRootPane() {
@@ -249,6 +251,7 @@ public class WeekView extends GridPane {
     }
     updateWeekDays();
     recomupting = false;
+    recreateEntries();
   }
 
   protected void updateWeekDays() {
@@ -286,7 +289,7 @@ public class WeekView extends GridPane {
     this.weekOfYear.set(weekOfYear);
   }
 
-  public ObservableList<WeekViewEntry> getEntries() {
+  public ObservableList<WeekViewAppointment> getEntries() {
     return entries;
   }
 

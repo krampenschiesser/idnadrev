@@ -17,7 +17,7 @@ package de.ks.idnadrev.week;
 
 import de.ks.BaseController;
 import de.ks.fxcontrols.weekview.WeekView;
-import de.ks.fxcontrols.weekview.WeekViewEntry;
+import de.ks.fxcontrols.weekview.WeekViewAppointment;
 import de.ks.i18n.Localized;
 import de.ks.idnadrev.entity.Task;
 import javafx.fxml.FXML;
@@ -28,6 +28,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.ThreadLocalRandom;
@@ -38,7 +39,7 @@ public class Weekview extends BaseController<List<Task>> {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    WeekView weekView = new WeekView(Localized.get("today"));
+    WeekView weekView = new WeekView(Localized.get("today"), (begin, end) -> Collections.<WeekViewAppointment>emptyList());
     root.getChildren().add(weekView);
 
     controller.getJavaFXExecutor().submit(() -> weekView.getScrollPane().setVvalue(0.3));
@@ -51,7 +52,7 @@ public class Weekview extends BaseController<List<Task>> {
       int minutes = Math.max(15, ThreadLocalRandom.current().nextInt(12) * 15);
       Duration duration = Duration.ofMinutes(minutes);
       LocalDateTime localDateTime = LocalDateTime.of(now, time);
-      weekView.getEntries().add(new WeekViewEntry("test entry" + i + " " + minutes + "m", localDateTime, duration));
+      weekView.getEntries().add(new WeekViewAppointment("test entry" + i + " " + minutes + "m", localDateTime, duration, btn -> btn.toString()));
     }
   }
 }

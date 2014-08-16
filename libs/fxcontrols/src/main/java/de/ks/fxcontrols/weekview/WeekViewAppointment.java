@@ -20,18 +20,22 @@ import javafx.scene.control.Control;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.function.Consumer;
 
-public class WeekViewEntry {
+public class WeekViewAppointment {
   protected String title;
 
   protected LocalDateTime start;
   protected Duration duration;
+  protected final Consumer<Button> action;
+  protected Consumer<Button> enhancer;
   protected Button node;
 
-  public WeekViewEntry(String title, LocalDateTime start, Duration duration) {
+  public WeekViewAppointment(String title, LocalDateTime start, Duration duration, Consumer<Button> action) {
     this.title = title;
     this.start = start;
     this.duration = duration;
+    this.action = action;
   }
 
   public Control getControl() {
@@ -39,6 +43,10 @@ public class WeekViewEntry {
       Button button = new Button(title);
       button.setPrefWidth(Control.USE_COMPUTED_SIZE);
       button.setMaxWidth(Double.MAX_VALUE);
+      if (enhancer != null) {
+        enhancer.accept(button);
+      }
+      button.setOnAction(e -> action.accept(button));
       node = button;
     }
     return node;
@@ -54,5 +62,10 @@ public class WeekViewEntry {
 
   public Duration getDuration() {
     return duration;
+  }
+
+  public WeekViewAppointment setEnhancer(Consumer<Button> enhancer) {
+    this.enhancer = enhancer;
+    return this;
   }
 }
