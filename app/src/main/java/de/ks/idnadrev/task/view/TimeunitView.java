@@ -14,14 +14,15 @@
  */
 package de.ks.idnadrev.task.view;
 
-import de.ks.activity.ActivityCfg;
-import de.ks.menu.MenuItem;
+import de.ks.BaseController;
+import de.ks.idnadrev.entity.Task;
 
-@MenuItem(order = 2, value = "/main/task")
-public class ViewTasksActvity extends ActivityCfg {
-  public ViewTasksActvity() {
-    super(ViewTasksDS.class, ViewTasks.class);
-    addAdditionalController(TaskFilterView.class);
-    addAdditionalController(TimeunitView.class);
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class TimeunitView extends BaseController<Task> {
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+
   }
 }
