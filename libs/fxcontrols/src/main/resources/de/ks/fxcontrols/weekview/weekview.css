@@ -1,8 +1,23 @@
 .week-bg-even {
     -fx-background-color: derive(-fx-background, 100%);
 }
+
+.week-bg-even-hover {
+    -fx-background-color: derive(-fx-accent, 100%);
+}
+
 .week-bg-odd {
     -fx-background-color: derive(-fx-background, 0%);/*maybe use 95% later*/
+}
+
+.week-bg-odd-hover {
+    -fx-background-color: derive(-fx-accent, 80%);
+}
+
+.week-cell:hover {
+    -fx-background-color: -fx-accent;
+    -fx-background-radius: 4;
+    -fx-background-insets: 2 0 0 3;
 }
 
 .week-weekfield {

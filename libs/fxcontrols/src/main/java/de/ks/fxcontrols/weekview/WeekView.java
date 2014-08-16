@@ -15,6 +15,8 @@
 
 package de.ks.fxcontrols.weekview;
 
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
@@ -45,6 +47,8 @@ public class WeekView extends GridPane {
   public static final int HEIGHT_OF_HOUR = 60;
   public static final int WIDTH_OF_TIMECOLUMN = 80;
   private boolean recomupting = false;
+  private int lastRow = -1;
+
   protected final ObservableList<WeekViewEntry> entries = FXCollections.observableArrayList();
   protected final SimpleIntegerProperty weekOfYear = new SimpleIntegerProperty();
   protected final SimpleIntegerProperty year = new SimpleIntegerProperty();
@@ -54,6 +58,7 @@ public class WeekView extends GridPane {
   protected final List<Label> weekDayLabels = new LinkedList<>();
   protected final ScrollPane scrollPane = new ScrollPane();
   private final WeekHelper helper = new WeekHelper();
+  private final Table<Integer, Integer, StackPane> bgCells = HashBasedTable.create();
 
   public WeekView() {
     sceneProperty().addListener((p, o, n) -> {
@@ -157,6 +162,18 @@ public class WeekView extends GridPane {
       background.getStyleClass().add(styleClass);
       contentPane.add(background, 0, i, Integer.MAX_VALUE, 1);
 
+      String cellStyle = i % 2 == 0 ? "week-bg-even" : "week-bg-odd";
+      for (int j = 0; j < 8; j++) {
+        StackPane cell = new StackPane();
+        cell.getStyleClass().add(cellStyle);
+        if (j > 0) {
+          cell.getStyleClass().add("week-cell");
+        }
+        bgCells.put(i, j, cell);
+        contentPane.add(cell, j, i);
+      }
+
+
       Label time = new Label();
       time.setText(String.format("%02d", i) + ":00");
       contentPane.add(time, 0, i);
@@ -174,6 +191,25 @@ public class WeekView extends GridPane {
       contentPane.add(separator, i + 1, 0, 1, Integer.MAX_VALUE);
       GridPane.setHalignment(separator, HPos.LEFT);
     }
+
+    contentPane.setOnMouseMoved(e -> {
+      double x = e.getX();
+      double y = e.getY();
+      int row = (int) (y / HEIGHT_OF_HOUR);
+      double factor = (contentPane.getWidth() - WIDTH_OF_TIMECOLUMN) / 7;
+      int column = (int) ((x - WIDTH_OF_TIMECOLUMN) / factor) + 1;
+
+      if (row != lastRow) {
+        String currentCellStyle = row % 2 == 0 ? "week-bg-even-hover" : "week-bg-odd-hover";
+        String lastCellStyle = lastRow % 2 == 0 ? "week-bg-even-hover" : "week-bg-odd-hover";
+        bgCells.row(lastRow).values().forEach(cell -> {
+          cell.getStyleClass().remove(lastCellStyle);
+        });
+
+        bgCells.row(row).values().forEach(cell -> cell.getStyleClass().add(currentCellStyle));
+        lastRow = row;
+      }
+    });
   }
 
   protected void recompute() {
