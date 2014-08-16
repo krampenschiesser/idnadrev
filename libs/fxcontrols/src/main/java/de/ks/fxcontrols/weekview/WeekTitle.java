@@ -33,12 +33,14 @@ import java.util.Locale;
 import java.util.function.Supplier;
 
 public class WeekTitle extends GridPane {
-  private final WeekHelper helper = new WeekHelper();
-  private final Label week = new Label();
-  private final Label month = new Label();
-  private final Label year = new Label();
-  private SimpleIntegerProperty weekOfYearProperty;
-  private SimpleIntegerProperty yearProperty;
+  protected final WeekHelper helper = new WeekHelper();
+  protected final Label week = new Label();
+  protected final Label month = new Label();
+  protected final Label year = new Label();
+  protected final Button today = new Button("today");
+
+  protected SimpleIntegerProperty weekOfYearProperty;
+  protected SimpleIntegerProperty yearProperty;
 
   public WeekTitle(String today, SimpleIntegerProperty weekOfYearProperty, SimpleIntegerProperty yearProperty) {
     this.weekOfYearProperty = weekOfYearProperty;
@@ -70,14 +72,13 @@ public class WeekTitle extends GridPane {
     getColumnConstraints().add(buttonColumn.get());
 
     int column = 0;
-    Button button = new Button(today);
-    button.setOnAction(e -> {
+    this.today.setOnAction(e -> {
       weekOfYearProperty.set(helper.getWeek(LocalDate.now()));
       yearProperty.set(LocalDate.now().getYear());
     });
-    add(button, column++, 0);
+    add(this.today, column++, 0);
 
-    button = new Button("<");
+    Button button = new Button("<");
     button.setOnAction(e -> weekOfYearProperty.set(weekOfYearProperty.getValue() - 1));
     add(button, column++, 0);
     add(week, column++, 0);

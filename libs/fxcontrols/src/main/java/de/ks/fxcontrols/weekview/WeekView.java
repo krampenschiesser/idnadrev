@@ -28,11 +28,17 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.VPos;
-import javafx.scene.control.Control;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Separator;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.WritableImage;
+import javafx.scene.input.DataFormat;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -40,12 +46,12 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class WeekView extends GridPane {
+  private static final Logger log = LoggerFactory.getLogger(WeekView.class);
   public static final int HEIGHT_OF_HOUR = 60;
   public static final int WIDTH_OF_TIMECOLUMN = 80;
 
@@ -53,6 +59,7 @@ public class WeekView extends GridPane {
   protected final SimpleIntegerProperty weekOfYear = new SimpleIntegerProperty();
   protected final SimpleIntegerProperty year = new SimpleIntegerProperty();
   protected final ObjectProperty<Consumer<LocalDateTime>> onAppointmentCreation = new SimpleObjectProperty<>();
+  protected final ObjectProperty<AppointmentResolver> appointmentResolver = new SimpleObjectProperty<>();
 
   protected final GridPane contentPane = new GridPane();
   protected final WeekTitle title;
@@ -60,13 +67,12 @@ public class WeekView extends GridPane {
   protected final ScrollPane scrollPane = new ScrollPane();
   protected final WeekHelper helper = new WeekHelper();
   protected final Table<Integer, Integer, StackPane> cells = HashBasedTable.create();
-  protected final AppointmentResolver appointmentResolver;
 
   protected boolean recomupting = false;
   protected int lastRow = -1;
+  protected int currentEntryStyleNr = 1;
 
-  public WeekView(String today, AppointmentResolver appointmentResolver) {
-    this.appointmentResolver = appointmentResolver;
+  public WeekView(String today) {
     title = new WeekTitle(today, weekOfYear, year);
     sceneProperty().addListener((p, o, n) -> {
       String styleSheetPath = WeekView.class.getResource("weekview.css").toExternalForm();
@@ -100,25 +106,59 @@ public class WeekView extends GridPane {
   }
 
   private void recreateEntries() {
+    entries.forEach(e -> contentPane.getChildren().remove(e.getControl()));
+    entries.clear();
+    if (appointmentResolver.get() == null) {
+      return;
+    }
     LocalDate firstDayOfWeek = helper.getFirstDayOfWeek(year.getValue(), weekOfYear.getValue());
     LocalDate lastDayOfWeek = helper.getLastDayOfWeek(year.getValue(), weekOfYear.getValue());
 
-    entries.forEach(e -> contentPane.getChildren().remove(e.getControl()));
-    entries.clear();
-
-    List<WeekViewAppointment> weekViewAppointments = appointmentResolver.resolve(firstDayOfWeek, helper.getLastDayOfWeek(year.getValue(), weekOfYear.getValue()));
-    weekViewAppointments.forEach(e -> {
-      entries.add(e);
-      long between = ChronoUnit.DAYS.between(firstDayOfWeek, e.getStart());
+    List<WeekViewAppointment> weekViewAppointments = appointmentResolver.get().resolve(firstDayOfWeek, helper.getLastDayOfWeek(year.getValue(), weekOfYear.getValue()));
+    weekViewAppointments.forEach(appointment -> {
+      entries.add(appointment);
+      long between = ChronoUnit.DAYS.between(firstDayOfWeek, appointment.getStart());
       if (between >= 0 && between < 7) {
-        long hours = ChronoUnit.HOURS.between(LocalTime.of(0, 0), e.getStart());
-        Control node = e.getControl();
-        int insetsTop = e.getStart().getMinute();
-        node.setPrefHeight(e.getDuration().toMinutes());
+        long hours = ChronoUnit.HOURS.between(LocalTime.of(0, 0), appointment.getStart());
+        Control node = appointment.getControl();
+        node.getStyleClass().add("week-entry" + currentEntryStyleNr);
+        currentEntryStyleNr++;
+        if (currentEntryStyleNr == 9) {
+          currentEntryStyleNr = 1;
+        }
+        node.setOnDragDetected(event -> {
+          if (appointment.getChangeStartCallback() == null) {
+            return;
+          }
+          Dragboard dragboard = node.startDragAndDrop(TransferMode.MOVE);
+          WritableImage image = new WritableImage((int) node.getWidth(), (int) node.getHeight());
+          Image snapshot = node.snapshot(new SnapshotParameters(), image);
+          assert snapshot.getWidth() > 0;
+          assert snapshot.getHeight() > 0;
+          dragboard.setDragView(snapshot, 10, 10);
+          dragboard.clear();
+
+          Map<DataFormat, Object> content = new HashMap<>();
+          DataFormat dataFormat = getDataFormat();
+          content.put(dataFormat, appointment.getTitle());
+          dragboard.setContent(content);
+          event.consume();
+        });
+
+        int insetsTop = appointment.getStart().getMinute();
+        node.setPrefHeight(appointment.getDuration().toMinutes());
         contentPane.add(node, (int) between + 1, (int) hours, 1, Integer.MAX_VALUE);
         GridPane.setMargin(node, new Insets(1 + insetsTop, 0, 0, 2));
       }
     });
+  }
+
+  private DataFormat getDataFormat() {
+    DataFormat dataFormat = DataFormat.lookupMimeType(WeekViewAppointment.class.getName());
+    if (dataFormat == null) {
+      dataFormat = new DataFormat(WeekViewAppointment.class.getName());
+    }
+    return dataFormat;
   }
 
   protected void configureRootPane() {
@@ -171,25 +211,8 @@ public class WeekView extends GridPane {
       background.getStyleClass().add(styleClass);
       contentPane.add(background, 0, i, Integer.MAX_VALUE, 1);
 
-      String cellStyle = i % 2 == 0 ? "week-bg-even" : "week-bg-odd";
       for (int j = 0; j < 8; j++) {
-        StackPane cell = new StackPane();
-        cell.getStyleClass().add(cellStyle);
-        if (j > 0) {
-          cell.getStyleClass().add("week-cell");
-          final int day = j - 1;
-          final int hour = i;
-          cell.setOnMouseClicked(e -> {
-            LocalDate firstDayOfWeek = getFirstDayOfWeek();
-            LocalDate selectedDay = firstDayOfWeek.plusDays(day);
-            LocalDateTime creationTime = LocalDateTime.of(selectedDay, LocalTime.of(hour, 0));
-
-            Consumer<LocalDateTime> consumer = onAppointmentCreation.get();
-            if (consumer != null) {
-              consumer.accept(creationTime);
-            }
-          });
-        }
+        StackPane cell = createCell(i, j);
         cells.put(i, j, cell);
         contentPane.add(cell, j, i);
       }
@@ -231,6 +254,75 @@ public class WeekView extends GridPane {
         lastRow = row;
       }
     });
+  }
+
+  private StackPane createCell(int row, int column) {
+    String cellStyle = row % 2 == 0 ? "week-bg-even" : "week-bg-odd";
+    StackPane cell = new StackPane();
+    cell.getStyleClass().add(cellStyle);
+    if (column > 0) {
+      cell.getStyleClass().add("week-cell");
+      final int day = column - 1;
+      final int hour = row;
+      cell.setOnMouseClicked(e -> {
+        LocalDate firstDayOfWeek = getFirstDayOfWeek();
+        LocalDate selectedDay = firstDayOfWeek.plusDays(day);
+        LocalDateTime creationTime = LocalDateTime.of(selectedDay, LocalTime.of(hour, 0));
+
+        Consumer<LocalDateTime> consumer = onAppointmentCreation.get();
+        if (consumer != null) {
+          consumer.accept(creationTime);
+        }
+      });
+      Predicate<DragEvent> filter = e -> {
+        Object content = e.getDragboard().getContent(getDataFormat());
+        return content != null;
+      };
+      cell.setOnDragOver(e -> {
+        if (filter.test(e)) {
+          e.acceptTransferModes(TransferMode.MOVE);
+          e.consume();
+        }
+      });
+      cell.setOnDragEntered(e -> {
+        if (filter.test(e)) {
+          cell.getStyleClass().add("week-cell-drag");
+          e.consume();
+        }
+      });
+      cell.setOnDragExited(e -> {
+        if (filter.test(e)) {
+          cell.getStyleClass().remove("week-cell-drag");
+          e.consume();
+        }
+      });
+      cell.setOnDragDropped(e -> {
+        if (filter.test(e)) {
+          String title = (String) e.getDragboard().getContent(getDataFormat());
+          Optional<WeekViewAppointment> first = entries.stream().filter(entry -> entry.getTitle().equals(title)).findFirst();
+          if (first.isPresent()) {
+            WeekViewAppointment weekViewAppointment = first.get();
+            LocalDateTime start = weekViewAppointment.getStart();
+            int originalHour = start.getHour();
+            int originalDayOfWeek = start.getDayOfWeek().getValue();
+            LocalDateTime newTime = start.withHour(hour);
+            int selectedDayOfWeek = day + 1;
+            if (originalDayOfWeek > selectedDayOfWeek) {
+              newTime = newTime.minusDays(originalDayOfWeek - selectedDayOfWeek);
+            } else if (originalDayOfWeek < selectedDayOfWeek) {
+              newTime = newTime.plusDays(selectedDayOfWeek - originalDayOfWeek);
+            }
+            if (weekViewAppointment.getChangeStartCallback().apply(newTime)) {
+              Control control = weekViewAppointment.getControl();
+              contentPane.getChildren().remove(control);
+              contentPane.add(control, column, row, 1, GridPane.REMAINING);
+            }
+          }
+          e.consume();
+        }
+      });
+    }
+    return cell;
   }
 
   protected void recompute() {
@@ -315,5 +407,21 @@ public class WeekView extends GridPane {
 
   public Table<Integer, Integer, StackPane> getCells() {
     return cells;
+  }
+
+  public Button getTodayButton() {
+    return title.today;
+  }
+
+  public AppointmentResolver getAppointmentResolver() {
+    return appointmentResolver.get();
+  }
+
+  public ObjectProperty<AppointmentResolver> appointmentResolverProperty() {
+    return appointmentResolver;
+  }
+
+  public void setAppointmentResolver(AppointmentResolver appointmentResolver) {
+    this.appointmentResolver.set(appointmentResolver);
   }
 }

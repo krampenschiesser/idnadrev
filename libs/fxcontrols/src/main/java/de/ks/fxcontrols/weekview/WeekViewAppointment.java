@@ -21,6 +21,7 @@ import javafx.scene.control.Control;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class WeekViewAppointment {
   protected String title;
@@ -30,6 +31,7 @@ public class WeekViewAppointment {
   protected final Consumer<Button> action;
   protected Consumer<Button> enhancer;
   protected Button node;
+  protected Function<LocalDateTime, Boolean> changeStartCallback;
 
   public WeekViewAppointment(String title, LocalDateTime start, Duration duration, Consumer<Button> action) {
     this.title = title;
@@ -67,5 +69,13 @@ public class WeekViewAppointment {
   public WeekViewAppointment setEnhancer(Consumer<Button> enhancer) {
     this.enhancer = enhancer;
     return this;
+  }
+
+  public void setChangeStartCallback(Function<LocalDateTime, Boolean> changeStartCallback) {
+    this.changeStartCallback = changeStartCallback;
+  }
+
+  public Function<LocalDateTime, Boolean> getChangeStartCallback() {
+    return changeStartCallback;
   }
 }

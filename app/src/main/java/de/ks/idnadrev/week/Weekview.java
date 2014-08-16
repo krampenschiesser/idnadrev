@@ -39,7 +39,8 @@ public class Weekview extends BaseController<List<Task>> {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    WeekView weekView = new WeekView(Localized.get("today"), (begin, end) -> Collections.<WeekViewAppointment>emptyList());
+    WeekView weekView = new WeekView(Localized.get("today"));
+    weekView.setAppointmentResolver((begin, end) -> Collections.<WeekViewAppointment>emptyList());
     root.getChildren().add(weekView);
 
     controller.getJavaFXExecutor().submit(() -> weekView.getScrollPane().setVvalue(0.3));

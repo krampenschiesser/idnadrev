@@ -20,6 +20,13 @@
     -fx-background-insets: 2 0 0 3;
 }
 
+.week-cell-drag {
+    /*-fx-background-color: derive(-fx-accent, 20%);*/
+    -fx-background-color: indianred;
+    -fx-background-radius: 4;
+    -fx-background-insets: 2 0 0 3;
+}
+
 .week-cell:pressed {
    -fx-background-color: derive(-fx-accent, -20%);
 }
@@ -42,3 +49,27 @@
     -fx-background-color: -fx-accent;
 }
 
+.week-entry1 {
+    -fx-background-color: CHART_COLOR_1;
+}
+.week-entry2 {
+    -fx-background-color: CHART_COLOR_2;
+}
+.week-entry3 {
+    -fx-background-color: CHART_COLOR_3;
+}
+.week-entry4 {
+    -fx-background-color: CHART_COLOR_4;
+}
+.week-entry5 {
+    -fx-background-color: CHART_COLOR_5;
+}
+.week-entry6 {
+    -fx-background-color: CHART_COLOR_6;
+}
+.week-entry7 {
+    -fx-background-color: CHART_COLOR_7;
+}
+.week-entry8 {
+    -fx-background-color: CHART_COLOR_8;
+}

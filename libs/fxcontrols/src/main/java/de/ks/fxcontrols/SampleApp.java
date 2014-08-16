@@ -38,7 +38,8 @@ public class SampleApp extends Application {
   public void start(Stage primaryStage) throws Exception {
     primaryStage.setTitle("Sample app");
 
-    WeekView weekView = new WeekView("Today", this::getNextEntries);
+    WeekView weekView = new WeekView("Today");
+    weekView.setAppointmentResolver(this::getNextEntries);
     weekView.setOnAppointmentCreation(dateTime -> log.info("Creating new appointment beginning at {}", dateTime));
 
 
@@ -63,6 +64,15 @@ public class SampleApp extends Application {
       LocalDateTime localDateTime = LocalDateTime.of(current, time);
 
       WeekViewAppointment appointment = new WeekViewAppointment("test entry" + i + " " + minutes + "m", localDateTime, duration, btn -> log.info("Clicking on appointment{}", btn.getText()));
+      appointment.setChangeStartCallback(newTime -> {
+        if (newTime.getHour() > 6 && newTime.getHour() < 22) {
+          log.info("{} now starts on {}", appointment.getTitle(), newTime);
+          return true;
+        } else {
+          log.info("Wrong time {}", newTime);
+          return false;
+        }
+      });
       retval.add(appointment);
     }
     return retval;
