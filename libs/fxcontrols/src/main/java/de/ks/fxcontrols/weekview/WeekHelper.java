@@ -22,6 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WeekHelper {
+
+  public int getWeek(LocalDate date) {
+    return date.get(WeekFields.ISO.weekOfWeekBasedYear());
+  }
+
   public int getWeeksInYear(int year) {
     LocalDate lastInYear = getLastDayOfYear(year);
 

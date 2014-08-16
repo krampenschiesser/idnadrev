@@ -20,6 +20,8 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -28,12 +30,14 @@ import java.time.LocalTime;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class SampleApp extends Application {
+  private static final Logger log = LoggerFactory.getLogger(SampleApp.class);
+
   @Override
   public void start(Stage primaryStage) throws Exception {
     primaryStage.setTitle("Sample app");
 
-    WeekView weekView = new WeekView();
-
+    WeekView weekView = new WeekView("Today");
+    weekView.setOnAppointmentCreation(dateTime -> log.info("Creating new appointment beginning at {}", dateTime));
     LocalDate firstDayOfWeek = weekView.getFirstDayOfWeek();
     for (int i = 0; i < 7; i++) {
       LocalDate now = firstDayOfWeek.plusDays(i);

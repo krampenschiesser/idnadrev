@@ -17,8 +17,11 @@ package de.ks.fxcontrols.weekview;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -34,33 +37,36 @@ import javafx.scene.layout.*;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalField;
-import java.time.temporal.WeekFields;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 public class WeekView extends GridPane {
   public static final int HEIGHT_OF_HOUR = 60;
   public static final int WIDTH_OF_TIMECOLUMN = 80;
-  private boolean recomupting = false;
-  private int lastRow = -1;
 
   protected final ObservableList<WeekViewEntry> entries = FXCollections.observableArrayList();
   protected final SimpleIntegerProperty weekOfYear = new SimpleIntegerProperty();
   protected final SimpleIntegerProperty year = new SimpleIntegerProperty();
+  protected final ObjectProperty<Consumer<LocalDateTime>> onAppointmentCreation = new SimpleObjectProperty<>();
 
   protected final GridPane contentPane = new GridPane();
-  protected final WeekTitle title = new WeekTitle(weekOfYear, year);
+  protected final WeekTitle title;
   protected final List<Label> weekDayLabels = new LinkedList<>();
   protected final ScrollPane scrollPane = new ScrollPane();
-  private final WeekHelper helper = new WeekHelper();
-  private final Table<Integer, Integer, StackPane> bgCells = HashBasedTable.create();
+  protected final WeekHelper helper = new WeekHelper();
+  protected final Table<Integer, Integer, StackPane> cells = HashBasedTable.create();
 
-  public WeekView() {
+  protected boolean recomupting = false;
+  protected int lastRow = -1;
+
+  public WeekView(String today) {
+    title = new WeekTitle(today, weekOfYear, year);
     sceneProperty().addListener((p, o, n) -> {
       String styleSheetPath = WeekView.class.getResource("weekview.css").toExternalForm();
       if (n != null) {
@@ -75,7 +81,7 @@ public class WeekView extends GridPane {
     configureRootPane();
     configureContentPane();
     scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-    scrollPane.setVvalue(0.3);
+    scrollPane.setVvalue(0.5);
     scrollPane.setMinSize(Control.USE_COMPUTED_SIZE, HEIGHT_OF_HOUR);
     scrollPane.setPrefSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
 
@@ -86,11 +92,11 @@ public class WeekView extends GridPane {
       recompute();
     });
     LocalDate now = LocalDate.now();
+    weekOfYear.set(helper.getWeek(now));
     year.set(now.getYear());
-    TemporalField weekOfYearField = WeekFields.of(Locale.getDefault()).weekOfYear();
-    weekOfYear.set(now.get(weekOfYearField));
 
     entries.addListener(this::recreateEntries);
+    Platform.runLater(() -> scrollPane.setVvalue(0.5));
   }
 
   private void recreateEntries(ListChangeListener.Change<? extends WeekViewEntry> c) {
@@ -119,7 +125,7 @@ public class WeekView extends GridPane {
     setMaxSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
 
     getRowConstraints().add(new RowConstraints(Control.USE_PREF_SIZE, Control.USE_COMPUTED_SIZE, Control.USE_PREF_SIZE, Priority.NEVER, VPos.BOTTOM, true));
-    getRowConstraints().add(new RowConstraints(Control.USE_PREF_SIZE, Control.USE_COMPUTED_SIZE, Control.USE_PREF_SIZE, Priority.NEVER, VPos.BOTTOM, true));
+    getRowConstraints().add(new RowConstraints(Control.USE_PREF_SIZE, 30, Control.USE_COMPUTED_SIZE, Priority.NEVER, VPos.BOTTOM, true));
     getRowConstraints().add(new RowConstraints(100, Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE, Priority.ALWAYS, VPos.TOP, true));
 
     getColumnConstraints().add(new ColumnConstraints(WIDTH_OF_TIMECOLUMN, WIDTH_OF_TIMECOLUMN, Control.USE_PREF_SIZE, Priority.NEVER, HPos.RIGHT, true));
@@ -129,6 +135,7 @@ public class WeekView extends GridPane {
       constraints.setPercentWidth(13);
       getColumnConstraints().add(constraints);
       Label label = new Label();
+      label.getStyleClass().add("week-daytitle");
       add(label, i + 1, 1);
       GridPane.setMargin(label, new Insets(0, 0, 5, 0));
       weekDayLabels.add(label);
@@ -168,8 +175,20 @@ public class WeekView extends GridPane {
         cell.getStyleClass().add(cellStyle);
         if (j > 0) {
           cell.getStyleClass().add("week-cell");
+          final int day = j - 1;
+          final int hour = i;
+          cell.setOnMouseClicked(e -> {
+            LocalDate firstDayOfWeek = getFirstDayOfWeek();
+            LocalDate selectedDay = firstDayOfWeek.plusDays(day);
+            LocalDateTime creationTime = LocalDateTime.of(selectedDay, LocalTime.of(hour, 0));
+
+            Consumer<LocalDateTime> consumer = onAppointmentCreation.get();
+            if (consumer != null) {
+              consumer.accept(creationTime);
+            }
+          });
         }
-        bgCells.put(i, j, cell);
+        cells.put(i, j, cell);
         contentPane.add(cell, j, i);
       }
 
@@ -202,11 +221,11 @@ public class WeekView extends GridPane {
       if (row != lastRow) {
         String currentCellStyle = row % 2 == 0 ? "week-bg-even-hover" : "week-bg-odd-hover";
         String lastCellStyle = lastRow % 2 == 0 ? "week-bg-even-hover" : "week-bg-odd-hover";
-        bgCells.row(lastRow).values().forEach(cell -> {
+        cells.row(lastRow).values().forEach(cell -> {
           cell.getStyleClass().remove(lastCellStyle);
         });
 
-        bgCells.row(row).values().forEach(cell -> cell.getStyleClass().add(currentCellStyle));
+        cells.row(row).values().forEach(cell -> cell.getStyleClass().add(currentCellStyle));
         lastRow = row;
       }
     });
@@ -277,5 +296,21 @@ public class WeekView extends GridPane {
 
   public LocalDate getFirstDayOfWeek() {
     return helper.getFirstDayOfWeek(year.getValue(), weekOfYear.getValue());
+  }
+
+  public Consumer<LocalDateTime> getOnAppointmentCreation() {
+    return onAppointmentCreation.get();
+  }
+
+  public ObjectProperty<Consumer<LocalDateTime>> onAppointmentCreationProperty() {
+    return onAppointmentCreation;
+  }
+
+  public void setOnAppointmentCreation(Consumer<LocalDateTime> onAppointmentCreation) {
+    this.onAppointmentCreation.set(onAppointmentCreation);
+  }
+
+  public Table<Integer, Integer, StackPane> getCells() {
+    return cells;
   }
 }

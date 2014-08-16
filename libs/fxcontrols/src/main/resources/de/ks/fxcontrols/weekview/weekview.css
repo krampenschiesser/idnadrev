@@ -20,19 +20,25 @@
     -fx-background-insets: 2 0 0 3;
 }
 
-.week-weekfield {
-  -fx-font-weight: bold;
-}
-.week-yearfield {
-  -fx-font-weight: bold;
+.week-cell:pressed {
+   -fx-background-color: derive(-fx-accent, -20%);
 }
 
-.webviewContainer {
-    -fx-border-color: darkgrey;
-    -fx-border-radius: 4;
+.week-month {
+    -fx-font-size: 1.5em;
 }
-
-.editorViewLabel {
-    -fx-font-size: 1.25em;
+.week-week {
     -fx-font-weight: bold;
 }
+.week-year {
+    -fx-font-weight: bold;
+}
+
+.week-daytitle {
+    -fx-font-size: 1.1em;
+}
+.week-daytitle-current {
+    -fx-font-size: 1.1em;
+    -fx-background-color: -fx-accent;
+}
+

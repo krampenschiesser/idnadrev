@@ -16,43 +16,51 @@ package de.ks.fxcontrols.weekview;
 
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.HPos;
-import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 
+import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.Locale;
 import java.util.function.Supplier;
 
 public class WeekTitle extends GridPane {
+  private final WeekHelper helper = new WeekHelper();
   private final Label week = new Label();
   private final Label month = new Label();
   private final Label year = new Label();
   private SimpleIntegerProperty weekOfYearProperty;
   private SimpleIntegerProperty yearProperty;
 
-  public WeekTitle(SimpleIntegerProperty weekOfYearProperty, SimpleIntegerProperty yearProperty) {
+  public WeekTitle(String today, SimpleIntegerProperty weekOfYearProperty, SimpleIntegerProperty yearProperty) {
     this.weekOfYearProperty = weekOfYearProperty;
     this.yearProperty = yearProperty;
+    week.getStyleClass().add("week-week");
+    month.getStyleClass().add("week-month");
+    year.getStyleClass().add("week-year");
 
     weekOfYearProperty.addListener((p, o, n) -> recomputeMonth());
     yearProperty.addListener((p, o, n) -> recomputeMonth());
 
     week.textProperty().bind(weekOfYearProperty.asString());
     year.textProperty().bind(yearProperty.asString());
-    setPadding(new Insets(20));
-    getRowConstraints().add(new RowConstraints(10, Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE));
+    getRowConstraints().add(new RowConstraints(10, 50, Control.USE_COMPUTED_SIZE));
+    getRowConstraints().add(new RowConstraints(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE));
 
+    Supplier<ColumnConstraints> todayColumn = () -> new ColumnConstraints(25, 80, Control.USE_COMPUTED_SIZE, Priority.NEVER, HPos.LEFT, true);
     Supplier<ColumnConstraints> buttonColumn = () -> new ColumnConstraints(25, Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE, Priority.NEVER, HPos.CENTER, true);
-    Supplier<ColumnConstraints> weekColumn = () -> new ColumnConstraints(25, 75, Control.USE_COMPUTED_SIZE, Priority.SOMETIMES, HPos.CENTER, true);
-    Supplier<ColumnConstraints> monthColumn = () -> new ColumnConstraints(25, 75, Control.USE_COMPUTED_SIZE, Priority.ALWAYS, HPos.CENTER, true);
-    Supplier<ColumnConstraints> yearColumn = () -> new ColumnConstraints(25, 75, Control.USE_COMPUTED_SIZE, Priority.SOMETIMES, HPos.CENTER, true);
+    Supplier<ColumnConstraints> weekColumn = () -> new ColumnConstraints(25, 70, Control.USE_COMPUTED_SIZE, Priority.SOMETIMES, HPos.CENTER, true);
+    Supplier<ColumnConstraints> monthColumn = () -> new ColumnConstraints(25, 70, Control.USE_COMPUTED_SIZE, Priority.ALWAYS, HPos.CENTER, true);
+    Supplier<ColumnConstraints> yearColumn = () -> new ColumnConstraints(25, 70, Control.USE_COMPUTED_SIZE, Priority.SOMETIMES, HPos.CENTER, true);
+    getColumnConstraints().add(todayColumn.get());
     getColumnConstraints().add(buttonColumn.get());
     getColumnConstraints().add(weekColumn.get());
     getColumnConstraints().add(buttonColumn.get());
@@ -61,27 +69,37 @@ public class WeekTitle extends GridPane {
     getColumnConstraints().add(yearColumn.get());
     getColumnConstraints().add(buttonColumn.get());
 
-    Button button = new Button("<");
+    int column = 0;
+    Button button = new Button(today);
+    button.setOnAction(e -> {
+      weekOfYearProperty.set(helper.getWeek(LocalDate.now()));
+      yearProperty.set(LocalDate.now().getYear());
+    });
+    add(button, column++, 0);
+
+    button = new Button("<");
     button.setOnAction(e -> weekOfYearProperty.set(weekOfYearProperty.getValue() - 1));
-    add(button, 0, 0);
-    add(week, 1, 0);
+    add(button, column++, 0);
+    add(week, column++, 0);
     button = new Button(">");
     button.setOnAction(e -> weekOfYearProperty.set(weekOfYearProperty.getValue() + 1));
-    add(button, 2, 0);
+    add(button, column++, 0);
 
-    add(month, 3, 0);
+    add(month, column++, 0);
 
     button = new Button("<");
     button.setOnAction(e -> yearProperty.set(yearProperty.getValue() - 1));
-    add(button, 4, 0);
-    add(year, 5, 0);
+    add(button, column++, 0);
+    add(year, column++, 0);
     button = new Button(">");
     button.setOnAction(e -> yearProperty.set(yearProperty.getValue() + 1));
-    add(button, 6, 0);
+    add(button, column++, 0);
+
+    add(new Separator(Orientation.HORIZONTAL), 0, 1, Integer.MAX_VALUE, 1);
   }
 
   private void recomputeMonth() {
-    Month monthOfWeek = new WeekHelper().getMonthOfWeek(yearProperty.getValue(), weekOfYearProperty.getValue());
+    Month monthOfWeek = helper.getMonthOfWeek(yearProperty.getValue(), weekOfYearProperty.getValue());
     String displayName = monthOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault());
     month.setText(displayName);
   }

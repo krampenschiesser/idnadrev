@@ -21,8 +21,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Year;
 import java.time.temporal.WeekFields;
+import java.util.LinkedList;
 
 import static org.junit.Assert.assertEquals;
 
@@ -31,7 +33,7 @@ public class WeekViewTest {
 
   @Test
   public void testWeek0() throws Exception {
-    WeekView weekView = new WeekView();
+    WeekView weekView = new WeekView("today");
     weekView.setYear(2014);
     weekView.setWeekOfYear(22);
     FXPlatform.invokeLater(() -> weekView.weekOfYear.set(0));
@@ -43,5 +45,19 @@ public class WeekViewTest {
     assertEquals(weekOfYear, weekView.getWeekOfYear());
 
     assertEquals(previous.getValue(), weekView.getYear());
+  }
+
+  @Test
+  public void testAppointmentCreation() throws Exception {
+    WeekView weekView = new WeekView("today");
+    weekView.setYear(2014);
+    weekView.setWeekOfYear(22);
+
+    LinkedList<LocalDateTime> times = new LinkedList<>();
+    weekView.setOnAppointmentCreation(ldt -> times.add(ldt));
+
+    FXPlatform.invokeLater(() -> weekView.getCells().get(13, 4).getOnMouseClicked().handle(null));
+    assertEquals(1, times.size());
+    assertEquals(LocalDateTime.of(2014, 5, 29, 13, 0), times.getLast());
   }
 }

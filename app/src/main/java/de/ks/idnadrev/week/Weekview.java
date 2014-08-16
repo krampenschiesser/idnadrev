@@ -18,6 +18,7 @@ package de.ks.idnadrev.week;
 import de.ks.BaseController;
 import de.ks.fxcontrols.weekview.WeekView;
 import de.ks.fxcontrols.weekview.WeekViewEntry;
+import de.ks.i18n.Localized;
 import de.ks.idnadrev.entity.Task;
 import javafx.fxml.FXML;
 import javafx.scene.layout.StackPane;
@@ -37,7 +38,7 @@ public class Weekview extends BaseController<List<Task>> {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    WeekView weekView = new WeekView();
+    WeekView weekView = new WeekView(Localized.get("today"));
     root.getChildren().add(weekView);
 
     controller.getJavaFXExecutor().submit(() -> weekView.getScrollPane().setVvalue(0.3));
