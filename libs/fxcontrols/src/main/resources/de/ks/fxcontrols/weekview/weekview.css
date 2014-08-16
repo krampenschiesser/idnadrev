@@ -48,28 +48,68 @@
     -fx-font-size: 1.1em;
     -fx-background-color: -fx-accent;
 }
+/*
+.week-entry:armed {
+    -fx-text-fill: -fx-pressed-base;
+}
+
+.week-entry:pressed {
+    -fx-text-fill: -fx-pressed-base;
+}*/
+
+.week-entry:hover {
+    -fx-text-fill: -fx-hover-base;
+}
+.week-entry:focused {
+    -fx-background-insets: -2, -0.3, 1, 2;
+    -fx-background-radius: 7, 6, 4, 3;
+}
 
 .week-entry1 {
-    -fx-background-color: CHART_COLOR_1;
+    -fx-background-color: -fx-outer-border, -fx-inner-border, CHART_COLOR_1;
+}
+.week-entry1:focused {
+    -fx-background-color: -fx-faint-focus-color, -fx-focus-color, -fx-inner-border, CHART_COLOR_1;
 }
 .week-entry2 {
-    -fx-background-color: CHART_COLOR_2;
+    -fx-background-color: -fx-outer-border, -fx-inner-border, CHART_COLOR_2;
+}
+.week-entry2:focused {
+    -fx-background-color: -fx-faint-focus-color, -fx-focus-color, -fx-inner-border, CHART_COLOR_2;
 }
 .week-entry3 {
-    -fx-background-color: CHART_COLOR_3;
+    -fx-background-color: -fx-outer-border, -fx-inner-border, CHART_COLOR_3;
+}
+.week-entry3:focused {
+    -fx-background-color: -fx-faint-focus-color, -fx-focus-color, -fx-inner-border, CHART_COLOR_3;
 }
 .week-entry4 {
-    -fx-background-color: CHART_COLOR_4;
+    -fx-background-color: -fx-outer-border, -fx-inner-border, CHART_COLOR_4;
+}
+.week-entry4:focused {
+    -fx-background-color: -fx-faint-focus-color, -fx-focus-color, -fx-inner-border, CHART_COLOR_4;
 }
 .week-entry5 {
-    -fx-background-color: CHART_COLOR_5;
+    -fx-background-color: -fx-outer-border, -fx-inner-border, CHART_COLOR_5;
+}
+.week-entry5:focused {
+    -fx-background-color: -fx-faint-focus-color, -fx-focus-color, -fx-inner-border, CHART_COLOR_5;
 }
 .week-entry6 {
-    -fx-background-color: CHART_COLOR_6;
+    -fx-background-color: -fx-outer-border, -fx-inner-border, CHART_COLOR_6;
+}
+.week-entry6:focused {
+    -fx-background-color: -fx-faint-focus-color, -fx-focus-color, -fx-inner-border, CHART_COLOR_6;
 }
 .week-entry7 {
-    -fx-background-color: CHART_COLOR_7;
+    -fx-background-color: -fx-outer-border, -fx-inner-border, CHART_COLOR_7;
+}
+.week-entry7:focused {
+    -fx-background-color: -fx-faint-focus-color, -fx-focus-color, -fx-inner-border, CHART_COLOR_7;
 }
 .week-entry8 {
-    -fx-background-color: CHART_COLOR_8;
+    -fx-background-color: -fx-outer-border, -fx-inner-border, CHART_COLOR_8;
+}
+.week-entry8:focused {
+    -fx-background-color: -fx-faint-focus-color, -fx-focus-color, -fx-inner-border, CHART_COLOR_8;
 }

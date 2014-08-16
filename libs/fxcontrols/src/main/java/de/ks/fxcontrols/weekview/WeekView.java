@@ -121,6 +121,7 @@ public class WeekView extends GridPane {
       if (between >= 0 && between < 7) {
         long hours = ChronoUnit.HOURS.between(LocalTime.of(0, 0), appointment.getStart());
         Control node = appointment.getControl();
+        node.getStyleClass().add("week-entry");
         node.getStyleClass().add("week-entry" + currentEntryStyleNr);
         currentEntryStyleNr++;
         if (currentEntryStyleNr == 9) {
@@ -173,8 +174,8 @@ public class WeekView extends GridPane {
     getColumnConstraints().add(new ColumnConstraints(WIDTH_OF_TIMECOLUMN, WIDTH_OF_TIMECOLUMN, Control.USE_PREF_SIZE, Priority.NEVER, HPos.RIGHT, true));
 
     for (int i = 0; i < 7; i++) {
-      ColumnConstraints constraints = new ColumnConstraints(10, 100, Double.MAX_VALUE, Priority.ALWAYS, HPos.CENTER, true);
-      constraints.setPercentWidth(13);
+      ColumnConstraints constraints = new ColumnConstraints(10, 80, Double.MAX_VALUE, Priority.ALWAYS, HPos.CENTER, true);
+      constraints.setPercentWidth(12);
       getColumnConstraints().add(constraints);
       Label label = new Label();
       label.getStyleClass().add("week-daytitle");
@@ -198,8 +199,8 @@ public class WeekView extends GridPane {
 
     contentPane.getColumnConstraints().add(new ColumnConstraints(WIDTH_OF_TIMECOLUMN, WIDTH_OF_TIMECOLUMN, Control.USE_PREF_SIZE, Priority.NEVER, HPos.RIGHT, true));
     for (int i = 0; i < 7; i++) {
-      ColumnConstraints constraints = new ColumnConstraints(10, 100, Double.MAX_VALUE, Priority.ALWAYS, HPos.CENTER, true);
-      constraints.setPercentWidth(13);
+      ColumnConstraints constraints = new ColumnConstraints(10, 80, Double.MAX_VALUE, Priority.ALWAYS, HPos.CENTER, true);
+      constraints.setPercentWidth(12);
       contentPane.getColumnConstraints().add(constraints);
 
     }
