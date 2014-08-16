@@ -30,16 +30,6 @@ import static org.junit.Assert.assertEquals;
 public class WeekViewTest {
 
   @Test
-  public void testGetFirstDayOfWeek() throws Exception {
-    WeekView weekView = new WeekView();
-
-    assertEquals(LocalDate.of(2014, 8, 4), weekView.getFirstDayOfWeek(2014, 32));
-    assertEquals(LocalDate.of(2013, 12, 23), weekView.getFirstDayOfWeek(2013, 52));
-    assertEquals(LocalDate.of(2013, 12, 30), weekView.getFirstDayOfWeek(2014, 1));
-    assertEquals(LocalDate.of(2014, 1, 6), weekView.getFirstDayOfWeek(2014, 2));
-  }
-
-  @Test
   public void testWeek0() throws Exception {
     WeekView weekView = new WeekView();
     weekView.setYear(2014);

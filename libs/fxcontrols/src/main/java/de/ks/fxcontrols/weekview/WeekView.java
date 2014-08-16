@@ -44,6 +44,7 @@ import java.util.Locale;
 public class WeekView extends GridPane {
   public static final int HEIGHT_OF_HOUR = 60;
   public static final int WIDTH_OF_TIMECOLUMN = 80;
+  private boolean recomupting = false;
   protected final ObservableList<WeekViewEntry> entries = FXCollections.observableArrayList();
   protected final SimpleIntegerProperty weekOfYear = new SimpleIntegerProperty();
   protected final SimpleIntegerProperty year = new SimpleIntegerProperty();
@@ -52,6 +53,7 @@ public class WeekView extends GridPane {
   protected final WeekTitle title = new WeekTitle(weekOfYear, year);
   protected final List<Label> weekDayLabels = new LinkedList<>();
   protected final ScrollPane scrollPane = new ScrollPane();
+  private final WeekHelper helper = new WeekHelper();
 
   public WeekView() {
     sceneProperty().addListener((p, o, n) -> {
@@ -92,7 +94,7 @@ public class WeekView extends GridPane {
       removed.forEach(e -> contentPane.getChildren().remove(e.getControl()));
       List<? extends WeekViewEntry> added = c.getAddedSubList();
       added.forEach(e -> {
-        LocalDate firstDayOfWeek = getFirstDayOfWeek();
+        LocalDate firstDayOfWeek = helper.getFirstDayOfWeek(year.getValue(), weekOfYear.get());
         long between = ChronoUnit.DAYS.between(firstDayOfWeek, e.getStart());
         if (between >= 0 && between < 7) {
           long hours = ChronoUnit.HOURS.between(LocalTime.of(0, 0), e.getStart());
@@ -175,15 +177,27 @@ public class WeekView extends GridPane {
   }
 
   protected void recompute() {
-    if (weekOfYear.getValue() <= 0) {
-      weekOfYear.set(52);
-      year.set(year.getValue() - 1);
+    if (recomupting) {
+      return;
+    } else {
+      recomupting = true;
+    }
+    int isoYear = year.get();
+    int weeksInYear = helper.getWeeksInYear(isoYear);
+    if (weekOfYear.getValue() == 0) {
+      int previousYear = isoYear - 1;
+      weekOfYear.set(helper.getWeeksInYear(previousYear));
+      year.set(previousYear);
+    } else if (weekOfYear.getValue() > weeksInYear) {
+      weekOfYear.set(1);
+      year.set(year.getValue() + 1);
     }
     updateWeekDays();
+    recomupting = false;
   }
 
   protected void updateWeekDays() {
-    LocalDate firstDayOfWeek = getFirstDayOfWeek();
+    LocalDate firstDayOfWeek = helper.getFirstDayOfWeek(year.getValue(), weekOfYear.getValue());
     for (int i = 0; i < 7; i++) {
       Label label = weekDayLabels.get(i);
 
@@ -191,21 +205,6 @@ public class WeekView extends GridPane {
       label.setText(dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ". " + firstDayOfWeek.getDayOfMonth());
       firstDayOfWeek = firstDayOfWeek.plusDays(1);
     }
-  }
-
-  public LocalDate getFirstDayOfWeek() {
-    int selectedYear = year.get();
-    int selectedWeek = weekOfYear.get();
-
-    return getFirstDayOfWeek(selectedYear, selectedWeek);
-  }
-
-  protected LocalDate getFirstDayOfWeek(int selectedYear, int selectedWeek) {
-    LocalDate firstDayOfWeek = LocalDate.ofYearDay(selectedYear, 1);
-    int currentDay = firstDayOfWeek.getDayOfWeek().getValue();
-    firstDayOfWeek = firstDayOfWeek.minus(currentDay - 1, ChronoUnit.DAYS);
-    firstDayOfWeek = firstDayOfWeek.plus(--selectedWeek, ChronoUnit.WEEKS);
-    return firstDayOfWeek;
   }
 
   public int getYear() {
@@ -238,5 +237,9 @@ public class WeekView extends GridPane {
 
   public ScrollPane getScrollPane() {
     return scrollPane;
+  }
+
+  public LocalDate getFirstDayOfWeek() {
+    return helper.getFirstDayOfWeek(year.getValue(), weekOfYear.getValue());
   }
 }

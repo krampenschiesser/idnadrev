@@ -25,6 +25,9 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 
+import java.time.Month;
+import java.time.format.TextStyle;
+import java.util.Locale;
 import java.util.function.Supplier;
 
 public class WeekTitle extends GridPane {
@@ -37,6 +40,9 @@ public class WeekTitle extends GridPane {
   public WeekTitle(SimpleIntegerProperty weekOfYearProperty, SimpleIntegerProperty yearProperty) {
     this.weekOfYearProperty = weekOfYearProperty;
     this.yearProperty = yearProperty;
+
+    weekOfYearProperty.addListener((p, o, n) -> recomputeMonth());
+    yearProperty.addListener((p, o, n) -> recomputeMonth());
 
     week.textProperty().bind(weekOfYearProperty.asString());
     year.textProperty().bind(yearProperty.asString());
@@ -72,5 +78,11 @@ public class WeekTitle extends GridPane {
     button = new Button(">");
     button.setOnAction(e -> yearProperty.set(yearProperty.getValue() + 1));
     add(button, 6, 0);
+  }
+
+  private void recomputeMonth() {
+    Month monthOfWeek = new WeekHelper().getMonthOfWeek(yearProperty.getValue(), weekOfYearProperty.getValue());
+    String displayName = monthOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault());
+    month.setText(displayName);
   }
 }
