@@ -132,12 +132,11 @@ public class WeekView extends GridPane {
             return;
           }
           Dragboard dragboard = node.startDragAndDrop(TransferMode.MOVE);
-          WritableImage image = new WritableImage((int) node.getWidth(), (int) node.getHeight());
-          Image snapshot = node.snapshot(new SnapshotParameters(), image);
-          assert snapshot.getWidth() > 0;
-          assert snapshot.getHeight() > 0;
-          dragboard.setDragView(snapshot, 10, 10);
           dragboard.clear();
+          WritableImage image = new WritableImage((int) node.getWidth(), (int) node.getHeight());
+          SnapshotParameters params = new SnapshotParameters();
+          Image snapshot = node.snapshot(params, image);
+          dragboard.setDragView(snapshot);
 
           Map<DataFormat, Object> content = new HashMap<>();
           DataFormat dataFormat = getDataFormat();
