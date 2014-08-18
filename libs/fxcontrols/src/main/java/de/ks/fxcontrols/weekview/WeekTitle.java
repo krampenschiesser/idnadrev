@@ -57,26 +57,27 @@ public class WeekTitle extends GridPane {
     getRowConstraints().add(new RowConstraints(10, 50, Control.USE_COMPUTED_SIZE));
     getRowConstraints().add(new RowConstraints(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE));
 
-    Supplier<ColumnConstraints> todayColumn = () -> new ColumnConstraints(25, 80, Control.USE_COMPUTED_SIZE, Priority.NEVER, HPos.LEFT, true);
+    ColumnConstraints initColumn = new ColumnConstraints(25, 80, Control.USE_COMPUTED_SIZE, Priority.NEVER, HPos.LEFT, true);
+    initColumn.setPercentWidth(WeekView.PERCENT_WIDTH_TIME_COLUMN);
     Supplier<ColumnConstraints> buttonColumn = () -> new ColumnConstraints(25, Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE, Priority.NEVER, HPos.CENTER, true);
     Supplier<ColumnConstraints> weekColumn = () -> new ColumnConstraints(25, 70, Control.USE_COMPUTED_SIZE, Priority.SOMETIMES, HPos.CENTER, true);
     Supplier<ColumnConstraints> monthColumn = () -> new ColumnConstraints(25, 70, Control.USE_COMPUTED_SIZE, Priority.ALWAYS, HPos.CENTER, true);
     Supplier<ColumnConstraints> yearColumn = () -> new ColumnConstraints(25, 70, Control.USE_COMPUTED_SIZE, Priority.SOMETIMES, HPos.CENTER, true);
-    getColumnConstraints().add(todayColumn.get());
+    Supplier<ColumnConstraints> todayColumn = () -> new ColumnConstraints(25, 70, Control.USE_COMPUTED_SIZE, Priority.SOMETIMES, HPos.CENTER, true);
+    getColumnConstraints().add(initColumn);
     getColumnConstraints().add(buttonColumn.get());
     getColumnConstraints().add(weekColumn.get());
     getColumnConstraints().add(buttonColumn.get());
     getColumnConstraints().add(monthColumn.get());
+
+    getColumnConstraints().add(todayColumn.get());
+
     getColumnConstraints().add(buttonColumn.get());
     getColumnConstraints().add(yearColumn.get());
     getColumnConstraints().add(buttonColumn.get());
 
-    int column = 0;
-    this.today.setOnAction(e -> {
-      weekOfYearProperty.set(helper.getWeek(LocalDate.now()));
-      yearProperty.set(LocalDate.now().getYear());
-    });
-    add(this.today, column++, 0);
+    int column = 1;
+
 
     Button button = new Button("<");
     button.setOnAction(e -> weekOfYearProperty.set(weekOfYearProperty.getValue() - 1));
@@ -87,6 +88,12 @@ public class WeekTitle extends GridPane {
     add(button, column++, 0);
 
     add(month, column++, 0);
+
+    this.today.setOnAction(e -> {
+      weekOfYearProperty.set(helper.getWeek(LocalDate.now()));
+      yearProperty.set(LocalDate.now().getYear());
+    });
+    add(this.today, column++, 0);
 
     button = new Button("<");
     button.setOnAction(e -> yearProperty.set(yearProperty.getValue() - 1));

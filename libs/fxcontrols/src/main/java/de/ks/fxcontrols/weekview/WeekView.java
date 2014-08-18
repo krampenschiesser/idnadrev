@@ -54,6 +54,8 @@ public class WeekView extends GridPane {
   private static final Logger log = LoggerFactory.getLogger(WeekView.class);
   public static final int HEIGHT_OF_HOUR = 60;
   public static final int WIDTH_OF_TIMECOLUMN = 80;
+  public static final double PERCENT_WIDTH_DAY_COLUMN = 13;
+  public static final double PERCENT_WIDTH_TIME_COLUMN = 7;
 
   protected final ObservableList<WeekViewAppointment> entries = FXCollections.observableArrayList();
   protected final SimpleIntegerProperty weekOfYear = new SimpleIntegerProperty();
@@ -180,7 +182,7 @@ public class WeekView extends GridPane {
   }
 
   protected void configureRootPane() {
-    setMinSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
+    setMinSize(350, HEIGHT_OF_HOUR);
     setPrefSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
     setMaxSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
 
@@ -188,21 +190,25 @@ public class WeekView extends GridPane {
     getRowConstraints().add(new RowConstraints(Control.USE_PREF_SIZE, 30, Control.USE_COMPUTED_SIZE, Priority.NEVER, VPos.BOTTOM, true));
     getRowConstraints().add(new RowConstraints(100, Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE, Priority.ALWAYS, VPos.TOP, true));
 
-    getColumnConstraints().add(new ColumnConstraints(WIDTH_OF_TIMECOLUMN, WIDTH_OF_TIMECOLUMN, Control.USE_PREF_SIZE, Priority.NEVER, HPos.RIGHT, true));
+    ColumnConstraints timeColumn = new ColumnConstraints(WIDTH_OF_TIMECOLUMN, WIDTH_OF_TIMECOLUMN, Control.USE_PREF_SIZE, Priority.NEVER, HPos.RIGHT, true);
+    timeColumn.setPercentWidth(PERCENT_WIDTH_TIME_COLUMN);
+    getColumnConstraints().add(timeColumn);
 
-    for (int i = 0; i < 7; i++) {
+    for (int i = 1; i <= 7; i++) {
       ColumnConstraints constraints = new ColumnConstraints(10, 80, Double.MAX_VALUE, Priority.ALWAYS, HPos.CENTER, true);
-      constraints.setPercentWidth(12);
+      constraints.setPercentWidth(PERCENT_WIDTH_DAY_COLUMN);
       getColumnConstraints().add(constraints);
       Label label = new Label();
       label.getStyleClass().add("week-daytitle");
-      add(label, i + 1, 1);
+      add(label, i, 1);
       GridPane.setMargin(label, new Insets(0, 0, 5, 0));
       weekDayLabels.add(label);
     }
-    getColumnConstraints().add(new ColumnConstraints(10, 30, 30, Priority.NEVER, HPos.RIGHT, true));
+    ColumnConstraints lastColumn = new ColumnConstraints(10, 10, 10, Priority.NEVER, HPos.RIGHT, true);
+    lastColumn.setPercentWidth(2);
+    getColumnConstraints().add(lastColumn);
 
-    add(scrollPane, 0, 2, Integer.MAX_VALUE, 1);
+    add(scrollPane, 0, 2, GridPane.REMAINING, 1);
     scrollPane.setContent(contentPane);
 
     add(title, 0, 0, GridPane.REMAINING, 1);
@@ -214,10 +220,12 @@ public class WeekView extends GridPane {
     contentPane.minWidthProperty().bind(width);
     contentPane.maxWidthProperty().bind(width);
 
-    contentPane.getColumnConstraints().add(new ColumnConstraints(WIDTH_OF_TIMECOLUMN, WIDTH_OF_TIMECOLUMN, Control.USE_PREF_SIZE, Priority.NEVER, HPos.RIGHT, true));
+    ColumnConstraints timeColumn = new ColumnConstraints(WIDTH_OF_TIMECOLUMN, WIDTH_OF_TIMECOLUMN, Control.USE_PREF_SIZE, Priority.NEVER, HPos.RIGHT, true);
+    timeColumn.setPercentWidth(PERCENT_WIDTH_TIME_COLUMN);
+    contentPane.getColumnConstraints().add(timeColumn);
     for (int i = 0; i < 7; i++) {
       ColumnConstraints constraints = new ColumnConstraints(10, 80, Double.MAX_VALUE, Priority.ALWAYS, HPos.CENTER, true);
-      constraints.setPercentWidth(12);
+      constraints.setPercentWidth(PERCENT_WIDTH_DAY_COLUMN);
       contentPane.getColumnConstraints().add(constraints);
 
     }
@@ -337,8 +345,6 @@ public class WeekView extends GridPane {
             minute = Math.max(0, minute);
             LocalDateTime newTime = getNewAppointmentTime(weekViewAppointment, day, hour, minute);
             weekViewAppointment.setStart(newTime);
-            weekViewAppointment.getChangeStartCallback().accept(newTime);
-            Control control = weekViewAppointment.getControl();
             ArrayList<WeekViewAppointment> copyOfEntries = new ArrayList<>(entries);
             recreateEntries(copyOfEntries);
           }
