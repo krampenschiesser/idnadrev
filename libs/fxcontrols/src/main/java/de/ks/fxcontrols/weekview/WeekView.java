@@ -106,15 +106,28 @@ public class WeekView extends GridPane {
   }
 
   private void recreateEntries() {
-    entries.forEach(e -> contentPane.getChildren().remove(e.getControl()));
-    entries.clear();
     if (appointmentResolver.get() == null) {
       return;
     }
     LocalDate firstDayOfWeek = helper.getFirstDayOfWeek(year.getValue(), weekOfYear.getValue());
     LocalDate lastDayOfWeek = helper.getLastDayOfWeek(year.getValue(), weekOfYear.getValue());
 
-    List<WeekViewAppointment> weekViewAppointments = appointmentResolver.get().resolve(firstDayOfWeek, helper.getLastDayOfWeek(year.getValue(), weekOfYear.getValue()));
+    List<WeekViewAppointment> weekViewAppointments = appointmentResolver.get().resolve(firstDayOfWeek, lastDayOfWeek);
+    recreateEntries(weekViewAppointments);
+  }
+
+  private void recreateEntries(List<WeekViewAppointment> weekViewAppointments) {
+    Collections.sort(weekViewAppointments);
+    LocalDate firstDayOfWeek = helper.getFirstDayOfWeek(year.getValue(), weekOfYear.getValue());
+    entries.forEach(e -> {
+      Control control = e.getControl();
+      for (int i = 0; i < 9; i++) {
+        control.getStyleClass().remove("week-entry" + i);
+      }
+      contentPane.getChildren().remove(control);
+    });
+    entries.clear();
+    currentEntryStyleNr = 0;
     weekViewAppointments.forEach(appointment -> {
       entries.add(appointment);
       long between = ChronoUnit.DAYS.between(firstDayOfWeek, appointment.getStart());
@@ -143,6 +156,11 @@ public class WeekView extends GridPane {
           content.put(dataFormat, appointment.getTitle());
           dragboard.setContent(content);
           event.consume();
+        });
+        node.focusedProperty().addListener((p, o, n) -> {
+          if (n) {
+            node.toFront();
+          }
         });
 
         int insetsTop = appointment.getStart().getMinute();
@@ -276,7 +294,20 @@ public class WeekView extends GridPane {
       });
       Predicate<DragEvent> filter = e -> {
         Object content = e.getDragboard().getContent(getDataFormat());
-        return content != null;
+        if (content != null) {
+          String title = (String) e.getDragboard().getContent(getDataFormat());
+          Optional<WeekViewAppointment> first = entries.stream().filter(entry -> entry.getTitle().equals(title)).findFirst();
+          if (first.isPresent()) {
+            WeekViewAppointment weekViewAppointment = first.get();
+            int minute = (int) ((e.getY() % HEIGHT_OF_HOUR) / 15) * 15;
+            minute = Math.max(0, minute);
+            LocalDateTime newTime = getNewAppointmentTime(weekViewAppointment, day, hour, minute);
+            if (weekViewAppointment.getNewTimePossiblePredicate().test(newTime)) {
+              return true;
+            }
+          }
+        }
+        return false;
       };
       cell.setOnDragOver(e -> {
         if (filter.test(e)) {
@@ -302,27 +333,34 @@ public class WeekView extends GridPane {
           Optional<WeekViewAppointment> first = entries.stream().filter(entry -> entry.getTitle().equals(title)).findFirst();
           if (first.isPresent()) {
             WeekViewAppointment weekViewAppointment = first.get();
-            LocalDateTime start = weekViewAppointment.getStart();
-            int originalHour = start.getHour();
-            int originalDayOfWeek = start.getDayOfWeek().getValue();
-            LocalDateTime newTime = start.withHour(hour);
-            int selectedDayOfWeek = day + 1;
-            if (originalDayOfWeek > selectedDayOfWeek) {
-              newTime = newTime.minusDays(originalDayOfWeek - selectedDayOfWeek);
-            } else if (originalDayOfWeek < selectedDayOfWeek) {
-              newTime = newTime.plusDays(selectedDayOfWeek - originalDayOfWeek);
-            }
-            if (weekViewAppointment.getChangeStartCallback().apply(newTime)) {
-              Control control = weekViewAppointment.getControl();
-              contentPane.getChildren().remove(control);
-              contentPane.add(control, column, row, 1, GridPane.REMAINING);
-            }
+            int minute = (int) ((e.getY() % HEIGHT_OF_HOUR) / 15) * 15;
+            minute = Math.max(0, minute);
+            LocalDateTime newTime = getNewAppointmentTime(weekViewAppointment, day, hour, minute);
+            weekViewAppointment.setStart(newTime);
+            weekViewAppointment.getChangeStartCallback().accept(newTime);
+            Control control = weekViewAppointment.getControl();
+            ArrayList<WeekViewAppointment> copyOfEntries = new ArrayList<>(entries);
+            recreateEntries(copyOfEntries);
           }
           e.consume();
         }
       });
     }
+
     return cell;
+  }
+
+  protected LocalDateTime getNewAppointmentTime(WeekViewAppointment appointment, int newDay, int newHour, int minutes) {
+    LocalDateTime start = appointment.getStart();
+    int originalDayOfWeek = start.getDayOfWeek().getValue();
+    LocalDateTime newTime = start.withHour(newHour);
+    int selectedDayOfWeek = newDay + 1;
+    if (originalDayOfWeek > selectedDayOfWeek) {
+      newTime = newTime.minusDays(originalDayOfWeek - selectedDayOfWeek);
+    } else if (originalDayOfWeek < selectedDayOfWeek) {
+      newTime = newTime.plusDays(selectedDayOfWeek - originalDayOfWeek);
+    }
+    return newTime.withMinute(minutes);
   }
 
   protected void recompute() {

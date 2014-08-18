@@ -57,7 +57,7 @@ public class SampleApp extends Application {
     LocalDate firstDayOfWeek = begin;
     for (int i = 0; i < 7; i++) {
       LocalDate current = firstDayOfWeek.plusDays(i);
-      LocalTime time = LocalTime.of(random.nextInt(6, 18), 0);
+      LocalTime time = LocalTime.of(random.nextInt(6, 18), random.nextInt(3) * 15);
 
       int minutes = Math.max(15, random.nextInt(12) * 15);
       Duration duration = Duration.ofMinutes(minutes);
@@ -65,8 +65,10 @@ public class SampleApp extends Application {
 
       WeekViewAppointment appointment = new WeekViewAppointment("test entry" + i + " " + minutes + "m", localDateTime, duration, btn -> log.info("Clicking on appointment{}", btn.getText()));
       appointment.setChangeStartCallback(newTime -> {
+        log.info("{} now starts on {}", appointment.getTitle(), newTime);
+      });
+      appointment.setNewTimePossiblePredicate(newTime -> {
         if (newTime.getHour() > 6 && newTime.getHour() < 22) {
-          log.info("{} now starts on {}", appointment.getTitle(), newTime);
           return true;
         } else {
           log.info("Wrong time {}", newTime);

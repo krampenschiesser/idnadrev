@@ -21,9 +21,9 @@ import javafx.scene.control.Control;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.function.Predicate;
 
-public class WeekViewAppointment {
+public class WeekViewAppointment implements Comparable<WeekViewAppointment> {
   protected String title;
 
   protected LocalDateTime start;
@@ -31,7 +31,8 @@ public class WeekViewAppointment {
   protected final Consumer<Button> action;
   protected Consumer<Button> enhancer;
   protected Button node;
-  protected Function<LocalDateTime, Boolean> changeStartCallback;
+  protected Predicate<LocalDateTime> newTimePossiblePredicate;
+  protected Consumer<LocalDateTime> changeStartCallback;
 
   public WeekViewAppointment(String title, LocalDateTime start, Duration duration, Consumer<Button> action) {
     this.title = title;
@@ -62,6 +63,13 @@ public class WeekViewAppointment {
     return start;
   }
 
+  public void setStart(LocalDateTime start) {
+    this.start = start;
+    if (changeStartCallback != null) {
+      changeStartCallback.accept(start);
+    }
+  }
+
   public Duration getDuration() {
     return duration;
   }
@@ -71,11 +79,24 @@ public class WeekViewAppointment {
     return this;
   }
 
-  public void setChangeStartCallback(Function<LocalDateTime, Boolean> changeStartCallback) {
+  public void setChangeStartCallback(Consumer<LocalDateTime> changeStartCallback) {
     this.changeStartCallback = changeStartCallback;
   }
 
-  public Function<LocalDateTime, Boolean> getChangeStartCallback() {
+  public Consumer<LocalDateTime> getChangeStartCallback() {
     return changeStartCallback;
+  }
+
+  public Predicate<LocalDateTime> getNewTimePossiblePredicate() {
+    return newTimePossiblePredicate;
+  }
+
+  public void setNewTimePossiblePredicate(Predicate<LocalDateTime> newTimePossiblePredicate) {
+    this.newTimePossiblePredicate = newTimePossiblePredicate;
+  }
+
+  @Override
+  public int compareTo(WeekViewAppointment o) {
+    return getStart().compareTo(o.getStart());
   }
 }
