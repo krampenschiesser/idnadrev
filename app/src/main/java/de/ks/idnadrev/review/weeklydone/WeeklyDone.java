@@ -12,14 +12,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.week;
+package de.ks.idnadrev.review.weeklydone;
 
-import de.ks.activity.ActivityCfg;
-import de.ks.menu.MenuItem;
+import de.ks.BaseController;
+import de.ks.fxcontrols.weekview.WeekView;
+import de.ks.i18n.Localized;
+import de.ks.idnadrev.entity.Task;
+import javafx.fxml.FXML;
+import javafx.scene.layout.StackPane;
 
-@MenuItem("/main/week")
-public class WeekviewActivity extends ActivityCfg {
-  public WeekviewActivity() {
-    super(WeekviewDS.class, Weekview.class);
+import java.net.URL;
+import java.util.List;
+import java.util.ResourceBundle;
+
+public class WeeklyDone extends BaseController<List<Task>> {
+
+  @FXML
+  private StackPane weekContainer;
+
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    WeekView weekView = new WeekView(Localized.get("today"));
+
+    weekContainer.getChildren().add(weekView);
   }
 }

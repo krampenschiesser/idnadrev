@@ -12,8 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package de.ks.idnadrev.week;
+package de.ks.idnadrev.review.weeklydone;
 
 import de.ks.datasource.ListDataSource;
 import de.ks.idnadrev.entity.Task;
@@ -21,7 +20,7 @@ import de.ks.idnadrev.entity.Task;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class WeekviewDS implements ListDataSource<Task> {
+public class WeeklyDoneDS implements ListDataSource<Task> {
   @Override
   public List<Task> loadModel(Consumer<List<Task>> furtherProcessing) {
     return null;
