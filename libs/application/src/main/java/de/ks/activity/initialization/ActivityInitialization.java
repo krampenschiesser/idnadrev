@@ -113,7 +113,6 @@ public class ActivityInitialization {
 
       currentlyLoadedControllers.get().forEach((c) -> {
         assert c != null;
-        assert view != null;
         log.debug("Registering controller {} with node {}", c, view);
         controllers.put(c.getClass(), Pair.of(c, view));
       });

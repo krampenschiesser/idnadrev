@@ -14,12 +14,34 @@
  */
 package de.ks.activity.initialization;
 
-import de.ks.activity.ActivityCfg;
-import de.ks.activity.DummyTestDataSource;
+import de.ks.activity.ActivityController;
+import javafx.fxml.Initializable;
 
-public class InitializationActivity extends ActivityCfg {
-  public InitializationActivity() {
-    super(DummyTestDataSource.class, InitalizationController.class);
-    addAdditionalController(PojoController.class);
+import javax.inject.Inject;
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class PojoController implements Initializable {
+  @Inject
+  ActivityController controller;
+  private URL location;
+  private ResourceBundle resources;
+
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    this.location = location;
+    this.resources = resources;
+  }
+
+  public ActivityController getController() {
+    return controller;
+  }
+
+  public URL getLocation() {
+    return location;
+  }
+
+  public ResourceBundle getResources() {
+    return resources;
   }
 }

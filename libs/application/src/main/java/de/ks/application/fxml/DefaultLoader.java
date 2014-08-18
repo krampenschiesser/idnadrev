@@ -17,6 +17,7 @@ package de.ks.application.fxml;
 
 import de.ks.i18n.Localized;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Node;
 import org.slf4j.Logger;
@@ -24,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -33,31 +35,51 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class DefaultLoader<V extends Node, C> {
   private static final Logger log = LoggerFactory.getLogger(DefaultLoader.class);
+  private final Class<?> controller;
   private final URL fxmlFile;
   private CompletableFuture<FXMLLoader> loaderFuture;
   private CompletableFuture<Void> allCallbacks;
   private FXMLLoader loader;
   protected final AtomicBoolean loaded = new AtomicBoolean(false);
+  private ControllerFactory controllerFactory;
+  private ResourceBundle resourceBundle;
+  private C loadedInstance;
 
   public DefaultLoader(Class<?> modelController) {
-    this(modelController.getResource(modelController.getSimpleName() + ".fxml"));
+    this(modelController, modelController.getResource(modelController.getSimpleName() + ".fxml"));
   }
 
   public DefaultLoader(URL fxmlFile) {
-    this.fxmlFile = fxmlFile;
-    if (fxmlFile == null) {
-      log.error("FXML file not found, is null!");
-      throw new IllegalArgumentException("FXML file not found, is null!");
-    }
-    loader = new FXMLLoader(fxmlFile, Localized.getBundle(), new JavaFXBuilderFactory(), new ControllerFactory());
+    this(null, fxmlFile);
   }
 
+  protected DefaultLoader(Class<?> controller, URL fxmlFile) {
+    this.controller = controller;
+    this.fxmlFile = fxmlFile;
+    if (fxmlFile == null && controller == null) {
+      log.error("FXML file not found, is null!");
+      throw new FXMLFileNotFoundException("FXML file not found, is null!");
+    }
+    controllerFactory = new ControllerFactory();
+    resourceBundle = Localized.getBundle();
+    loader = new FXMLLoader(fxmlFile, resourceBundle, new JavaFXBuilderFactory(), controllerFactory);
+  }
+
+  @SuppressWarnings("unchecked")
   public DefaultLoader<V, C> load() {
     try {
       if (loaded.compareAndSet(false, true)) {
-        log.debug("Loading fxml file {}", fxmlFile);
-        loader.load();
-        loaded.set(true);
+        if (fxmlFile == null) {
+          Object instance = controllerFactory.call(controller);
+          if (instance instanceof Initializable) {
+            ((Initializable) instance).initialize(null, resourceBundle);
+          }
+          this.loadedInstance = (C) instance;
+        } else {
+          log.debug("Loading fxml file {}", fxmlFile);
+          loader.load();
+          loaded.set(true);
+        }
       }
     } catch (IOException e) {
       log.error("Could not load fxml file {}", fxmlFile, e);
@@ -67,7 +89,11 @@ public class DefaultLoader<V extends Node, C> {
   }
 
   public V getView() {
-    return getLoader().getRoot();
+    if (fxmlFile == null) {
+      return null;
+    } else {
+      return getLoader().getRoot();
+    }
   }
 
   private FXMLLoader getLoader() {
@@ -76,7 +102,12 @@ public class DefaultLoader<V extends Node, C> {
   }
 
   public C getController() {
-    return getLoader().getController();
+    if (fxmlFile == null) {
+      load();
+      return loadedInstance;
+    } else {
+      return getLoader().getController();
+    }
   }
 
   public URL getFxmlFile() {

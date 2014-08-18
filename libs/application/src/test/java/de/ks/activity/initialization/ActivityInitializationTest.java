@@ -21,6 +21,7 @@ import de.ks.activity.ActivityHint;
 import de.ks.application.Navigator;
 import de.ks.launch.JavaFXService;
 import de.ks.launch.Launcher;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +42,11 @@ public class ActivityInitializationTest {
     Navigator.registerWithBorderPane(service.getStage());
   }
 
+  @After
+  public void tearDown() throws Exception {
+    controller.stopAll();
+  }
+
   @Test
   public void testLoadAdditionalController() throws Exception {
     controller.startOrResume(new ActivityHint(InitializationActivity.class));
@@ -49,5 +55,9 @@ public class ActivityInitializationTest {
     assertNotNull(controller.getControllerInstance(InitalizationController.class).other);
     assertNotNull(controller.getControllerInstance(OtherController.class));
 
+    PojoController pojoController = controller.getControllerInstance(PojoController.class);
+    assertNotNull(pojoController);
+    assertNotNull(pojoController.controller);
+    assertNotNull(pojoController.getResources());
   }
 }

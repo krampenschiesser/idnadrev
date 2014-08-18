@@ -12,14 +12,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.activity.initialization;
+package de.ks.application.fxml;
 
-import de.ks.activity.ActivityCfg;
-import de.ks.activity.DummyTestDataSource;
-
-public class InitializationActivity extends ActivityCfg {
-  public InitializationActivity() {
-    super(DummyTestDataSource.class, InitalizationController.class);
-    addAdditionalController(PojoController.class);
+public class FXMLFileNotFoundException extends RuntimeException {
+  public FXMLFileNotFoundException(String message) {
+    super(message);
   }
 }
