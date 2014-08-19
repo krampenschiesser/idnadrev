@@ -105,6 +105,12 @@ public class WeekView extends GridPane {
     year.set(now.getYear());
 
     Platform.runLater(() -> scrollPane.setVvalue(0.5));
+
+    appointmentResolver.addListener((p, o, n) -> {
+      if (o == null && n != null) {
+        recreateEntries();
+      }
+    });
   }
 
   private void recreateEntries() {
@@ -467,5 +473,6 @@ public class WeekView extends GridPane {
 
   public void setAppointmentResolver(AppointmentResolver appointmentResolver) {
     this.appointmentResolver.set(appointmentResolver);
+
   }
 }

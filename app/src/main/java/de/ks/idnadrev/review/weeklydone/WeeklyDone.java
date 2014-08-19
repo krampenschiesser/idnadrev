@@ -35,5 +35,7 @@ public class WeeklyDone extends BaseController<List<Task>> {
     WeekView weekView = new WeekView(Localized.get("today"));
 
     weekContainer.getChildren().add(weekView);
+    WeeklyDoneDS datasource = (WeeklyDoneDS) store.getDatasource();
+    weekView.setAppointmentResolver(datasource);
   }
 }
