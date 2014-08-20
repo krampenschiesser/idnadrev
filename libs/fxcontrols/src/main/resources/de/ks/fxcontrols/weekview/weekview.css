@@ -21,7 +21,6 @@
 }
 
 .week-cell-drag {
-    /*-fx-background-color: derive(-fx-accent, 20%);*/
     -fx-background-color: indianred;
     -fx-background-radius: 4;
     -fx-background-insets: 2 0 0 3;
@@ -48,14 +47,6 @@
     -fx-font-size: 1.1em;
     -fx-background-color: -fx-accent;
 }
-/*
-.week-entry:armed {
-    -fx-text-fill: -fx-pressed-base;
-}
-
-.week-entry:pressed {
-    -fx-text-fill: -fx-pressed-base;
-}*/
 
 .week-entry:hover {
     -fx-text-fill: -fx-hover-base;
