@@ -180,6 +180,10 @@ public class Task extends NamedPersistentObject<Task> implements FileContainer<T
     return this;
   }
 
+  public void setFinishTime(LocalDateTime finishTime) {
+    this.finishTime = finishTime;
+  }
+
   public boolean isFinished() {
     return finishTime != null;
   }

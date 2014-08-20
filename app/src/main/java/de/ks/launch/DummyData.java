@@ -14,6 +14,7 @@
  */
 package de.ks.launch;
 
+import de.ks.fxcontrols.weekview.WeekHelper;
 import de.ks.idnadrev.entity.*;
 import de.ks.option.Option;
 import de.ks.persistence.PersistentWork;
@@ -21,7 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
@@ -85,6 +88,22 @@ public class DummyData extends Service {
       persist(effort);
 
       persist(new Task("finished task").setDescription("yes it is done").setFinished(true));
+
+
+      PersistentWork.wrap(() -> {
+        Task longRunner = new Task("long runner");
+        persist(longRunner);
+        LocalDateTime start = null;
+        for (int i = 0; i < 7; i++) {
+          WorkUnit unit = new WorkUnit(longRunner);
+          LocalDate startDate = new WeekHelper().getFirstDayOfWeek(LocalDate.now()).minusWeeks(1).plusDays(i);
+          start = LocalDateTime.of(startDate, LocalTime.of(12, 15));
+          unit.setStart(start);
+          unit.setEnd(start.plusHours(1));
+          persist(unit);
+        }
+        longRunner.setFinishTime(start);
+      });
     }
   }
 

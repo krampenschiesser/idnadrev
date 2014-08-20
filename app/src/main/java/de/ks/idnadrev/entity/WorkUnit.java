@@ -103,7 +103,7 @@ public class WorkUnit extends AbstractPersistentObject<WorkUnit> implements Comp
     this.task = task;
   }
 
-  protected void setEnd(LocalDateTime time) {
+  public void setEnd(LocalDateTime time) {
     this.end = time;
   }
 
