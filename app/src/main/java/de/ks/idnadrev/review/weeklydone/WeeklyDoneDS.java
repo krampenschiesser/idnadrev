@@ -15,7 +15,6 @@
 package de.ks.idnadrev.review.weeklydone;
 
 import de.ks.datasource.ListDataSource;
-import de.ks.fxcontrols.weekview.AppointmentResolver;
 import de.ks.fxcontrols.weekview.WeekHelper;
 import de.ks.fxcontrols.weekview.WeekViewAppointment;
 import de.ks.idnadrev.entity.WorkUnit;
@@ -33,7 +32,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class WeeklyDoneDS implements ListDataSource<WeekViewAppointment>, AppointmentResolver {
+public class WeeklyDoneDS implements ListDataSource<WeekViewAppointment> {
   protected final WeekHelper helper = new WeekHelper();
   protected volatile LocalDateTime beginDate = LocalDateTime.of(helper.getFirstDayOfWeek(LocalDate.now()), LocalTime.of(0, 0));
   protected volatile LocalDateTime endDate = LocalDateTime.of(helper.getLastDayOfWeek(LocalDate.now()), LocalTime.of(23, 59));
@@ -67,15 +66,5 @@ public class WeeklyDoneDS implements ListDataSource<WeekViewAppointment>, Appoin
   @Override
   public void saveModel(List<WeekViewAppointment> model, Consumer<List<WeekViewAppointment>> beforeSaving) {
 //
-  }
-
-  @Override
-  public synchronized List<WeekViewAppointment> resolve(LocalDate begin, LocalDate end) {
-    if (!begin.equals(this.beginDate) || !end.equals(this.endDate)) {
-      beginDate = LocalDateTime.of(begin, LocalTime.of(0, 0));
-      endDate = LocalDateTime.of(end, LocalTime.of(23, 59));
-      loadModel(null);
-    }
-    return resolvedAppointments;
   }
 }

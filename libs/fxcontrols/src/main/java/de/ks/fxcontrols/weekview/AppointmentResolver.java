@@ -16,7 +16,8 @@ package de.ks.fxcontrols.weekview;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.function.Consumer;
 
 public interface AppointmentResolver {
-  List<WeekViewAppointment> resolve(LocalDate begin, LocalDate end);
+  void resolve(LocalDate begin, LocalDate end, Consumer<List<WeekViewAppointment>> callback);
 }

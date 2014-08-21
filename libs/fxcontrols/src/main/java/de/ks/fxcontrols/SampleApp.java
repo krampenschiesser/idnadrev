@@ -30,6 +30,7 @@ import java.time.LocalTime;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
 
 public class SampleApp extends Application {
   private static final Logger log = LoggerFactory.getLogger(SampleApp.class);
@@ -50,7 +51,7 @@ public class SampleApp extends Application {
     primaryStage.show();
   }
 
-  private List<WeekViewAppointment> getNextEntries(LocalDate begin, LocalDate end) {
+  private void getNextEntries(LocalDate begin, LocalDate end, Consumer<List<WeekViewAppointment>> consumer) {
     ThreadLocalRandom random = ThreadLocalRandom.current();
 
     LinkedList<WeekViewAppointment> retval = new LinkedList<>();
@@ -77,7 +78,7 @@ public class SampleApp extends Application {
       });
       retval.add(appointment);
     }
-    return retval;
+    consumer.accept(retval);
   }
 
   public static void main(String[] args) throws Exception {

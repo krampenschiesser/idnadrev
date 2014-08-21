@@ -23,6 +23,7 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -111,72 +112,78 @@ public class WeekView extends GridPane {
         recreateEntries();
       }
     });
+    entries.addListener(this::entriesChanged);
+  }
+
+  private void entriesChanged(ListChangeListener.Change<? extends WeekViewAppointment> change) {
+    while (change.next()) {
+      change.getRemoved().forEach(e -> {
+        Control control = e.getControl();
+        for (int i = 0; i < 9; i++) {
+          control.getStyleClass().remove("week-entry" + i);
+        }
+        contentPane.getChildren().remove(control);
+      });
+
+      LocalDate firstDayOfWeek = helper.getFirstDayOfWeek(year.getValue(), weekOfYear.getValue());
+      change.getAddedSubList().forEach(appointment -> {
+        long between = ChronoUnit.DAYS.between(firstDayOfWeek, appointment.getStart());
+        if (between >= 0 && between < 7) {
+          long hours = ChronoUnit.HOURS.between(LocalTime.of(0, 0), appointment.getStart());
+          Control node = appointment.getControl();
+          node.getStyleClass().add("week-entry");
+          node.getStyleClass().add("week-entry" + currentEntryStyleNr);
+          currentEntryStyleNr++;
+          if (currentEntryStyleNr == 9) {
+            currentEntryStyleNr = 1;
+          }
+          node.setOnDragDetected(event -> {
+            if (appointment.getChangeStartCallback() == null) {
+              return;
+            }
+            Dragboard dragboard = node.startDragAndDrop(TransferMode.MOVE);
+            dragboard.clear();
+            WritableImage image = new WritableImage((int) node.getWidth(), (int) node.getHeight());
+            SnapshotParameters params = new SnapshotParameters();
+            Image snapshot = node.snapshot(params, image);
+            dragboard.setDragView(snapshot);
+
+            Map<DataFormat, Object> content = new HashMap<>();
+            DataFormat dataFormat = getDataFormat();
+            content.put(dataFormat, appointment.getTitle());
+            dragboard.setContent(content);
+            event.consume();
+          });
+          node.focusedProperty().addListener((p, o, n) -> {
+            if (n) {
+              node.toFront();
+            }
+          });
+
+          int insetsTop = appointment.getStart().getMinute();
+          node.setPrefHeight(appointment.getDuration().toMinutes());
+          contentPane.add(node, (int) between + 1, (int) hours, 1, Integer.MAX_VALUE);
+          GridPane.setMargin(node, new Insets(1 + insetsTop, 0, 0, 2));
+        }
+      });
+    }
   }
 
   private void recreateEntries() {
     if (appointmentResolver.get() == null) {
       return;
     }
+    currentEntryStyleNr = 0;
     LocalDate firstDayOfWeek = helper.getFirstDayOfWeek(year.getValue(), weekOfYear.getValue());
     LocalDate lastDayOfWeek = helper.getLastDayOfWeek(year.getValue(), weekOfYear.getValue());
 
-    List<WeekViewAppointment> weekViewAppointments = appointmentResolver.get().resolve(firstDayOfWeek, lastDayOfWeek);
-    recreateEntries(weekViewAppointments);
+    appointmentResolver.get().resolve(firstDayOfWeek, lastDayOfWeek, this::recreateEntries);
   }
 
-  private void recreateEntries(List<WeekViewAppointment> weekViewAppointments) {
+  public void recreateEntries(List<WeekViewAppointment> weekViewAppointments) {
     Collections.sort(weekViewAppointments);
-    LocalDate firstDayOfWeek = helper.getFirstDayOfWeek(year.getValue(), weekOfYear.getValue());
-    entries.forEach(e -> {
-      Control control = e.getControl();
-      for (int i = 0; i < 9; i++) {
-        control.getStyleClass().remove("week-entry" + i);
-      }
-      contentPane.getChildren().remove(control);
-    });
     entries.clear();
-    currentEntryStyleNr = 0;
-    weekViewAppointments.forEach(appointment -> {
-      entries.add(appointment);
-      long between = ChronoUnit.DAYS.between(firstDayOfWeek, appointment.getStart());
-      if (between >= 0 && between < 7) {
-        long hours = ChronoUnit.HOURS.between(LocalTime.of(0, 0), appointment.getStart());
-        Control node = appointment.getControl();
-        node.getStyleClass().add("week-entry");
-        node.getStyleClass().add("week-entry" + currentEntryStyleNr);
-        currentEntryStyleNr++;
-        if (currentEntryStyleNr == 9) {
-          currentEntryStyleNr = 1;
-        }
-        node.setOnDragDetected(event -> {
-          if (appointment.getChangeStartCallback() == null) {
-            return;
-          }
-          Dragboard dragboard = node.startDragAndDrop(TransferMode.MOVE);
-          dragboard.clear();
-          WritableImage image = new WritableImage((int) node.getWidth(), (int) node.getHeight());
-          SnapshotParameters params = new SnapshotParameters();
-          Image snapshot = node.snapshot(params, image);
-          dragboard.setDragView(snapshot);
-
-          Map<DataFormat, Object> content = new HashMap<>();
-          DataFormat dataFormat = getDataFormat();
-          content.put(dataFormat, appointment.getTitle());
-          dragboard.setContent(content);
-          event.consume();
-        });
-        node.focusedProperty().addListener((p, o, n) -> {
-          if (n) {
-            node.toFront();
-          }
-        });
-
-        int insetsTop = appointment.getStart().getMinute();
-        node.setPrefHeight(appointment.getDuration().toMinutes());
-        contentPane.add(node, (int) between + 1, (int) hours, 1, Integer.MAX_VALUE);
-        GridPane.setMargin(node, new Insets(1 + insetsTop, 0, 0, 2));
-      }
-    });
+    entries.addAll(weekViewAppointments);
   }
 
   private DataFormat getDataFormat() {
@@ -473,6 +480,5 @@ public class WeekView extends GridPane {
 
   public void setAppointmentResolver(AppointmentResolver appointmentResolver) {
     this.appointmentResolver.set(appointmentResolver);
-
   }
 }

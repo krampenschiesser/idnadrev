@@ -15,27 +15,48 @@
 package de.ks.idnadrev.review.weeklydone;
 
 import de.ks.BaseController;
+import de.ks.fxcontrols.weekview.AppointmentResolver;
 import de.ks.fxcontrols.weekview.WeekView;
+import de.ks.fxcontrols.weekview.WeekViewAppointment;
 import de.ks.i18n.Localized;
-import de.ks.idnadrev.entity.Task;
 import javafx.fxml.FXML;
 import javafx.scene.layout.StackPane;
 
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
-public class WeeklyDone extends BaseController<List<Task>> {
+public class WeeklyDone extends BaseController<List<WeekViewAppointment>> implements AppointmentResolver {
 
   @FXML
   private StackPane weekContainer;
+  private WeekView weekView;
+  private Consumer<List<WeekViewAppointment>> consumer;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    WeekView weekView = new WeekView(Localized.get("today"));
-
+    weekView = new WeekView(Localized.get("today"));
     weekContainer.getChildren().add(weekView);
+    controller.getJavaFXExecutor().execute(() -> weekView.setAppointmentResolver(this));
+  }
+
+  @Override
+  public void resolve(LocalDate begin, LocalDate end, Consumer<List<WeekViewAppointment>> consumer) {
+    this.consumer = consumer;
     WeeklyDoneDS datasource = (WeeklyDoneDS) store.getDatasource();
-    weekView.setAppointmentResolver(datasource);
+    datasource.beginDate = LocalDateTime.of(begin, LocalTime.of(0, 0));
+    datasource.endDate = LocalDateTime.of(end, LocalTime.of(23, 59));
+    controller.reload();
+  }
+
+  @Override
+  protected void onRefresh(List<WeekViewAppointment> model) {
+    if (consumer != null) {
+      consumer.accept(model);
+    }
   }
 }
