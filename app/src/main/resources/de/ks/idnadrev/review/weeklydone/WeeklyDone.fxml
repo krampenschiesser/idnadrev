@@ -15,7 +15,6 @@
   ~ limitations under the License.
   -->
 
-
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.layout.StackPane?>
@@ -30,7 +29,11 @@
                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
             </padding>
         </StackPane>
-        <StackPane minHeight="100.0" minWidth="100.0"/>
+        <StackPane fx:id="viewContainer" minHeight="100.0" minWidth="100.0">
+            <padding>
+                <Insets bottom="5.0" left="10.0" right="5.0" top="5.0"/>
+            </padding>
+        </StackPane>
     </items>
     <padding>
         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>

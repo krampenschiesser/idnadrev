@@ -33,6 +33,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+import static de.ks.JunitMatchers.withRetry;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(LauncherRunner.class)
@@ -76,10 +77,11 @@ public class WeeklyDoneTest extends ActivityTest {
   public void testShowWeek() throws Exception {
     int week = new WeekHelper().getWeek(weekStart.toLocalDate());
     FXPlatform.invokeLater(() -> weeklyDone.weekView.weekOfYearProperty().set(week));
+    withRetry(() -> !weeklyDone.weekView.getEntries().isEmpty());
     activityController.waitForDataSource();
     FXPlatform.waitForFX();
 
-    ObservableList<WeekViewAppointment> entries = weeklyDone.weekView.getEntries();
+    ObservableList<WeekViewAppointment<Task>> entries = weeklyDone.weekView.getEntries();
     assertEquals(4, entries.size());
     WeekViewAppointment first = entries.get(0);
     assertEquals("finished", first.getTitle());

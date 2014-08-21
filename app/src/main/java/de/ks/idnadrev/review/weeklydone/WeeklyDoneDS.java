@@ -14,16 +14,22 @@
  */
 package de.ks.idnadrev.review.weeklydone;
 
+import de.ks.activity.ActivityController;
 import de.ks.datasource.ListDataSource;
 import de.ks.fxcontrols.weekview.WeekHelper;
 import de.ks.fxcontrols.weekview.WeekViewAppointment;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.WorkUnit;
+import de.ks.imagecache.Images;
 import de.ks.persistence.PersistentWork;
 import de.ks.reflection.PropertyPath;
+import javafx.scene.control.ContentDisplay;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import java.time.Duration;
@@ -36,16 +42,22 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class WeeklyDoneDS implements ListDataSource<WeekViewAppointment> {
+public class WeeklyDoneDS implements ListDataSource<WeekViewAppointment<Task>> {
   private static final Logger log = LoggerFactory.getLogger(WeeklyDoneDS.class);
+  public static final int DONE_IMG_HEIGHT = 15;
   protected final WeekHelper helper = new WeekHelper();
   protected volatile LocalDateTime beginDate = LocalDateTime.of(helper.getFirstDayOfWeek(LocalDate.now()), LocalTime.of(0, 0));
   protected volatile LocalDateTime endDate = LocalDateTime.of(helper.getLastDayOfWeek(LocalDate.now()), LocalTime.of(23, 59));
 
-  protected final List<WeekViewAppointment> resolvedAppointments = new CopyOnWriteArrayList<>();
+  protected final List<WeekViewAppointment<Task>> resolvedAppointments = new CopyOnWriteArrayList<>();
+
+  @Inject
+  ActivityController controller;
 
   @Override
-  public synchronized List<WeekViewAppointment> loadModel(Consumer<List<WeekViewAppointment>> furtherProcessing) {
+  public synchronized List<WeekViewAppointment<Task>> loadModel(Consumer<List<WeekViewAppointment<Task>>> furtherProcessing) {
+    WeeklyDoneAppointmentView doneView = controller.getControllerInstance(WeeklyDoneAppointmentView.class);
+
     List<WorkUnit> workUnits = PersistentWork.from(WorkUnit.class, (root, query, builder) -> {
       Path start = root.get(PropertyPath.property(WorkUnit.class, unit -> unit.getStart()));
       Path end = root.get(PropertyPath.property(WorkUnit.class, unit -> unit.getEnd()));
@@ -67,33 +79,49 @@ public class WeeklyDoneDS implements ListDataSource<WeekViewAppointment> {
     }, null);
     log.debug("Found {} finished tasks and {} workunits for the given range {} - {}", finishedTasks.size(), workUnits.size(), beginDate, endDate);
 
-    List<WeekViewAppointment> appointments = workUnits.stream().map(unit -> {
+    List<WeekViewAppointment<Task>> appointments = workUnits.stream().map(unit -> {
       Duration duration = Duration.between(unit.getStart(), unit.getEnd());
-      WeekViewAppointment appointment = new WeekViewAppointment(unit.getTask().getName(), unit.getStart(), duration, btn -> btn.getText());
+      WeekViewAppointment<Task> appointment = new WeekViewAppointment<>(unit.getTask().getName(), unit.getStart(), duration);
       appointment.setNewTimePossiblePredicate(ldt -> false);
+      appointment.setUserData(unit.getTask());
+      appointment.setAction((btn, task) -> doneView.appointment.set(appointment));
       return appointment;
     }).collect(Collectors.toList());
 
 
-    List<WeekViewAppointment> finished = finishedTasks.stream().map(task -> {
-      Optional<WeekViewAppointment> first = appointments.stream().filter(a -> a.contains(task.getFinishTime())).findFirst();
+    List<WeekViewAppointment<Task>> finished = finishedTasks.stream().map(task -> {
+      Optional<WeekViewAppointment<Task>> first = appointments.stream().filter(a -> a.contains(task.getFinishTime())).findFirst();
       if (first.isPresent()) {
-        WeekViewAppointment existing = first.get();
-        existing.setTitle("finished-" + existing.getTitle());
+        WeekViewAppointment<Task> existing = first.get();
+        String doneImagePath = getClass().getResource("done.png").toExternalForm();
+        Image image = Images.get(doneImagePath);
+        ImageView view = new ImageView(image);
+        existing.setEnhancer(btn -> {
+          view.setFitHeight(DONE_IMG_HEIGHT);
+          view.setPreserveRatio(true);
+          view.setSmooth(true);
+          btn.setGraphic(view);
+          btn.setContentDisplay(ContentDisplay.RIGHT);
+        });
         return null;
       } else {
-        WeekViewAppointment appointment = new WeekViewAppointment(task.getName(), task.getFinishTime().minusMinutes(15), Duration.ofMinutes(15), null);
+        WeekViewAppointment<Task> appointment = new WeekViewAppointment<>(task.getName(), task.getFinishTime().minusMinutes(15), Duration.ofMinutes(15));
+        appointment.setNewTimePossiblePredicate(ldt -> false);
+        appointment.setUserData(task);
+        appointment.setAction((btn, t) -> doneView.appointment.set(appointment));
         return appointment;
       }
     }).filter(n -> n != null).collect(Collectors.toList());
     resolvedAppointments.clear();
     resolvedAppointments.addAll(appointments);
     resolvedAppointments.addAll(finished);
+
+//    resolvedAppointments.forEach(appointment -> appointment.set);
     return resolvedAppointments;
   }
 
   @Override
-  public void saveModel(List<WeekViewAppointment> model, Consumer<List<WeekViewAppointment>> beforeSaving) {
+  public void saveModel(List<WeekViewAppointment<Task>> model, Consumer<List<WeekViewAppointment<Task>>> beforeSaving) {
 //
   }
 }
