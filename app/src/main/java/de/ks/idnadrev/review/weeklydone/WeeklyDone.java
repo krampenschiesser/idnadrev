@@ -34,7 +34,7 @@ public class WeeklyDone extends BaseController<List<WeekViewAppointment>> implem
 
   @FXML
   private StackPane weekContainer;
-  private WeekView weekView;
+  protected WeekView weekView;
   private Consumer<List<WeekViewAppointment>> consumer;
 
   @Override

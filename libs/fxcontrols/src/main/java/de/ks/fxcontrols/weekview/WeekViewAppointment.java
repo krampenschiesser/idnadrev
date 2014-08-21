@@ -59,6 +59,11 @@ public class WeekViewAppointment implements Comparable<WeekViewAppointment> {
     return title;
   }
 
+  public WeekViewAppointment setTitle(String title) {
+    this.title = title;
+    return this;
+  }
+
   public LocalDateTime getStart() {
     return start;
   }
@@ -95,8 +100,25 @@ public class WeekViewAppointment implements Comparable<WeekViewAppointment> {
     this.newTimePossiblePredicate = newTimePossiblePredicate;
   }
 
+  public boolean contains(LocalDateTime finishTime) {
+    Duration between = Duration.between(start, finishTime);
+    if (between.isNegative()) {
+      return false;
+    }
+    return between.compareTo(duration) > 0;
+  }
+
   @Override
   public int compareTo(WeekViewAppointment o) {
     return getStart().compareTo(o.getStart());
+  }
+
+  @Override
+  public String toString() {
+    return "WeekViewAppointment{" +
+            "title='" + title + '\'' +
+            ", start=" + start +
+            ", duration=" + duration +
+            '}';
   }
 }
