@@ -51,10 +51,10 @@ public class SampleApp extends Application {
     primaryStage.show();
   }
 
-  private void getNextEntries(LocalDate begin, LocalDate end, Consumer<List<WeekViewAppointment>> consumer) {
+  private void getNextEntries(LocalDate begin, LocalDate end, Consumer<List<WeekViewAppointment<Object>>> consumer) {
     ThreadLocalRandom random = ThreadLocalRandom.current();
 
-    LinkedList<WeekViewAppointment> retval = new LinkedList<>();
+    LinkedList<WeekViewAppointment<Object>> retval = new LinkedList<>();
     LocalDate firstDayOfWeek = begin;
     for (int i = 0; i < 7; i++) {
       LocalDate current = firstDayOfWeek.plusDays(i);
@@ -64,11 +64,13 @@ public class SampleApp extends Application {
       Duration duration = Duration.ofMinutes(minutes);
       LocalDateTime localDateTime = LocalDateTime.of(current, time);
 
-      WeekViewAppointment appointment = new WeekViewAppointment("test entry" + i + " " + minutes + "m", localDateTime, duration, btn -> log.info("Clicking on appointment{}", btn.getText()));
+      WeekViewAppointment<Object> appointment = new WeekViewAppointment<>("test entry" + i + " " + minutes + "m", localDateTime, duration);
+
       appointment.setChangeStartCallback(newTime -> {
         log.info("{} now starts on {}", appointment.getTitle(), newTime);
       });
-      appointment.setNewTimePossiblePredicate(newTime -> {
+
+      appointment.setNewTimePossiblePredicate((LocalDateTime newTime) -> {
         if (newTime.getHour() > 6 && newTime.getHour() < 22) {
           return true;
         } else {

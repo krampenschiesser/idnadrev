@@ -20,25 +20,26 @@ import javafx.scene.control.Control;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class WeekViewAppointment implements Comparable<WeekViewAppointment> {
+public class WeekViewAppointment<T> implements Comparable<WeekViewAppointment> {
   protected String title;
 
   protected LocalDateTime start;
   protected Duration duration;
-  protected final Consumer<Button> action;
+  protected BiConsumer<Button, T> action;
   protected Consumer<Button> enhancer;
   protected Button node;
   protected Predicate<LocalDateTime> newTimePossiblePredicate;
   protected Consumer<LocalDateTime> changeStartCallback;
+  protected T userData;
 
-  public WeekViewAppointment(String title, LocalDateTime start, Duration duration, Consumer<Button> action) {
+  public WeekViewAppointment(String title, LocalDateTime start, Duration duration) {
     this.title = title;
     this.start = start;
     this.duration = duration;
-    this.action = action;
   }
 
   public Control getControl() {
@@ -49,10 +50,29 @@ public class WeekViewAppointment implements Comparable<WeekViewAppointment> {
       if (enhancer != null) {
         enhancer.accept(button);
       }
-      button.setOnAction(e -> action.accept(button));
+      if (action != null) {
+        button.setOnAction(e -> action.accept(button, userData));
+      }
       node = button;
     }
     return node;
+  }
+
+  public T getUserData() {
+    return userData;
+  }
+
+  public void setUserData(T userData) {
+    this.userData = userData;
+  }
+
+  public BiConsumer<Button, T> getAction() {
+    return action;
+  }
+
+  public WeekViewAppointment<T> setAction(BiConsumer<Button, T> action) {
+    this.action = action;
+    return this;
   }
 
   public String getTitle() {

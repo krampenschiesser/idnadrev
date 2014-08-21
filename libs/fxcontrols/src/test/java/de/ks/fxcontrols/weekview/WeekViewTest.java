@@ -33,7 +33,7 @@ public class WeekViewTest {
 
   @Test
   public void testWeek0() throws Exception {
-    WeekView weekView = new WeekView("today");
+    WeekView<Object> weekView = new WeekView<>("today");
     weekView.setYear(2014);
     weekView.setWeekOfYear(22);
     FXPlatform.invokeLater(() -> weekView.weekOfYear.set(0));
@@ -49,7 +49,7 @@ public class WeekViewTest {
 
   @Test
   public void testAppointmentCreation() throws Exception {
-    WeekView weekView = new WeekView("today");
+    WeekView<Object> weekView = new WeekView<>("today");
     weekView.setYear(2014);
     weekView.setWeekOfYear(22);
 

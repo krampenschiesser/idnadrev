@@ -51,18 +51,18 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class WeekView extends GridPane {
+public class WeekView<T> extends GridPane {
   private static final Logger log = LoggerFactory.getLogger(WeekView.class);
   public static final int HEIGHT_OF_HOUR = 60;
   public static final int WIDTH_OF_TIMECOLUMN = 80;
   public static final double PERCENT_WIDTH_DAY_COLUMN = 13;
   public static final double PERCENT_WIDTH_TIME_COLUMN = 7;
 
-  protected final ObservableList<WeekViewAppointment> entries = FXCollections.observableArrayList();
+  protected final ObservableList<WeekViewAppointment<T>> entries = FXCollections.observableArrayList();
   protected final SimpleIntegerProperty weekOfYear = new SimpleIntegerProperty();
   protected final SimpleIntegerProperty year = new SimpleIntegerProperty();
   protected final ObjectProperty<Consumer<LocalDateTime>> onAppointmentCreation = new SimpleObjectProperty<>();
-  protected final ObjectProperty<AppointmentResolver> appointmentResolver = new SimpleObjectProperty<>();
+  protected final ObjectProperty<AppointmentResolver<T>> appointmentResolver = new SimpleObjectProperty<>();
 
   protected final GridPane contentPane = new GridPane();
   protected final WeekTitle title;
@@ -177,10 +177,11 @@ public class WeekView extends GridPane {
     LocalDate firstDayOfWeek = helper.getFirstDayOfWeek(year.getValue(), weekOfYear.getValue());
     LocalDate lastDayOfWeek = helper.getLastDayOfWeek(year.getValue(), weekOfYear.getValue());
 
-    appointmentResolver.get().resolve(firstDayOfWeek, lastDayOfWeek, this::recreateEntries);
+    AppointmentResolver<T> resolver = appointmentResolver.get();
+    resolver.resolve(firstDayOfWeek, lastDayOfWeek, this::recreateEntries);
   }
 
-  public void recreateEntries(List<WeekViewAppointment> weekViewAppointments) {
+  public void recreateEntries(List<? extends WeekViewAppointment<T>> weekViewAppointments) {
     Collections.sort(weekViewAppointments);
     entries.clear();
     entries.addAll(weekViewAppointments);
@@ -317,9 +318,9 @@ public class WeekView extends GridPane {
         Object content = e.getDragboard().getContent(getDataFormat());
         if (content != null) {
           String title = (String) e.getDragboard().getContent(getDataFormat());
-          Optional<WeekViewAppointment> first = entries.stream().filter(entry -> entry.getTitle().equals(title)).findFirst();
+          Optional<WeekViewAppointment<T>> first = entries.stream().filter(entry -> entry.getTitle().equals(title)).findFirst();
           if (first.isPresent()) {
-            WeekViewAppointment weekViewAppointment = first.get();
+            WeekViewAppointment<?> weekViewAppointment = first.get();
             int minute = (int) ((e.getY() % HEIGHT_OF_HOUR) / 15) * 15;
             minute = Math.max(0, minute);
             LocalDateTime newTime = getNewAppointmentTime(weekViewAppointment, day, hour, minute);
@@ -351,14 +352,14 @@ public class WeekView extends GridPane {
       cell.setOnDragDropped(e -> {
         if (filter.test(e)) {
           String title = (String) e.getDragboard().getContent(getDataFormat());
-          Optional<WeekViewAppointment> first = entries.stream().filter(entry -> entry.getTitle().equals(title)).findFirst();
+          Optional<WeekViewAppointment<T>> first = entries.stream().filter(entry -> entry.getTitle().equals(title)).findFirst();
           if (first.isPresent()) {
             WeekViewAppointment weekViewAppointment = first.get();
             int minute = (int) ((e.getY() % HEIGHT_OF_HOUR) / 15) * 15;
             minute = Math.max(0, minute);
             LocalDateTime newTime = getNewAppointmentTime(weekViewAppointment, day, hour, minute);
             weekViewAppointment.setStart(newTime);
-            ArrayList<WeekViewAppointment> copyOfEntries = new ArrayList<>(entries);
+            ArrayList<WeekViewAppointment<T>> copyOfEntries = new ArrayList<>(entries);
             recreateEntries(copyOfEntries);
           }
           e.consume();
@@ -438,7 +439,7 @@ public class WeekView extends GridPane {
     this.weekOfYear.set(weekOfYear);
   }
 
-  public ObservableList<WeekViewAppointment> getEntries() {
+  public ObservableList<WeekViewAppointment<T>> getEntries() {
     return entries;
   }
 
@@ -474,11 +475,11 @@ public class WeekView extends GridPane {
     return appointmentResolver.get();
   }
 
-  public ObjectProperty<AppointmentResolver> appointmentResolverProperty() {
+  public ObjectProperty<AppointmentResolver<T>> appointmentResolverProperty() {
     return appointmentResolver;
   }
 
-  public void setAppointmentResolver(AppointmentResolver appointmentResolver) {
+  public void setAppointmentResolver(AppointmentResolver<T> appointmentResolver) {
     this.appointmentResolver.set(appointmentResolver);
   }
 }

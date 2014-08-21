@@ -18,6 +18,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.function.Consumer;
 
-public interface AppointmentResolver {
-  void resolve(LocalDate begin, LocalDate end, Consumer<List<WeekViewAppointment>> callback);
+public interface AppointmentResolver<T> {
+  void resolve(LocalDate begin, LocalDate end, Consumer<List<WeekViewAppointment<T>>> callback);
 }
