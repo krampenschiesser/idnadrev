@@ -33,7 +33,7 @@ public class ActivityExecutor implements ScheduledExecutorService {
   private final ScheduledThreadPoolExecutor delegate;
 
   protected ActivityExecutor() {
-    this("NeverCalled", 2, 4);
+    this("NeverCalled", 2, 4);//but needed for cdi proxy
   }
 
   public ActivityExecutor(String name, int corePoolSize, int maximumPoolSize) {
@@ -41,6 +41,7 @@ public class ActivityExecutor implements ScheduledExecutorService {
     this.name = name;
     delegate.setMaximumPoolSize(maximumPoolSize);
     delegate.setKeepAliveTime(1, TimeUnit.MINUTES);
+    delegate.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardPolicy());
   }
 
   public String getName() {
