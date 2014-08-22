@@ -17,6 +17,7 @@ package de.ks.fxcontrols.weekview;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
+import javafx.scene.control.Tooltip;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -47,6 +48,8 @@ public class WeekViewAppointment<T> implements Comparable<WeekViewAppointment> {
       Button button = new Button(title);
       button.setPrefWidth(Control.USE_COMPUTED_SIZE);
       button.setMaxWidth(Double.MAX_VALUE);
+      button.setWrapText(true);
+      button.setTooltip(new Tooltip(title));
       if (enhancer != null) {
         enhancer.accept(button);
       }
@@ -125,7 +128,8 @@ public class WeekViewAppointment<T> implements Comparable<WeekViewAppointment> {
     if (between.isNegative()) {
       return false;
     }
-    return between.compareTo(duration) > 0;
+    int comparison = between.compareTo(duration);
+    return comparison <= 0;
   }
 
   @Override
@@ -140,5 +144,10 @@ public class WeekViewAppointment<T> implements Comparable<WeekViewAppointment> {
             ", start=" + start +
             ", duration=" + duration +
             '}';
+  }
+
+  public LocalDateTime getEnd() {
+    LocalDateTime end = start.plus(duration);
+    return end;
   }
 }

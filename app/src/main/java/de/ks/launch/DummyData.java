@@ -92,6 +92,7 @@ public class DummyData extends Service {
 
       PersistentWork.wrap(() -> {
         Task longRunner = new Task("long runner");
+        longRunner.setDescription("= title\n\n== bla\n\nhello");
         persist(longRunner);
         LocalDateTime start = null;
         for (int i = 0; i < 7; i++) {

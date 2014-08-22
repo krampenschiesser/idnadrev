@@ -15,24 +15,53 @@
 package de.ks.idnadrev.review.weeklydone;
 
 import de.ks.BaseController;
+import de.ks.application.fxml.DefaultLoader;
 import de.ks.fxcontrols.weekview.WeekViewAppointment;
 import de.ks.idnadrev.entity.Task;
+import de.ks.text.view.AsciiDocContent;
+import de.ks.text.view.AsciiDocViewer;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
 
 import java.net.URL;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
-public class WeeklyDoneAppointmentView extends BaseController<List<WeekViewAppointment>> {
+public class WeeklyDoneAppointmentView extends BaseController<List<WeekViewAppointment<Task>>> {
   protected final SimpleObjectProperty<WeekViewAppointment<Task>> appointment = new SimpleObjectProperty<>();
 
   @FXML
-  private Label name;
+  Label name;
+  @FXML
+  Label startTime;
+  @FXML
+  Label endTime;
+  @FXML
+  Label duration;
+  @FXML
+  StackPane descriptionContainer;
+  @FXML
+  ImageView doneView;
+
+  AsciiDocViewer viewer;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
+    CompletableFuture<DefaultLoader<Node, AsciiDocViewer>> future = activityInitialization.loadAdditionalController(AsciiDocViewer.class);
+    future.thenAcceptAsync(loader -> {
+      descriptionContainer.getChildren().add(loader.getView());
+      viewer = loader.getController();
+    }, controller.getJavaFXExecutor());
+
     appointment.addListener((p, o, n) -> {
       clear();
       if (n != null) {
@@ -44,9 +73,29 @@ public class WeeklyDoneAppointmentView extends BaseController<List<WeekViewAppoi
 
   private void applyContent(WeekViewAppointment<Task> appointment) {
     name.setText(appointment.getTitle());
+    startTime.setText(appointment.getStart().format(DateTimeFormatter.ISO_LOCAL_TIME));
+    duration.setText(appointment.getDuration().toMinutes() + "min");
+    endTime.setText(appointment.getEnd().format(DateTimeFormatter.ISO_LOCAL_TIME));
+    viewer.show(new AsciiDocContent(appointment.getTitle(), appointment.getUserData().getDescription()));
+    Button btn = (Button) appointment.getControl();
+    Node graphic = btn.getGraphic();
+    if (graphic instanceof ImageView) {
+      Image image = ((ImageView) graphic).getImage();
+      doneView.setImage(image);
+    }
   }
 
   private void clear() {
     name.setText("");
+    startTime.setText("");
+    duration.setText("");
+    endTime.setText("");
+    doneView.setImage(null);
+  }
+
+  @Override
+  protected void onRefresh(List<WeekViewAppointment<Task>> model) {
+    List<AsciiDocContent> asciiDocContents = model.stream().map(appointment -> new AsciiDocContent(appointment.getTitle(), appointment.getUserData().getDescription())).collect(Collectors.toList());
+    viewer.preload(asciiDocContents);
   }
 }
