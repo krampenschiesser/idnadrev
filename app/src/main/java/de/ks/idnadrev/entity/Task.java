@@ -176,7 +176,11 @@ public class Task extends NamedPersistentObject<Task> implements FileContainer<T
   }
 
   public Task setFinished(boolean finished) {
-    this.finishTime = LocalDateTime.now();
+    if (finished) {
+      this.finishTime = LocalDateTime.now();
+    } else {
+      this.finishTime = null;
+    }
     return this;
   }
 
