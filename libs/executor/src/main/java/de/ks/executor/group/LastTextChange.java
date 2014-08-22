@@ -24,10 +24,11 @@ import java.util.function.Consumer;
 
 public class LastTextChange extends LastExecutionGroup<String> {
   private static final Logger log = LoggerFactory.getLogger(LastTextChange.class);
+  public static final int WAIT_TIME = 100;
   private Consumer<CompletableFuture<String>> handler;
 
   public LastTextChange(TextInputControl textInput, ExecutorService executor) {
-    this(textInput, 100, executor);
+    this(textInput, WAIT_TIME, executor);
   }
 
   public LastTextChange(TextInputControl textInput, long waitTime, ExecutorService executor) {
