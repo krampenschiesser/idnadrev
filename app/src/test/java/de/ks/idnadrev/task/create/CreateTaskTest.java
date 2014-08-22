@@ -177,6 +177,7 @@ public class CreateTaskTest {
   }
 
   protected void createTask(String name, Consumer<MainTaskInfo> consumer) {
+    FXPlatform.waitForFX();
     activityController.waitForDataSource();
     FXPlatform.invokeLater(() -> {
       controller.name.setText(name);
