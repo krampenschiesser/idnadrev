@@ -326,13 +326,13 @@ public class WeekView<T> extends GridPane {
           control.getStyleClass().remove("week-entry" + i);
         }
         contentPane.getChildren().remove(control);
+        wholeDayPane.getChildren().remove(control);
       });
 
       LocalDate firstDayOfWeek = helper.getFirstDayOfWeek(year.getValue(), weekOfYear.getValue());
       change.getAddedSubList().forEach(appointment -> {
-        long between = ChronoUnit.DAYS.between(firstDayOfWeek, appointment.getStart());
+        long between = ChronoUnit.DAYS.between(firstDayOfWeek, appointment.getStartDate());
         if (between >= 0 && between < 7) {
-          long hours = ChronoUnit.HOURS.between(LocalTime.of(0, 0), appointment.getStart());
           Control node = appointment.getControl();
           node.getStyleClass().add("week-entry");
           node.getStyleClass().add("week-entry" + currentEntryStyleNr);
@@ -363,10 +363,15 @@ public class WeekView<T> extends GridPane {
             }
           });
 
-          int insetsTop = appointment.getStart().getMinute();
-          node.setPrefHeight(appointment.getDuration().toMinutes());
-          contentPane.add(node, (int) between + 1, (int) hours, 1, Integer.MAX_VALUE);
-          GridPane.setMargin(node, new Insets(1 + insetsTop, 0, 0, 2));
+          if (appointment.isSpanningWholeDay()) {
+            wholeDayPane.add(node, (int) between + 1, 0);
+          } else {
+            long hours = ChronoUnit.HOURS.between(LocalTime.of(0, 0), appointment.getStartTime());
+            int insetsTop = appointment.getStart().getMinute();
+            node.setPrefHeight(appointment.getDuration().toMinutes());
+            contentPane.add(node, (int) between + 1, (int) hours, 1, Integer.MAX_VALUE);
+            GridPane.setMargin(node, new Insets(1 + insetsTop, 0, 0, 2));
+          }
         }
       });
     }
@@ -399,9 +404,14 @@ public class WeekView<T> extends GridPane {
   }
 
   protected LocalDateTime getNewAppointmentTime(WeekViewAppointment appointment, int newDay, int newHour, int minutes) {
-    LocalDateTime start = appointment.getStart();
+    LocalDate start = appointment.getStartDate();
     int originalDayOfWeek = start.getDayOfWeek().getValue();
-    LocalDateTime newTime = start.withHour(newHour);
+    LocalDateTime newTime;
+    if (appointment.isSpanningWholeDay()) {
+      newTime = LocalDateTime.of(start, LocalTime.of(newHour, 0));
+    } else {
+      newTime = LocalDateTime.of(start, appointment.getStartTime().withHour(newHour));
+    }
     int selectedDayOfWeek = newDay + 1;
     if (originalDayOfWeek > selectedDayOfWeek) {
       newTime = newTime.minusDays(originalDayOfWeek - selectedDayOfWeek);

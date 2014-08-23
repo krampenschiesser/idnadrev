@@ -40,8 +40,11 @@ public class WeekViewAppointment<T> implements Comparable<WeekViewAppointment> {
   protected BiConsumer<LocalDate, LocalTime> changeStartCallback;
   protected T userData;
 
-  public WeekViewAppointment(String title, LocalDate startDate, LocalTime startTime, Duration duration) {
-
+  public WeekViewAppointment(String title, LocalDate startDate, Duration duration) {
+    this.title = title;
+    this.startDate = startDate;
+    this.startTime = null;
+    this.duration = duration;
   }
 
   public WeekViewAppointment(String title, LocalDateTime start, Duration duration) {
@@ -169,7 +172,19 @@ public class WeekViewAppointment<T> implements Comparable<WeekViewAppointment> {
 
   @Override
   public int compareTo(WeekViewAppointment o) {
-    return getStart().compareTo(o.getStart());
+    int dateComparison = getStartDate().compareTo(o.getStartDate());
+    if (dateComparison == 0) {
+      LocalTime time1 = getStartTime();
+      LocalTime time2 = o.getStartTime();
+      if (time1 == null) {
+        return 1;
+      } else if (time2 == null) {
+        return -1;
+      } else {
+        return time1.compareTo(time2);
+      }
+    }
+    return dateComparison;
   }
 
   @Override

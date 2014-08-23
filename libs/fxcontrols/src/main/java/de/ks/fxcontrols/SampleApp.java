@@ -30,6 +30,7 @@ import java.time.LocalTime;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 
 public class SampleApp extends Application {
@@ -64,21 +65,27 @@ public class SampleApp extends Application {
       Duration duration = Duration.ofMinutes(minutes);
       LocalDateTime localDateTime = LocalDateTime.of(current, time);
 
-      WeekViewAppointment<Object> appointment = new WeekViewAppointment<>("test entry" + i + " " + minutes + "m", localDateTime, duration);
-
-      appointment.setChangeStartCallback((newDate, newTime) -> {
-        log.info("{} now starts on {} {}", appointment.getTitle(), newDate, newTime);
-      });
-
-      appointment.setNewTimePossiblePredicate((newDate, newTime) -> {
+      BiPredicate<LocalDate, LocalTime> newTimePossiblePredicate = (newDate, newTime) -> {
         if (newTime.getHour() > 6 && newTime.getHour() < 22) {
           return true;
         } else {
           log.info("Wrong time {}", newTime);
           return false;
         }
+      };
+
+      WeekViewAppointment<Object> timedAppointment = new WeekViewAppointment<>("test entry" + i + " " + minutes + "m", localDateTime, duration);
+      timedAppointment.setChangeStartCallback((newDate, newTime) -> {
+        log.info("{} now starts on {} {}", timedAppointment.getTitle(), newDate, newTime);
       });
-      retval.add(appointment);
+      timedAppointment.setNewTimePossiblePredicate(newTimePossiblePredicate);
+      retval.add(timedAppointment);
+      WeekViewAppointment<Object> dayAppointment = new WeekViewAppointment<>("test day spanning entry" + i + " " + minutes + "m", localDateTime.toLocalDate(), duration);
+      dayAppointment.setChangeStartCallback((newDate, newTime) -> {
+        log.info("{} now starts on {} {}", dayAppointment.getTitle(), newDate, newTime);
+      });
+      dayAppointment.setNewTimePossiblePredicate(newTimePossiblePredicate);
+      retval.add(dayAppointment);
     }
     consumer.accept(retval);
   }
