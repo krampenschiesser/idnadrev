@@ -57,6 +57,7 @@ public class WeekView<T> extends GridPane {
   public static final int WIDTH_OF_TIMECOLUMN = 80;
   public static final double PERCENT_WIDTH_DAY_COLUMN = 13;
   public static final double PERCENT_WIDTH_TIME_COLUMN = 7;
+  public static final double INSETS_WHOLEDAY = 2.5;
 
   protected final ObservableList<WeekViewAppointment<T>> entries = FXCollections.observableArrayList();
   protected final SimpleIntegerProperty weekOfYear = new SimpleIntegerProperty();
@@ -223,7 +224,7 @@ public class WeekView<T> extends GridPane {
       VBox cell = createWholeDayCell(i);
       wholeDayCells.put(i, cell);
 
-      GridPane.setMargin(cell, new Insets(0, 2, 0, 2));
+      GridPane.setMargin(cell, new Insets(0, INSETS_WHOLEDAY, 0, INSETS_WHOLEDAY));
       wholeDayPane.add(cell, i + 1, 0);
     }
   }
@@ -255,7 +256,7 @@ public class WeekView<T> extends GridPane {
   }
 
   protected VBox createWholeDayCell(int day) {
-    String cellStyle = "week-bg-even";
+    String cellStyle = "week-day-cell";
     VBox cell = new VBox();
     cell.setPadding(new Insets(5, 0, 5, 0));
     cell.setSpacing(5);
@@ -439,7 +440,7 @@ public class WeekView<T> extends GridPane {
             VBox vbox = wholeDayCells.get((int) between);
             vbox.getChildren().add(node);
             node.setPrefHeight(Control.USE_COMPUTED_SIZE);
-            VBox.setMargin(node, new Insets(0, 2, 0, 2));
+            VBox.setMargin(node, new Insets(0, 0, 0, INSETS_WHOLEDAY));
           } else {
             long hours = ChronoUnit.HOURS.between(LocalTime.of(0, 0), appointment.getStartTime());
             int insetsTop = appointment.getStart().getMinute();
