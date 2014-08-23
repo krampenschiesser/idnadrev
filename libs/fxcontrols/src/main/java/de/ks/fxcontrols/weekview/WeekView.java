@@ -222,6 +222,8 @@ public class WeekView<T> extends GridPane {
     for (int i = 0; i < 7; i++) {
       VBox cell = createWholeDayCell(i);
       wholeDayCells.put(i, cell);
+
+      GridPane.setMargin(cell, new Insets(0, 2, 0, 2));
       wholeDayPane.add(cell, i + 1, 0);
     }
   }
@@ -253,7 +255,70 @@ public class WeekView<T> extends GridPane {
   }
 
   protected VBox createWholeDayCell(int day) {
-    return new VBox();
+    String cellStyle = "week-bg-even";
+    VBox cell = new VBox();
+    cell.setPadding(new Insets(5, 0, 5, 0));
+    cell.setSpacing(5);
+    cell.getStyleClass().add(cellStyle);
+    cell.getStyleClass().add("week-day-cell");
+    cell.setOnMouseClicked(e -> {
+      LocalDate firstDayOfWeek = getFirstDayOfWeek();
+      LocalDate selectedDay = firstDayOfWeek.plusDays(day);
+
+      BiConsumer<LocalDate, LocalTime> consumer = onAppointmentCreation.get();
+      if (consumer != null) {
+        consumer.accept(selectedDay, null);
+      }
+    });
+    Predicate<DragEvent> filter = e -> {
+      Object content = e.getDragboard().getContent(getDataFormat());
+      if (content != null) {
+        String title = (String) e.getDragboard().getContent(getDataFormat());
+        Optional<WeekViewAppointment<T>> first = entries.stream().filter(entry -> entry.getTitle().equals(title)).findFirst();
+        if (first.isPresent()) {
+          WeekViewAppointment<?> weekViewAppointment = first.get();
+          LocalDate newDate = getNewAppointmentDate(weekViewAppointment, day);
+          if (weekViewAppointment.getNewTimePossiblePredicate().test(newDate, null)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    };
+    cell.setOnDragOver(e -> {
+      if (filter.test(e)) {
+        e.acceptTransferModes(TransferMode.MOVE);
+        e.consume();
+      }
+    });
+    cell.setOnDragEntered(e -> {
+      if (filter.test(e)) {
+        cell.getStyleClass().add("week-day-cell-drag");
+        e.consume();
+      }
+    });
+    cell.setOnDragExited(e -> {
+      if (filter.test(e)) {
+        cell.getStyleClass().remove("week-day-cell-drag");
+        e.consume();
+      }
+    });
+    cell.setOnDragDropped(e -> {
+      if (filter.test(e)) {
+        String title = (String) e.getDragboard().getContent(getDataFormat());
+        Optional<WeekViewAppointment<T>> first = entries.stream().filter(entry -> entry.getTitle().equals(title)).findFirst();
+        if (first.isPresent()) {
+          WeekViewAppointment weekViewAppointment = first.get();
+          LocalDate newDate = getNewAppointmentDate(weekViewAppointment, day);
+          weekViewAppointment.setStart(newDate, null);
+          ArrayList<WeekViewAppointment<T>> copyOfEntries = new ArrayList<>(entries);
+          recreateEntries(copyOfEntries);
+        }
+        e.consume();
+      }
+    });
+
+    return cell;
   }
 
   protected StackPane createHourCell(int row, int column) {
@@ -378,6 +443,8 @@ public class WeekView<T> extends GridPane {
           if (appointment.isSpanningWholeDay()) {
             VBox vbox = wholeDayCells.get((int) between);
             vbox.getChildren().add(node);
+            node.setPrefHeight(Control.USE_COMPUTED_SIZE);
+            VBox.setMargin(node, new Insets(0, 2, 0, 2));
           } else {
             long hours = ChronoUnit.HOURS.between(LocalTime.of(0, 0), appointment.getStartTime());
             int insetsTop = appointment.getStart().getMinute();
@@ -417,21 +484,22 @@ public class WeekView<T> extends GridPane {
   }
 
   protected LocalDateTime getNewAppointmentTime(WeekViewAppointment appointment, int newDay, int newHour, int minutes) {
+    LocalDate newDate = getNewAppointmentDate(appointment, newDay);
+    LocalTime newTime = LocalTime.of(newHour, minutes);
+    return LocalDateTime.of(newDate, newTime);
+  }
+
+  protected LocalDate getNewAppointmentDate(WeekViewAppointment appointment, int newDay) {
     LocalDate start = appointment.getStartDate();
     int originalDayOfWeek = start.getDayOfWeek().getValue();
-    LocalDateTime newTime;
-    if (appointment.isSpanningWholeDay()) {
-      newTime = LocalDateTime.of(start, LocalTime.of(newHour, 0));
-    } else {
-      newTime = LocalDateTime.of(start, appointment.getStartTime().withHour(newHour));
-    }
     int selectedDayOfWeek = newDay + 1;
+
     if (originalDayOfWeek > selectedDayOfWeek) {
-      newTime = newTime.minusDays(originalDayOfWeek - selectedDayOfWeek);
+      start = start.minusDays(originalDayOfWeek - selectedDayOfWeek);
     } else if (originalDayOfWeek < selectedDayOfWeek) {
-      newTime = newTime.plusDays(selectedDayOfWeek - originalDayOfWeek);
+      start = start.plusDays(selectedDayOfWeek - originalDayOfWeek);
     }
-    return newTime.withMinute(minutes);
+    return start;
   }
 
   protected void recompute() {

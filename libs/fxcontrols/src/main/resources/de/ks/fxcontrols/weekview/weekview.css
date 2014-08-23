@@ -14,12 +14,13 @@
     -fx-background-color: derive(-fx-accent, 80%);
 }
 
+.week-day-cell:hover,
 .week-cell:hover {
     -fx-background-color: -fx-accent;
     -fx-background-radius: 4;
     -fx-background-insets: 2 0 0 3;
 }
-
+.week-day-cell-drag,
 .week-cell-drag {
     -fx-background-color: indianred;
     -fx-background-radius: 4;

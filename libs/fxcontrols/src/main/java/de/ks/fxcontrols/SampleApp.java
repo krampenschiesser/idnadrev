@@ -66,6 +66,9 @@ public class SampleApp extends Application {
       LocalDateTime localDateTime = LocalDateTime.of(current, time);
 
       BiPredicate<LocalDate, LocalTime> newTimePossiblePredicate = (newDate, newTime) -> {
+        if (newTime == null) {
+          return true;
+        }
         if (newTime.getHour() > 6 && newTime.getHour() < 22) {
           return true;
         } else {
