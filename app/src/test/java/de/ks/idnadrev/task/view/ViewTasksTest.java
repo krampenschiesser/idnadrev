@@ -25,6 +25,7 @@ import de.ks.persistence.entity.Sequence;
 import de.ks.util.FXPlatform;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeTableView;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,6 +45,8 @@ public class ViewTasksTest {
   @Inject
   ActivityController activityController;
   private ViewTasks controller;
+  private TreeTableView<Task> tasksView;
+  private ViewTasksMaster master;
 
   @Before
   public void setUp() throws Exception {
@@ -68,6 +71,8 @@ public class ViewTasksTest {
     activityController.startOrResume(new ActivityHint(ViewTasksActvity.class));
     activityController.waitForTasks();
     controller = activityController.getControllerInstance(ViewTasks.class);
+    master = activityController.getControllerInstance(ViewTasksMaster.class);
+    tasksView = master.getTasksView();
   }
 
   @After
@@ -78,7 +83,7 @@ public class ViewTasksTest {
 
   @Test
   public void testBinding() throws Exception {
-    TreeItem<Task> root = controller.tasksView.getRoot();
+    TreeItem<Task> root = tasksView.getRoot();
     assertNotNull(root);
     assertEquals(2, root.getChildren().size());
     assertEquals("other", root.getChildren().get(0).getValue().getName());
@@ -92,8 +97,8 @@ public class ViewTasksTest {
     List<Task> from = PersistentWork.from(Task.class);
     assertEquals(8, from.size());
 
-    TreeItem<Task> project = controller.tasksView.getRoot().getChildren().get(1);
-    FXPlatform.invokeLater(() -> controller.tasksView.getSelectionModel().select(project));
+    TreeItem<Task> project = tasksView.getRoot().getChildren().get(1);
+    FXPlatform.invokeLater(() -> tasksView.getSelectionModel().select(project));
 
     controller.deleteTask();
 
@@ -103,9 +108,9 @@ public class ViewTasksTest {
 
   @Test
   public void testFilter() throws Exception {
-    FXPlatform.invokeLater(() -> controller.searchField.setText("4"));
+    FXPlatform.invokeLater(() -> master.searchField.setText("4"));
 
-    TreeItem<Task> root = controller.tasksView.getRoot();
+    TreeItem<Task> root = tasksView.getRoot();
 
     ObservableList<TreeItem<Task>> children = root.getChildren();
     assertEquals(1, children.size());
@@ -118,11 +123,11 @@ public class ViewTasksTest {
 
   @Test
   public void testCreateSubtaskFromProject() throws Exception {
-    TreeItem<Task> project = controller.tasksView.getRoot().getChildren().get(1);//they are sorted
+    TreeItem<Task> project = tasksView.getRoot().getChildren().get(1);//they are sorted
     Task value = project.getValue();
     assertEquals("project1", value.getName());
 
-    FXPlatform.invokeLater(() -> controller.tasksView.getSelectionModel().select(project));
+    FXPlatform.invokeLater(() -> tasksView.getSelectionModel().select(project));
     FXPlatform.invokeLater(() -> controller.createSubtask());
 
     withRetry(() -> CreateTaskActivity.class.getSimpleName().equals(activityController.getCurrentActivityId()));
@@ -144,11 +149,11 @@ public class ViewTasksTest {
 
   @Test
   public void testCreateSubtaskFromTask() throws Exception {
-    TreeItem<Task> other = controller.tasksView.getRoot().getChildren().get(0);//they are sorted
+    TreeItem<Task> other = tasksView.getRoot().getChildren().get(0);//they are sorted
     Task value = other.getValue();
     assertEquals("other", value.getName());
 
-    FXPlatform.invokeLater(() -> controller.tasksView.getSelectionModel().select(other));
+    FXPlatform.invokeLater(() -> tasksView.getSelectionModel().select(other));
     FXPlatform.invokeLater(() -> controller.createSubtask());
 
     withRetry(() -> CreateTaskActivity.class.getSimpleName().equals(activityController.getCurrentActivityId()));
