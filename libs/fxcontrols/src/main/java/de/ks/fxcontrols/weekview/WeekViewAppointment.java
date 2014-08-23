@@ -190,6 +190,29 @@ public class WeekViewAppointment<T> implements Comparable<WeekViewAppointment> {
   }
 
   @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof WeekViewAppointment)) {
+      return false;
+    }
+
+    WeekViewAppointment that = (WeekViewAppointment) o;
+
+    if (!title.equals(that.title)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    return title.hashCode();
+  }
+
+  @Override
   public String toString() {
     return "WeekViewAppointment{" +
             "title='" + title + '\'' +

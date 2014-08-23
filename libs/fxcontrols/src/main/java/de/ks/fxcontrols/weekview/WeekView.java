@@ -181,11 +181,9 @@ public class WeekView<T> extends GridPane {
         contentPane.add(cell, j, i);
       }
 
-
       Label time = new Label();
       time.setText(String.format("%02d", i) + ":00");
       contentPane.add(time, 0, i);
-
 
       Separator separator = new Separator();
       separator.setOrientation(Orientation.HORIZONTAL);
@@ -310,6 +308,7 @@ public class WeekView<T> extends GridPane {
         Optional<WeekViewAppointment<T>> first = entries.stream().filter(entry -> entry.getTitle().equals(title)).findFirst();
         if (first.isPresent()) {
           WeekViewAppointment weekViewAppointment = first.get();
+          weekViewAppointment.getControl().setVisible(true);
           LocalDate newDate = getNewAppointmentDate(weekViewAppointment, day);
           weekViewAppointment.setStart(newDate, null);
           ArrayList<WeekViewAppointment<T>> copyOfEntries = new ArrayList<>(entries);
@@ -381,6 +380,7 @@ public class WeekView<T> extends GridPane {
           Optional<WeekViewAppointment<T>> first = entries.stream().filter(entry -> entry.getTitle().equals(title)).findFirst();
           if (first.isPresent()) {
             WeekViewAppointment weekViewAppointment = first.get();
+            weekViewAppointment.getControl().setVisible(true);
             int minute = (int) ((e.getY() % HEIGHT_OF_HOUR) / 15) * 15;
             minute = Math.max(0, minute);
             LocalDateTime newTime = getNewAppointmentTime(weekViewAppointment, day, hour, minute);
@@ -396,7 +396,7 @@ public class WeekView<T> extends GridPane {
     return cell;
   }
 
-  protected void entriesChanged(ListChangeListener.Change<? extends WeekViewAppointment> change) {
+  protected void entriesChanged(ListChangeListener.Change<? extends WeekViewAppointment<T>> change) {
     while (change.next()) {
       change.getRemoved().forEach(e -> {
         Control control = e.getControl();
@@ -414,20 +414,7 @@ public class WeekView<T> extends GridPane {
           Control node = appointment.getControl();
           applyStyle(appointment, node);
           node.setOnDragDetected(event -> {
-            if (appointment.getChangeStartCallback() == null) {
-              return;
-            }
-            Dragboard dragboard = node.startDragAndDrop(TransferMode.MOVE);
-            dragboard.clear();
-            WritableImage image = new WritableImage((int) node.getWidth(), (int) node.getHeight());
-            SnapshotParameters params = new SnapshotParameters();
-            Image snapshot = node.snapshot(params, image);
-            dragboard.setDragView(snapshot);
-
-            Map<DataFormat, Object> content = new HashMap<>();
-            DataFormat dataFormat = getDataFormat();
-            content.put(dataFormat, appointment.getTitle());
-            dragboard.setContent(content);
+            startAppointmentDragInternal(appointment);
             event.consume();
           });
           node.focusedProperty().addListener((p, o, n) -> {
@@ -450,6 +437,49 @@ public class WeekView<T> extends GridPane {
           }
         }
       });
+    }
+  }
+
+  public void startAppointmentDrag(WeekViewAppointment<T> appointment) {
+    if (!entries.contains(appointment)) {
+      entries.add(appointment);
+      appointment.getControl().setVisible(false);
+    } else {
+      int i = entries.indexOf(appointment);
+      appointment = entries.get(i);
+    }
+    startAppointmentDragInternal(appointment);
+  }
+
+  protected void startAppointmentDragInternal(WeekViewAppointment<T> appointment) {
+    Control source = appointment.getControl();
+    if (appointment.getChangeStartCallback() == null) {
+      return;
+    }
+    Dragboard dragboard = source.startDragAndDrop(TransferMode.MOVE);
+    dragboard.clear();
+
+    Map<DataFormat, Object> content = new HashMap<>();
+    DataFormat dataFormat = getDataFormat();
+    content.put(dataFormat, appointment.getTitle());
+    dragboard.setContent(content);
+
+    checkCreateDragView(source, dragboard);
+  }
+
+  protected void checkCreateDragView(Control source, Dragboard dragboard) {
+    boolean visible = source.isVisible();
+    if (!visible) {
+      source.setVisible(true);
+    }
+    if (source.getWidth() > 0 && dragboard.getDragView() == null) {
+      WritableImage image = new WritableImage((int) source.getWidth(), (int) source.getHeight());
+      SnapshotParameters params = new SnapshotParameters();
+      Image snapshot = source.snapshot(params, image);
+      dragboard.setDragView(snapshot);
+    }
+    if (!visible) {
+      source.setVisible(false);
     }
   }
 
@@ -488,7 +518,7 @@ public class WeekView<T> extends GridPane {
     entries.addAll(weekViewAppointments);
   }
 
-  protected DataFormat getDataFormat() {
+  public DataFormat getDataFormat() {
     DataFormat dataFormat = DataFormat.lookupMimeType(WeekViewAppointment.class.getName());
     if (dataFormat == null) {
       dataFormat = new DataFormat(WeekViewAppointment.class.getName());
@@ -614,4 +644,5 @@ public class WeekView<T> extends GridPane {
   public void setAppointmentResolver(AppointmentResolver<T> appointmentResolver) {
     this.appointmentResolver.set(appointmentResolver);
   }
+
 }
