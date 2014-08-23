@@ -235,8 +235,6 @@ public class ViewTasks extends BaseController<List<Task>> {
   }
 
   protected Predicate<Task> createFilter() {
-    TaskFilterView filterView = activityInitialization.getControllerInstance(TaskFilterView.class);
-
     return task -> {
       boolean hasContextFilter = contextSelection.getValue() != null && !contextSelection.getValue().trim().isEmpty();
       if (hasContextFilter) {
