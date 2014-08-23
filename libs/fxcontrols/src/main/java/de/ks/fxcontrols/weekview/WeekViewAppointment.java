@@ -28,6 +28,8 @@ import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 
 public class WeekViewAppointment<T> implements Comparable<WeekViewAppointment> {
+  String styleClass;
+
   protected String title;
 
   protected LocalDate startDate;

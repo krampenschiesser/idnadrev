@@ -411,12 +411,7 @@ public class WeekView<T> extends GridPane {
         long between = ChronoUnit.DAYS.between(firstDayOfWeek, appointment.getStartDate());
         if (between >= 0 && between < 7) {
           Control node = appointment.getControl();
-          node.getStyleClass().add("week-entry");
-          node.getStyleClass().add("week-entry" + currentEntryStyleNr);
-          currentEntryStyleNr++;
-          if (currentEntryStyleNr == 9) {
-            currentEntryStyleNr = 1;
-          }
+          applyStyle(appointment, node);
           node.setOnDragDetected(event -> {
             if (appointment.getChangeStartCallback() == null) {
               return;
@@ -454,6 +449,23 @@ public class WeekView<T> extends GridPane {
           }
         }
       });
+    }
+  }
+
+  protected void applyStyle(WeekViewAppointment appointment, Control node) {
+    if (!node.getStyleClass().contains("week-entry")) {
+      node.getStyleClass().add("week-entry");
+    }
+    if (appointment.styleClass == null) {
+      appointment.styleClass = "week-entry" + currentEntryStyleNr;
+
+      currentEntryStyleNr++;
+      if (currentEntryStyleNr == 9) {
+        currentEntryStyleNr = 1;
+      }
+    }
+    if (!node.getStyleClass().contains(appointment.styleClass)) {
+      node.getStyleClass().add(appointment.styleClass);
     }
   }
 
