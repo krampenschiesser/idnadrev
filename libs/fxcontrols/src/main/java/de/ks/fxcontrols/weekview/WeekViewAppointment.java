@@ -20,26 +20,34 @@ import javafx.scene.control.Control;
 import javafx.scene.control.Tooltip;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.function.BiConsumer;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 public class WeekViewAppointment<T> implements Comparable<WeekViewAppointment> {
   protected String title;
 
-  protected LocalDateTime start;
+  protected LocalDate startDate;
+  protected LocalTime startTime;
   protected Duration duration;
   protected BiConsumer<Button, T> action;
   protected Consumer<Button> enhancer;
   protected Button node;
-  protected Predicate<LocalDateTime> newTimePossiblePredicate;
-  protected Consumer<LocalDateTime> changeStartCallback;
+  protected BiPredicate<LocalDate, LocalTime> newTimePossiblePredicate;
+  protected BiConsumer<LocalDate, LocalTime> changeStartCallback;
   protected T userData;
+
+  public WeekViewAppointment(String title, LocalDate startDate, LocalTime startTime, Duration duration) {
+
+  }
 
   public WeekViewAppointment(String title, LocalDateTime start, Duration duration) {
     this.title = title;
-    this.start = start;
+    this.startDate = start.toLocalDate();
+    this.startTime = start.toLocalTime();
     this.duration = duration;
   }
 
@@ -87,14 +95,30 @@ public class WeekViewAppointment<T> implements Comparable<WeekViewAppointment> {
     return this;
   }
 
-  public LocalDateTime getStart() {
-    return start;
+  public LocalDate getStartDate() {
+    return startDate;
   }
 
-  public void setStart(LocalDateTime start) {
-    this.start = start;
+  public LocalTime getStartTime() {
+    return startTime;
+  }
+
+  public LocalDateTime getStart() {
+    if (startTime == null) {
+      return null;
+    }
+    return LocalDateTime.of(startDate, startTime);
+  }
+
+  public boolean isSpanningWholeDay() {
+    return startTime == null;
+  }
+
+  public void setStart(LocalDate date, LocalTime time) {
+    this.startDate = date;
+    this.startTime = time;
     if (changeStartCallback != null) {
-      changeStartCallback.accept(start);
+      changeStartCallback.accept(date, time);
     }
   }
 
@@ -107,29 +131,40 @@ public class WeekViewAppointment<T> implements Comparable<WeekViewAppointment> {
     return this;
   }
 
-  public void setChangeStartCallback(Consumer<LocalDateTime> changeStartCallback) {
+  public void setChangeStartCallback(BiConsumer<LocalDate, LocalTime> changeStartCallback) {
     this.changeStartCallback = changeStartCallback;
   }
 
-  public Consumer<LocalDateTime> getChangeStartCallback() {
+  public BiConsumer<LocalDate, LocalTime> getChangeStartCallback() {
     return changeStartCallback;
   }
 
-  public Predicate<LocalDateTime> getNewTimePossiblePredicate() {
+  public BiPredicate<LocalDate, LocalTime> getNewTimePossiblePredicate() {
     return newTimePossiblePredicate;
   }
 
-  public void setNewTimePossiblePredicate(Predicate<LocalDateTime> newTimePossiblePredicate) {
+  public void setNewTimePossiblePredicate(BiPredicate<LocalDate, LocalTime> newTimePossiblePredicate) {
     this.newTimePossiblePredicate = newTimePossiblePredicate;
   }
 
   public boolean contains(LocalDateTime finishTime) {
-    Duration between = Duration.between(start, finishTime);
+    if (isSpanningWholeDay()) {
+      return false;
+    }
+    Duration between = Duration.between(getStart(), finishTime);
     if (between.isNegative()) {
       return false;
     }
     int comparison = between.compareTo(duration);
     return comparison <= 0;
+  }
+
+  public LocalDateTime getEnd() {
+    if (isSpanningWholeDay()) {
+      return null;
+    }
+    LocalDateTime end = getStart().plus(duration);
+    return end;
   }
 
   @Override
@@ -141,13 +176,10 @@ public class WeekViewAppointment<T> implements Comparable<WeekViewAppointment> {
   public String toString() {
     return "WeekViewAppointment{" +
             "title='" + title + '\'' +
-            ", start=" + start +
+            ", startDate=" + startDate +
+            ", startTime=" + startTime +
             ", duration=" + duration +
+            ", userData=" + userData +
             '}';
-  }
-
-  public LocalDateTime getEnd() {
-    LocalDateTime end = start.plus(duration);
-    return end;
   }
 }

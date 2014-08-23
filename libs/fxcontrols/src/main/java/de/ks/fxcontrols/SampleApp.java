@@ -66,11 +66,11 @@ public class SampleApp extends Application {
 
       WeekViewAppointment<Object> appointment = new WeekViewAppointment<>("test entry" + i + " " + minutes + "m", localDateTime, duration);
 
-      appointment.setChangeStartCallback(newTime -> {
-        log.info("{} now starts on {}", appointment.getTitle(), newTime);
+      appointment.setChangeStartCallback((newDate, newTime) -> {
+        log.info("{} now starts on {} {}", appointment.getTitle(), newDate, newTime);
       });
 
-      appointment.setNewTimePossiblePredicate((LocalDateTime newTime) -> {
+      appointment.setNewTimePossiblePredicate((newDate, newTime) -> {
         if (newTime.getHour() > 6 && newTime.getHour() < 22) {
           return true;
         } else {

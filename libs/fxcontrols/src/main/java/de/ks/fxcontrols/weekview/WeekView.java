@@ -272,7 +272,7 @@ public class WeekView<T> extends GridPane {
             int minute = (int) ((e.getY() % HEIGHT_OF_HOUR) / 15) * 15;
             minute = Math.max(0, minute);
             LocalDateTime newTime = getNewAppointmentTime(weekViewAppointment, day, hour, minute);
-            if (weekViewAppointment.getNewTimePossiblePredicate().test(newTime)) {
+            if (weekViewAppointment.getNewTimePossiblePredicate().test(newTime.toLocalDate(), newTime.toLocalTime())) {
               return true;
             }
           }
@@ -306,7 +306,7 @@ public class WeekView<T> extends GridPane {
             int minute = (int) ((e.getY() % HEIGHT_OF_HOUR) / 15) * 15;
             minute = Math.max(0, minute);
             LocalDateTime newTime = getNewAppointmentTime(weekViewAppointment, day, hour, minute);
-            weekViewAppointment.setStart(newTime);
+            weekViewAppointment.setStart(newTime.toLocalDate(), newTime.toLocalTime());
             ArrayList<WeekViewAppointment<T>> copyOfEntries = new ArrayList<>(entries);
             recreateEntries(copyOfEntries);
           }

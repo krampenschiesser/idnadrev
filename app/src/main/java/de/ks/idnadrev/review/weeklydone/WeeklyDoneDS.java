@@ -83,7 +83,7 @@ public class WeeklyDoneDS implements ListDataSource<WeekViewAppointment<Task>> {
     return workUnits.stream().map(unit -> {
       Duration duration = Duration.between(unit.getStart(), unit.getEnd());
       WeekViewAppointment<Task> appointment = new WeekViewAppointment<>(unit.getTask().getName(), unit.getStart(), duration);
-      appointment.setNewTimePossiblePredicate(ldt -> false);
+      appointment.setNewTimePossiblePredicate((date, time) -> false);
       appointment.setUserData(unit.getTask());
       appointment.setAction((btn, task) -> doneView.appointment.set(appointment));
       return appointment;
@@ -121,7 +121,7 @@ public class WeeklyDoneDS implements ListDataSource<WeekViewAppointment<Task>> {
         return null;
       } else {
         WeekViewAppointment<Task> appointment = new WeekViewAppointment<>(task.getName(), task.getFinishTime().minusMinutes(15), Duration.ofMinutes(15));
-        appointment.setNewTimePossiblePredicate(ldt -> false);
+        appointment.setNewTimePossiblePredicate((date, time) -> false);
         appointment.setUserData(task);
         appointment.setEnhancer(enhanceForFinish);
         appointment.setAction((btn, t) -> doneView.appointment.set(appointment));
