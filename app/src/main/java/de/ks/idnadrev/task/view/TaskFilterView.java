@@ -42,6 +42,8 @@ public class TaskFilterView extends BaseController<Void> {
   @FXML
   protected CheckBox showAsap;
   @FXML
+  protected CheckBox showDefault;
+  @FXML
   protected CheckBox showLater;
   @FXML
   protected CheckBox showDelegated;
@@ -72,7 +74,7 @@ public class TaskFilterView extends BaseController<Void> {
     showLater.selectedProperty().addListener((p, o, n) -> triggerFilter());
     showDelegated.selectedProperty().addListener((p, o, n) -> triggerFilter());
     showFinished.selectedProperty().addListener((p, o, n) -> triggerFilter());
-
+    showDefault.selectedProperty().addListener((p, o, n) -> triggerFilter());
   }
 
   public boolean needsToKeepFocus() {
@@ -97,7 +99,9 @@ public class TaskFilterView extends BaseController<Void> {
       Path<String> statePath = root.get(PropertyPath.property(Task.class, t -> t.getState()));
       ArrayList<Predicate> stateOrCombination = new ArrayList<>();
 
-      stateOrCombination.add(builder.equal(statePath, TaskState.NONE));
+      if (showDefault.isSelected()) {
+        stateOrCombination.add(builder.equal(statePath, TaskState.NONE));
+      }
       if (showAsap.isSelected()) {
         stateOrCombination.add(builder.equal(statePath, TaskState.ASAP));
       }

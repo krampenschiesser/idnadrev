@@ -30,21 +30,25 @@
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+        <RowConstraints/>
     </rowConstraints>
     <children>
         <CheckBox fx:id="showFinished" mnemonicParsing="false" text="%task.filter.showFinished"
                   GridPane.columnIndex="1"/>
         <Label text="%task.state" GridPane.rowIndex="1"/>
-        <CheckBox fx:id="showAsap" mnemonicParsing="false" selected="true" text="%task.state.asapFilter"
+        <CheckBox fx:id="showDefault" mnemonicParsing="false" selected="true" text="%task.state.default"
                   GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <CheckBox fx:id="showAsap" mnemonicParsing="false" selected="true" text="%task.state.asapFilter"
+                  GridPane.columnIndex="1" GridPane.rowIndex="2"/>
         <CheckBox fx:id="showLater" mnemonicParsing="false" text="%task.state.laterFilter" GridPane.columnIndex="1"
-                  GridPane.rowIndex="2"/>
+                  GridPane.rowIndex="3"/>
         <CheckBox fx:id="showDelegated" mnemonicParsing="false" text="%task.state.delegatedFilter"
-                  GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-        <Label text="%task.description" GridPane.rowIndex="4"/>
-        <TextField fx:id="description" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
-        <Label text="%task.parent.project" GridPane.rowIndex="5"/>
-        <StackPane GridPane.columnIndex="1" GridPane.rowIndex="5" GridPane.valignment="TOP" GridPane.vgrow="NEVER">
+                  GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+        <Label text="%task.description" GridPane.rowIndex="5"/>
+        <TextField fx:id="description" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+        <Label text="%task.parent.project" GridPane.rowIndex="6"/>
+        <StackPane GridPane.columnIndex="1" GridPane.rowIndex="6" GridPane.valignment="TOP" GridPane.vgrow="NEVER">
             <children>
                 <fx:include fx:id="parentProject" source="../../selection/NamedPersistentObjectSelection.fxml"/>
             </children>
