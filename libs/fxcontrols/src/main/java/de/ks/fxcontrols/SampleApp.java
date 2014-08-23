@@ -39,7 +39,7 @@ public class SampleApp extends Application {
   public void start(Stage primaryStage) throws Exception {
     primaryStage.setTitle("Sample app");
 
-    WeekView weekView = new WeekView("Today");
+    WeekView<Object> weekView = new WeekView<>("Today");
     weekView.setAppointmentResolver(this::getNextEntries);
     weekView.setOnAppointmentCreation(dateTime -> log.info("Creating new appointment beginning at {}", dateTime));
 
