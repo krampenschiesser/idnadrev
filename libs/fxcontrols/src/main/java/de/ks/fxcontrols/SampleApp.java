@@ -42,7 +42,7 @@ public class SampleApp extends Application {
 
     WeekView<Object> weekView = new WeekView<>("Today");
     weekView.setAppointmentResolver(this::getNextEntries);
-    weekView.setOnAppointmentCreation(dateTime -> log.info("Creating new appointment beginning at {}", dateTime));
+    weekView.setOnAppointmentCreation((date, time) -> log.info("Creating new appointment beginning at {} {}", date, time));
 
 
     StackPane pane = new StackPane(weekView);
@@ -80,12 +80,14 @@ public class SampleApp extends Application {
       });
       timedAppointment.setNewTimePossiblePredicate(newTimePossiblePredicate);
       retval.add(timedAppointment);
-      WeekViewAppointment<Object> dayAppointment = new WeekViewAppointment<>("test day spanning entry" + i + " " + minutes + "m", localDateTime.toLocalDate(), duration);
-      dayAppointment.setChangeStartCallback((newDate, newTime) -> {
-        log.info("{} now starts on {} {}", dayAppointment.getTitle(), newDate, newTime);
-      });
-      dayAppointment.setNewTimePossiblePredicate(newTimePossiblePredicate);
-      retval.add(dayAppointment);
+      for (int j = 0; j < 3; j++) {
+        WeekViewAppointment<Object> dayAppointment = new WeekViewAppointment<>(j + " test day spanning entry" + i + " " + minutes + "m", localDateTime.toLocalDate(), duration);
+        dayAppointment.setChangeStartCallback((newDate, newTime) -> {
+          log.info("{} now starts on {} {}", dayAppointment.getTitle(), newDate, newTime);
+        });
+        dayAppointment.setNewTimePossiblePredicate(newTimePossiblePredicate);
+        retval.add(dayAppointment);
+      }
     }
     consumer.accept(retval);
   }

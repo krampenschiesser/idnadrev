@@ -54,7 +54,7 @@ public class WeekViewTest {
     weekView.setWeekOfYear(22);
 
     LinkedList<LocalDateTime> times = new LinkedList<>();
-    weekView.setOnAppointmentCreation(ldt -> times.add(ldt));
+    weekView.setOnAppointmentCreation((date, time) -> times.add(LocalDateTime.of(date, time)));
 
     FXPlatform.invokeLater(() -> weekView.getCells().get(13, 4).getOnMouseClicked().handle(null));
     assertEquals(1, times.size());

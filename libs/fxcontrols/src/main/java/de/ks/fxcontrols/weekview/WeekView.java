@@ -48,7 +48,7 @@ import java.time.LocalTime;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 public class WeekView<T> extends GridPane {
@@ -61,7 +61,7 @@ public class WeekView<T> extends GridPane {
   protected final ObservableList<WeekViewAppointment<T>> entries = FXCollections.observableArrayList();
   protected final SimpleIntegerProperty weekOfYear = new SimpleIntegerProperty();
   protected final SimpleIntegerProperty year = new SimpleIntegerProperty();
-  protected final ObjectProperty<Consumer<LocalDateTime>> onAppointmentCreation = new SimpleObjectProperty<>();
+  protected final ObjectProperty<BiConsumer<LocalDate, LocalTime>> onAppointmentCreation = new SimpleObjectProperty<>();
   protected final ObjectProperty<AppointmentResolver<T>> appointmentResolver = new SimpleObjectProperty<>();
 
   protected final GridPane contentPane = new GridPane();
@@ -71,7 +71,9 @@ public class WeekView<T> extends GridPane {
   protected final WeekTitle title;
   protected final List<Label> weekDayLabels = new LinkedList<>();
   protected final WeekHelper helper = new WeekHelper();
+
   protected final Table<Integer, Integer, StackPane> cells = HashBasedTable.create();
+  protected final Map<Integer, VBox> wholeDayCells = new TreeMap<>();
 
   protected boolean recomupting = false;
   protected int lastRow = -1;
@@ -173,7 +175,7 @@ public class WeekView<T> extends GridPane {
       contentPane.add(background, 0, i, Integer.MAX_VALUE, 1);
 
       for (int j = 0; j < 8; j++) {
-        StackPane cell = createCell(i, j);
+        StackPane cell = createHourCell(i, j);
         cells.put(i, j, cell);
         contentPane.add(cell, j, i);
       }
@@ -216,6 +218,12 @@ public class WeekView<T> extends GridPane {
 
     createTimeAndDayColumns(wholeDayPane);
     createSeparators(wholeDayPane);
+
+    for (int i = 0; i < 7; i++) {
+      VBox cell = createWholeDayCell(i);
+      wholeDayCells.put(i, cell);
+      wholeDayPane.add(cell, i + 1, 0);
+    }
   }
 
   protected void createSeparators(GridPane pane) {
@@ -244,7 +252,11 @@ public class WeekView<T> extends GridPane {
     }
   }
 
-  protected StackPane createCell(int row, int column) {
+  protected VBox createWholeDayCell(int day) {
+    return new VBox();
+  }
+
+  protected StackPane createHourCell(int row, int column) {
     String cellStyle = row % 2 == 0 ? "week-bg-even" : "week-bg-odd";
     StackPane cell = new StackPane();
     cell.getStyleClass().add(cellStyle);
@@ -257,9 +269,9 @@ public class WeekView<T> extends GridPane {
         LocalDate selectedDay = firstDayOfWeek.plusDays(day);
         LocalDateTime creationTime = LocalDateTime.of(selectedDay, LocalTime.of(hour, 0));
 
-        Consumer<LocalDateTime> consumer = onAppointmentCreation.get();
+        BiConsumer<LocalDate, LocalTime> consumer = onAppointmentCreation.get();
         if (consumer != null) {
-          consumer.accept(creationTime);
+          consumer.accept(creationTime.toLocalDate(), creationTime.toLocalTime());
         }
       });
       Predicate<DragEvent> filter = e -> {
@@ -326,7 +338,7 @@ public class WeekView<T> extends GridPane {
           control.getStyleClass().remove("week-entry" + i);
         }
         contentPane.getChildren().remove(control);
-        wholeDayPane.getChildren().remove(control);
+        wholeDayCells.values().forEach(vbox -> vbox.getChildren().remove(control));
       });
 
       LocalDate firstDayOfWeek = helper.getFirstDayOfWeek(year.getValue(), weekOfYear.getValue());
@@ -364,7 +376,8 @@ public class WeekView<T> extends GridPane {
           });
 
           if (appointment.isSpanningWholeDay()) {
-            wholeDayPane.add(node, (int) between + 1, 0);
+            VBox vbox = wholeDayCells.get((int) between);
+            vbox.getChildren().add(node);
           } else {
             long hours = ChronoUnit.HOURS.between(LocalTime.of(0, 0), appointment.getStartTime());
             int insetsTop = appointment.getStart().getMinute();
@@ -489,15 +502,15 @@ public class WeekView<T> extends GridPane {
     return helper.getFirstDayOfWeek(year.getValue(), weekOfYear.getValue());
   }
 
-  public Consumer<LocalDateTime> getOnAppointmentCreation() {
+  public BiConsumer<LocalDate, LocalTime> getOnAppointmentCreation() {
     return onAppointmentCreation.get();
   }
 
-  public ObjectProperty<Consumer<LocalDateTime>> onAppointmentCreationProperty() {
+  public ObjectProperty<BiConsumer<LocalDate, LocalTime>> onAppointmentCreationProperty() {
     return onAppointmentCreation;
   }
 
-  public void setOnAppointmentCreation(Consumer<LocalDateTime> onAppointmentCreation) {
+  public void setOnAppointmentCreation(BiConsumer<LocalDate, LocalTime> onAppointmentCreation) {
     this.onAppointmentCreation.set(onAppointmentCreation);
   }
 
