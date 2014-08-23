@@ -83,7 +83,7 @@ public class SampleApp extends Application {
       });
       timedAppointment.setNewTimePossiblePredicate(newTimePossiblePredicate);
       retval.add(timedAppointment);
-      for (int j = 0; j < 3; j++) {
+      for (int j = 0; j < random.nextInt(1, 4); j++) {
         WeekViewAppointment<Object> dayAppointment = new WeekViewAppointment<>(j + " test day spanning entry" + i + " " + minutes + "m", localDateTime.toLocalDate(), duration);
         dayAppointment.setChangeStartCallback((newDate, newTime) -> {
           log.info("{} now starts on {} {}", dayAppointment.getTitle(), newDate, newTime);
