@@ -119,6 +119,10 @@ public class WeekViewAppointment<T> implements Comparable<WeekViewAppointment> {
     return startTime == null;
   }
 
+  protected void setStartWithoutCallback(LocalDate date, LocalTime time) {
+    this.startDate = date;
+    this.startTime = time;
+  }
   public void setStart(LocalDate date, LocalTime time) {
     this.startDate = date;
     this.startTime = time;

@@ -18,6 +18,7 @@ import de.ks.fxcontrols.weekview.WeekHelper;
 import de.ks.idnadrev.entity.*;
 import de.ks.option.Option;
 import de.ks.persistence.PersistentWork;
+import de.ks.scheduler.Schedule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,6 +106,19 @@ public class DummyData extends Service {
         }
         longRunner.setFinishTime(start);
       });
+
+
+      Task proposed = new Task("proposed");
+      proposed.setSchedule(new Schedule().setProposedWeek(new WeekHelper().getWeek(LocalDate.now())));
+      persist(proposed);
+
+      Task scheduled = new Task("scheduled");
+      Schedule schedule = new Schedule();
+      schedule.setScheduledDate(new WeekHelper().getFirstDayOfWeek(LocalDate.now()).plusDays(1));
+      schedule.setScheduledTime(LocalTime.of(12, 0));
+
+      scheduled.setSchedule(schedule);
+      persist(scheduled);
     }
   }
 

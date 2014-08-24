@@ -441,6 +441,10 @@ public class WeekView<T> extends GridPane {
   }
 
   public void startAppointmentDrag(WeekViewAppointment<T> appointment) {
+    if (appointment.getStartDate().isAfter(getLastDayOfWeek()) || appointment.getStartDate().isBefore(getFirstDayOfWeek())) {
+      appointment.setStartWithoutCallback(getFirstDayOfWeek(), appointment.getStartTime());
+      entries.remove(appointment);
+    }
     if (!entries.contains(appointment)) {
       entries.add(appointment);
       appointment.getControl().setVisible(false);
@@ -500,7 +504,7 @@ public class WeekView<T> extends GridPane {
     }
   }
 
-  protected void recreateEntries() {
+  public void recreateEntries() {
     if (appointmentResolver.get() == null) {
       return;
     }
@@ -611,6 +615,10 @@ public class WeekView<T> extends GridPane {
 
   public LocalDate getFirstDayOfWeek() {
     return helper.getFirstDayOfWeek(year.getValue(), weekOfYear.getValue());
+  }
+
+  public LocalDate getLastDayOfWeek() {
+    return helper.getLastDayOfWeek(year.getValue(), weekOfYear.getValue());
   }
 
   public BiConsumer<LocalDate, LocalTime> getOnAppointmentCreation() {

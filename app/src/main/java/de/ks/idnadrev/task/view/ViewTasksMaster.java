@@ -312,4 +312,8 @@ public class ViewTasksMaster extends BaseController<List<Task>> {
   public TreeItem<Task> getTreeItem(Task parent) {
     return task2TreeItem.get(parent);
   }
+
+  public ObservableList<Task> getTasks() {
+    return tasks;
+  }
 }
