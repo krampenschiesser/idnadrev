@@ -15,9 +15,11 @@
 package de.ks.idnadrev.task.create;
 
 import de.ks.BaseController;
+import de.ks.fxcontrols.weekview.WeekHelper;
 import de.ks.idnadrev.entity.Task;
 import de.ks.persistence.PersistentWork;
 import de.ks.scheduler.Schedule;
+import de.ks.validation.validators.TimeHHMMValidator;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.DatePicker;
@@ -52,6 +54,32 @@ public class TaskSchedule extends BaseController<Task> {
 
     dueDate.disableProperty().bind(proposedWeek.valueProperty().isNotNull());
     dueTime.disableProperty().bind(proposedWeek.valueProperty().isNotNull());
+
+    validationRegistry.registerValidator(dueTime, new TimeHHMMValidator());
+  }
+
+  @Override
+  protected void onRefresh(Task model) {
+    Schedule schedule = model.getSchedule();
+    if (schedule != null) {
+      if (schedule.getProposedWeek() != 0) {
+        LocalDate date = new WeekHelper().getFirstDayOfWeek(schedule.getProposedYear(), schedule.getProposedWeek());
+        if (schedule.getProposedWeekDay() != null) {
+          date = date.plusDays(schedule.getProposedWeekDay().getValue());
+        }
+        proposedWeek.setValue(date);
+        if (schedule.getProposedWeekDay() != null) {
+          useProposedWeekDay.setSelected(true);
+        }
+      } else if (schedule.getScheduledDate() != null) {
+        dueDate.setValue(schedule.getScheduledDate());
+
+        LocalTime scheduledTime = schedule.getScheduledTime();
+        if (scheduledTime != null) {
+          dueTime.setText(String.format("%02d", scheduledTime.getHour()) + ":" + String.format("%02d", scheduledTime.getMinute()));
+        }
+      }
+    }
   }
 
   @Override
