@@ -45,6 +45,7 @@ public class Schedule extends AbstractPersistentObject<Schedule> {
    * should be done in this week @see WeekFields#weekOfWeekBasedYear()
    */
   protected int proposedWeek;
+  protected int proposedYear;
 
   @Enumerated(EnumType.STRING)
   protected RepetitionType repetition = null;
@@ -118,8 +119,11 @@ public class Schedule extends AbstractPersistentObject<Schedule> {
   }
 
   public Schedule setScheduledTime(LocalTime scheduledTime) {
-    this.scheduledTime = scheduledTime.truncatedTo(ChronoUnit.MINUTES);
-    ;
+    if (scheduledTime == null) {
+      this.scheduledTime = null;
+    } else {
+      this.scheduledTime = scheduledTime.truncatedTo(ChronoUnit.MINUTES);
+    }
     return this;
   }
 
@@ -147,6 +151,18 @@ public class Schedule extends AbstractPersistentObject<Schedule> {
 
   public Schedule setProposedWeek(int proposedWeek) {
     this.proposedWeek = proposedWeek;
+    if (proposedYear == 0) {
+      setProposedYear(Year.now().getValue());
+    }
+    return this;
+  }
+
+  public int getProposedYear() {
+    return proposedYear;
+  }
+
+  public Schedule setProposedYear(int proposedYear) {
+    this.proposedYear = proposedYear;
     return this;
   }
 }
