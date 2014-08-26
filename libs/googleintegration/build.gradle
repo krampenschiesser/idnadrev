@@ -12,16 +12,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-include "doc"
 
-include "libs:fxcontrols"
 
-include "libs:testutil", "libs:util", "libs:reflection"
-include "libs:launch"
-//PC stuff
-include "libs:validation", "libs:hibernate-pool", "libs:persistence", "libs:eventsystem", "libs:i18n", "libs:scheduler"
-include "libs:executor"
-//javaFX stuff
-include "libs:images", "libs:application"
-include "libs:googleintegration"
-include "app"
+
+dependencies {
+    compile "com.google.api-client:google-api-client:$googleApi"
+    compile "com.google.http-client:google-http-client-jackson2:$googleApi"
+    compile "com.google.oauth-client:google-oauth-client-jetty:$googleApi"
+
+    compile "com.google.apis:google-api-services-calendar:$googleCalendarApi"
+
+    testCompile project(":libs:testutil")
+}
