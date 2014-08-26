@@ -17,6 +17,7 @@ package de.ks.idnadrev;
 import de.ks.activity.ActivityController;
 import de.ks.activity.ActivityHint;
 import de.ks.idnadrev.task.create.CreateTaskActivity;
+import de.ks.idnadrev.task.fasttrack.FastTrackActivity;
 import de.ks.idnadrev.task.view.ViewTasksActvity;
 import de.ks.idnadrev.thought.add.AddThoughtActivity;
 import de.ks.idnadrev.thought.view.ViewThoughtsActivity;
@@ -56,4 +57,7 @@ public class ButtonBar implements Initializable {
     controller.startOrResume(new ActivityHint(ViewTasksActvity.class));
   }
 
+  public void fastTrack() {
+    controller.startOrResume(new ActivityHint(FastTrackActivity.class));
+  }
 }

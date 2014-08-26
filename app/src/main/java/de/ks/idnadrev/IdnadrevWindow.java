@@ -130,6 +130,9 @@ public class IdnadrevWindow extends MainWindow {
     } else if (code == KeyCode.F4) {
       buttonBar.viewTasks();
       event.consume();
+    } else if (code == KeyCode.F12) {
+      buttonBar.fastTrack();
+      event.consume();
     }
 
     if (event.isControlDown() && event.getCode() == KeyCode.S) {

@@ -15,8 +15,11 @@
 package de.ks.idnadrev.task.fasttrack;
 
 import de.ks.BaseController;
+import de.ks.activity.executor.ActivityExecutor;
 import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.entity.WorkUnit;
 import de.ks.idnadrev.selection.NamedPersistentObjectSelection;
+import de.ks.persistence.PersistentWork;
 import de.ks.text.AsciiDocEditor;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
@@ -26,7 +29,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ResourceBundle;
+import java.util.concurrent.TimeUnit;
 
 public class FastTrack extends BaseController<Task> {
   private static final Logger log = LoggerFactory.getLogger(FastTrack.class);
@@ -47,9 +53,11 @@ public class FastTrack extends BaseController<Task> {
     nameController.selectedValueProperty().addListener((p, o, n) -> {
       if (n != null) {
         store.setModel(n);
+        addNewWorkUnit(n);
       } else {
         Task model = new Task(nameController.getInput().getText());
         store.setModel(model);
+        addNewWorkUnit(model);
       }
     });
     StringProperty nameBinding = store.getBinding().getStringProperty(Task.class, t -> t.getName());
@@ -60,10 +68,41 @@ public class FastTrack extends BaseController<Task> {
     descriptionBinding.bindBidirectional(description.textProperty());
   }
 
+  @Override
+  public void duringLoad(Task model) {
+    super.duringLoad(model);
+    addNewWorkUnit(model);
+  }
+
+  private void addNewWorkUnit(Task model) {
+    if (model.getId() > 0) {
+      PersistentWork.wrap(() -> {
+        PersistentWork.persist(new WorkUnit(PersistentWork.reload(model)));
+      });
+    } else {
+      model.getWorkUnits().add(new WorkUnit(model));
+    }
+  }
+
   @FXML
   void finishTask() {
     controller.save();
     controller.stopCurrent();
+  }
+
+  @Override
+  public void onStart() {
+    ActivityExecutor executorService = controller.getExecutorService();
+    executorService.scheduleAtFixedRate(this::showSpentTime, 100, 1, TimeUnit.MINUTES);
+  }
+
+  private void showSpentTime() {
+    Duration duration = PersistentWork.read(em -> {
+      Task task = PersistentWork.reload(store.getModel());
+      WorkUnit last = task.getWorkUnits().last();
+      return Duration.between(last.getStart(), LocalDateTime.now());
+    });
+    controller.getJavaFXExecutor().execute(() -> spentTime.setText(duration.toMinutes() + "m"));
   }
 
   @Override
@@ -75,4 +114,11 @@ public class FastTrack extends BaseController<Task> {
   public void onSuspend() {
     controller.save();
   }
+
+  @Override
+  protected void onRefresh(Task model) {
+    super.onRefresh(model);
+    spentTime.setText("0min");
+  }
+
 }
