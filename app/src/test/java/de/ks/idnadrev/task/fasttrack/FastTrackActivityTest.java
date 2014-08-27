@@ -109,7 +109,7 @@ public class FastTrackActivityTest extends ActivityTest {
       assertEquals("blubber", task.getDescription());
       assertEquals(1, task.getWorkUnits().size());
       WorkUnit workUnit = task.getWorkUnits().iterator().next();
-      assertEquals(task.getCreationTime(), workUnit.getStart());
+      assertEquals(task.getCreationTime().withNano(0), workUnit.getStart().withNano(0));
       assertEquals(task.getFinishTime(), workUnit.getEnd());
     });
   }

@@ -16,12 +16,10 @@ package de.ks.idnadrev.task.fasttrack;
 
 import de.ks.datasource.NewInstanceDataSource;
 import de.ks.idnadrev.entity.Task;
-import de.ks.idnadrev.entity.WorkUnit;
 import de.ks.persistence.PersistentWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDateTime;
 import java.util.function.Consumer;
 
 public class FastTrackDS extends NewInstanceDataSource<Task> {
@@ -48,16 +46,9 @@ public class FastTrackDS extends NewInstanceDataSource<Task> {
         beforeSaving.accept(task);
       } else {
         beforeSaving.accept(model);
-        log.debug("Creating new task {}", model);
         em.persist(model);
-        task = model;
+        log.debug("Creating new task {}", model);
       }
-      WorkUnit workUnit = new WorkUnit(task);
-      workUnit.setStart(model.getCreationTime());
-      LocalDateTime now = LocalDateTime.now();
-      workUnit.setEnd(now);
-      task.setFinishTime(now);
-      em.persist(workUnit);
     });
   }
 }

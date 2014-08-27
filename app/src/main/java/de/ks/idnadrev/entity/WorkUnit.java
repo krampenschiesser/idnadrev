@@ -134,4 +134,8 @@ public class WorkUnit extends AbstractPersistentObject<WorkUnit> implements Comp
     result = 31 * result + (task != null ? task.hashCode() : 0);
     return result;
   }
+
+  public boolean isDone() {
+    return getEnd() != null;
+  }
 }
