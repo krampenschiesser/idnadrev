@@ -110,7 +110,7 @@ public class FastTrackActivityTest extends ActivityTest {
       assertEquals(1, task.getWorkUnits().size());
       WorkUnit workUnit = task.getWorkUnits().iterator().next();
       assertEquals(task.getCreationTime().withNano(0), workUnit.getStart().withNano(0));
-      assertEquals(task.getFinishTime(), workUnit.getEnd());
+      assertEquals(task.getFinishTime().withNano(0), workUnit.getEnd().withNano(0));
     });
   }
 
