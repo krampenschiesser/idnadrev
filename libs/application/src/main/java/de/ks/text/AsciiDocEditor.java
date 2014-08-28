@@ -42,6 +42,7 @@ import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -221,7 +222,9 @@ public class AsciiDocEditor implements Initializable {
 
   @FXML
   void showHelp() {
-    helpDialog = new Dialog(this.help, Localized.get("help"));
+    String title = Localized.get("help");
+    title = StringUtils.remove(title, "_");
+    helpDialog = new Dialog(this.help, title);
 
     helpDialog.setContent(helpView);
 
