@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
-import java.util.concurrent.TimeUnit;
 
 public class ActivityJavaFXExecutorProducer {
   private static final Logger log = LoggerFactory.getLogger(ActivityJavaFXExecutorProducer.class);
@@ -32,14 +31,6 @@ public class ActivityJavaFXExecutorProducer {
   }
 
   public void shutdownActivityFXExecutor(@Disposes ActivityJavaFXExecutor executor) {
-    if (!executor.isShutdown()) {
-      log.debug("Shutting down javafx executor ");
-      executor.shutdownNow();
-      try {
-        executor.awaitTermination(5, TimeUnit.SECONDS);
-      } catch (InterruptedException e) {
-        //
-      }
-    }
+    new GracefulExecutorShutdown().shutdown(executor, "javafx");
   }
 }

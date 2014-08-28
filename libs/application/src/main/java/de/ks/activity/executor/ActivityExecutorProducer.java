@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
-import java.util.concurrent.TimeUnit;
 
 public class ActivityExecutorProducer {
   private static final Logger log = LoggerFactory.getLogger(ActivityExecutorProducer.class);
@@ -33,14 +32,6 @@ public class ActivityExecutorProducer {
   }
 
   public void shutdownActivityExecutor(@Disposes ActivityExecutor executor) {
-    if (!executor.isShutdown()) {
-      log.debug("Shutting down executor {}", executor.getName());
-      executor.shutdownNow();
-      try {
-        executor.awaitTermination(5, TimeUnit.SECONDS);
-      } catch (InterruptedException e) {
-        //
-      }
-    }
+    new GracefulExecutorShutdown().shutdown(executor, executor.getName());
   }
 }
