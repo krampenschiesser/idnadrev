@@ -88,6 +88,9 @@ public class JavaFXExecutorService extends AbstractExecutorService {
   }
 
   protected void triggerQueueReading() {
+    if (isShutdown()) {
+      return;//no more triggering
+    }
     QueueListener listener = queueListener.get();
     if (listener == null || !listener.isRunning()) {
       listener = queueListener.updateAndGet(l -> l != null && l.isRunning() ? l : new QueueListener(this));
