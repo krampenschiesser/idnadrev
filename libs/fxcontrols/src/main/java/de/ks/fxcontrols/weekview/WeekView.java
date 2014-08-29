@@ -18,10 +18,7 @@ package de.ks.fxcontrols.weekview;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -80,6 +77,8 @@ public class WeekView<T> extends GridPane {
   protected int lastRow = -1;
   protected int currentEntryStyleNr = 1;
 
+  protected final SimpleDoubleProperty hourHeight = new SimpleDoubleProperty(HEIGHT_OF_HOUR);
+
   public WeekView(String today) {
     title = new WeekTitle(today, weekOfYear, year);
     sceneProperty().addListener((p, o, n) -> {
@@ -117,6 +116,24 @@ public class WeekView<T> extends GridPane {
       }
     });
     entries.addListener(this::entriesChanged);
+
+
+    contentPane.setOnScroll(m -> {
+      if (m.isControlDown()) {
+        double vvalue = contentScollPane.getVvalue();
+        double deltaY = m.getDeltaY();
+
+        double lastHeight = hourHeight.getValue();
+        double newHeight = Math.max(HEIGHT_OF_HOUR, lastHeight + deltaY);
+
+        this.hourHeight.set(newHeight);
+
+        double v = newHeight / lastHeight;
+        contentScollPane.setVvalue(vvalue * v);
+        m.consume();
+        recreateEntries(new ArrayList<>(entries));
+      }
+    });
   }
 
   protected void configureScollPane(ScrollPane scrollPane, double minHeight) {
@@ -168,7 +185,11 @@ public class WeekView<T> extends GridPane {
   protected void configureContentPane() {
     createTimeAndDayColumns(contentPane);
     for (int i = 0; i < 24; i++) {
-      contentPane.getRowConstraints().add(new RowConstraints(10, HEIGHT_OF_HOUR, Control.USE_COMPUTED_SIZE, Priority.SOMETIMES, VPos.TOP, true));
+      RowConstraints rowConstraints = new RowConstraints(10, HEIGHT_OF_HOUR, Control.USE_PREF_SIZE, Priority.NEVER, VPos.TOP, true);
+      this.hourHeight.addListener((p, o, n) -> {
+        rowConstraints.setPrefHeight(n.doubleValue());
+      });
+      contentPane.getRowConstraints().add(rowConstraints);
 
       StackPane background = new StackPane();
       String styleClass = i % 2 == 0 ? "week-bg-even" : "week-bg-odd";
@@ -381,8 +402,12 @@ public class WeekView<T> extends GridPane {
           if (first.isPresent()) {
             WeekViewAppointment weekViewAppointment = first.get();
             weekViewAppointment.getControl().setVisible(true);
-            int minute = (int) ((e.getY() % HEIGHT_OF_HOUR) / 15) * 15;
-            minute = Math.max(0, minute);
+
+            double percentagePos = 100D / hourHeight.get() * e.getY();
+            int minute = (int) (60D / 100D * percentagePos);
+            int grid = (int) (15F / (hourHeight.get() / 60));
+            minute -= minute % grid;
+
             LocalDateTime newTime = getNewAppointmentTime(weekViewAppointment, day, hour, minute);
             weekViewAppointment.setStart(newTime.toLocalDate(), newTime.toLocalTime());
             ArrayList<WeekViewAppointment<T>> copyOfEntries = new ArrayList<>(entries);
@@ -430,9 +455,19 @@ public class WeekView<T> extends GridPane {
             VBox.setMargin(node, new Insets(0, 0, 0, INSETS_WHOLEDAY));
           } else {
             long hours = ChronoUnit.HOURS.between(LocalTime.of(0, 0), appointment.getStartTime());
-            int insetsTop = appointment.getStart().getMinute();
-            node.setPrefHeight(appointment.getDuration().toMinutes());
+
+            double percentageOfHourStartMinute = 100D / 60D * appointment.getStart().getMinute();
+            double percentageOfHourDuration = 100D / 60D * appointment.getDuration().toMinutes();
+
+            double insetsTop = hourHeight.get() / 100 * percentageOfHourStartMinute;
+            double height = hourHeight.get() / 100 * percentageOfHourDuration;
+
+            node.setPrefHeight(height);
+            node.setMinHeight(Control.USE_PREF_SIZE);
+            node.setMaxHeight(Control.USE_PREF_SIZE);
+
             contentPane.add(node, (int) between + 1, (int) hours, 1, Integer.MAX_VALUE);
+
             GridPane.setMargin(node, new Insets(1 + insetsTop, 0, 0, 2));
           }
         }
