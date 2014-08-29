@@ -31,13 +31,20 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
+import java.lang.management.ManagementFactory;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
-/**
- *
- */
 @ActivityScoped
 public class ActivityStore {
+  static final boolean isDebugging;
+
+  static {
+    isDebugging = ManagementFactory.getRuntimeMXBean().getInputArguments().stream().filter(s -> s.contains("jdwp")).findFirst().isPresent();
+  }
+
   private static final Logger log = LoggerFactory.getLogger(ActivityStore.class);
 
   @Inject
@@ -155,7 +162,19 @@ public class ActivityStore {
     if (Platform.isFxApplicationThread()) {
       return;
     }
-    loadingFuture.join();
+    if (!isDebugging) {
+      try {
+        loadingFuture.get(1, TimeUnit.SECONDS);
+      } catch (InterruptedException e) {
+        //
+      } catch (ExecutionException e) {
+        throw new RuntimeException(e.getCause());
+      } catch (TimeoutException e) {
+        log.warn("Waited too long for loading, will continue.");
+      }
+    } else {
+      loadingFuture.join();
+    }
   }
 
   public void waitForSave() {
@@ -165,7 +184,19 @@ public class ActivityStore {
     if (Platform.isFxApplicationThread()) {
       return;
     }
-    savingFuture.join();
+    if (!isDebugging) {
+      try {
+        savingFuture.get(1, TimeUnit.SECONDS);
+      } catch (InterruptedException e) {
+        //
+      } catch (ExecutionException e) {
+        throw new RuntimeException(e.getCause());
+      } catch (TimeoutException e) {
+        log.warn("Waited too long for saving, will continue.");
+      }
+    } else {
+      savingFuture.join();
+    }
   }
 
   public void waitForDataSource() {
