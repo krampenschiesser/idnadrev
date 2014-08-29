@@ -17,5 +17,6 @@
 
 dependencies {
     compile project(":libs:util")
+    compile project(":libs:reflection")
     testCompile project(":libs:testutil")
 }

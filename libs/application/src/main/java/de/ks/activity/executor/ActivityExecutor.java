@@ -16,6 +16,7 @@ package de.ks.activity.executor;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import de.ks.activity.context.ActivityScoped;
+import de.ks.executor.CancelRejection;
 import de.ks.executor.LoggingUncaughtExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +42,7 @@ public class ActivityExecutor implements ScheduledExecutorService {
     this.name = name;
     delegate.setMaximumPoolSize(maximumPoolSize);
     delegate.setKeepAliveTime(1, TimeUnit.MINUTES);
-    delegate.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardPolicy());
+    delegate.setRejectedExecutionHandler(new CancelRejection());
   }
 
   public String getName() {

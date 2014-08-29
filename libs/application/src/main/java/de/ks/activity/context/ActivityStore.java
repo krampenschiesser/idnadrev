@@ -32,10 +32,8 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import java.lang.management.ManagementFactory;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 @ActivityScoped
 public class ActivityStore {
@@ -162,19 +160,23 @@ public class ActivityStore {
     if (Platform.isFxApplicationThread()) {
       return;
     }
-    if (!isDebugging) {
+//    if (!isDebugging) {
+//      try {
+//        loadingFuture.get(1, TimeUnit.SECONDS);
+//      } catch (InterruptedException e) {
+//        //
+//      } catch (ExecutionException e) {
+//        throw new RuntimeException(e.getCause());
+//      } catch (TimeoutException e) {
+//        log.warn("Waited too long for loading, will continue.");
+//      }
+//    } else {
       try {
-        loadingFuture.get(1, TimeUnit.SECONDS);
-      } catch (InterruptedException e) {
-        //
-      } catch (ExecutionException e) {
-        throw new RuntimeException(e.getCause());
-      } catch (TimeoutException e) {
-        log.warn("Waited too long for loading, will continue.");
+        loadingFuture.join();
+      } catch (CancellationException e) {
+        //ok
       }
-    } else {
-      loadingFuture.join();
-    }
+//    }
   }
 
   public void waitForSave() {
@@ -184,19 +186,23 @@ public class ActivityStore {
     if (Platform.isFxApplicationThread()) {
       return;
     }
-    if (!isDebugging) {
-      try {
-        savingFuture.get(1, TimeUnit.SECONDS);
-      } catch (InterruptedException e) {
-        //
-      } catch (ExecutionException e) {
-        throw new RuntimeException(e.getCause());
-      } catch (TimeoutException e) {
-        log.warn("Waited too long for saving, will continue.");
-      }
-    } else {
+//    if (!isDebugging) {
+//      try {
+//        savingFuture.get(1, TimeUnit.SECONDS);
+//      } catch (InterruptedException e) {
+//        //
+//      } catch (ExecutionException e) {
+//        throw new RuntimeException(e.getCause());
+//      } catch (TimeoutException e) {
+//        log.warn("Waited too long for saving, will continue.");
+//      }
+//    } else {
+    try {
       savingFuture.join();
+    } catch (CancellationException e) {
+      //ok
     }
+//    }
   }
 
   public void waitForDataSource() {
