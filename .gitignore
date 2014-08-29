@@ -17,3 +17,4 @@ data/mathjax
 data/*.css
 files/**
 version.info
+**/client_secrets.json
