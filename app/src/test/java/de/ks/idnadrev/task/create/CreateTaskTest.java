@@ -105,6 +105,7 @@ public class CreateTaskTest {
       taskSchedule.dueTime.setText("11:35");
       expectedOutcomeEditor.setText("outcome123");
     });
+    Thread.sleep(150);
     activityController.waitForTasks();
     FXPlatform.waitForFX();
     FXPlatform.invokeLater(() -> {
@@ -176,13 +177,14 @@ public class CreateTaskTest {
     assertTrue(task.isProject());
   }
 
-  protected void createTask(String name, Consumer<MainTaskInfo> consumer) {
+  protected void createTask(String name, Consumer<MainTaskInfo> consumer) throws InterruptedException {
     FXPlatform.waitForFX();
     activityController.waitForDataSource();
     FXPlatform.invokeLater(() -> {
       controller.name.setText(name);
       consumer.accept(controller);
     });
+    Thread.sleep(150);
     activityController.waitForTasks();
     FXPlatform.waitForFX();
     FXPlatform.invokeLater(() -> {
