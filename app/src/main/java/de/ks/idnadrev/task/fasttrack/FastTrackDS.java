@@ -45,9 +45,11 @@ public class FastTrackDS extends NewInstanceDataSource<Task> {
         log.debug("Found existing task {}", task);
         beforeSaving.accept(task);
       } else {
-        beforeSaving.accept(model);
-        em.persist(model);
-        log.debug("Creating new task {}", model);
+        if (model != null && model.getName() != null && model.getName().trim().length() > 0) {
+          beforeSaving.accept(model);
+          em.persist(model);
+          log.debug("Creating new task {}", model);
+        }
       }
     });
   }
