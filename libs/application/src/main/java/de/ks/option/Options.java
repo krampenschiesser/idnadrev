@@ -37,6 +37,9 @@ public class Options {
 
     Object retval = objenesis.newInstance(proxy);
     ((Proxy) retval).setHandler((self, thisMethod, proceed, args) -> {
+      if (thisMethod.getDeclaringClass().equals(Object.class)) {
+        return thisMethod.invoke(options, args);
+      }
       OptionSource optionSource = CDI.current().select(OptionSource.class).get();
       String key = thisMethod.getDeclaringClass().getName() + "." + thisMethod.getName();
       Object value = optionSource.readOption(key);
