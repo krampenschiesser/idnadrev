@@ -23,8 +23,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class CompletableFutureTest {
 
@@ -77,13 +78,60 @@ public class CompletableFutureTest {
   @Test
   public void testSecondThen() throws Exception {
     AtomicInteger result = new AtomicInteger();
+    AtomicInteger cumulation = new AtomicInteger();
     CompletableFuture<Integer> future = new CompletableFuture<>();
-    future.thenApply(i -> i + 1).thenAccept(i -> result.set(i));
-    future.thenApply(i -> i + 2).thenAccept(i -> result.set(i));
-    future.thenApply(i -> i + 3).thenAccept(i -> result.set(i));
-    future.thenApply(i -> i + 4).thenAccept(i -> result.set(i));
+    Consumer<Integer> consumer = i -> {
+      result.set(i);
+      cumulation.addAndGet(i);
+    };
+    assertEquals(0, future.getNumberOfDependents());
+
+    CompletableFuture<Void> first = future.thenApply(i -> i + 1).thenAccept(consumer);
+    CompletableFuture<Void> second = future.thenApply(i -> i + 2).thenAccept(consumer);
+    CompletableFuture<Void> third = future.thenApply(i -> i + 3).thenAccept(consumer);
+    CompletableFuture<Void> fourth = future.thenApply(i -> i + 4).thenAccept(consumer);
+    assertEquals(4, future.getNumberOfDependents());
+
+    assertNotSame(first, second);
+    first.exceptionally(t -> null);
+    first.thenRun(() -> "".toCharArray());
+    assertEquals(2, first.getNumberOfDependents());
+    assertEquals(0, second.getNumberOfDependents());
 
     future.complete(1);
     assertEquals(2, result.intValue());
+    assertTrue(first.isDone());
+    assertTrue(second.isDone());
+    assertTrue(third.isDone());
+    assertTrue(fourth.isDone());
+
+    assertEquals(14, cumulation.get());
+  }
+
+  @Test
+  public void testExceptionally() throws Exception {
+    AtomicInteger received = new AtomicInteger();
+
+    CompletableFuture<Integer> future = new CompletableFuture<>();
+    future.thenAccept(i -> i++)//
+            .thenRun(() -> {
+              throw new RuntimeException("test");
+            })//
+            .thenRun(() -> "".toString())//
+            .thenRun(() -> "".toString())//
+            .exceptionally(t -> {
+              received.incrementAndGet();
+              return null;
+            });
+    future.exceptionally(t -> {
+      received.incrementAndGet();
+      received.incrementAndGet();
+      return 0;
+    });
+
+    assertEquals(2, future.getNumberOfDependents());
+
+    future.complete(1);
+    assertEquals(1, received.get());
   }
 }
