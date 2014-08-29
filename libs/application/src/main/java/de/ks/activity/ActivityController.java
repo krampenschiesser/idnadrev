@@ -229,9 +229,9 @@ public class ActivityController {
         }
 
         context.startActivity(id);
-        shutdownExecutors();
         initialization.getActivityCallbacks().forEach(ActivityCallback::onStop);
         initialization.getControllers().forEach((controller) -> eventBus.unregister(controller));
+        shutdownExecutors();
         registeredActivities.remove(id);
 
         context.stopActivity(id);
