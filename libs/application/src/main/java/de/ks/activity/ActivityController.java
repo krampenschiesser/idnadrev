@@ -27,7 +27,6 @@ import de.ks.activity.loading.ActivityLoadingExecutor;
 import de.ks.application.Navigator;
 import de.ks.datasource.DataSource;
 import de.ks.eventsystem.bus.EventBus;
-import de.ks.executor.JavaFXExecutorService;
 import de.ks.util.LockSupport;
 import javafx.application.Platform;
 import javafx.scene.Node;
@@ -45,7 +44,9 @@ import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -74,7 +75,6 @@ public class ActivityController {
 
   protected final Map<String, ActivityCfg> registeredActivities = new HashMap<>();
   protected final ReentrantLock lock = new ReentrantLock(true);
-  private volatile CompletableFuture<?> finishingFutures;
 
   public void stopCurrentStartNew(ActivityHint activityHint) {
     loadInExecutor("could not start activityhint " + activityHint, () -> {
@@ -111,7 +111,6 @@ public class ActivityController {
           ActivityCfg activityCfg = CDI.current().select(activityHint.getNextActivity()).get();
 
           registeredActivities.put(id, activityCfg);
-          finishingFutures = null;
 
           activityCfg.setActivityHint(activityHint);
 
@@ -173,7 +172,7 @@ public class ActivityController {
     initialization.getActivityCallbacks().forEach(ActivityCallback::onResume);
     if (reload) {
       reload();
-      finishingFutures.join();
+      store.waitForLoad();
     }
     log.info("Resumed activity {}", id);
   }
@@ -307,36 +306,7 @@ public class ActivityController {
   }
 
   public void waitForDataSource() {
-    if (finishingFutures == null || finishingFutures.isDone()) {
-      return;
-    }
-    if (Platform.isFxApplicationThread()) {
-      return;
-    }
-    try (LockSupport support = new LockSupport(lock)) {
-      try {
-        long start = System.currentTimeMillis();
-        boolean loop = true;
-        while (loop) {
-          try {
-            finishingFutures.get(100, TimeUnit.MILLISECONDS);
-            loop = false;
-          } catch (TimeoutException e) {
-            if (executor.isShutdown()) {
-              loop = false;
-            } else {
-              loop = true;
-            }
-            if (System.currentTimeMillis() - start > TimeUnit.SECONDS.toMillis(10)) {
-              log.warn("Waited for 10s for datasource, did not return.");
-              return;
-            }
-          }
-        }
-      } catch (InterruptedException | ExecutionException e) {
-        throw new RuntimeException(e);
-      }
-    }
+    store.waitForDataSource();
   }
 
   public ActivityCfg getCurrentActivity() {
@@ -387,56 +357,12 @@ public class ActivityController {
 
   @SuppressWarnings("unchecked")
   public void save() {
-    waitForDataSource();
-    DataSource dataSource = store.getDatasource();
-
-    Object model = store.getModel();
-    CompletableFuture<Object> save = CompletableFuture.supplyAsync(() -> {
-      log.debug("Start saving model");
-      dataSource.saveModel(model, m -> {
-        store.getBinding().applyControllerContent(m);
-        initialization.getDataStoreCallbacks().forEach(c -> c.duringSave(m));
-      });
-      log.debug("Initially saved model '{}'", model);
-      return model;
-    }, executor);
-    finishingFutures = save.thenApply((value) -> {
-      log.debug("Saved model '{}'", value);
-      return value;
-    });
-
-    save.exceptionally((t) -> {
-      log.error("Could not save model {} DataSource {} for activity {}", model, dataSource, getCurrentActivityId(), t);
-      return null;
-    });
+    store.save();
   }
 
   @SuppressWarnings("unchecked")
   public void reload() {
-    loadInExecutor("reload", () -> {
-      waitForDataSource();
-      DataSource dataSource = store.getDatasource();
-      JavaFXExecutorService javafxExecutor = getJavaFXExecutor();
-
-      CompletableFuture<Object> load = CompletableFuture.supplyAsync(() -> dataSource.loadModel(m -> {
-        if (m != null) {
-          initialization.getDataStoreCallbacks().forEach(c -> c.duringLoad(m));
-        }
-      }), executor);
-      finishingFutures = load.thenApplyAsync((value) -> {
-        log.debug("Loaded model '{}'", value);
-        CDI.current().select(ActivityStore.class).get().setModel(value);
-        return value;
-      }, javafxExecutor).thenAcceptAsync((value) -> {
-        EventBus eventBus = CDI.current().select(EventBus.class).get();
-        eventBus.post(new ActivityLoadFinishedEvent(value));
-      }, javafxExecutor);
-
-      load.exceptionally((t) -> {
-        log.error("Could not load DataSource {} for activity {}", dataSource, getCurrentActivityId(), t);
-        return null;
-      });
-    });
+    store.reload();
   }
 
   @PreDestroy
