@@ -20,7 +20,7 @@ import de.ks.menu.MenuItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@MenuItem(order = 1, value = "/main/thought")
+@MenuItem(order = 0, value = "/main/thought")
 public class AddThoughtActivity extends ActivityCfg {
   private static final Logger log = LoggerFactory.getLogger(AddThoughtActivity.class);
 
