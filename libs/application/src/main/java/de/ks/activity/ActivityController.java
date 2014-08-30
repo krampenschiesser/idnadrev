@@ -91,6 +91,7 @@ public class ActivityController {
         if (isCurrentActivity(activityHint)) {
           log.debug("skip starting activity {} because it is already active");
           reload();
+          store.waitForLoad();
           return;
         }
         showBusy();
@@ -128,6 +129,7 @@ public class ActivityController {
 
           if (activityHint.needsReload()) {
             reload();
+            store.waitForLoad();
           }
           log.info("Started activity {}", id);
         }
