@@ -32,7 +32,7 @@ public class LastTextChange extends LastExecutionGroup<String> {
   }
 
   public LastTextChange(TextInputControl textInput, long waitTime, ExecutorService executor) {
-    super(waitTime, executor);
+    super("lastTextChange-" + textInput.getId(), waitTime, executor);
 
     textInput.textProperty().addListener((p, o, n) -> {
       if (n != null) {

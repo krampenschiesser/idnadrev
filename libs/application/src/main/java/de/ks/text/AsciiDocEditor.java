@@ -114,7 +114,7 @@ public class AsciiDocEditor implements Initializable {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    renderGroup = new LastExecutionGroup<>(500, controller.getExecutorService());
+    renderGroup = new LastExecutionGroup<>("adocrender", 500, controller.getExecutorService());
 
     CompletableFuture.supplyAsync(() -> new WebView(), controller.getJavaFXExecutor())//
             .thenAccept(webView -> {

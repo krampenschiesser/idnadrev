@@ -46,13 +46,15 @@ public class LastExecutionGroup<T> implements Runnable {
   private static final Logger log = LoggerFactory.getLogger(LastExecutionGroup.class);
 
   protected final LinkedBlockingDeque<LastExecutionEvent<T>> queue = new LinkedBlockingDeque<>();
+  private final String desc;
   protected final long waitTime;
   protected ExecutorService executor;
   protected final AtomicBoolean running = new AtomicBoolean(false);
 
   protected volatile CompletableFuture<T> result;
 
-  public LastExecutionGroup(long waitTime, ExecutorService executor) {
+  public LastExecutionGroup(String desc, long waitTime, ExecutorService executor) {
+    this.desc = desc;
     this.waitTime = waitTime;
     this.executor = executor;
   }
@@ -71,7 +73,7 @@ public class LastExecutionGroup<T> implements Runnable {
   }
 
   public void run() {
-    log.info("Starting execution group {}.", this);
+    log.info("Starting execution group {}.", desc);
     try {
       T value = null;
       while (!queue.isEmpty()) {
@@ -85,7 +87,7 @@ public class LastExecutionGroup<T> implements Runnable {
         if (strVal.length() > 100) {
           strVal = strVal.substring(0, 100);
         }
-        log.debug("Finished execution group {} with value {}", this, strVal);
+        log.debug("Finished execution group {} with value {}", desc, strVal);
       }
       result.complete(value);
     } catch (Throwable t) {
@@ -119,5 +121,13 @@ public class LastExecutionGroup<T> implements Runnable {
         }
       }
     }
+  }
+
+  @Override
+  public String toString() {
+    return "LastExecutionGroup{" +
+            "desc='" + desc + '\'' +
+            ", waitTime=" + waitTime +
+            '}';
   }
 }

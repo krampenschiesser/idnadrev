@@ -35,7 +35,7 @@ public class LastExecutionGroupTest {
   @Before
   public void setUp() throws Exception {
     executorService = Executors.newFixedThreadPool(2);
-    lastExecutionGroup = new LastExecutionGroup<Integer>(50, executorService);
+    lastExecutionGroup = new LastExecutionGroup<Integer>("test", 50, executorService);
     warmUpPool();
   }
 
