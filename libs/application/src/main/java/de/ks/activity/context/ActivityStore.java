@@ -22,8 +22,6 @@ import de.ks.activity.initialization.ActivityInitialization;
 import de.ks.binding.Binding;
 import de.ks.datasource.DataSource;
 import de.ks.eventsystem.bus.EventBus;
-import de.ks.executor.group.LastExecutionGroup;
-import de.ks.util.LockSupport;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import org.slf4j.Logger;
@@ -34,7 +32,7 @@ import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import java.lang.management.ManagementFactory;
 import java.util.concurrent.*;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @ActivityScoped
 public class ActivityStore {
@@ -42,6 +40,10 @@ public class ActivityStore {
 
   static {
     isDebugging = ManagementFactory.getRuntimeMXBean().getInputArguments().stream().filter(s -> s.contains("jdwp")).findFirst().isPresent();
+  }
+
+  static enum LoadOrSave {
+    LOAD, SAVE;
   }
 
   private static final Logger log = LoggerFactory.getLogger(ActivityStore.class);
@@ -58,17 +60,15 @@ public class ActivityStore {
   protected ActivityInitialization initialization;
 
   protected final SimpleObjectProperty<Object> model = new SimpleObjectProperty<>();
-  protected final ReentrantLock lock = new ReentrantLock();
+
+  protected final ConcurrentLinkedDeque<LoadOrSave> queue = new ConcurrentLinkedDeque<>();
+  protected final AtomicBoolean inExecution = new AtomicBoolean();
   protected DataSource datasource;
-  protected LastExecutionGroup loadingGroup;
-  protected LastExecutionGroup savingGroup;
   protected volatile CompletableFuture<Void> loadingFuture;
   protected volatile CompletableFuture<Object> savingFuture;
 
   @PostConstruct
   public void initialize() {
-    loadingGroup = new LastExecutionGroup<>(context.getCurrentActivity() + "-load", 10, executor);
-    savingGroup = new LastExecutionGroup<>(context.getCurrentActivity() + "-save", 10, executor);
     model.addListener(binding::bindChangedModel);
   }
 
@@ -99,98 +99,139 @@ public class ActivityStore {
     return datasource;
   }
 
+  protected void advanceInQueue() {
+    LoadOrSave first = queue.peekFirst();
+    if (first != null && inExecution.compareAndSet(false, true)) {
+      log.trace("Advanced in queue, next task is {}", first);
+      if (first == LoadOrSave.SAVE) {
+        doSave();
+      } else if (first == LoadOrSave.LOAD) {
+        doReload();
+      }
+    } else {
+      log.trace("Could not advance in queue");
+    }
+  }
+
+  protected synchronized void finishExecution() {
+    queue.removeFirst();
+    inExecution.set(false);
+    log.trace("Finished execution");
+    advanceInQueue();
+  }
+
   @SuppressWarnings("unchecked")
-  public void reload() {
-    try (LockSupport support = new LockSupport(lock)) {
-      CompletableFuture<Object> load = loadingGroup.schedule(() -> datasource.loadModel(m -> {
-        waitForSave();
+  protected void doReload() {
+    CompletableFuture<Object> load = CompletableFuture.supplyAsync(() -> {
+      return datasource.loadModel(m -> {
         if (m != null) {
           initialization.getDataStoreCallbacks().forEach(c -> c.duringLoad(m));
         }
-      }));
+      });
+    }, executor);
 
-      boolean isFirstScheduling = load.getNumberOfDependents() == 0;
-      if (isFirstScheduling) {
+    boolean isFirstScheduling = load.getNumberOfDependents() == 0;
 
-        loadingFuture = load.thenApplyAsync((value) -> {
-          log.debug("Loaded model '{}'", value);
-          setModel(value);
-          return value;
-        }, javaFXExecutor).thenAcceptAsync((value) -> {
+    if (isFirstScheduling) {
+      loadingFuture = load.thenApplyAsync((value) -> {
+        log.debug("Loaded model '{}'", value);
+        setModel(value);
+        return value;
+      }, javaFXExecutor).thenAcceptAsync((value) -> {
+        try {
           EventBus eventBus = CDI.current().select(EventBus.class).get();
           eventBus.post(new ActivityLoadFinishedEvent(value));
-        }, javaFXExecutor).exceptionally((t) -> {
+        } finally {
+          finishExecution();
+        }
+      }, javaFXExecutor).exceptionally((t) -> {
+        try {
           log.error("Could not load DataSource {} for activity {}", datasource, context.getCurrentActivity(), t);
           return null;
-        });
-      }
+        } finally {
+          finishExecution();
+        }
+      });
     }
+
   }
 
   @SuppressWarnings("unchecked")
-  public void save() {
-    try (LockSupport support = new LockSupport(lock)) {
-      Object model = getModel();
+  protected void doSave() {
+    Object model = getModel();
 
-      CompletableFuture<Object> save = savingGroup.schedule(() -> {
-        waitForLoad();
-        log.debug("Start saving model");
-        datasource.saveModel(model, m -> {
-          getBinding().applyControllerContent(m);
-          initialization.getDataStoreCallbacks().forEach(c -> c.duringSave(m));
-        });
-        log.debug("Initially saved model '{}'", model);
-        return model;
+    CompletableFuture<Object> save = CompletableFuture.supplyAsync(() -> {
+      log.debug("Start saving model");
+      datasource.saveModel(model, m -> {
+        getBinding().applyControllerContent(m);
+        initialization.getDataStoreCallbacks().forEach(c -> c.duringSave(m));
       });
+      log.debug("Initially saved model '{}'", model);
+      return model;
+    }, executor);
 
+    boolean isFirstScheduling = save.getNumberOfDependents() == 0;
 
-      boolean isFirstScheduling = save.getNumberOfDependents() == 0;
-      if (isFirstScheduling) {
-        savingFuture = save.thenApply((value) -> {
+    if (isFirstScheduling) {
+      savingFuture = save.thenApply((value) -> {
+        try {
           log.debug("Saved model '{}'", value);
           return value;
-        }).exceptionally((t) -> {
+        } finally {
+          finishExecution();
+        }
+      }).exceptionally((t) -> {
+        try {
           log.error("Could not save model {} DataSource {} for activity {}", model, datasource, context.getCurrentActivity(), t);
           return null;
-        });
-      }
+        } finally {
+          finishExecution();
+        }
+      });
     }
   }
 
-  public void waitForLoad() {
+  public void reload() {
+    queue.add(LoadOrSave.LOAD);
+    advanceInQueue();
+  }
+
+  public void save() {
+    queue.add(LoadOrSave.SAVE);
+    advanceInQueue();
+  }
+
+  protected void waitForLoad() {
     waitForFuture(loadingFuture, "Waited too long for loading, will continue.");
   }
 
-  public void waitForSave() {
+  protected void waitForSave() {
     waitForFuture(savingFuture, "Waited too long for saving, will continue.");
   }
 
   protected void waitForFuture(CompletableFuture<?> future, String msg) {
-    try (LockSupport support = new LockSupport(lock)) {
+    if (future == null || future.isDone()) {
+      return;
+    }
+    if (Platform.isFxApplicationThread()) {
+      return;
+    }
+    if (!isDebugging) {
+      try {
+        future.get(10, TimeUnit.SECONDS);
+      } catch (InterruptedException e) {
+        //
+      } catch (ExecutionException e) {
+        throw new RuntimeException(e.getCause());
+      } catch (TimeoutException e) {
 
-      if (future == null || future.isDone()) {
-        return;
+        log.warn(msg);
       }
-      if (Platform.isFxApplicationThread()) {
-        return;
-      }
-      if (!isDebugging) {
-        try {
-          future.get(1, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-          //
-        } catch (ExecutionException e) {
-          throw new RuntimeException(e.getCause());
-        } catch (TimeoutException e) {
-
-          log.warn(msg);
-        }
-      } else {
-        try {
-          future.join();
-        } catch (CancellationException e) {
-          //ok
-        }
+    } else {
+      try {
+        future.join();
+      } catch (CancellationException e) {
+        //ok
       }
     }
   }
@@ -198,5 +239,14 @@ public class ActivityStore {
   public void waitForDataSource() {
     waitForLoad();
     waitForSave();
+    while (!queue.isEmpty()) {
+      waitForLoad();
+      waitForSave();
+      try {
+        Thread.sleep(100);
+      } catch (InterruptedException e) {
+        //
+      }
+    }
   }
 }

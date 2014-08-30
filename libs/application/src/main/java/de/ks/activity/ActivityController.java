@@ -91,7 +91,7 @@ public class ActivityController {
         if (isCurrentActivity(activityHint)) {
           log.debug("skip starting activity {} because it is already active");
           reload();
-          store.waitForLoad();
+          store.waitForDataSource();
           return;
         }
         showBusy();
@@ -129,7 +129,7 @@ public class ActivityController {
 
           if (activityHint.needsReload()) {
             reload();
-            store.waitForLoad();
+            store.waitForDataSource();
           }
           log.info("Started activity {}", id);
         }
@@ -174,7 +174,7 @@ public class ActivityController {
     initialization.getActivityCallbacks().forEach(ActivityCallback::onResume);
     if (reload) {
       reload();
-      store.waitForLoad();
+      store.waitForDataSource();
     }
     log.info("Resumed activity {}", id);
   }
@@ -233,6 +233,7 @@ public class ActivityController {
         context.startActivity(id);
         initialization.getActivityCallbacks().forEach(ActivityCallback::onStop);
         initialization.getControllers().forEach((controller) -> eventBus.unregister(controller));
+        store.waitForDataSource();
         shutdownExecutors();
         registeredActivities.remove(id);
 
