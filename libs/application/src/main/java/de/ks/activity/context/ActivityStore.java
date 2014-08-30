@@ -153,33 +153,15 @@ public class ActivityStore {
   }
 
   public void waitForLoad() {
-    if (loadingFuture == null || loadingFuture.isDone()) {
-      return;
-    }
-    if (Platform.isFxApplicationThread()) {
-      return;
-    }
-    if (!isDebugging) {
-      try {
-        loadingFuture.get(1, TimeUnit.SECONDS);
-      } catch (InterruptedException e) {
-        //
-      } catch (ExecutionException e) {
-        throw new RuntimeException(e.getCause());
-      } catch (TimeoutException e) {
-        log.warn("Waited too long for loading, will continue.");
-      }
-    } else {
-      try {
-        loadingFuture.join();
-      } catch (CancellationException e) {
-        //ok
-      }
-    }
+    waitForFuture(loadingFuture, "Waited too long for loading, will continue.");
   }
 
   public void waitForSave() {
-    if (savingFuture == null || savingFuture.isDone()) {
+    waitForFuture(savingFuture, "Waited too long for saving, will continue.");
+  }
+
+  protected void waitForFuture(CompletableFuture<?> future, String msg) {
+    if (future == null || future.isDone()) {
       return;
     }
     if (Platform.isFxApplicationThread()) {
@@ -187,17 +169,18 @@ public class ActivityStore {
     }
     if (!isDebugging) {
       try {
-        savingFuture.get(1, TimeUnit.SECONDS);
+        future.get(1, TimeUnit.SECONDS);
       } catch (InterruptedException e) {
         //
       } catch (ExecutionException e) {
         throw new RuntimeException(e.getCause());
       } catch (TimeoutException e) {
-        log.warn("Waited too long for saving, will continue.");
+
+        log.warn(msg);
       }
     } else {
       try {
-        savingFuture.join();
+        future.join();
       } catch (CancellationException e) {
         //ok
       }
