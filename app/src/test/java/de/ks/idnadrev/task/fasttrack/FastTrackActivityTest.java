@@ -27,6 +27,8 @@ import de.ks.util.FXPlatform;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
@@ -38,6 +40,7 @@ import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
 public class FastTrackActivityTest extends ActivityTest {
+  private static final Logger log = LoggerFactory.getLogger(FastTrackActivityTest.class);
 
   @Override
   protected Class<? extends ActivityCfg> getActivityClass() {
@@ -102,7 +105,6 @@ public class FastTrackActivityTest extends ActivityTest {
     FXPlatform.invokeLater(() -> description.setText("blubber"));
     FXPlatform.invokeLater(() -> fastTrack.finishTask());
     activityController.waitForDataSource();
-
     PersistentWork.wrap(() -> {
       Task task = PersistentWork.forName(Task.class, "bla");
       assertNotNull(task);

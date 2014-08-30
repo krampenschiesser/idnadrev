@@ -83,8 +83,14 @@ public class FastTrack extends BaseController<Task> {
 
   @FXML
   void finishTask() {
-    controller.save();
+    if (isNameSet()) {
+      controller.save();
+    }
     controller.stopCurrent();
+  }
+
+  private boolean isNameSet() {
+    return nameController.getInput().textProperty().getValueSafe().trim().length() > 0;
   }
 
   private void showSpentTime() {
@@ -101,12 +107,16 @@ public class FastTrack extends BaseController<Task> {
 
   @Override
   public void onStop() {
-    controller.save();
+    if (isNameSet()) {
+      controller.save();
+    }
   }
 
   @Override
   public void onSuspend() {
-    controller.save();
+    if (isNameSet()) {
+      controller.save();
+    }
   }
 
   @Override
