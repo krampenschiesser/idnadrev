@@ -69,26 +69,6 @@ public class FastTrack extends BaseController<Task> {
     descriptionBinding.bindBidirectional(description.textProperty());
   }
 
-  @Override
-  public void duringSave(Task model) {
-    super.duringSave(model);
-    WorkUnit workUnit = new WorkUnit(model);
-    workUnit.setStart(start.get());
-    workUnit.setEnd(LocalDateTime.now());
-    if (model.isFinished() || model.getId() == 0) {
-      model.setFinished(true);
-    }
-    PersistentWork.persist(workUnit);
-  }
-
-  @FXML
-  void finishTask() {
-    if (isNameSet()) {
-      controller.save();
-    }
-    controller.stopCurrent();
-  }
-
   private boolean isNameSet() {
     return nameController.getInput().textProperty().getValueSafe().trim().length() > 0;
   }
@@ -96,6 +76,14 @@ public class FastTrack extends BaseController<Task> {
   private void showSpentTime() {
     Duration duration = Duration.between(start.get(), LocalDateTime.now());
     controller.getJavaFXExecutor().execute(() -> spentTime.setText(duration.toMinutes() + "m"));
+  }
+
+  @FXML
+  void finishTask() {
+    if (isNameSet() && start.get() != null) {
+      controller.save();
+    }
+    controller.stopCurrent();
   }
 
   @Override
@@ -107,14 +95,14 @@ public class FastTrack extends BaseController<Task> {
 
   @Override
   public void onStop() {
-    if (isNameSet()) {
+    if (isNameSet() && start.get() != null) {
       controller.save();
     }
   }
 
   @Override
   public void onSuspend() {
-    if (isNameSet()) {
+    if (isNameSet() && start.get() != null) {
       controller.save();
     }
   }
@@ -128,6 +116,19 @@ public class FastTrack extends BaseController<Task> {
   protected void onRefresh(Task model) {
     super.onRefresh(model);
     spentTime.setText("0min");
+  }
+
+  @Override
+  public void duringSave(Task model) {
+    super.duringSave(model);
+    WorkUnit workUnit = new WorkUnit(model);
+    workUnit.setStart(start.get());
+    workUnit.setEnd(LocalDateTime.now());
+    if (model.isFinished() || model.getId() == 0) {
+      model.setFinished(true);
+    }
+    PersistentWork.persist(workUnit);
+    start.set(null);
   }
 
   public LocalDateTime getStart() {
