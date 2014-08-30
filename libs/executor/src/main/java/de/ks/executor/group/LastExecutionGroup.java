@@ -25,27 +25,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 public class LastExecutionGroup<T> implements Runnable {
-  static class LastExecutionEvent<T> {
-    protected final long scheduleTime;
-    private final Supplier<T> delegate;
-
-    public LastExecutionEvent(Supplier<T> delegate) {
-      this.delegate = delegate;
-      this.scheduleTime = System.currentTimeMillis();
-    }
-
-    public long getScheduleTime() {
-      return scheduleTime;
-    }
-
-    public Supplier<T> getDelegate() {
-      return delegate;
-    }
-  }
 
   private static final Logger log = LoggerFactory.getLogger(LastExecutionGroup.class);
 
-  protected final LinkedBlockingDeque<LastExecutionEvent<T>> queue = new LinkedBlockingDeque<>();
+  protected final LinkedBlockingDeque<ExecutionGroupEvent<T>> queue = new LinkedBlockingDeque<>();
   private final String desc;
   protected final long waitTime;
   protected ExecutorService executor;
@@ -60,7 +43,7 @@ public class LastExecutionGroup<T> implements Runnable {
   }
 
   public CompletableFuture<T> schedule(Supplier<T> supplier) {
-    queue.add(new LastExecutionEvent<T>(supplier));
+    queue.add(new ExecutionGroupEvent<T>(supplier));
     if (running.compareAndSet(false, true)) {
       result = new CompletableFuture<>();
       executor.submit(this);
@@ -73,36 +56,41 @@ public class LastExecutionGroup<T> implements Runnable {
   }
 
   public void run() {
-    log.info("Starting execution group {}.", desc);
+    log.trace("Starting {}.", this);
     try {
-      T value = null;
-      while (!queue.isEmpty()) {
-        T nextValue = getValue();
-        if (nextValue != null) {
-          value = nextValue;
-        }
-      }
+      T value = getValueFromQueue();
       if (log.isDebugEnabled()) {
         String strVal = String.valueOf(value);
         if (strVal.length() > 100) {
           strVal = strVal.substring(0, 100);
         }
-        log.debug("Finished execution group {} with value {}", desc, strVal);
+        log.trace("Finished {} with value {}", this, strVal);
       }
       result.complete(value);
     } catch (Throwable t) {
-      log.error("Error while running execution group {}", this, t);
+      log.error("Error while running {}", this, t);
       result.completeExceptionally(t);
     } finally {
       running.set(false);
     }
   }
 
+  protected T getValueFromQueue() {
+    T value = null;
+    while (!queue.isEmpty()) {
+      T nextValue = getValue();
+      if (nextValue != null) {
+        value = nextValue;
+      }
+    }
+    return value;
+  }
+
   protected T getValue() {
-    LastExecutionEvent<T> lastEvent = null;
+    ExecutionGroupEvent<T> lastEvent = null;
     while (true) {
       try {
-        LastExecutionEvent<T> poll = queue.poll(waitTime, TimeUnit.MILLISECONDS);
+        ExecutionGroupEvent<T> poll = queue.poll(waitTime, TimeUnit.MILLISECONDS);
         if (poll == null) {
           if (lastEvent != null) {
             T value = lastEvent.getDelegate().get();
@@ -125,9 +113,10 @@ public class LastExecutionGroup<T> implements Runnable {
 
   @Override
   public String toString() {
-    return "LastExecutionGroup{" +
-            "desc='" + desc + '\'' +
-            ", waitTime=" + waitTime +
-            '}';
+    final StringBuilder sb = new StringBuilder("LastExecutionGroup{");
+    sb.append("desc='").append(desc).append('\'');
+    sb.append(", waitTime=").append(waitTime);
+    sb.append('}');
+    return sb.toString();
   }
 }
