@@ -15,10 +15,14 @@
 package de.ks.executor;
 
 import de.ks.reflection.ReflectionUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.*;
 
 public class CancelRejection implements RejectedExecutionHandler {
+  private static final Logger log = LoggerFactory.getLogger(CancelRejection.class);
+
   @Override
   public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
     if (r instanceof RunnableScheduledFuture) {
@@ -31,9 +35,11 @@ public class CancelRejection implements RejectedExecutionHandler {
       Object dst = ReflectionUtil.getFieldValue(r, "dst");
       if (dst instanceof CompletableFuture) {
         ((CompletableFuture) dst).cancel(false);
+        log.debug("Canceled completable future {}", r);
       }
     } else if (r instanceof Future) {
       ((Future) r).cancel(false);
+      log.debug("Canceled future {}", r);
     }
   }
 }
