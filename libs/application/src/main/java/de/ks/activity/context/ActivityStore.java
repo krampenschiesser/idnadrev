@@ -67,8 +67,8 @@ public class ActivityStore {
 
   @PostConstruct
   public void initialize() {
-    loadingGroup = new LastExecutionGroup<>(10, executor);
-    savingGroup = new LastExecutionGroup<>(10, executor);
+    loadingGroup = new LastExecutionGroup<>(context.getCurrentActivity() + "-load", 10, executor);
+    savingGroup = new LastExecutionGroup<>(context.getCurrentActivity() + "-save", 10, executor);
     model.addListener(binding::bindChangedModel);
   }
 
@@ -101,10 +101,9 @@ public class ActivityStore {
 
   @SuppressWarnings("unchecked")
   public void reload() {
-    waitForSave();
     try (LockSupport support = new LockSupport(lock)) {
-
       CompletableFuture<Object> load = loadingGroup.schedule(() -> datasource.loadModel(m -> {
+        waitForSave();
         if (m != null) {
           initialization.getDataStoreCallbacks().forEach(c -> c.duringLoad(m));
         }
@@ -130,18 +129,19 @@ public class ActivityStore {
 
   @SuppressWarnings("unchecked")
   public void save() {
-    waitForLoad();
     try (LockSupport support = new LockSupport(lock)) {
       Object model = getModel();
-      CompletableFuture<Object> save = CompletableFuture.supplyAsync(() -> {
-        log.error("Start saving model");
+
+      CompletableFuture<Object> save = savingGroup.schedule(() -> {
+        waitForLoad();
+        log.debug("Start saving model");
         datasource.saveModel(model, m -> {
           getBinding().applyControllerContent(m);
           initialization.getDataStoreCallbacks().forEach(c -> c.duringSave(m));
         });
-        log.error("Initially saved model '{}'", model);
+        log.debug("Initially saved model '{}'", model);
         return model;
-      }, executor);
+      });
 
 
       boolean isFirstScheduling = save.getNumberOfDependents() == 0;
