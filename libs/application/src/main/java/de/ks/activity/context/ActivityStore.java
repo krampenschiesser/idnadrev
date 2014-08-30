@@ -23,6 +23,7 @@ import de.ks.binding.Binding;
 import de.ks.datasource.DataSource;
 import de.ks.eventsystem.bus.EventBus;
 import de.ks.executor.group.LastExecutionGroup;
+import de.ks.util.LockSupport;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import org.slf4j.Logger;
@@ -33,6 +34,7 @@ import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import java.lang.management.ManagementFactory;
 import java.util.concurrent.*;
+import java.util.concurrent.locks.ReentrantLock;
 
 @ActivityScoped
 public class ActivityStore {
@@ -56,6 +58,7 @@ public class ActivityStore {
   protected ActivityInitialization initialization;
 
   protected final SimpleObjectProperty<Object> model = new SimpleObjectProperty<>();
+  protected final ReentrantLock lock = new ReentrantLock();
   protected DataSource datasource;
   protected LastExecutionGroup loadingGroup;
   protected LastExecutionGroup savingGroup;
@@ -99,56 +102,58 @@ public class ActivityStore {
   @SuppressWarnings("unchecked")
   public void reload() {
     waitForSave();
+    try (LockSupport support = new LockSupport(lock)) {
 
-    CompletableFuture<Object> load = loadingGroup.schedule(() -> datasource.loadModel(m -> {
-      if (m != null) {
-        initialization.getDataStoreCallbacks().forEach(c -> c.duringLoad(m));
+      CompletableFuture<Object> load = loadingGroup.schedule(() -> datasource.loadModel(m -> {
+        if (m != null) {
+          initialization.getDataStoreCallbacks().forEach(c -> c.duringLoad(m));
+        }
+      }));
+
+      boolean isFirstScheduling = load.getNumberOfDependents() == 0;
+      if (isFirstScheduling) {
+
+        loadingFuture = load.thenApplyAsync((value) -> {
+          log.debug("Loaded model '{}'", value);
+          setModel(value);
+          return value;
+        }, javaFXExecutor).thenAcceptAsync((value) -> {
+          EventBus eventBus = CDI.current().select(EventBus.class).get();
+          eventBus.post(new ActivityLoadFinishedEvent(value));
+        }, javaFXExecutor).exceptionally((t) -> {
+          log.error("Could not load DataSource {} for activity {}", datasource, context.getCurrentActivity(), t);
+          return null;
+        });
       }
-    }));
-
-    boolean isFirstScheduling = load.getNumberOfDependents() == 0;
-    if (isFirstScheduling) {
-
-      loadingFuture = load.thenApplyAsync((value) -> {
-        log.debug("Loaded model '{}'", value);
-        setModel(value);
-        return value;
-      }, javaFXExecutor).thenAcceptAsync((value) -> {
-        EventBus eventBus = CDI.current().select(EventBus.class).get();
-        eventBus.post(new ActivityLoadFinishedEvent(value));
-      }, javaFXExecutor).exceptionally((t) -> {
-        log.error("Could not load DataSource {} for activity {}", datasource, context.getCurrentActivity(), t);
-        return null;
-      });
     }
   }
 
   @SuppressWarnings("unchecked")
   public void save() {
     waitForLoad();
+    try (LockSupport support = new LockSupport(lock)) {
+      Object model = getModel();
+      CompletableFuture<Object> save = CompletableFuture.supplyAsync(() -> {
+        log.error("Start saving model");
+        datasource.saveModel(model, m -> {
+          getBinding().applyControllerContent(m);
+          initialization.getDataStoreCallbacks().forEach(c -> c.duringSave(m));
+        });
+        log.error("Initially saved model '{}'", model);
+        return model;
+      }, executor);
 
-    Object model = getModel();
-    CompletableFuture<Object> save = CompletableFuture.supplyAsync(() -> {
-      log.debug("Start saving model");
-      datasource.saveModel(model, m -> {
-        getBinding().applyControllerContent(m);
-        initialization.getDataStoreCallbacks().forEach(c -> c.duringSave(m));
-      });
-      log.debug("Initially saved model '{}'", model);
-      return model;
-    }, executor);
 
-
-    boolean isFirstScheduling = save.getNumberOfDependents() == 0;
-    if (isFirstScheduling) {
-
-      savingFuture = save.thenApply((value) -> {
-        log.debug("Saved model '{}'", value);
-        return value;
-      }).exceptionally((t) -> {
-        log.error("Could not save model {} DataSource {} for activity {}", model, datasource, context.getCurrentActivity(), t);
-        return null;
-      });
+      boolean isFirstScheduling = save.getNumberOfDependents() == 0;
+      if (isFirstScheduling) {
+        savingFuture = save.thenApply((value) -> {
+          log.debug("Saved model '{}'", value);
+          return value;
+        }).exceptionally((t) -> {
+          log.error("Could not save model {} DataSource {} for activity {}", model, datasource, context.getCurrentActivity(), t);
+          return null;
+        });
+      }
     }
   }
 
@@ -161,28 +166,31 @@ public class ActivityStore {
   }
 
   protected void waitForFuture(CompletableFuture<?> future, String msg) {
-    if (future == null || future.isDone()) {
-      return;
-    }
-    if (Platform.isFxApplicationThread()) {
-      return;
-    }
-    if (!isDebugging) {
-      try {
-        future.get(1, TimeUnit.SECONDS);
-      } catch (InterruptedException e) {
-        //
-      } catch (ExecutionException e) {
-        throw new RuntimeException(e.getCause());
-      } catch (TimeoutException e) {
+    try (LockSupport support = new LockSupport(lock)) {
 
-        log.warn(msg);
+      if (future == null || future.isDone()) {
+        return;
       }
-    } else {
-      try {
-        future.join();
-      } catch (CancellationException e) {
-        //ok
+      if (Platform.isFxApplicationThread()) {
+        return;
+      }
+      if (!isDebugging) {
+        try {
+          future.get(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+          //
+        } catch (ExecutionException e) {
+          throw new RuntimeException(e.getCause());
+        } catch (TimeoutException e) {
+
+          log.warn(msg);
+        }
+      } else {
+        try {
+          future.join();
+        } catch (CancellationException e) {
+          //ok
+        }
       }
     }
   }
