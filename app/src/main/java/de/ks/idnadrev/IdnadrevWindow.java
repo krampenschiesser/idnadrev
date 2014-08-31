@@ -108,7 +108,6 @@ public class IdnadrevWindow extends MainWindow {
         } catch (InterruptedException e) {
           //
         }
-        activityController.waitForTasks();
       } catch (ClassNotFoundException e) {
         log.error("Could not load activity class {}", activityClass, e);
       }
