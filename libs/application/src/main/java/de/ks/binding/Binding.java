@@ -99,7 +99,7 @@ public class Binding {
     properties.entrySet().forEach(entry -> {
       @SuppressWarnings("unchecked") Property<Object> property = (Property<Object>) entry.getValue();
       Object value = property.getValue();
-      log.debug("Setting property {} to {}", property, value);
+      log.debug("For key '{}' setting property {} to {}", entry.getKey().getPropertyPath(), property, value);
       entry.getKey().setValue(model, value);
     });
   }
