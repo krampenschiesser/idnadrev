@@ -182,6 +182,7 @@ public class ActivityController {
   protected void suspendCurrent() {
     log.debug("Suspending activity {}", getCurrentActivityId());
     initialization.getActivityCallbacks().forEach(ActivityCallback::onSuspend);
+    store.waitForDataSource();
 
     shutdownExecutors();
     //I want to cleanup the executors themselves, but during registering, I sadly don't know that it is a producer
