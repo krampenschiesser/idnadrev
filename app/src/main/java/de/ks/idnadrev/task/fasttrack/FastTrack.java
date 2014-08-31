@@ -90,7 +90,7 @@ public class FastTrack extends BaseController<Task> {
   @Override
   public void onStart() {
     ActivityExecutor executorService = controller.getExecutorService();
-    executorService.scheduleAtFixedRate(this::showSpentTime, 100, 1, TimeUnit.MINUTES);
+    executorService.scheduleAtFixedRate(this::showSpentTime, 1, 1, TimeUnit.MINUTES);
     onResume();
   }
 
