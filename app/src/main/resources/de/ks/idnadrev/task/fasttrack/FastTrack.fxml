@@ -23,8 +23,9 @@
           xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.idnadrev.task.fasttrack.FastTrack">
     <columnConstraints>
         <ColumnConstraints hgrow="ALWAYS" minWidth="10.0"/>
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="50.0"/>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="20.0"/>
+        <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0"/>
+        <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0"/>
     </columnConstraints>
     <rowConstraints>
         <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER"/>
@@ -37,10 +38,10 @@
                 <fx:include fx:id="name" source="../../selection/NamedPersistentObjectSelection.fxml"/>
             </children>
         </StackPane>
-        <Label text="%task.spentTime:" GridPane.columnIndex="1"/>
+        <Label text="%task.spentTime:" GridPane.columnIndex="2"/>
         <StackPane fx:id="descriptionView" prefHeight="150.0" prefWidth="200.0" GridPane.columnSpan="2147483647"
                    GridPane.rowIndex="1"/>
-        <Label fx:id="spentTime" text="Label" GridPane.columnIndex="2"/>
+        <Label fx:id="spentTime" text="Label" GridPane.columnIndex="3"/>
         <Button mnemonicParsing="false" onAction="#finishTask" text="%task.finish" GridPane.columnSpan="2147483647"
                 GridPane.halignment="CENTER" GridPane.rowIndex="2"/>
     </children>
