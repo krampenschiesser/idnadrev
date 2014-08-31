@@ -89,8 +89,6 @@ public class FastTrack extends BaseController<Task> {
 
   @Override
   public void onStart() {
-    ActivityExecutor executorService = controller.getExecutorService();
-    executorService.scheduleAtFixedRate(this::showSpentTime, 1, 1, TimeUnit.MINUTES);
     onResume();
   }
 
@@ -110,13 +108,15 @@ public class FastTrack extends BaseController<Task> {
 
   @Override
   public void onResume() {
+    ActivityExecutor executorService = controller.getExecutorService();
+    executorService.scheduleAtFixedRate(this::showSpentTime, 1, 1, TimeUnit.MINUTES);
     this.start.set(LocalDateTime.now());
   }
 
   @Override
   protected void onRefresh(Task model) {
-    super.onRefresh(model);
     spentTime.setText("0min");
+    start.set(LocalDateTime.now());
   }
 
   @Override
