@@ -122,6 +122,7 @@ public class ActivityStore {
 
   @SuppressWarnings("unchecked")
   protected void doReload() {
+    loadingFuture = null;
     CompletableFuture<Object> load = CompletableFuture.supplyAsync(() -> {
       return datasource.loadModel(m -> {
         if (m != null) {
@@ -158,6 +159,7 @@ public class ActivityStore {
 
   @SuppressWarnings("unchecked")
   protected void doSave() {
+    savingFuture = null;
     Object model = getModel();
 
     CompletableFuture<Object> save = CompletableFuture.supplyAsync(() -> {
