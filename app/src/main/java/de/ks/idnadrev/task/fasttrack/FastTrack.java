@@ -57,7 +57,8 @@ public class FastTrack extends BaseController<Task> {
       if (n != null) {
         store.setModel(n);
       } else {
-        Task model = new Task(nameController.getInput().getText());
+        String text = nameController.getInput().getText();
+        Task model = new Task(text);
         store.setModel(model);
       }
     });

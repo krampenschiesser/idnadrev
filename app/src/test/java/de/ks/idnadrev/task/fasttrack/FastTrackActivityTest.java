@@ -126,8 +126,10 @@ public class FastTrackActivityTest extends ActivityTest {
     Thread.sleep(LastTextChange.WAIT_TIME);
     activityController.waitForTasks();
 
+    //now set to new task
+    log.info("Now setting to new task");
     FXPlatform.invokeLater(() -> fastTrack.nameController.getInput().setText("bla"));
-    Thread.sleep(LastTextChange.WAIT_TIME);
+    Thread.sleep(LastTextChange.WAIT_TIME * 2);
     activityController.waitForTasks();
     FXPlatform.waitForFX();
 
