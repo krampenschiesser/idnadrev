@@ -22,7 +22,10 @@ import de.ks.activity.initialization.ActivityInitialization;
 import de.ks.binding.Binding;
 import de.ks.datasource.DataSource;
 import de.ks.eventsystem.bus.EventBus;
+import de.ks.validation.ValidationRegistry;
 import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,8 +61,11 @@ public class ActivityStore {
   protected ActivityContext context;
   @Inject
   protected ActivityInitialization initialization;
+  @Inject
+  ValidationRegistry registry;
 
   protected final SimpleObjectProperty<Object> model = new SimpleObjectProperty<>();
+  protected final SimpleBooleanProperty loading = new SimpleBooleanProperty(false);
 
   protected final ConcurrentLinkedDeque<LoadOrSave> queue = new ConcurrentLinkedDeque<>();
   protected final AtomicBoolean inExecution = new AtomicBoolean();
@@ -99,17 +105,31 @@ public class ActivityStore {
     return datasource;
   }
 
-  protected void advanceInQueue() {
+  protected boolean advanceInQueue() {
     LoadOrSave first = queue.peekFirst();
     if (first != null && inExecution.compareAndSet(false, true)) {
+      syncSetLoadingProperty();
       log.trace("Advanced in queue, next task is {}", first);
       if (first == LoadOrSave.SAVE) {
         doSave();
+        return true;
       } else if (first == LoadOrSave.LOAD) {
         doReload();
+        return true;
       }
     } else {
       log.trace("Could not advance in queue");
+    }
+    return false;
+  }
+
+  private void syncSetLoadingProperty() {
+    try {
+      javaFXExecutor.submit(() -> loading.set(true)).get();
+    } catch (InterruptedException e) {
+      //
+    } catch (ExecutionException e) {
+      log.error("Coulöd not set loading property", e);
     }
   }
 
@@ -117,7 +137,9 @@ public class ActivityStore {
     queue.removeFirst();
     inExecution.set(false);
     log.trace("Finished execution");
-    advanceInQueue();
+    if (!advanceInQueue()) {
+      javaFXExecutor.submit(() -> loading.set(false));
+    }
   }
 
   @SuppressWarnings("unchecked")
@@ -250,5 +272,13 @@ public class ActivityStore {
         //
       }
     }
+  }
+
+  public boolean isLoading() {
+    return loading.get();
+  }
+
+  public ReadOnlyBooleanProperty loadingProperty() {
+    return loading;
   }
 }

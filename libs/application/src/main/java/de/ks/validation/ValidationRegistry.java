@@ -18,7 +18,8 @@ import de.ks.activity.context.ActivityScoped;
 import de.ks.activity.context.ActivityStore;
 import de.ks.validation.validators.BeanValidationValidator;
 import de.ks.validation.validators.ValidatorChain;
-import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.adapter.JavaBeanProperty;
 import javafx.scene.Node;
 import javafx.scene.control.Control;
@@ -30,6 +31,7 @@ import org.controlsfx.validation.decoration.ValidationDecoration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.validation.Validator;
 import javax.validation.metadata.BeanDescriptor;
@@ -46,6 +48,8 @@ public class ValidationRegistry {
   protected final Map<String, Control> registeredControls = new HashMap<>();
   protected final Map<Control, ValidatorChain<?>> registeredValidators = new HashMap<>();
 
+  protected final SimpleBooleanProperty invalid = new SimpleBooleanProperty(false);
+
   @Inject
   Validator validator;
   @Inject
@@ -56,6 +60,23 @@ public class ValidationRegistry {
     ValidationDecoration cssDecorator = new StyleClassValidationDecoration();
     ValidationDecoration compoundDecorator = new CompoundValidationDecoration(cssDecorator, iconDecorator);
     validationSupport.setValidationDecorator(compoundDecorator);
+  }
+
+  @PostConstruct
+  public void init() {
+    validationSupport.invalidProperty().addListener((p, o, n) -> {
+      invalid.set(n || store.isLoading());
+      log.trace("Validation is {}", invalid.get() ? "Invalid" : "valid");
+    });
+    store.loadingProperty().addListener((p, o, n) -> {
+      Boolean isInvalid = validationSupport.isInvalid();
+      if (isInvalid == null) {
+        invalid.set(n);
+      } else {
+        invalid.set(n || isInvalid);
+      }
+      log.trace("Validation is {}", invalid.get() ? "Invalid" : "valid");
+    });
   }
 
   public void addProperty(JavaBeanProperty<?> property, Node node) {
@@ -80,12 +101,12 @@ public class ValidationRegistry {
     return validationSupport.getValidationResult();
   }
 
-  public Boolean isInvalid() {
-    return validationSupport.isInvalid();
+  public boolean isInvalid() {
+    return invalid.get();
   }
 
-  public ReadOnlyObjectProperty<Boolean> invalidProperty() {
-    return validationSupport.invalidProperty();
+  public ReadOnlyBooleanProperty invalidProperty() {
+    return invalid;
   }
 
   public void registerBeanValidationValidator(Control control, Class<?> clazz, String propertyName) {
