@@ -18,6 +18,7 @@ package de.ks.idnadrev.thought.add;
 import de.ks.BaseController;
 import de.ks.file.FileViewController;
 import de.ks.idnadrev.entity.Thought;
+import de.ks.reflection.PropertyPath;
 import de.ks.text.AsciiDocEditor;
 import de.ks.validation.validators.NamedEntityMustNotExistValidator;
 import javafx.beans.property.StringProperty;
@@ -83,11 +84,11 @@ public class AddThought extends BaseController<Thought> {
     descriptionBinding.bindBidirectional(description.textProperty());
 
     fileViewController.setImageData(description.getImages());
-
   }
 
   private void bindValidation() {
     save.disableProperty().bind(validationRegistry.invalidProperty());
+    validationRegistry.registerBeanValidationValidator(name, Thought.class, PropertyPath.of(Thought.class, t -> t.getName()).getPropertyPath());
     validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(Thought.class, t -> t.getId() == store.<Thought>getModel().getId()));
   }
 

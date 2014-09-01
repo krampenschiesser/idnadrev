@@ -79,6 +79,7 @@ public class MainTaskInfo extends BaseController<Task> {
   public void initialize(URL location, ResourceBundle resources) {
     AsciiDocEditor.load(descriptionContainer.getChildren()::add, ade -> this.description = ade);
 
+    validationRegistry.registerBeanValidationValidator(name, Task.class, PropertyPath.of(Task.class, t -> t.getName()).getPropertyPath());
     validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(Task.class, t -> t.getId() == store.<Task>getModel().getId()));
     description.hideActionBar();
     StringProperty nameBinding = store.getBinding().getStringProperty(Task.class, t -> t.getName());
