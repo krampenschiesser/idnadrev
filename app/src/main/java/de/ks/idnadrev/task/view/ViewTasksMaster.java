@@ -242,7 +242,9 @@ public class ViewTasksMaster extends BaseController<List<Task>> {
       if (!root.getChildren().isEmpty()) {
         root.setExpanded(true);
         if (taskToSelect != null && task2TreeItem.containsKey(taskToSelect)) {
-          tasksView.getSelectionModel().select(task2TreeItem.get(taskToSelect));
+          TreeItem<Task> treeItem = task2TreeItem.get(taskToSelect);
+          expandParents(treeItem);
+          tasksView.getSelectionModel().select(treeItem);
         } else {
           Optional<Task> first = task2TreeItem.keySet().stream().filter(filter).findFirst();
           if (first.isPresent()) {
