@@ -44,6 +44,7 @@ public abstract class AbstractPersistentObject<T extends AbstractPersistentObjec
   protected LocalDateTime updateTime;
 
   protected AbstractPersistentObject() {
+    creationTime = LocalDateTime.now();
   }
 
   public long getId() {
@@ -52,11 +53,6 @@ public abstract class AbstractPersistentObject<T extends AbstractPersistentObjec
 
   public long getVersion() {
     return version;
-  }
-
-  @PrePersist
-  void prePersist() {
-    creationTime = LocalDateTime.now();
   }
 
   @PreUpdate
