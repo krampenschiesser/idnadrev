@@ -20,13 +20,19 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.control.*;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.DataFormat;
+import javafx.scene.input.MouseButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.ResourceBundle;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -37,8 +43,6 @@ public class DefaultLoader<V extends Node, C> {
   private static final Logger log = LoggerFactory.getLogger(DefaultLoader.class);
   private final Class<?> controller;
   private final URL fxmlFile;
-  private CompletableFuture<FXMLLoader> loaderFuture;
-  private CompletableFuture<Void> allCallbacks;
   private FXMLLoader loader;
   protected final AtomicBoolean loaded = new AtomicBoolean(false);
   private ControllerFactory controllerFactory;
@@ -77,7 +81,10 @@ public class DefaultLoader<V extends Node, C> {
           this.loadedInstance = (C) instance;
         } else {
           log.debug("Loading fxml file {}", fxmlFile);
-          loader.load();
+          Node loadedNode = loader.load();
+          if (loadedNode != null) {
+            fillLabelCopyMenu(loadedNode);
+          }
           loaded.set(true);
         }
       }
@@ -86,6 +93,47 @@ public class DefaultLoader<V extends Node, C> {
       throw new RuntimeException(e);
     }
     return this;
+  }
+
+  protected void fillLabelCopyMenu(Node loadedNode) {
+    LinkedList<Node> stack = new LinkedList<>();
+    stack.add(loadedNode);
+
+    while (!stack.isEmpty()) {
+      Node node = stack.pollFirst();
+      if (node instanceof Parent) {
+        stack.addAll(((Parent) node).getChildrenUnmodifiable());
+      }
+      if (node instanceof TabPane) {
+        ((TabPane) node).getTabs().forEach(t -> {
+          log.info("Found tab pane, child node= {}", t.getContent());
+          stack.add(t.getContent());
+        });
+      }
+      if (node instanceof Accordion) {
+        ((Accordion) node).getPanes().forEach(t -> stack.add(t.getContent()));
+      }
+      if (node instanceof SplitPane) {
+        ((SplitPane) node).getItems().forEach(t -> stack.add(t));
+      }
+      if (node instanceof Label) {
+        Label label = (Label) node;
+
+        label.setOnMouseClicked(e -> {
+          if (e.getButton() == MouseButton.SECONDARY) {
+            MenuItem item = new MenuItem(Localized.get("copy"));
+            ContextMenu contextMenu = new ContextMenu(item);
+            item.setOnAction(actionEvent -> {
+              HashMap<DataFormat, Object> content = new HashMap<>();
+              content.put(DataFormat.PLAIN_TEXT, label.getText());
+              Clipboard.getSystemClipboard().setContent(content);
+            });
+
+            contextMenu.show(label, e.getScreenX(), e.getScreenY());
+          }
+        });
+      }
+    }
   }
 
   public V getView() {
