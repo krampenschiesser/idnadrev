@@ -457,7 +457,11 @@ public class WeekView<T> extends GridPane {
             long hours = ChronoUnit.HOURS.between(LocalTime.of(0, 0), appointment.getStartTime());
 
             double percentageOfHourStartMinute = 100D / 60D * appointment.getStart().getMinute();
-            double percentageOfHourDuration = 100D / 60D * appointment.getDuration().toMinutes();
+            long durationInMinutes = appointment.getDuration().toMinutes();
+            if (durationInMinutes == 0) {
+              durationInMinutes = 15;
+            }
+            double percentageOfHourDuration = 100D / 60D * durationInMinutes;
 
             double insetsTop = hourHeight.get() / 100 * percentageOfHourStartMinute;
             double height = hourHeight.get() / 100 * percentageOfHourDuration;
@@ -511,7 +515,7 @@ public class WeekView<T> extends GridPane {
     if (!visible) {
       source.setVisible(true);
     }
-    if (source.getWidth() > 0 && dragboard.getDragView() == null) {
+    if (source.getWidth() > 0 && source.getHeight() > 0 && dragboard.getDragView() == null) {
       WritableImage image = new WritableImage((int) source.getWidth(), (int) source.getHeight());
       SnapshotParameters params = new SnapshotParameters();
       Image snapshot = source.snapshot(params, image);
