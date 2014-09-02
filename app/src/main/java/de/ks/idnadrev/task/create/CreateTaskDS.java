@@ -69,6 +69,7 @@ public class CreateTaskDS extends NewInstanceDataSource<Task> {
   public void saveModel(Task model, Consumer<Task> beforeSaving) {
     PersistentWork.run((em) -> {
       Task task = PersistentWork.reload(model);
+      task.setFinished(false);
       beforeSaving.accept(task);
       em.persist(task);
       if (fromThought != null && fromThought.getId() > 0) {
