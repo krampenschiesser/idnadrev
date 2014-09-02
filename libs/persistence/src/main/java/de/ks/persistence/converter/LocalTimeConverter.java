@@ -17,28 +17,29 @@ package de.ks.persistence.converter;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
+import java.sql.Time;
 import java.time.LocalTime;
 
 /**
  *
  */
 @Converter(autoApply = true)
-public class LocalTimeConverter implements AttributeConverter<LocalTime, String> {
+public class LocalTimeConverter implements AttributeConverter<LocalTime, Time> {
   @Override
-  public String convertToDatabaseColumn(LocalTime attribute) {
+  public Time convertToDatabaseColumn(LocalTime attribute) {
     if (attribute == null) {
       return null;
     } else {
-      return attribute.toString();
+      return Time.valueOf(attribute);
     }
   }
 
   @Override
-  public LocalTime convertToEntityAttribute(String dbData) {
+  public LocalTime convertToEntityAttribute(Time dbData) {
     if (dbData == null) {
       return null;
     } else {
-      return LocalTime.parse(dbData);
+      return dbData.toLocalTime();
     }
   }
 }

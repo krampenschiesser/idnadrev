@@ -17,28 +17,29 @@ package de.ks.persistence.converter;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
+import java.sql.Date;
 import java.time.LocalDate;
 
 /**
  *
  */
 @Converter(autoApply = true)
-public class LocalDateConverter implements AttributeConverter<LocalDate, String> {
+public class LocalDateConverter implements AttributeConverter<LocalDate, Date> {
   @Override
-  public String convertToDatabaseColumn(LocalDate attribute) {
+  public Date convertToDatabaseColumn(LocalDate attribute) {
     if (attribute == null) {
       return null;
     } else {
-      return attribute.toString();
+      return Date.valueOf(attribute);
     }
   }
 
   @Override
-  public LocalDate convertToEntityAttribute(String dbData) {
+  public LocalDate convertToEntityAttribute(Date dbData) {
     if (dbData == null) {
       return null;
     } else {
-      return LocalDate.parse(dbData);
+      return dbData.toLocalDate();
     }
   }
 }

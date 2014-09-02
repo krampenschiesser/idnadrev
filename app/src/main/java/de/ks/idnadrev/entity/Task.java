@@ -51,21 +51,18 @@ public class Task extends NamedPersistentObject<Task> implements FileContainer<T
   protected SortedSet<WorkUnit> workUnits = new TreeSet<>();
 
   //tracking
-  @Column(columnDefinition = "VARCHAR(250)")
-  @Convert(converter = LocalDateTimeConverter.class)
-  protected LocalDateTime creationTime;
-  @Column(columnDefinition = "VARCHAR(250)")
+  @Column(columnDefinition = "TIMESTAMP")
   @Convert(converter = LocalDateTimeConverter.class)
   protected LocalDateTime finishTime;
 
-  @Column(columnDefinition = "VARCHAR(250)")
+  @Column(columnDefinition = "BIGINT(19)")
   @Convert(converter = DurationConverter.class)
   protected Duration estimatedTime;
 
-  @Column(columnDefinition = "VARCHAR(250)")
+  @Column(columnDefinition = "DATE")
   @Convert(converter = LocalDateConverter.class)
   protected LocalDate dueDate;//must be done before this date (and time)
-  @Column(columnDefinition = "VARCHAR(250)")
+  @Column(columnDefinition = "TIME")
   @Convert(converter = LocalTimeConverter.class)
   protected LocalTime dueTime;//if null, only date relevant
 
@@ -194,10 +191,6 @@ public class Task extends NamedPersistentObject<Task> implements FileContainer<T
 
   public LocalDateTime getFinishTime() {
     return finishTime;
-  }
-
-  public LocalDateTime getCreationTime() {
-    return creationTime;
   }
 
   public void setCreationTime(LocalDateTime creationTime) {

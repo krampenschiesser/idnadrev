@@ -32,10 +32,10 @@ public class Schedule extends AbstractPersistentObject<Schedule> {
     DAILY, WEEKLY, MONTHLY, YEARLY;
   }
 
-  @Column(columnDefinition = "VARCHAR(250)")
+  @Column(columnDefinition = "DATE")
   @Convert(converter = LocalDateConverter.class)
   protected LocalDate scheduledDate;//should be done at this date (and time)
-  @Column(columnDefinition = "VARCHAR(250)")
+  @Column(columnDefinition = "TIME")
   @Convert(converter = LocalTimeConverter.class)
   protected LocalTime scheduledTime;//if null, only date relevant
 

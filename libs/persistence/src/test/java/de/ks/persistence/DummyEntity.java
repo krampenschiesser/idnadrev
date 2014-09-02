@@ -15,27 +15,33 @@
 
 package de.ks.persistence;
 
+import de.ks.persistence.converter.LocalDateConverter;
+import de.ks.persistence.converter.LocalTimeConverter;
+import de.ks.persistence.entity.AbstractPersistentObject;
+
+import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 /**
  *
  */
 @Entity
-public class DummyEntity implements Serializable {
+public class DummyEntity extends AbstractPersistentObject<DummyEntity> {
   private static final long serialVersionUID = 1L;
-  @Id
-  @GeneratedValue
-  protected Long id;
-  @Version
-  protected Long version;
-
   @NotNull
   protected String name;
+
+  @Column(columnDefinition = "TIME")
+  @Convert(converter = LocalTimeConverter.class)
+  protected LocalTime myTime;
+
+  @Column(columnDefinition = "DATE")
+  @Convert(converter = LocalDateConverter.class)
+  protected LocalDate myDate;
 
   protected DummyEntity() {
     //
@@ -45,14 +51,6 @@ public class DummyEntity implements Serializable {
     this.name = name;
   }
 
-  public Long getId() {
-    return id;
-  }
-
-  public Long getVersion() {
-    return version;
-  }
-
   public String getName() {
     return name;
   }
@@ -60,6 +58,22 @@ public class DummyEntity implements Serializable {
   public DummyEntity setName(String name) {
     this.name = name;
     return this;
+  }
+
+  public LocalDate getMyDate() {
+    return myDate;
+  }
+
+  public void setMyDate(LocalDate myDate) {
+    this.myDate = myDate;
+  }
+
+  public LocalTime getMyTime() {
+    return myTime;
+  }
+
+  public void setMyTime(LocalTime myTime) {
+    this.myTime = myTime;
   }
 
   @Override

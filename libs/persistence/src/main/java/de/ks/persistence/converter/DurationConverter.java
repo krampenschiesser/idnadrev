@@ -23,22 +23,22 @@ import java.time.Duration;
  *
  */
 @Converter(autoApply = true)
-public class DurationConverter implements AttributeConverter<Duration, String> {
+public class DurationConverter implements AttributeConverter<Duration, Long> {
   @Override
-  public String convertToDatabaseColumn(Duration attribute) {
+  public Long convertToDatabaseColumn(Duration attribute) {
     if (attribute == null) {
       return null;
     } else {
-      return attribute.toString();
+      return attribute.toNanos();
     }
   }
 
   @Override
-  public Duration convertToEntityAttribute(String dbData) {
+  public Duration convertToEntityAttribute(Long dbData) {
     if (dbData == null) {
       return null;
     } else {
-      return Duration.parse(dbData);
+      return Duration.ofNanos(dbData);
     }
   }
 }

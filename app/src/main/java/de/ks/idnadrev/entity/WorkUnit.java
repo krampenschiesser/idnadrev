@@ -37,10 +37,10 @@ import java.time.LocalDateTime;
 public class WorkUnit extends AbstractPersistentObject<WorkUnit> implements Comparable<WorkUnit> {
   private static final long serialVersionUID = 1L;
 
-  @Column(columnDefinition = "VARCHAR(250)")
+  @Column(columnDefinition = "TIMESTAMP")
   @Convert(converter = LocalDateTimeConverter.class)
   protected LocalDateTime start;
-  @Column(columnDefinition = "VARCHAR(250)")
+  @Column(columnDefinition = "TIMESTAMP")
   @Convert(converter = LocalDateTimeConverter.class)
   protected LocalDateTime end;
 

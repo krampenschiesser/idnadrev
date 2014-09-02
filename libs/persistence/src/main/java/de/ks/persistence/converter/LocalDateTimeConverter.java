@@ -20,31 +20,32 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 /**
  *
  */
 @Converter(autoApply = true)
-public class LocalDateTimeConverter implements AttributeConverter<LocalDateTime, String> {
+public class LocalDateTimeConverter implements AttributeConverter<LocalDateTime, Timestamp> {
   private static final Logger log = LoggerFactory.getLogger(LocalDateTimeConverter.class);
 
   @Override
-  public String convertToDatabaseColumn(LocalDateTime attribute) {
+  public Timestamp convertToDatabaseColumn(LocalDateTime attribute) {
     if (attribute == null) {
       return null;
     } else {
-      return attribute.toString();
+      return Timestamp.valueOf(attribute);
     }
 
   }
 
   @Override
-  public LocalDateTime convertToEntityAttribute(String dbData) {
+  public LocalDateTime convertToEntityAttribute(Timestamp dbData) {
     if (dbData == null) {
       return null;
     } else {
-      return LocalDateTime.parse(dbData);
+      return dbData.toLocalDateTime();
     }
   }
 }

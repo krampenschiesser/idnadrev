@@ -15,11 +15,11 @@
 
 package de.ks.persistence.entity;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Version;
+import de.ks.persistence.converter.LocalDateTimeConverter;
+
+import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * Created by Christian Loehnert
@@ -35,8 +35,15 @@ public abstract class AbstractPersistentObject<T extends AbstractPersistentObjec
   @Version
   protected long version;
 
-  protected AbstractPersistentObject() {
+  @Column(columnDefinition = "TIMESTAMP")
+  @Convert(converter = LocalDateTimeConverter.class)
+  protected LocalDateTime creationTime;
 
+  @Column(columnDefinition = "TIMESTAMP")
+  @Convert(converter = LocalDateTimeConverter.class)
+  protected LocalDateTime updateTime;
+
+  protected AbstractPersistentObject() {
   }
 
   public long getId() {
@@ -45,5 +52,23 @@ public abstract class AbstractPersistentObject<T extends AbstractPersistentObjec
 
   public long getVersion() {
     return version;
+  }
+
+  @PrePersist
+  void prePersist() {
+    creationTime = LocalDateTime.now();
+  }
+
+  @PreUpdate
+  void preUpdate() {
+    updateTime = LocalDateTime.now();
+  }
+
+  public LocalDateTime getCreationTime() {
+    return creationTime;
+  }
+
+  public LocalDateTime getUpdateTime() {
+    return updateTime;
   }
 }
