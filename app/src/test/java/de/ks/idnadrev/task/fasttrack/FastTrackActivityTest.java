@@ -34,6 +34,7 @@ import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -111,8 +112,14 @@ public class FastTrackActivityTest extends ActivityTest {
       assertEquals("blubber", task.getDescription());
       assertEquals(1, task.getWorkUnits().size());
       WorkUnit workUnit = task.getWorkUnits().iterator().next();
-      assertEquals(task.getCreationTime().withNano(0), workUnit.getStart().withNano(0));
-      assertEquals(task.getFinishTime().withNano(0), workUnit.getEnd().withNano(0));
+
+      long creationTime = task.getCreationTime().withNano(0).toEpochSecond(ZoneOffset.UTC);
+      long workUnitStart = workUnit.getStart().withNano(0).toEpochSecond(ZoneOffset.UTC);
+      assertThat(workUnitStart - creationTime, Matchers.lessThan(2L));
+
+      long finishTime = task.getFinishTime().withNano(0).toEpochSecond(ZoneOffset.UTC);
+      long workUnitEnd = workUnit.getEnd().withNano(0).toEpochSecond(ZoneOffset.UTC);
+      assertThat(workUnitEnd - finishTime, Matchers.lessThan(2L));
     });
   }
 
