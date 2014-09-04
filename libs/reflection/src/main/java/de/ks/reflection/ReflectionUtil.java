@@ -191,6 +191,10 @@ public class ReflectionUtil {
 
   public static Object getFieldValue(Object object, String fieldName) {
     Field field = getField(object, fieldName);
+    return getFieldValue(object, field);
+  }
+
+  public static Object getFieldValue(Object object, Field field) {
     field.setAccessible(true);
     try {
       return field.get(object);
@@ -201,7 +205,12 @@ public class ReflectionUtil {
   }
 
   public static Field getField(Object object, String fieldName) {
-    List<Field> allFields = getAllFields(object.getClass(), f -> f.getName().equals(fieldName));
+    Class<?> clazz = object.getClass();
+    return getField(clazz, fieldName);
+  }
+
+  public static Field getField(Class<?> clazz, String fieldName) {
+    List<Field> allFields = getAllFields(clazz, f -> f.getName().equals(fieldName));
     Field field = null;
     if (allFields.size() == 1) {
       field = allFields.get(0);
