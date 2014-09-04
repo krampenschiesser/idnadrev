@@ -88,13 +88,13 @@ public class AsciiDocEditorTest {
   public void testAdocParsing() throws Exception {
     FXPlatform.invokeLater(() -> adocEditor.editor.setText("= Title\n== more"));
     activityController.waitForTasks();
-    assertNotNull(adocEditor.previewHtmlString);
+    assertNotNull("preview string is null", adocEditor.previewHtmlString);
 
-    assertNull(adocEditor.preview.getEngine().getDocument());
+    assertNull("document is not null", adocEditor.preview.getEngine().getDocument());
 
     FXPlatform.invokeLater(() -> adocEditor.tabPane.getSelectionModel().select(1));
     JunitMatchers.withRetry(() -> adocEditor.preview.getEngine().getDocument() != null);
-    assertNotNull(adocEditor.preview.getEngine().getDocument());
+    assertNotNull("document did not load, is still null", adocEditor.preview.getEngine().getDocument());
 
     FXPlatform.invokeLater(() -> adocEditor.tabPane.getSelectionModel().select(0));
     FXPlatform.waitForFX();
