@@ -25,6 +25,7 @@ import java.util.stream.StreamSupport;
 
 public class EntityExportSource<T extends AbstractPersistentObject> implements Iterable<T>, AutoCloseable {
   protected final List<EntityExportIterator<T>> iterators = new LinkedList<>();
+  protected final Config config = new Config();
   private final Collection<Long> ids;
   private final Class<T> root;
   protected int bulkSize = 100;
@@ -32,6 +33,14 @@ public class EntityExportSource<T extends AbstractPersistentObject> implements I
   public EntityExportSource(Collection<Long> ids, Class<T> root) {
     this.ids = ids;
     this.root = root;
+  }
+
+  public Class<T> getRoot() {
+    return root;
+  }
+
+  public String getIdentifier() {
+    return root.getName();
   }
 
   public void setBulkSize(int bulkSize) {
@@ -54,5 +63,22 @@ public class EntityExportSource<T extends AbstractPersistentObject> implements I
   @Override
   public void close() throws Exception {
     iterators.forEach(i -> i.close());
+  }
+
+  public Config getConfig() {
+    return config;
+  }
+
+  public static class Config {
+    protected List<String> ignoredFields = new LinkedList<>();
+
+    public Config ignoreField(String name) {
+      ignoredFields.add(name);
+      return this;
+    }
+
+    public List<String> getIgnoredFields() {
+      return ignoredFields;
+    }
   }
 }

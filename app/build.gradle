@@ -24,6 +24,7 @@ dependencies {
     compile "commons-codec:commons-codec:$commonscodec"
     compile "$jpa2api"
     compile "org.apache.poi:poi:$poi"
+    compile "org.apache.poi:poi-ooxml:$poi"
 
     runtime "org.hibernate:hibernate-validator:$hibernateValidation"
     runtime "com.sun.el:el-ri:1.0"

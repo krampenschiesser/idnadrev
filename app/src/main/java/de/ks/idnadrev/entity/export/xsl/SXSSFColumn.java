@@ -1,6 +1,5 @@
-/**
- * Copyright [2014] [Christian Loehnert]
- *
+/*
+ * Copyright [2014] [Christian Loehnert, krampenschiesser@gmail.com]
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,10 +12,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.entity.export;
+package de.ks.idnadrev.entity.export.xsl;
 
-import java.io.File;
+public interface SXSSFColumn {
+  Class<?> getRoot();
 
-public interface Exporter {
-  void export(File file, EntityExportSource<?>... sources);
+  String getIdentifier();
+
+  Object getValue(Object object);
+
+  int getCellType();
+
+  Object getDefaultValue();
 }
