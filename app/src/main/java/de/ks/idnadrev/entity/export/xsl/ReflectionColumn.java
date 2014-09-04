@@ -15,6 +15,8 @@
 package de.ks.idnadrev.entity.export.xsl;
 
 import com.google.common.primitives.Primitives;
+import de.ks.persistence.entity.AbstractPersistentObject;
+import de.ks.persistence.entity.NamedPersistentObject;
 import de.ks.reflection.ReflectionUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.slf4j.Logger;
@@ -70,6 +72,17 @@ public class ReflectionColumn implements SXSSFColumn {
 
   @Override
   public Object getValue(Object object) {
+    Object valueInternal = getValueInternal(object);
+    if (valueInternal instanceof NamedPersistentObject) {
+      return ((NamedPersistentObject) valueInternal).getName();
+    } else if (valueInternal instanceof AbstractPersistentObject) {
+      return ((AbstractPersistentObject) valueInternal).getId();
+    } else {
+      return valueInternal;
+    }
+  }
+
+  public Object getValueInternal(Object object) {
     if (getter != null) {
       try {
         return getter.invoke(object);
