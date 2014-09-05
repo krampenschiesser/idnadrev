@@ -20,8 +20,10 @@ import de.ks.reflection.ReflectionUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import java.time.LocalDateTime;
+
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.Assert.*;
 
 public class ReflectionColumnTest {
   @Test
@@ -33,5 +35,14 @@ public class ReflectionColumnTest {
     assertEquals("name", column.getIdentifier());
 
     assertEquals("bla", column.getValue(new Thought("bla")));
+  }
+
+  @Test
+  public void testCreationTime() throws Exception {
+    ReflectionColumn column = new ReflectionColumn(Thought.class, ReflectionUtil.getField(Thought.class, "creationTime"));
+    Thought bla = new Thought("bla");
+    Object value = column.getValue(bla);
+    assertThat(value, instanceOf(LocalDateTime.class));
+    assertEquals(value, bla.getCreationTime());
   }
 }

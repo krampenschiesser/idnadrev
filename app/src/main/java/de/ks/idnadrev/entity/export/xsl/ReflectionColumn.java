@@ -19,12 +19,17 @@ import de.ks.persistence.entity.AbstractPersistentObject;
 import de.ks.persistence.entity.NamedPersistentObject;
 import de.ks.reflection.ReflectionUtil;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class ReflectionColumn implements SXSSFColumn {
   private static final Logger log = LoggerFactory.getLogger(ReflectionColumn.class);
@@ -101,6 +106,21 @@ public class ReflectionColumn implements SXSSFColumn {
 
   @Override
   public Object getDefaultValue() {
+    return null;
+  }
+
+  @Override
+  public CellStyle getCellStyle(SXSSFWorkbook workbook) {
+    CreationHelper creationHelper = workbook.getCreationHelper();
+    if (LocalDateTime.class.isAssignableFrom(fieldType)) {
+      CellStyle cellStyle = workbook.createCellStyle();
+      cellStyle.setDataFormat(creationHelper.createDataFormat().getFormat("yyyy/mm/dd h:mm"));
+      return cellStyle;
+    } else if (LocalDate.class.isAssignableFrom(fieldType)) {
+      CellStyle cellStyle = workbook.createCellStyle();
+      cellStyle.setDataFormat(creationHelper.createDataFormat().getFormat("yyyy/mm/dd"));
+      return cellStyle;
+    }
     return null;
   }
 }

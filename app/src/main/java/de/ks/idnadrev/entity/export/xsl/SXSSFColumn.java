@@ -14,6 +14,9 @@
  */
 package de.ks.idnadrev.entity.export.xsl;
 
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+
 public interface SXSSFColumn {
   Class<?> getRoot();
 
@@ -24,4 +27,6 @@ public interface SXSSFColumn {
   int getCellType();
 
   Object getDefaultValue();
+
+  CellStyle getCellStyle(SXSSFWorkbook workbook);
 }

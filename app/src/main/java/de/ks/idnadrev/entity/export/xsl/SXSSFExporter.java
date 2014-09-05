@@ -108,6 +108,7 @@ public class SXSSFExporter implements Exporter {
           row.createCell(columnId, Cell.CELL_TYPE_BLANK);
         } else {
           Cell cell = row.createCell(columnId, column.getCellType());
+          cell.setCellStyle(column.getCellStyle(workbook));
           setCellValue(sheet.getWorkbook().getCreationHelper(), cell, value);
         }
       }
