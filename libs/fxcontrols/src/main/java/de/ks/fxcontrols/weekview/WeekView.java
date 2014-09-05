@@ -610,13 +610,26 @@ public class WeekView<T> extends GridPane {
   }
 
   protected void updateWeekDays() {
-    LocalDate firstDayOfWeek = helper.getFirstDayOfWeek(year.getValue(), weekOfYear.getValue());
+    LocalDate currentDay = helper.getFirstDayOfWeek(year.getValue(), weekOfYear.getValue());
     for (int i = 0; i < 7; i++) {
       Label label = weekDayLabels.get(i);
 
-      DayOfWeek dayOfWeek = firstDayOfWeek.getDayOfWeek();
-      label.setText(dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ". " + firstDayOfWeek.getDayOfMonth());
-      firstDayOfWeek = firstDayOfWeek.plusDays(1);
+      DayOfWeek dayOfWeek = currentDay.getDayOfWeek();
+      label.setText(dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ". " + currentDay.getDayOfMonth());
+      currentDay = currentDay.plusDays(1);
+
+      for (int hours = 0; hours < 24; hours++) {
+        ObservableList<String> styleClass = cells.get(hours, i).getStyleClass();
+        styleClass.remove("week-bg-even-today");
+        styleClass.remove("week-bg-odd-today");
+      }
+      if (currentDay.equals(LocalDate.now())) {
+        for (int hours = 0; hours < 24; hours++) {
+          ObservableList<String> styleClass = cells.get(hours, i).getStyleClass();
+          String cellStyle = hours % 2 == 0 ? "week-bg-even-today" : "week-bg-odd-today";
+          styleClass.add(cellStyle);
+        }
+      }
     }
   }
 

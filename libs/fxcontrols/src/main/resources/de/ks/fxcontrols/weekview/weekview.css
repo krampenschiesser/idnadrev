@@ -1,6 +1,9 @@
 .week-bg-even {
     -fx-background-color: derive(-fx-background, 100%);
 }
+.week-bg-even-today {
+    -fx-background-color: derive(-fx-accent, 100%);/*maybe use 95% later*/
+}
 
 .week-bg-even-hover {
     -fx-background-color: derive(-fx-accent, 100%);
@@ -8,6 +11,10 @@
 
 .week-bg-odd {
     -fx-background-color: derive(-fx-background, 0%);/*maybe use 95% later*/
+}
+
+.week-bg-odd-today {
+    -fx-background-color: derive(-fx-accent, 80%);
 }
 
 .week-bg-odd-hover {
