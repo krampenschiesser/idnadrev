@@ -12,25 +12,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.expimp.xls;
+package de.ks.idnadrev.expimp.xls.sheet;
 
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 
-public interface XlsxColumn {
-  Class<?> getRoot();
-
-  String getIdentifier();
-
-  Object getValue(Object object);
-
-  int getCellType();
-
-  Object getDefaultValue();
-
-  CellStyle getCellStyle(SXSSFWorkbook workbook);
-
-  Class<?> getFieldType();
-
-  void setValue(Object instance, Object value);
+public class InlineStringValueParser extends ImportValueParser<String> {
+  @Override
+  public String getValue() {
+    return new XSSFRichTextString(builder.toString()).getString();
+  }
 }

@@ -37,6 +37,7 @@ public class ReflectionColumn implements XlsxColumn {
   protected Class<?> root;
   protected Field field;
   protected MethodHandle getter;
+  protected MethodHandle setter;
   protected Class<?> fieldType;
 
   public ReflectionColumn(Class<?> root, Field field) {
@@ -47,8 +48,14 @@ public class ReflectionColumn implements XlsxColumn {
     try {
       getter = MethodHandles.lookup().unreflectGetter(field);
     } catch (IllegalAccessException e) {
-      log.error("Could not get handle for field {}", field, e);
+      log.error("Could not resolve getter handle for field {}", field, e);
       getter = null;
+    }
+    try {
+      setter = MethodHandles.lookup().unreflectSetter(field);
+    } catch (IllegalAccessException e) {
+      log.error("Could not resolve setter handle for field {}", field, e);
+      setter = null;
     }
 
     fieldType = field.getType();
@@ -100,6 +107,19 @@ public class ReflectionColumn implements XlsxColumn {
   }
 
   @Override
+  public void setValue(Object instance, Object value) {
+    if (setter != null) {
+      try {
+        setter.invoke(instance, value);
+      } catch (Throwable t) {
+        throw new RuntimeException(t);
+      }
+    } else {
+      ReflectionUtil.setField(field, instance, value);
+    }
+  }
+
+  @Override
   public int getCellType() {
     return cellType;
   }
@@ -122,5 +142,19 @@ public class ReflectionColumn implements XlsxColumn {
       return cellStyle;
     }
     return null;
+  }
+
+  @Override
+  public Class<?> getFieldType() {
+    return fieldType;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder("ReflectionColumn{");
+    sb.append("field=").append(field);
+    sb.append(", fieldType=").append(fieldType);
+    sb.append('}');
+    return sb.toString();
   }
 }

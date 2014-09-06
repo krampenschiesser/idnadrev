@@ -25,7 +25,9 @@ import org.junit.runner.RunWith;
 
 import java.io.File;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -50,5 +52,14 @@ public class XlsxImporterTest {
 
     List<Thought> thoughts = PersistentWork.from(Thought.class);
     assertEquals(142, thoughts.size());
+
+    Thought first = PersistentWork.forName(Thought.class, "Thought000");
+    assertNotNull(first);
+    int nanos = (int) TimeUnit.MILLISECONDS.toNanos(578);
+
+    assertEquals(LocalDateTime.of(2014, 9, 5, 19, 28, 34, nanos), first.getCreationTime());
+    Thought last = PersistentWork.forName(Thought.class, "Thought141");
+    assertNotNull(last);
+    assertEquals(LocalDateTime.of(2014, 9, 5, 19, 28, 36), last.getCreationTime());
   }
 }

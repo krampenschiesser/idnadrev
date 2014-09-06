@@ -12,25 +12,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.expimp.xls;
+package de.ks.idnadrev.expimp.xls.sheet;
 
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import java.time.Duration;
 
-public interface XlsxColumn {
-  Class<?> getRoot();
-
-  String getIdentifier();
-
-  Object getValue(Object object);
-
-  int getCellType();
-
-  Object getDefaultValue();
-
-  CellStyle getCellStyle(SXSSFWorkbook workbook);
-
-  Class<?> getFieldType();
-
-  void setValue(Object instance, Object value);
+public class DurationValueParser extends ImportValueParser<Duration> {
+  @Override
+  public Duration getValue() {
+    Long nanos = Long.valueOf(builder.toString());
+    return Duration.ofNanos(nanos);
+  }
 }

@@ -25,6 +25,7 @@ import java.lang.reflect.Modifier;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +33,15 @@ public class ColumnProvider {
   public List<XlsxColumn> getColumns(EntityExportSource<?> source) {
     Class<? extends AbstractPersistentObject> root = source.getRoot();
     return getColumnsByReflection(root);
+  }
+
+  @SuppressWarnings("unchecked")
+  public List<XlsxColumn> getColumns(Class<?> clazz) {
+    if (AbstractPersistentObject.class.isAssignableFrom(clazz)) {
+      return getColumnsByReflection((Class<? extends AbstractPersistentObject>) clazz);
+    } else {
+      return Collections.emptyList();
+    }
   }
 
   private List<XlsxColumn> getColumnsByReflection(Class<? extends AbstractPersistentObject> clazz) {

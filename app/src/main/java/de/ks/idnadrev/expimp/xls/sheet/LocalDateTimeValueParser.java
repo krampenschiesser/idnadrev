@@ -12,25 +12,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.expimp.xls;
+package de.ks.idnadrev.expimp.xls.sheet;
 
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.ss.usermodel.DateUtil;
 
-public interface XlsxColumn {
-  Class<?> getRoot();
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.Date;
 
-  String getIdentifier();
-
-  Object getValue(Object object);
-
-  int getCellType();
-
-  Object getDefaultValue();
-
-  CellStyle getCellStyle(SXSSFWorkbook workbook);
-
-  Class<?> getFieldType();
-
-  void setValue(Object instance, Object value);
+public class LocalDateTimeValueParser extends ImportValueParser<LocalDateTime> {
+  @Override
+  public LocalDateTime getValue() {
+    Double dVal = Double.valueOf(builder.toString());
+    Date date = DateUtil.getJavaDate(dVal);
+    return new Timestamp(date.getTime()).toLocalDateTime();
+  }
 }
