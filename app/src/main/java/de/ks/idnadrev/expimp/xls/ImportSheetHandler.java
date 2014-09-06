@@ -39,12 +39,11 @@ public class ImportSheetHandler extends DefaultHandler {
   private static final String CELL_TYPE_INLINESTRING = "inlineStr";
   private static final String CELL_TYPE_NUMBER = "n";
 
-  private static final String CELL_STYLE = "s";
-
-  private static final String VALUE_ELEMENT = "v";//elelemt value
-  private static final String CELL_ELEMENT = "c";//elelemt cell
-  private static final String CELL_ATTRIBUTE_TYPE = "t";//attribute of cell element
-  private static final String CELL_ATTRIBUTE_ID = "r";//attribute of cell element
+  private static final String VALUE_ELEMENT = "v";
+  private static final String CELL_ELEMENT = "c";
+  private static final String CELL_ATTRIBUTE_TYPE = "t";
+  private static final String CELL_ATTRIBUTE_ID = "r";
+  private static final String CELL_ATTRIBUTE_STYLE = "s";
   private NextValue<?> nextValue;
 
   private boolean columnDefsDiscovered;
