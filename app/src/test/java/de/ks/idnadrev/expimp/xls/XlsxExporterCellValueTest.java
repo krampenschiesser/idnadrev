@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package de.ks.idnadrev.entity.export.xsl;
+package de.ks.idnadrev.expimp.xls;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CreationHelper;
@@ -25,11 +25,11 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 
-public class SXSSFExporterCellValueTest {
+public class XlsxExporterCellValueTest {
 
   @Test
   public void testSetNumericCellValue() {
-    SXSSFExporter exporter = new SXSSFExporter(null);
+    XlsxExporter exporter = new XlsxExporter(null);
 
     Cell cell = Mockito.mock(Cell.class);
 
@@ -47,7 +47,7 @@ public class SXSSFExporterCellValueTest {
 
   @Test
   public void testString() throws Exception {
-    SXSSFExporter exporter = new SXSSFExporter(null);
+    XlsxExporter exporter = new XlsxExporter(null);
 
     Cell cell = Mockito.mock(Cell.class);
     CreationHelper helper = Mockito.mock(CreationHelper.class);
@@ -62,7 +62,7 @@ public class SXSSFExporterCellValueTest {
 
   @Test
   public void testLocalDateTime() throws Exception {
-    SXSSFExporter exporter = new SXSSFExporter(null);
+    XlsxExporter exporter = new XlsxExporter(null);
     LocalDateTime localDateTime = LocalDateTime.of(2014, 03, 06, 14, 42);
 
     Cell cell = Mockito.mock(Cell.class);

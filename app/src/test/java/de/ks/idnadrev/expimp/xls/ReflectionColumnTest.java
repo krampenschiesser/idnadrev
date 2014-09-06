@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package de.ks.idnadrev.entity.export.xsl;
+package de.ks.idnadrev.expimp.xls;
 
 import de.ks.idnadrev.entity.Thought;
 import de.ks.reflection.ReflectionUtil;

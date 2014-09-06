@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package de.ks.idnadrev.entity.export;
+package de.ks.idnadrev.expimp;
 
 import de.ks.LauncherRunner;
 import de.ks.idnadrev.entity.Thought;

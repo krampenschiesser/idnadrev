@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.entity.export;
+package de.ks.idnadrev.expimp;
 
 import de.ks.persistence.entity.AbstractPersistentObject;
 import org.slf4j.Logger;

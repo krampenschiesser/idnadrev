@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.entity.export.xsl;
+package de.ks.idnadrev.expimp.xls;
 
 import com.google.common.primitives.Primitives;
 import de.ks.persistence.entity.AbstractPersistentObject;
@@ -31,7 +31,7 @@ import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public class ReflectionColumn implements SXSSFColumn {
+public class ReflectionColumn implements XlsxColumn {
   private static final Logger log = LoggerFactory.getLogger(ReflectionColumn.class);
   protected final int cellType;
   protected Class<?> root;
@@ -114,7 +114,7 @@ public class ReflectionColumn implements SXSSFColumn {
     CreationHelper creationHelper = workbook.getCreationHelper();
     if (LocalDateTime.class.isAssignableFrom(fieldType)) {
       CellStyle cellStyle = workbook.createCellStyle();
-      cellStyle.setDataFormat(creationHelper.createDataFormat().getFormat("yyyy/mm/dd h:mm"));
+      cellStyle.setDataFormat(creationHelper.createDataFormat().getFormat("yyyy/mm/dd hh:mm:ss"));
       return cellStyle;
     } else if (LocalDate.class.isAssignableFrom(fieldType)) {
       CellStyle cellStyle = workbook.createCellStyle();

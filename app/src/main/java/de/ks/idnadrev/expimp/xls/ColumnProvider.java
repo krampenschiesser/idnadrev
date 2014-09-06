@@ -12,10 +12,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.entity.export.xsl;
+package de.ks.idnadrev.expimp.xls;
 
 import com.google.common.primitives.Primitives;
-import de.ks.idnadrev.entity.export.EntityExportSource;
+import de.ks.idnadrev.expimp.EntityExportSource;
 import de.ks.persistence.entity.AbstractPersistentObject;
 import de.ks.persistence.entity.NamedPersistentObject;
 import de.ks.reflection.ReflectionUtil;
@@ -29,12 +29,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ColumnProvider {
-  public List<SXSSFColumn> getColumns(EntityExportSource<?> source) {
+  public List<XlsxColumn> getColumns(EntityExportSource<?> source) {
     Class<? extends AbstractPersistentObject> root = source.getRoot();
     return getColumnsByReflection(root);
   }
 
-  private List<SXSSFColumn> getColumnsByReflection(Class<? extends AbstractPersistentObject> clazz) {
+  private List<XlsxColumn> getColumnsByReflection(Class<? extends AbstractPersistentObject> clazz) {
     List<Field> fields = ReflectionUtil.getAllFields(clazz, f -> !Modifier.isFinal(f.getModifiers()), f -> !Modifier.isStatic(f.getModifiers()));
     return fields.stream().sequential().filter(this::isMatchingField).map(f -> new ReflectionColumn(clazz, f)).collect(Collectors.toList());
   }

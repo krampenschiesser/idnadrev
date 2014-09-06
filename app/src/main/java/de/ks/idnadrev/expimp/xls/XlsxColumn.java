@@ -12,12 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.entity.export.xsl;
+package de.ks.idnadrev.expimp.xls;
 
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
-public interface SXSSFColumn {
+public interface XlsxColumn {
   Class<?> getRoot();
 
   String getIdentifier();

@@ -13,12 +13,12 @@
  * limitations under the License.
  */
 
-package de.ks.idnadrev.entity.export.xsl;
+package de.ks.idnadrev.expimp.xls;
 
 import com.google.common.primitives.Primitives;
 import com.google.common.util.concurrent.MoreExecutors;
-import de.ks.idnadrev.entity.export.EntityExportSource;
-import de.ks.idnadrev.entity.export.Exporter;
+import de.ks.idnadrev.expimp.EntityExportSource;
+import de.ks.idnadrev.expimp.Exporter;
 import de.ks.persistence.entity.AbstractPersistentObject;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
@@ -38,18 +38,18 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-public class SXSSFExporter implements Exporter {
-  private static final Logger log = LoggerFactory.getLogger(SXSSFExporter.class);
+public class XlsxExporter implements Exporter {
+  private static final Logger log = LoggerFactory.getLogger(XlsxExporter.class);
   protected final SXSSFWorkbook workbook;
   protected final ExecutorService executorService;
   protected final ColumnProvider provider = new ColumnProvider();
 
-  public SXSSFExporter() {
+  public XlsxExporter() {
     this(MoreExecutors.sameThreadExecutor());
 
   }
 
-  public SXSSFExporter(ExecutorService executorService) {
+  public XlsxExporter(ExecutorService executorService) {
     workbook = new SXSSFWorkbook();
     workbook.setCompressTempFiles(true);
     this.executorService = executorService;
@@ -95,14 +95,14 @@ public class SXSSFExporter implements Exporter {
   }
 
   protected void exportSource(Sheet sheet, EntityExportSource<?> source) {
-    List<SXSSFColumn> columns = getColumnDefinitions(source);
+    List<XlsxColumn> columns = getColumnDefinitions(source);
     createTitle(sheet, columns);
 
     int rowId = 1;
     for (AbstractPersistentObject object : source) {
       Row row = sheet.createRow(rowId);
       for (int columnId = 0; columnId < columns.size(); columnId++) {
-        SXSSFColumn column = columns.get(columnId);
+        XlsxColumn column = columns.get(columnId);
         Object value = column.getValue(object);
         if (value == null) {
           row.createCell(columnId, Cell.CELL_TYPE_BLANK);
@@ -119,10 +119,10 @@ public class SXSSFExporter implements Exporter {
     }
   }
 
-  private void createTitle(Sheet sheet, List<SXSSFColumn> columns) {
+  private void createTitle(Sheet sheet, List<XlsxColumn> columns) {
     Row title = sheet.createRow(0);
     for (int columnId = 0; columnId < columns.size(); columnId++) {
-      SXSSFColumn column = columns.get(columnId);
+      XlsxColumn column = columns.get(columnId);
       Cell titleCell = title.createCell(columnId, Cell.CELL_TYPE_STRING);
 
       RichTextString richTextString = workbook.getCreationHelper().createRichTextString(column.getIdentifier());
@@ -160,8 +160,8 @@ public class SXSSFExporter implements Exporter {
     }
   }
 
-  protected List<SXSSFColumn> getColumnDefinitions(EntityExportSource<?> source) {
-    List<SXSSFColumn> collect = provider.getColumns(source).stream()//
+  protected List<XlsxColumn> getColumnDefinitions(EntityExportSource<?> source) {
+    List<XlsxColumn> collect = provider.getColumns(source).stream()//
             .filter(c -> !source.getConfig().getIgnoredFields().contains(c.getIdentifier()))//
             .collect(Collectors.toList());
     return collect;

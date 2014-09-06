@@ -13,11 +13,11 @@
  * limitations under the License.
  */
 
-package de.ks.idnadrev.entity.export.xsl;
+package de.ks.idnadrev.expimp.xls;
 
 import de.ks.LauncherRunner;
 import de.ks.idnadrev.entity.Thought;
-import de.ks.idnadrev.entity.export.EntityExportSource;
+import de.ks.idnadrev.expimp.EntityExportSource;
 import de.ks.persistence.PersistentWork;
 import de.ks.reflection.PropertyPath;
 import org.apache.poi.ss.usermodel.Row;
@@ -44,8 +44,8 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
-public class SXSSFExporterTest {
-  private static final Logger log = LoggerFactory.getLogger(SXSSFExporterTest.class);
+public class XlsxExporterTest {
+  private static final Logger log = LoggerFactory.getLogger(XlsxExporterTest.class);
   public static final int COUNT = 142;
 
   @Before
@@ -73,7 +73,7 @@ public class SXSSFExporterTest {
   public void testExportThoughts() throws Exception {
     File tempFile = File.createTempFile("testExport", ".xlsx");
     EntityExportSource<Thought> source = new EntityExportSource<>(getAllIds(), Thought.class);
-    SXSSFExporter exporter = new SXSSFExporter();
+    XlsxExporter exporter = new XlsxExporter();
     exporter.export(tempFile, source);
 
 
