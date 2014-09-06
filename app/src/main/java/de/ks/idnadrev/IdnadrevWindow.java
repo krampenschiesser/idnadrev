@@ -134,7 +134,7 @@ public class IdnadrevWindow extends MainWindow {
       event.consume();
     }
 
-    if (event.isControlDown() && event.getCode() == KeyCode.S) {
+    if (event.isControlDown() && event.getCode() == KeyCode.ENTER) {
       Set<Node> defaultButtons = NodeLookup.getAllNodes(borderPane, n -> n.isVisible() && n instanceof Button && ((Button) n).isDefaultButton());
       if (!defaultButtons.isEmpty()) {
         Button defaultButton = (Button) defaultButtons.iterator().next();
