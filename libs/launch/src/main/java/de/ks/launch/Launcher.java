@@ -94,6 +94,7 @@ public class Launcher {
     latch = new CountDownLatch(waves.keySet().size());
     Iterator<Integer> iter = waves.keySet().iterator();
     startWave(iter, waves, args);
+    log.info("Launching done!");
   }
 
   private void startWave(Iterator<Integer> iter, TreeMap<Integer, List<Service>> waves, String[] args) {
