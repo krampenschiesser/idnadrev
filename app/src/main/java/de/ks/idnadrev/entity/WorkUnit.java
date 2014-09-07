@@ -44,7 +44,7 @@ public class WorkUnit extends AbstractPersistentObject<WorkUnit> implements Comp
   @Convert(converter = LocalDateTimeConverter.class)
   protected LocalDateTime end;
 
-  @ManyToOne
+  @ManyToOne(optional = false)
   protected Task task;
 
   protected WorkUnit() {
