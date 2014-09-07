@@ -56,8 +56,8 @@ public class ColumnProvider {
     retval = retval || field.getType().equals(LocalDate.class);
     retval = retval || field.getType().equals(LocalDateTime.class);
     retval = retval || Boolean.class.equals(Primitives.unwrap(field.getType()));
-    retval = retval || AbstractPersistentObject.class.equals(field.getType());
-    retval = retval || NamedPersistentObject.class.equals(field.getType());
+    retval = retval || AbstractPersistentObject.class.isAssignableFrom(field.getType());
+    retval = retval || NamedPersistentObject.class.isAssignableFrom(field.getType());
     return retval;
   }
 }
