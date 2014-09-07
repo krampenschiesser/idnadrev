@@ -44,82 +44,86 @@ public class DummyData extends Service {
   @Override
   protected void doStart() {
     if (Boolean.getBoolean(CREATE_DUMMYDATA)) {
-      PersistentWork.deleteAllOf(Option.class, Tag.class, WorkUnit.class, FileReference.class, Thought.class, Task.class, Context.class);
-      ArrayList<Task> tasks = new ArrayList<>();
-
-      log.info("Creating dummy data.");
-      persist(new Thought("Go fishing").setDescription("on a nice lake"));
-      persist(new Thought("Go hiking").setDescription("maybe the CDT"));
-
-      Context hiking = new Context("Hiking");
-      Task backpack = new Task("Build a new backpack", "DIY").setProject(true);
-      backpack.setContext(hiking);
-      tasks.add(backpack);
-
-      Task sketch = new Task("Create a sketch").setDescription("sketchy\n\tsketchy");
-      sketch.setEstimatedTime(Duration.ofMinutes(42));
-      tasks.add(sketch);
-      Task sew = new Task("Sew the backpack", "no hussle please");
-      sew.setEstimatedTime(Duration.ofMinutes(60 * 3 + 32));
-      tasks.add(sew);
-      backpack.addChild(sketch);
-      backpack.addChild(sew);
-
-      Task task = new Task("Do some stuff").setContext(hiking).setEstimatedTime(Duration.ofMinutes(12));
-      WorkUnit workUnit = new WorkUnit(task);
-      workUnit.setStart(LocalDateTime.now().minus(5, ChronoUnit.MINUTES));
-      workUnit.stop();
-      tasks.add(task);
-      Task asciiDocSample = new Task("AsciiDocSample", asciiDocString).setEstimatedTime(Duration.ofMinutes(1));
-      asciiDocSample.getOutcome().setExpectedOutcome("= title\n\n== other\n");
-      tasks.add(asciiDocSample);
-
-      tasks.forEach((t) -> t.getPhysicalEffort().setAmount(ThreadLocalRandom.current().nextInt(0, 10)));
-      tasks.forEach((t) -> t.getMentalEffort().setAmount(ThreadLocalRandom.current().nextInt(0, 10)));
-      tasks.forEach((t) -> t.getFunFactor().setAmount(ThreadLocalRandom.current().nextInt(-5, 5)));
-
-      persist(hiking, backpack, sketch, sew, task, workUnit, asciiDocSample);
-      persist(new Context("Work"), new Context("Studying"), new Context("Music"));
-
-      Task effort = new Task("effort");
-      effort.getMentalEffort().setAmount(-3);
-      effort.getPhysicalEffort().setAmount(4);
-      effort.getFunFactor().setAmount(4);
-
-      persist(effort);
-
-      persist(new Task("finished task").setDescription("yes it is done").setFinished(true));
-
-
-      PersistentWork.wrap(() -> {
-        Task longRunner = new Task("long runner");
-        longRunner.setDescription("= title\n\n== bla\n\nhello");
-        persist(longRunner);
-        LocalDateTime start = null;
-        for (int i = 0; i < 7; i++) {
-          WorkUnit unit = new WorkUnit(longRunner);
-          LocalDate startDate = new WeekHelper().getFirstDayOfWeek(LocalDate.now()).minusWeeks(1).plusDays(i);
-          start = LocalDateTime.of(startDate, LocalTime.of(12, 15));
-          unit.setStart(start);
-          unit.setEnd(start.plusHours(1));
-          persist(unit);
-        }
-        longRunner.setFinishTime(start);
-      });
-
-
-      Task proposed = new Task("proposed");
-      proposed.setSchedule(new Schedule().setProposedWeek(new WeekHelper().getWeek(LocalDate.now())));
-      persist(proposed);
-
-      Task scheduled = new Task("scheduled");
-      Schedule schedule = new Schedule();
-      schedule.setScheduledDate(new WeekHelper().getFirstDayOfWeek(LocalDate.now()).plusDays(1));
-      schedule.setScheduledTime(LocalTime.of(12, 0));
-
-      scheduled.setSchedule(schedule);
-      persist(scheduled);
+      createData();
     }
+  }
+
+  public void createData() {
+    PersistentWork.deleteAllOf(Option.class, Tag.class, WorkUnit.class, FileReference.class, Thought.class, Task.class, Context.class);
+    ArrayList<Task> tasks = new ArrayList<>();
+
+    log.info("Creating dummy data.");
+    persist(new Thought("Go fishing").setDescription("on a nice lake"));
+    persist(new Thought("Go hiking").setDescription("maybe the CDT"));
+
+    Context hiking = new Context("Hiking");
+    Task backpack = new Task("Build a new backpack", "DIY").setProject(true);
+    backpack.setContext(hiking);
+    tasks.add(backpack);
+
+    Task sketch = new Task("Create a sketch").setDescription("sketchy\n\tsketchy");
+    sketch.setEstimatedTime(Duration.ofMinutes(42));
+    tasks.add(sketch);
+    Task sew = new Task("Sew the backpack", "no hussle please");
+    sew.setEstimatedTime(Duration.ofMinutes(60 * 3 + 32));
+    tasks.add(sew);
+    backpack.addChild(sketch);
+    backpack.addChild(sew);
+
+    Task task = new Task("Do some stuff").setContext(hiking).setEstimatedTime(Duration.ofMinutes(12));
+    WorkUnit workUnit = new WorkUnit(task);
+    workUnit.setStart(LocalDateTime.now().minus(5, ChronoUnit.MINUTES));
+    workUnit.stop();
+    tasks.add(task);
+    Task asciiDocSample = new Task("AsciiDocSample", asciiDocString).setEstimatedTime(Duration.ofMinutes(1));
+    asciiDocSample.getOutcome().setExpectedOutcome("= title\n\n== other\n");
+    tasks.add(asciiDocSample);
+
+    tasks.forEach((t) -> t.getPhysicalEffort().setAmount(ThreadLocalRandom.current().nextInt(0, 10)));
+    tasks.forEach((t) -> t.getMentalEffort().setAmount(ThreadLocalRandom.current().nextInt(0, 10)));
+    tasks.forEach((t) -> t.getFunFactor().setAmount(ThreadLocalRandom.current().nextInt(-5, 5)));
+
+    persist(hiking, backpack, sketch, sew, task, workUnit, asciiDocSample);
+    persist(new Context("Work"), new Context("Studying"), new Context("Music"));
+
+    Task effort = new Task("effort");
+    effort.getMentalEffort().setAmount(-3);
+    effort.getPhysicalEffort().setAmount(4);
+    effort.getFunFactor().setAmount(4);
+
+    persist(effort);
+
+    persist(new Task("finished task").setDescription("yes it is done").setFinished(true));
+
+
+    PersistentWork.wrap(() -> {
+      Task longRunner = new Task("long runner");
+      longRunner.setDescription("= title\n\n== bla\n\nhello");
+      persist(longRunner);
+      LocalDateTime start = null;
+      for (int i = 0; i < 7; i++) {
+        WorkUnit unit = new WorkUnit(longRunner);
+        LocalDate startDate = new WeekHelper().getFirstDayOfWeek(LocalDate.now()).minusWeeks(1).plusDays(i);
+        start = LocalDateTime.of(startDate, LocalTime.of(12, 15));
+        unit.setStart(start);
+        unit.setEnd(start.plusHours(1));
+        persist(unit);
+      }
+      longRunner.setFinishTime(start);
+    });
+
+
+    Task proposed = new Task("proposed");
+    proposed.setSchedule(new Schedule().setProposedWeek(new WeekHelper().getWeek(LocalDate.now())));
+    persist(proposed);
+
+    Task scheduled = new Task("scheduled");
+    Schedule schedule = new Schedule();
+    schedule.setScheduledDate(new WeekHelper().getFirstDayOfWeek(LocalDate.now()).plusDays(1));
+    schedule.setScheduledTime(LocalTime.of(12, 0));
+
+    scheduled.setSchedule(schedule);
+    persist(scheduled);
   }
 
   @Override

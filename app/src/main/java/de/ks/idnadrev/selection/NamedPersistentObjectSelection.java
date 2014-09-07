@@ -70,7 +70,7 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
 
   protected SimpleObjectProperty<T> selectedValue = new SimpleObjectProperty<>();
   protected ActivityController controller = CDI.current().select(ActivityController.class).get();
-  protected QueryConsumer<T> filter;
+  protected QueryConsumer<T, T> filter;
   private Dialog dialog;
   private CustomAutoCompletionBinding autoCompletion;
   private EventHandler<ActionEvent> onAction;
@@ -133,7 +133,7 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
     return this;
   }
 
-  public NamedPersistentObjectSelection<T> from(Class<T> namedEntity, QueryConsumer<T> filter) {
+  public NamedPersistentObjectSelection<T> from(Class<T> namedEntity, QueryConsumer<T, T> filter) {
     this.entityClass = namedEntity;
     this.filter = filter;
     Platform.runLater(() -> {

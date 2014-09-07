@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 public class ViewTasksDS implements ListDataSource<Task> {
   private static final Logger log = LoggerFactory.getLogger(ViewTasksDS.class);
   private Task taskToSelect;
-  private QueryConsumer<Task> filter;
+  private QueryConsumer<Task, Task> filter;
 
   @Override
   public List<Task> loadModel(Consumer<List<Task>> furtherProcessing) {
@@ -97,7 +97,7 @@ public class ViewTasksDS implements ListDataSource<Task> {
     return taskToSelect;
   }
 
-  public void setFilter(QueryConsumer<Task> filter) {
+  public void setFilter(QueryConsumer<Task, Task> filter) {
     this.filter = filter;
   }
 }

@@ -30,7 +30,7 @@ public class NamedPersistentObjectAutoCompletion<T extends NamedPersistentObject
   private final Class<T> entityClass;
   private final QueryConsumer filter;
 
-  public NamedPersistentObjectAutoCompletion(Class<T> entityClass, QueryConsumer<T> filter) {
+  public NamedPersistentObjectAutoCompletion(Class<T> entityClass, QueryConsumer<T, T> filter) {
     this.entityClass = entityClass;
     this.filter = filter;
   }
