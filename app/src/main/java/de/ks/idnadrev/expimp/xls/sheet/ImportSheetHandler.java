@@ -56,7 +56,7 @@ public class ImportSheetHandler extends DefaultHandler {
   private ImportValueParser<?> nextValue;
 
   private CellId currentCell;
-  private final Map<String, XlsxColumn> columnId2Covnerter = new HashMap<>();
+  private final Map<String, XlsxColumn> columnId2Converter = new HashMap<>();
   private final List<ImportValue> currentValues;
   private XlsxColumn currentColumnDef;
 
@@ -85,7 +85,7 @@ public class ImportSheetHandler extends DefaultHandler {
         if (currentCell.row == COLUMN_DEF_ROW) {
           nextValue = getNextValueForDefinition(cellType);
         } else if (cellType != null) {
-          currentColumnDef = columnId2Covnerter.get(currentCell.col);
+          currentColumnDef = columnId2Converter.get(currentCell.col);
           if (currentColumnDef != null) {
             nextValue = getColumnParser(currentColumnDef, cellType);
           } else {
@@ -126,7 +126,7 @@ public class ImportSheetHandler extends DefaultHandler {
                     .filter(c -> c.getIdentifier().toLowerCase(Locale.ENGLISH).equals(columnName.toLowerCase(Locale.ENGLISH)))//
                     .findFirst();
             if (column.isPresent()) {
-              columnId2Covnerter.put(currentCell.col, column.get());
+              columnId2Converter.put(currentCell.col, column.get());
               log.debug("Found column definition {} for column {}, pos={}", column.get(), columnName, currentCell);
             } else {
               log.warn("Could not find any column definition for {}, pos={}", columnName, currentCell);

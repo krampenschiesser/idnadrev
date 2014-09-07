@@ -20,6 +20,7 @@ import de.ks.idnadrev.expimp.EntityExportSource;
 import de.ks.persistence.PersistentWork;
 import de.ks.persistence.entity.NamedPersistentObject;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -39,6 +40,7 @@ public class ImportExportTaskTest {
     createTaskExportData();
   }
 
+  @Ignore
   @Test
   public void testExportImportTasks() throws Exception {
     List<EntityExportSource<?>> sources = getSourcesToExport();

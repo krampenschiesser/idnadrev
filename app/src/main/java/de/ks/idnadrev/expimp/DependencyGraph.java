@@ -30,19 +30,44 @@ public class DependencyGraph {
   @Inject
   EntityManagerFactory factory;
 
-  public List<Collection<EntityType<?>>> getImportOrder() {
-    Set<EntityType<?>> entities = new HashSet<>(factory.getMetamodel().getEntities());
+  protected final List<Collection<EntityType<?>>> importOrder = new ArrayList<>();
 
-    List<Collection<EntityType<?>>> importOrder = new ArrayList<>();
-    while (!entities.isEmpty()) {
-      List<EntityType<?>> rootEntites = getNextEntities(entities, importOrder);
-      importOrder.add(rootEntites);
-    }
-    log.debug("Found {} waves to import", importOrder.size());
-    for (int i = 0; i < importOrder.size(); i++) {
-      log.debug("Found import wave {} objects {}", i, importOrder.get(i).stream().map(t -> t.getJavaType().getName()).collect(Collectors.toList()));
+  public List<Collection<EntityType<?>>> getImportOrder() {
+    if (importOrder.isEmpty()) {
+      Set<EntityType<?>> entities = new HashSet<>(factory.getMetamodel().getEntities());
+
+      while (!entities.isEmpty()) {
+        List<EntityType<?>> rootEntites = getNextEntities(entities, importOrder);
+        importOrder.add(rootEntites);
+      }
+      log.debug("Found {} waves to import", importOrder.size());
+      for (int i = 0; i < importOrder.size(); i++) {
+        log.debug("Found import wave {} objects {}", i, importOrder.get(i).stream().map(t -> t.getJavaType().getName()).collect(Collectors.toList()));
+      }
     }
     return importOrder;
+  }
+
+  public int getStage(Class<?> entity) {
+    List<Collection<EntityType<?>>> order = getImportOrder();
+    for (int i = 0; i < order.size(); i++) {
+      Optional<EntityType<?>> first = order.get(i).stream().filter(t -> t.getJavaType().equals(entity)).findFirst();
+      if (first.isPresent()) {
+        return i;
+      }
+    }
+    throw new IllegalArgumentException(entity.getName() + " is not contained in any stage");
+  }
+
+  public EntityType<?> getEntityType(Class<?> entity) {
+    List<Collection<EntityType<?>>> order = getImportOrder();
+    for (int i = 0; i < order.size(); i++) {
+      Optional<EntityType<?>> first = order.get(i).stream().filter(t -> t.getJavaType().equals(entity)).findFirst();
+      if (first.isPresent()) {
+        return first.get();
+      }
+    }
+    throw new IllegalArgumentException(entity.getName() + " is not contained in any stage");
   }
 
   private List<EntityType<?>> getNextEntities(Set<EntityType<?>> entities, List<Collection<EntityType<?>>> importOrder) {
