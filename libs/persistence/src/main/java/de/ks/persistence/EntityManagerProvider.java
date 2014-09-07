@@ -20,6 +20,7 @@ import de.ks.launch.Launcher;
 
 import javax.enterprise.inject.Produces;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 
 /**
  * Currently used to initialize persistence and to provide access to the {@link EntityManager}
@@ -30,5 +31,11 @@ public class EntityManagerProvider {
   public EntityManager createEm() {
     JPAService jpaService = Launcher.instance.getService(JPAService.class);
     return jpaService.getEntityManagerFactory().createEntityManager();
+  }
+
+  @Produces
+  public EntityManagerFactory createEMF() {
+    JPAService jpaService = Launcher.instance.getService(JPAService.class);
+    return jpaService.getEntityManagerFactory();
   }
 }
