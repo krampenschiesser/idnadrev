@@ -18,10 +18,8 @@ import de.ks.activity.ActivityCfg;
 import de.ks.activity.ActivityController;
 import de.ks.activity.ActivityHint;
 import de.ks.activity.context.ActivityStore;
-import de.ks.idnadrev.entity.*;
+import de.ks.idnadrev.entity.Cleanup;
 import de.ks.persistence.PersistentWork;
-import de.ks.persistence.entity.Sequence;
-import de.ks.scheduler.Schedule;
 import de.ks.util.FXPlatform;
 import org.junit.After;
 import org.junit.Before;
@@ -53,7 +51,7 @@ public abstract class ActivityTest {
   }
 
   protected void cleanup() {
-    PersistentWork.deleteAllOf(FileReference.class, Sequence.class, WorkUnit.class, Task.class, Schedule.class, Context.class, Tag.class, Thought.class);
+    new Cleanup().cleanup();
   }
 
   protected void createTestData(EntityManager em) {
