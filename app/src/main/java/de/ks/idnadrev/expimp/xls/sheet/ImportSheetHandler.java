@@ -38,6 +38,7 @@ public class ImportSheetHandler extends DefaultHandler {
   public static final String CELL_TYPE_INLINESTRING = "inlineStr";
   public static final String CELL_TYPE_NUMBER = "n";
 
+  private static final String INLINESTRING_ELEMENT = "is";
   private static final String VALUE_ELEMENT = "v";
   private static final String CELL_ELEMENT = "c";
   private static final String CELL_ATTRIBUTE_TYPE = "t";
@@ -83,13 +84,17 @@ public class ImportSheetHandler extends DefaultHandler {
 
         if (currentCell.row == COLUMN_DEF_ROW) {
           nextValue = getNextValueForDefinition(cellType);
-        } else {
+        } else if (cellType != null) {
           currentColumnDef = columnId2Covnerter.get(currentCell.col);
           if (currentColumnDef != null) {
             nextValue = getColumnParser(currentColumnDef, cellType);
+          } else {
+            nextValue = null;
           }
+        } else {
+          nextValue = null;
         }
-      } else if (name.equals(VALUE_ELEMENT)) {
+      } else if (name.equals(VALUE_ELEMENT) || name.equals(INLINESTRING_ELEMENT)) {
         if (nextValue != null) {
           nextValue.beginRecording();
         }
@@ -111,7 +116,7 @@ public class ImportSheetHandler extends DefaultHandler {
 
   public void endElement(String uri, String localName, String name) throws SAXException {
     try {
-      if (name.equals(VALUE_ELEMENT)) {
+      if (name.equals(VALUE_ELEMENT) || name.equals(INLINESTRING_ELEMENT)) {
         if (nextValue != null) {
           nextValue.endRecording();
 
@@ -128,6 +133,9 @@ public class ImportSheetHandler extends DefaultHandler {
             }
           } else {
             Object value = nextValue.getValue();
+            if (currentColumnDef == null) {
+              throw new IllegalStateException("column def is null for cell" + currentCell);
+            }
             currentValues.add(new ImportValue(currentColumnDef, value));
             log.trace("new value {} in cell {}", value, currentCell);
           }

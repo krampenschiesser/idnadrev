@@ -16,6 +16,7 @@
 package de.ks.idnadrev.expimp.xls;
 
 import de.ks.LauncherRunner;
+import de.ks.idnadrev.entity.Cleanup;
 import de.ks.idnadrev.entity.Thought;
 import de.ks.idnadrev.expimp.EntityExportSource;
 import de.ks.persistence.PersistentWork;
@@ -50,7 +51,7 @@ public class XlsxExporterTest {
 
   @Before
   public void setUp() throws Exception {
-    PersistentWork.deleteAllOf(Thought.class);
+    new Cleanup().cleanup();
 
     PersistentWork.run(em -> {
       for (int i = 0; i < COUNT; i++) {
@@ -71,7 +72,7 @@ public class XlsxExporterTest {
 
   @Test
   public void testExportThoughts() throws Exception {
-    File tempFile = File.createTempFile("testExport", ".xlsx");
+    File tempFile = File.createTempFile("thoughtExport", ".xlsx");
     EntityExportSource<Thought> source = new EntityExportSource<>(getAllIds(), Thought.class);
     XlsxExporter exporter = new XlsxExporter();
     exporter.export(tempFile, source);
@@ -117,4 +118,5 @@ public class XlsxExporterTest {
     Date creationDate = new Date(timestamp.getTime());
     assertEquals(creationDate, excelDate);
   }
+
 }

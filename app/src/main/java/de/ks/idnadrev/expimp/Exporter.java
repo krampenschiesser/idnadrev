@@ -16,7 +16,10 @@
 package de.ks.idnadrev.expimp;
 
 import java.io.File;
+import java.util.List;
 
 public interface Exporter {
   void export(File file, EntityExportSource<?>... sources);
+
+  void export(File file, List<EntityExportSource<?>> sources);
 }

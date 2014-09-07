@@ -14,6 +14,7 @@
  */
 package de.ks.idnadrev.expimp.xls;
 
+import com.google.common.util.concurrent.MoreExecutors;
 import de.ks.idnadrev.expimp.xls.sheet.ImportSheetHandler;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
@@ -37,6 +38,10 @@ public class XlsxImporter {
 
   protected final ColumnProvider columnProvider = new ColumnProvider();
   private final ExecutorService executorService;
+
+  public XlsxImporter() {
+    this(MoreExecutors.sameThreadExecutor());
+  }
 
   public XlsxImporter(ExecutorService executorService) {
     this.executorService = executorService;
@@ -100,7 +105,7 @@ public class XlsxImporter {
     }
   }
 
-  public OPCPackage openPackage(File file) {
+  protected OPCPackage openPackage(File file) {
     OPCPackage pkg = null;
     try {
       pkg = OPCPackage.open(file);

@@ -57,11 +57,16 @@ public class XlsxExporter implements Exporter {
 
   @Override
   public void export(File file, EntityExportSource<?>... sources) {
+    List<EntityExportSource<?>> exportSources = Arrays.asList(sources);
+    export(file, exportSources);
+  }
+
+  @Override
+  public void export(File file, List<EntityExportSource<?>> sources) {
     if (file.exists()) {
       file.delete();
     }
-    List<EntityExportSource<?>> exportSources = Arrays.asList(sources);
-    List<Future<?>> futures = exportSources.stream().map(s -> {
+    List<Future<?>> futures = sources.stream().map(s -> {
       return executorService.submit(() -> {
         String identifier = s.getIdentifier();
         log.info("Exporting {} to {}", identifier, file);

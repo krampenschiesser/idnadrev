@@ -21,6 +21,9 @@ public class ImportValue {
   protected final Object value;
 
   public ImportValue(XlsxColumn columnDef, Object value) {
+    if (columnDef == null) {
+      throw new NullPointerException("ColumnDef must not be null");
+    }
     this.columnDef = columnDef;
     this.value = value;
   }
