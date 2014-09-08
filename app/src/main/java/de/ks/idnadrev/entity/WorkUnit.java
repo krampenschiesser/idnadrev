@@ -44,7 +44,7 @@ public class WorkUnit extends AbstractPersistentObject<WorkUnit> implements Comp
   @Convert(converter = LocalDateTimeConverter.class)
   protected LocalDateTime end;
 
-  @ManyToOne //fixme make mandatory later
+  @ManyToOne(optional = false)
   protected Task task;
 
   protected WorkUnit() {
@@ -54,6 +54,7 @@ public class WorkUnit extends AbstractPersistentObject<WorkUnit> implements Comp
   public WorkUnit(Task task) {
     this.task = task;
     start = LocalDateTime.now();
+    task.getWorkUnits().add(this);
   }
 
   public void setStart(LocalDateTime start) {

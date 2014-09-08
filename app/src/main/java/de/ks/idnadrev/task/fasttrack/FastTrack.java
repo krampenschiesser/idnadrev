@@ -19,7 +19,6 @@ import de.ks.activity.executor.ActivityExecutor;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.WorkUnit;
 import de.ks.idnadrev.selection.NamedPersistentObjectSelection;
-import de.ks.persistence.PersistentWork;
 import de.ks.text.AsciiDocEditor;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.StringProperty;
@@ -128,7 +127,7 @@ public class FastTrack extends BaseController<Task> {
     if (model.isFinished() || model.getId() == 0) {
       model.setFinished(true);
     }
-    PersistentWork.persist(workUnit);
+//    PersistentWork.persist(workUnit);
     start.set(null);
   }
 
