@@ -43,7 +43,11 @@ public abstract class BaseController<T> implements Initializable, DatasourceCall
   @Subscribe
   @Threading(HandlingThread.JavaFX)
   private void afterRefresh(ActivityLoadFinishedEvent e) {
-    onRefresh(e.getModel());
+    onRefresh(extractFromEvent(e));
+  }
+
+  protected T extractFromEvent(ActivityLoadFinishedEvent e) {
+    return e.getModel();
   }
 
   @Override
