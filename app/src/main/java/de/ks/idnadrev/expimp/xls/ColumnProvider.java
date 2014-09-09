@@ -15,21 +15,32 @@
 package de.ks.idnadrev.expimp.xls;
 
 import com.google.common.primitives.Primitives;
+import de.ks.idnadrev.expimp.DependencyGraph;
 import de.ks.idnadrev.expimp.EntityExportSource;
 import de.ks.persistence.entity.AbstractPersistentObject;
 import de.ks.persistence.entity.NamedPersistentObject;
 import de.ks.reflection.ReflectionUtil;
 
+import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.EntityType;
+import javax.persistence.metamodel.PluralAttribute;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class ColumnProvider {
+  private final DependencyGraph graph;
+
+  public ColumnProvider(DependencyGraph graph) {
+    this.graph = graph;
+  }
+
   public List<XlsxColumn> getColumns(EntityExportSource<?> source) {
     Class<? extends AbstractPersistentObject> root = source.getRoot();
     return getColumnsByReflection(root);
@@ -45,8 +56,17 @@ public class ColumnProvider {
   }
 
   private List<XlsxColumn> getColumnsByReflection(Class<? extends AbstractPersistentObject> clazz) {
+    ArrayList<XlsxColumn> retval = new ArrayList<>();
     List<Field> fields = ReflectionUtil.getAllFields(clazz, f -> !Modifier.isFinal(f.getModifiers()), f -> !Modifier.isStatic(f.getModifiers()));
-    return fields.stream().sequential().filter(this::isMatchingField).map(f -> new ReflectionColumn(clazz, f)).collect(Collectors.toList());
+    List<XlsxColumn> simpleColumns = fields.stream().sequential().filter(this::isMatchingField).map(f -> new ReflectionColumn(clazz, f)).collect(Collectors.toList());
+
+    EntityType<?> entityType = graph.getEntityType(clazz);
+    List<Attribute<?, ?>> collect = entityType.getDeclaredAttributes().stream().filter(a -> a.isAssociation() && a.getPersistentAttributeType() == Attribute.PersistentAttributeType.MANY_TO_MANY).collect(Collectors.toList());
+    List<ToManyColumn> toManyColumns = collect.stream().map(a -> new ToManyColumn((PluralAttribute) a)).collect(Collectors.toList());
+
+    retval.addAll(simpleColumns);
+    retval.addAll(toManyColumns);
+    return retval;
   }
 
   private boolean isMatchingField(Field field) {

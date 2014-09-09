@@ -17,14 +17,14 @@ package de.ks.idnadrev.expimp.xls;
 
 import de.ks.LauncherRunner;
 import de.ks.idnadrev.entity.Cleanup;
+import de.ks.idnadrev.entity.Tag;
+import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.Thought;
 import de.ks.idnadrev.expimp.EntityExportSource;
 import de.ks.persistence.PersistentWork;
 import de.ks.reflection.PropertyPath;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,10 +36,7 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
 import java.io.File;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.*;
@@ -57,6 +54,12 @@ public class XlsxExporterTest {
       for (int i = 0; i < COUNT; i++) {
         em.persist(new Thought(String.format("Thought%03d", i)));
       }
+      Tag tag1 = new Tag("tag" + ToManyColumn.SEPARATOR + "1");
+      Tag tag2 = new Tag("tag2");
+      Task testTask = new Task("testTask");
+      testTask.addTag(tag1);
+      testTask.addTag(tag2);
+      em.persist(testTask);
     });
   }
 
@@ -119,4 +122,39 @@ public class XlsxExporterTest {
     assertEquals(creationDate, excelDate);
   }
 
+  @Test
+  public void testExportToManyRelation() throws Exception {
+    File tempFile = File.createTempFile("taskExportTest", ".xlsx");
+    EntityExportSource<Task> tasks = new EntityExportSource<>(PersistentWork.idsFrom(Task.class), Task.class);
+    EntityExportSource<Tag> tags = new EntityExportSource<>(PersistentWork.idsFrom(Tag.class), Tag.class);
+    XlsxExporter exporter = new XlsxExporter();
+    exporter.export(tempFile, tasks, tags);
+
+
+    Workbook wb = WorkbookFactory.create(tempFile);
+    Sheet taskSheet = wb.getSheet(Task.class.getName());
+    Sheet tagSheet = wb.getSheet(Tag.class.getName());
+    assertNotNull(taskSheet);
+    assertNotNull(tagSheet);
+
+    Row firstRow = taskSheet.getRow(0);
+    int pos = 0;
+    Iterator<Cell> cellIterator = firstRow.cellIterator();
+
+    String property = PropertyPath.property(Task.class, t -> t.getTags());
+    while (cellIterator.hasNext()) {
+      Cell cell = cellIterator.next();
+      if (cell.getStringCellValue().equals(property)) {
+        break;
+      }
+      pos++;
+    }
+    assertNotEquals(Task.class.getSimpleName() + "." + property + " not exported", firstRow.getLastCellNum(), pos);
+
+    Cell cell = taskSheet.getRow(1).getCell(pos);
+    String[] split = StringUtils.split(cell.getStringCellValue(), ToManyColumn.SEPARATOR);
+    assertEquals(2, split.length);
+    assertTrue(Arrays.asList(split).contains("tag" + ToManyColumn.SEPARATOR_REPLACEMENT + "1"));
+    assertTrue(Arrays.asList(split).contains("tag2"));
+  }
 }

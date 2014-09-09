@@ -17,6 +17,7 @@ package de.ks.idnadrev.expimp.xls;
 
 import com.google.common.primitives.Primitives;
 import com.google.common.util.concurrent.MoreExecutors;
+import de.ks.idnadrev.expimp.DependencyGraph;
 import de.ks.idnadrev.expimp.EntityExportSource;
 import de.ks.idnadrev.expimp.Exporter;
 import de.ks.persistence.entity.AbstractPersistentObject;
@@ -25,6 +26,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.enterprise.inject.spi.CDI;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -42,7 +44,7 @@ public class XlsxExporter implements Exporter {
   private static final Logger log = LoggerFactory.getLogger(XlsxExporter.class);
   protected final SXSSFWorkbook workbook;
   protected final ExecutorService executorService;
-  protected final ColumnProvider provider = new ColumnProvider();
+  protected final ColumnProvider provider;
 
   public XlsxExporter() {
     this(MoreExecutors.sameThreadExecutor());
@@ -53,6 +55,7 @@ public class XlsxExporter implements Exporter {
     workbook = new SXSSFWorkbook();
     workbook.setCompressTempFiles(true);
     this.executorService = executorService;
+    provider = new ColumnProvider(CDI.current().select(DependencyGraph.class).get());
   }
 
   @Override
