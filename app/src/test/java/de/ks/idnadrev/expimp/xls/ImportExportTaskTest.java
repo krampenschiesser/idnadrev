@@ -20,7 +20,6 @@ import de.ks.idnadrev.expimp.EntityExportSource;
 import de.ks.persistence.PersistentWork;
 import de.ks.persistence.entity.NamedPersistentObject;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -40,7 +39,6 @@ public class ImportExportTaskTest {
     createTaskExportData();
   }
 
-  @Ignore
   @Test
   public void testExportImportTasks() throws Exception {
     List<EntityExportSource<?>> sources = getSourcesToExport();
@@ -68,12 +66,13 @@ public class ImportExportTaskTest {
       assertNotNull("Parent not set", task.getParent());
       assertNotNull("Context not set", task.getContext());
 
+//      assertEquals("Tags not added to task", 2, task.getTags().size());
     });
   }
 
   private void assertEntiyExists(Class<? extends NamedPersistentObject> clazz, String name) {
     NamedPersistentObject<?> object = PersistentWork.forName(clazz, name);
-    assertNotNull(clazz.getSimpleName() + " with name=" + name + "does not exist", object);
+    assertNotNull(clazz.getSimpleName() + " with name='" + name + "' does not exist", object);
   }
 
   private List<EntityExportSource<?>> getSourcesToExport() {

@@ -17,6 +17,8 @@ package de.ks.idnadrev.expimp.xls.sheet;
 import com.google.common.primitives.Primitives;
 import de.ks.idnadrev.expimp.xls.ColumnProvider;
 import de.ks.idnadrev.expimp.xls.XlsxColumn;
+import de.ks.persistence.entity.AbstractPersistentObject;
+import de.ks.persistence.entity.NamedPersistentObject;
 import org.apache.poi.xssf.model.SharedStringsTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +51,6 @@ public class ImportSheetHandler extends DefaultHandler {
 
   private final Class<?> clazz;
   private final SharedStringsTable sharedStringsTable;
-  private final ColumnProvider columnProvider;
   private final Consumer<List<ImportValue>> importCallback;
 
   private final List<XlsxColumn> columns;
@@ -63,7 +64,6 @@ public class ImportSheetHandler extends DefaultHandler {
   public ImportSheetHandler(Class<?> class2Import, SharedStringsTable sharedStringsTable, ColumnProvider columnProvider, Consumer<List<ImportValue>> importCallback) {
     this.clazz = class2Import;
     this.sharedStringsTable = sharedStringsTable;
-    this.columnProvider = columnProvider;
     this.importCallback = importCallback;
     columns = columnProvider.getColumns(clazz);
     currentValues = new ArrayList<>(columns.size());
@@ -196,6 +196,17 @@ public class ImportSheetHandler extends DefaultHandler {
     if (Long.class.isAssignableFrom(unwrap) || Integer.class.isAssignableFrom(unwrap)) {
       return new LongValueParser();
     }
+
+    if (NamedPersistentObject.class.isAssignableFrom(fieldType)) {
+      if (cellType.equals(CELL_TYPE_INLINESTRING)) {
+        return new InlineStringValueParser();
+      } else if (cellType.equals(CELL_TYPE_STRING)) {
+        return new SharedStringValueParser(sharedStringsTable);
+      }
+    } else if (AbstractPersistentObject.class.isAssignableFrom(fieldType)) {
+      return new LongValueParser();
+    }
+
     log.warn("No value parser for celltype {} and coumndef {}", cellType, columnDef);
     return null;
   }

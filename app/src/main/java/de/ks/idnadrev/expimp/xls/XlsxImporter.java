@@ -29,11 +29,11 @@ import javax.persistence.metamodel.EntityType;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 public class XlsxImporter {
   private static final Logger log = LoggerFactory.getLogger(XlsxImporter.class);
@@ -84,6 +84,24 @@ public class XlsxImporter {
       importStages.entrySet().forEach(e -> {
         try {
           executorService.invokeAll(e.getValue());
+
+          List<Future<?>> futures = new LinkedList<Future<?>>();
+
+          List<List<Future<?>>> collect = e.getValue().stream()//
+                  .map(sheet -> sheet.getRunAfterImport().stream().map((Runnable r) -> executorService.submit(r)).collect(Collectors.<Future<?>>toList()))//
+                  .collect(Collectors.<List<Future<?>>>toList());
+
+          for (List<Future<?>> futureList : collect) {
+            futureList.forEach(future -> {
+              try {
+                future.get();
+              } catch (ExecutionException e1) {
+                log.error("Could not run after sheet ", e);
+              } catch (InterruptedException e1) {
+                //
+              }
+            });
+          }
         } catch (InterruptedException e1) {
           //
         }
