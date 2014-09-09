@@ -14,12 +14,14 @@
  */
 package de.ks.idnadrev.expimp.xls;
 
+import de.ks.idnadrev.expimp.DependencyGraph;
 import de.ks.idnadrev.expimp.xls.sheet.ImportSheetHandler;
 import de.ks.idnadrev.expimp.xls.sheet.ImportValue;
 import de.ks.persistence.PersistentWork;
 import de.ks.persistence.entity.AbstractPersistentObject;
 import de.ks.persistence.entity.NamedPersistentObject;
 import de.ks.reflection.ReflectionUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.xssf.eventusermodel.XSSFReader;
 import org.slf4j.Logger;
@@ -30,12 +32,11 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import javax.persistence.metamodel.EntityType;
+import javax.persistence.metamodel.PluralAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -43,7 +44,7 @@ import java.util.stream.Collectors;
 public class SingleSheetImport implements Callable<Void> {
   private static final Logger log = LoggerFactory.getLogger(SingleSheetImport.class);
 
-  protected final ColumnProvider columnProvider = new ColumnProvider();
+  protected final ColumnProvider columnProvider;
   private final Class<?> clazz;
   private final InputStream sheetStream;
   private final EntityType<?> entityType;
@@ -51,11 +52,12 @@ public class SingleSheetImport implements Callable<Void> {
 
   protected final LinkedList<Runnable> runAfterImport = new LinkedList<>();
 
-  public SingleSheetImport(Class<?> clazz, InputStream sheetStream, EntityType<?> entityType, XSSFReader reader) {
+  public SingleSheetImport(Class<?> clazz, InputStream sheetStream, DependencyGraph graph, XSSFReader reader) {
     this.clazz = clazz;
     this.sheetStream = sheetStream;
-    this.entityType = entityType;
+    this.entityType = graph.getEntityType(clazz);
     this.reader = reader;
+    columnProvider = new ColumnProvider(graph);
   }
 
   @Override
@@ -92,7 +94,8 @@ public class SingleSheetImport implements Callable<Void> {
 
 
     List<ToOneRelationAssignment> manadatoryRelations = getManadatoryRelations(importValues, instance);
-    List<ToOneRelationAssignment> optionalRelations = getOptionalRelations(importValues, null);
+    List<ToOneRelationAssignment> optionalRelations = getOptionalRelations(importValues);
+    List<ToManyRelationAssignment> toManyRelations = getToManyRelations(importValues);
 
     manadatoryRelations.forEach(r -> r.run());
     importValues.forEach(v -> {
@@ -106,7 +109,14 @@ public class SingleSheetImport implements Callable<Void> {
         return resolveEntity(clazz, identifier);
       };
     });
+    toManyRelations.forEach(r -> {
+      r.ownerResolver = () -> {
+        Object identifier = getIdentifier(instance);
+        return resolveEntity(clazz, identifier);
+      };
+    });
     runAfterImport.addAll(optionalRelations);
+    runAfterImport.addAll(toManyRelations);
 
     PersistentWork.persist(instance);
     log.debug("Persisted {}", instance);
@@ -127,7 +137,7 @@ public class SingleSheetImport implements Callable<Void> {
     }).collect(Collectors.toList());
   }
 
-  private List<ToOneRelationAssignment> getOptionalRelations(List<ImportValue> importValues, Object identifier) {
+  private List<ToOneRelationAssignment> getOptionalRelations(List<ImportValue> importValues) {
     List<SingularAttribute<?, ?>> optionalRelations = entityType.getSingularAttributes().stream().filter(a -> a.isAssociation() && a.isOptional()).collect(Collectors.toList());
 
     return optionalRelations.stream().map(r -> {
@@ -137,7 +147,21 @@ public class SingleSheetImport implements Callable<Void> {
       }
       ImportValue importValue = found.get();
       importValues.remove(importValue);
-      return new ToOneRelationAssignment(identifier, r, importValue.getColumnDef(), importValue.getValue());
+      return new ToOneRelationAssignment(null, r, importValue.getColumnDef(), importValue.getValue());
+    }).filter(r -> r != null).collect(Collectors.toList());
+  }
+
+  private List<ToManyRelationAssignment> getToManyRelations(List<ImportValue> importValues) {
+    List<PluralAttribute<?, ?, ?>> pluralAttributes = entityType.getPluralAttributes().stream().filter(a -> a.isAssociation()).collect(Collectors.toList());
+
+    return pluralAttributes.stream().map(r -> {
+      Optional<ImportValue> found = importValues.stream().filter(v -> v.getColumnDef().getIdentifier().equals(r.getName())).findFirst();
+      if (!found.isPresent()) {
+        return null;
+      }
+      ImportValue importValue = found.get();
+      importValues.remove(importValue);
+      return new ToManyRelationAssignment(importValue.getColumnDef(), r, (String) importValue.getValue());
     }).filter(r -> r != null).collect(Collectors.toList());
   }
 
@@ -155,10 +179,25 @@ public class SingleSheetImport implements Callable<Void> {
       @SuppressWarnings("unchecked") Object o = PersistentWork.forName((Class<? extends NamedPersistentObject>) type, (String) identifier);
       return o;
     } else if (AbstractPersistentObject.class.isAssignableFrom(type)) {
-      @SuppressWarnings("unchecked") Object o = PersistentWork.byId((Class<? extends AbstractPersistentObject>) type, (Long) identifier);
+      Long id;
+      if (identifier instanceof String) {
+        id = Long.parseLong((String) identifier);
+      } else {
+        id = (Long) identifier;
+      }
+      @SuppressWarnings("unchecked") Object o = PersistentWork.byId((Class<? extends AbstractPersistentObject>) type, id);
       return o;
     }
     return null;
+  }
+
+  static List<Object> resolveToManyRelation(Class<?> type, List<String> singleIdentifiers) {
+    LinkedList<Object> retval = new LinkedList<>();
+    for (String identifier : singleIdentifiers) {
+      Object entity = resolveEntity(type, identifier);
+      retval.add(entity);
+    }
+    return retval;
   }
 
   static class ToOneRelationAssignment implements Runnable {
@@ -185,6 +224,37 @@ public class SingleSheetImport implements Callable<Void> {
         Object owner = ownerResolver.get();
         Object value = relationResolver.get();
         ownerColumn.setValue(owner, value);
+      });
+    }
+  }
+
+  static class ToManyRelationAssignment implements Runnable {
+    XlsxColumn ownerColumn;
+
+    Supplier<Object> ownerResolver;
+    Supplier<List<Object>> relationResolver;
+
+    ToManyRelationAssignment(XlsxColumn ownerColumn, PluralAttribute relation, String relationString) {
+      this.ownerColumn = ownerColumn;
+
+      String[] split = StringUtils.split(relationString, "|");
+      ArrayList<String> singleIdentifiers = new ArrayList<>(split.length);
+      for (String string : split) {
+        String id = StringUtils.replace(string, ToManyColumn.SEPARATOR, ToManyColumn.SEPARATOR_REPLACEMENT);
+        singleIdentifiers.add(id);
+      }
+      relationResolver = () -> resolveToManyRelation(relation.getElementType().getJavaType(), singleIdentifiers);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void run() {
+      PersistentWork.wrap(() -> {
+        Object owner = ownerResolver.get();
+        List<Object> values = relationResolver.get();
+
+        Collection original = (Collection) ReflectionUtil.getFieldValue(owner, ownerColumn.getIdentifier());
+        original.addAll(values);
       });
     }
   }

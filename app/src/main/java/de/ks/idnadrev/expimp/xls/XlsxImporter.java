@@ -77,7 +77,7 @@ public class XlsxImporter {
           int stage = dependencyGraph.getStage(class2Import);
           EntityType<?> entityType = dependencyGraph.getEntityType(class2Import);
           importStages.putIfAbsent(stage, new LinkedList<SingleSheetImport>());
-          importStages.get(stage).add(new SingleSheetImport(class2Import, sheetStream, entityType, reader));
+          importStages.get(stage).add(new SingleSheetImport(class2Import, sheetStream, dependencyGraph, reader));
         }
       }
 

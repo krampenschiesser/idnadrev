@@ -66,7 +66,7 @@ public class ImportExportTaskTest {
       assertNotNull("Parent not set", task.getParent());
       assertNotNull("Context not set", task.getContext());
 
-//      assertEquals("Tags not added to task", 2, task.getTags().size());
+      assertEquals("Tags not added to task", 2, task.getTags().size());
     });
   }
 
