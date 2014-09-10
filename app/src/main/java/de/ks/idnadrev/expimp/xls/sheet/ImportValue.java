@@ -19,8 +19,10 @@ import de.ks.idnadrev.expimp.xls.XlsxColumn;
 public class ImportValue {
   protected final XlsxColumn columnDef;
   protected final Object value;
+  private final CellId cellId;
 
-  public ImportValue(XlsxColumn columnDef, Object value) {
+  public ImportValue(XlsxColumn columnDef, Object value, CellId cellId) {
+    this.cellId = cellId;
     if (columnDef == null) {
       throw new NullPointerException("ColumnDef must not be null");
     }
@@ -34,6 +36,10 @@ public class ImportValue {
 
   public Object getValue() {
     return value;
+  }
+
+  public CellId getCellId() {
+    return cellId;
   }
 
   @Override

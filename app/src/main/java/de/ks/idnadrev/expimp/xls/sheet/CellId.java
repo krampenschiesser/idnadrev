@@ -14,7 +14,7 @@
  */
 package de.ks.idnadrev.expimp.xls.sheet;
 
-class CellId {
+public class CellId {
   static CellId from(String cellId) {
     StringBuilder row = new StringBuilder(cellId.length());
     StringBuilder col = new StringBuilder(cellId.length());

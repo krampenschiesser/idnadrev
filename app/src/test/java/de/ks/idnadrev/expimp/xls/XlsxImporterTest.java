@@ -18,10 +18,13 @@ package de.ks.idnadrev.expimp.xls;
 import com.google.common.util.concurrent.MoreExecutors;
 import de.ks.LauncherRunner;
 import de.ks.idnadrev.entity.Thought;
+import de.ks.idnadrev.expimp.xls.result.XlsxImportResultCollector;
 import de.ks.persistence.PersistentWork;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.URL;
@@ -34,7 +37,7 @@ import static org.junit.Assert.assertNotNull;
 
 @RunWith(LauncherRunner.class)
 public class XlsxImporterTest {
-
+  private static final Logger log = LoggerFactory.getLogger(XlsxImporterTest.class);
   private File thoughtsFile;
 
   @Before
@@ -48,7 +51,9 @@ public class XlsxImporterTest {
   @Test
   public void testImportThought() throws Exception {
     XlsxImporter importer = new XlsxImporter(MoreExecutors.sameThreadExecutor());
-    importer.importFromFile(thoughtsFile);
+    XlsxImportResultCollector result = importer.importFromFile(thoughtsFile);
+    log.info(result.describe());
+
 
     List<Thought> thoughts = PersistentWork.from(Thought.class);
     assertEquals(142, thoughts.size());

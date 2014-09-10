@@ -16,6 +16,8 @@ package de.ks.idnadrev.expimp.xls;
 
 import com.google.common.util.concurrent.MoreExecutors;
 import de.ks.idnadrev.expimp.DependencyGraph;
+import de.ks.idnadrev.expimp.xls.result.XlsxImportResultCollector;
+import de.ks.idnadrev.expimp.xls.result.XlsxImportSheetResult;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
@@ -38,8 +40,10 @@ import java.util.stream.Collectors;
 public class XlsxImporter {
   private static final Logger log = LoggerFactory.getLogger(XlsxImporter.class);
 
+  private XlsxImportResultCollector resultCollector;
   private final ExecutorService executorService;
   private DependencyGraph dependencyGraph;
+  protected boolean throwOnError = false;
 
   public XlsxImporter() {
     this(MoreExecutors.sameThreadExecutor());
@@ -50,7 +54,8 @@ public class XlsxImporter {
     dependencyGraph = CDI.current().select(DependencyGraph.class).get();
   }
 
-  public void importFromFile(File file) {
+  public XlsxImportResultCollector importFromFile(File file) {
+    resultCollector = new XlsxImportResultCollector();
     checkFile(file);
     OPCPackage pkg = openPackage(file);
     try {
@@ -65,11 +70,14 @@ public class XlsxImporter {
         InputStream sheetStream = iterator.next();
 
         String sheetName = iterator.getSheetName();
+        final XlsxImportSheetResult result = resultCollector.getSheetResult(sheetName);
+
         Class<?> class2Import = null;
         try {
           class2Import = getClass().getClassLoader().loadClass(sheetName);
         } catch (ClassNotFoundException e) {
           log.info("Could not load class to import {} will skip sheet.", sheetName);
+          result.generalError("Could not load class to import " + sheetName + " will skip sheet.", e);
           continue;
         }
 
@@ -77,17 +85,15 @@ public class XlsxImporter {
           int stage = dependencyGraph.getStage(class2Import);
           EntityType<?> entityType = dependencyGraph.getEntityType(class2Import);
           importStages.putIfAbsent(stage, new LinkedList<SingleSheetImport>());
-          importStages.get(stage).add(new SingleSheetImport(class2Import, sheetStream, dependencyGraph, reader));
+          importStages.get(stage).add(new SingleSheetImport(class2Import, sheetStream, dependencyGraph, reader, result));
         }
       }
 
-      importStages.entrySet().forEach(e -> {
+      importStages.entrySet().forEach(stage -> {
         try {
-          executorService.invokeAll(e.getValue());
+          executorService.invokeAll(stage.getValue());
 
-          List<Future<?>> futures = new LinkedList<Future<?>>();
-
-          List<List<Future<?>>> collect = e.getValue().stream()//
+          List<List<Future<?>>> collect = stage.getValue().stream()//
                   .map(sheet -> sheet.getRunAfterImport().stream().map((Runnable r) -> executorService.submit(r)).collect(Collectors.<Future<?>>toList()))//
                   .collect(Collectors.<List<Future<?>>>toList());
 
@@ -95,9 +101,12 @@ public class XlsxImporter {
             futureList.forEach(future -> {
               try {
                 future.get();
-              } catch (ExecutionException e1) {
-                log.error("Could not run after sheet ", e);
-              } catch (InterruptedException e1) {
+              } catch (ExecutionException e) {
+                if (throwOnError) {
+                  log.error("Could not run after sheet ", e);
+                  throw new RuntimeException(e);
+                }
+              } catch (InterruptedException e) {
                 //
               }
             });
@@ -108,15 +117,22 @@ public class XlsxImporter {
       });
 
     } catch (OpenXML4JException | IOException e) {
-      log.error("Could not read {}", file, e);
-      throw new RuntimeException(e);
+      resultCollector.generalError("Could not read " + file, e);
+      if (throwOnError) {
+        log.error("Could not read {}", file, e);
+        throw new RuntimeException(e);
+      }
     } finally {
       try {
         pkg.close();
       } catch (IOException e) {
-        log.error("Could not close package {}", pkg, e);
+        resultCollector.generalError("Could not close package " + pkg, e);
+        if (throwOnError) {
+          log.error("Could not close package {}", pkg, e);
+        }
       }
     }
+    return resultCollector;
   }
 
   protected OPCPackage openPackage(File file) {
@@ -137,5 +153,13 @@ public class XlsxImporter {
     if (!file.exists()) {
       throw new IllegalArgumentException("File " + file + " has to exist");
     }
+  }
+
+  public boolean isThrowOnError() {
+    return throwOnError;
+  }
+
+  public void setThrowOnError(boolean throwOnError) {
+    this.throwOnError = throwOnError;
   }
 }

@@ -15,6 +15,7 @@
 package de.ks.idnadrev.expimp.xls;
 
 import de.ks.idnadrev.expimp.DependencyGraph;
+import de.ks.idnadrev.expimp.xls.result.XlsxImportSheetResult;
 import de.ks.idnadrev.expimp.xls.sheet.ImportSheetHandler;
 import de.ks.idnadrev.expimp.xls.sheet.ImportValue;
 import de.ks.persistence.PersistentWork;
@@ -38,6 +39,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -47,14 +49,16 @@ public class SingleSheetImport implements Callable<Void> {
   protected final ColumnProvider columnProvider;
   private final Class<?> clazz;
   private final InputStream sheetStream;
+  private final XlsxImportSheetResult result;
   private final EntityType<?> entityType;
   private final XSSFReader reader;
 
   protected final LinkedList<Runnable> runAfterImport = new LinkedList<>();
 
-  public SingleSheetImport(Class<?> clazz, InputStream sheetStream, DependencyGraph graph, XSSFReader reader) {
+  public SingleSheetImport(Class<?> clazz, InputStream sheetStream, DependencyGraph graph, XSSFReader reader, XlsxImportSheetResult result) {
     this.clazz = clazz;
     this.sheetStream = sheetStream;
+    this.result = result;
     this.entityType = graph.getEntityType(clazz);
     this.reader = reader;
     columnProvider = new ColumnProvider(graph);
@@ -72,13 +76,13 @@ public class SingleSheetImport implements Callable<Void> {
       parser.parse(inputSource);
 
     } catch (SAXException | IOException | InvalidFormatException e) {
-      log.error("Failed to parse sheet {} ", clazz.getName(), e);
+      result.generalError("Failed to parse sheet " + clazz.getName(), e);
       throw new RuntimeException(e);
     } finally {
       try {
         sheetStream.close();
       } catch (IOException e) {
-        log.error("Could not close sheet stream {}", clazz.getName(), e);
+        result.generalError("Could not close sheet stream " + clazz.getName(), e);
         throw new RuntimeException(e);
       }
       return null;
@@ -97,18 +101,27 @@ public class SingleSheetImport implements Callable<Void> {
     List<ToOneRelationAssignment> optionalRelations = getOptionalRelations(importValues);
     List<ToManyRelationAssignment> toManyRelations = getToManyRelations(importValues);
 
-    manadatoryRelations.forEach(r -> r.run());
-    importValues.forEach(v -> {
-      XlsxColumn columnDef = v.getColumnDef();
-      Object value = v.getValue();
-      columnDef.setValue(instance, value);
+    PersistentWork.run(em -> {
+      try {
+        manadatoryRelations.forEach(r -> r.run());
+        importValues.forEach(v -> {
+          XlsxColumn columnDef = v.getColumnDef();
+          Object value = v.getValue();
+          columnDef.setValue(instance, value);
+        });
+        optionalRelations.forEach(r -> {
+          r.ownerResolver = () -> {
+            Object identifier = getIdentifier(instance);
+            return resolveEntity(clazz, identifier);
+          };
+        });
+        em.persist(instance);
+        result.success(instance.toString(), importValues.get(0).getCellId());
+      } catch (Exception e) {
+        result.error("Could not persist entity " + instance, e, importValues.get(0).getCellId());
+      }
     });
-    optionalRelations.forEach(r -> {
-      r.ownerResolver = () -> {
-        Object identifier = getIdentifier(instance);
-        return resolveEntity(clazz, identifier);
-      };
-    });
+
     toManyRelations.forEach(r -> {
       r.ownerResolver = () -> {
         Object identifier = getIdentifier(instance);
@@ -117,9 +130,6 @@ public class SingleSheetImport implements Callable<Void> {
     });
     runAfterImport.addAll(optionalRelations);
     runAfterImport.addAll(toManyRelations);
-
-    PersistentWork.persist(instance);
-    log.debug("Persisted {}", instance);
   }
 
   private List<ToOneRelationAssignment> getManadatoryRelations(List<ImportValue> importValues, Object instance) {
@@ -129,11 +139,14 @@ public class SingleSheetImport implements Callable<Void> {
       Optional<ImportValue> found = importValues.stream().filter(v -> v.getColumnDef().getIdentifier().equals(r.getName())).findFirst();
       if (!found.isPresent()) {
         log.warn("Could not import {} no column definition for {}.{} found. Values: {}", clazz.getName(), r.getJavaType().getName(), r.getName(), importValues);
+        result.warn("Could not import " + clazz.getName() + " no column definition for " + r.getJavaType().getName() + "." + r.getName() + " found. Values: " + importValues, null);
         return null;
       }
       ImportValue importValue = found.get();
       importValues.remove(importValue);
-      return new ToOneRelationAssignment(() -> instance, r, importValue.getColumnDef(), importValue.getValue());
+
+      Consumer<Object> resultWriter = o -> result.warn("could not find association of '" + o + "' via '" + r.getName() + "' to '" + importValue.getValue() + "'", importValue.getCellId());
+      return new ToOneRelationAssignment(resultWriter, () -> instance, r, importValue.getColumnDef(), importValue.getValue());
     }).collect(Collectors.toList());
   }
 
@@ -147,7 +160,8 @@ public class SingleSheetImport implements Callable<Void> {
       }
       ImportValue importValue = found.get();
       importValues.remove(importValue);
-      return new ToOneRelationAssignment(null, r, importValue.getColumnDef(), importValue.getValue());
+      Consumer<Object> resultWriter = o -> result.warn("could not find association of '" + o + "' via '" + r.getName() + "' to '" + importValue.getValue() + "'", importValue.getCellId());
+      return new ToOneRelationAssignment(resultWriter, null, r, importValue.getColumnDef(), importValue.getValue());
     }).filter(r -> r != null).collect(Collectors.toList());
   }
 
@@ -201,21 +215,17 @@ public class SingleSheetImport implements Callable<Void> {
   }
 
   static class ToOneRelationAssignment implements Runnable {
+    private final Consumer<Object> resultWriter;
     XlsxColumn ownerColumn;
 
     Supplier<Object> ownerResolver;
     Supplier<Object> relationResolver;
 
-    ToOneRelationAssignment(Supplier<Object> ownerResolver, SingularAttribute<?, ?> relation, XlsxColumn ownerColumn, Object relationIdentifier) {
+    ToOneRelationAssignment(Consumer<Object> resultWriter, Supplier<Object> ownerResolver, SingularAttribute<?, ?> relation, XlsxColumn ownerColumn, Object relationIdentifier) {
+      this.resultWriter = resultWriter;
       this.ownerColumn = ownerColumn;
       this.ownerResolver = ownerResolver;
       relationResolver = () -> resolveEntity(relation.getJavaType(), relationIdentifier);
-    }
-
-    ToOneRelationAssignment(Object ownerIdentifier, SingularAttribute<?, ?> relation, XlsxColumn ownerColumn, Object relationIdentifier) {
-      ownerResolver = () -> resolveEntity(relation.getDeclaringType().getJavaType(), ownerIdentifier);
-      relationResolver = () -> resolveEntity(relation.getJavaType(), relationIdentifier);
-      this.ownerColumn = ownerColumn;
     }
 
     @Override
@@ -223,7 +233,11 @@ public class SingleSheetImport implements Callable<Void> {
       PersistentWork.wrap(() -> {
         Object owner = ownerResolver.get();
         Object value = relationResolver.get();
-        ownerColumn.setValue(owner, value);
+        if (value == null) {
+          resultWriter.accept(owner);
+        } else {
+          ownerColumn.setValue(owner, value);
+        }
       });
     }
   }

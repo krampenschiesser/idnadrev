@@ -136,7 +136,7 @@ public class ImportSheetHandler extends DefaultHandler {
             if (currentColumnDef == null) {
               throw new IllegalStateException("column def is null for cell" + currentCell);
             }
-            currentValues.add(new ImportValue(currentColumnDef, value));
+            currentValues.add(new ImportValue(currentColumnDef, value, currentCell));
             log.trace("new value {} in cell {}", value, currentCell);
           }
         }
