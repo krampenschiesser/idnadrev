@@ -136,7 +136,13 @@ public class WorkUnit extends AbstractPersistentObject<WorkUnit> implements Comp
     return result;
   }
 
-  public boolean isDone() {
-    return getEnd() != null;
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder("WorkUnit{");
+    sb.append("start=").append(start);
+    sb.append(", end=").append(end);
+    sb.append(", task=").append(task);
+    sb.append('}');
+    return sb.toString();
   }
 }
