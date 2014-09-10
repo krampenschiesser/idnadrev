@@ -161,7 +161,7 @@ public class AsciiDocEditor implements Initializable {
       if (o == null || n == null) {
         return;
       }
-      if (o.intValue() == 1 && n.intValue() == 0) {
+      if (o.intValue() != 0 && n.intValue() == 0) {
         Platform.runLater(() -> editor.requestFocus());
       }
     });
