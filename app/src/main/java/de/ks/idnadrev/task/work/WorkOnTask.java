@@ -24,11 +24,12 @@ import de.ks.idnadrev.task.finish.FinishTaskActivity;
 import de.ks.idnadrev.thought.add.AddThoughtActivity;
 import de.ks.persistence.PersistentWork;
 import de.ks.text.AsciiDocEditor;
-import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +54,8 @@ public class WorkOnTask extends BaseController<Task> {
   protected StackPane descriptionView;
   protected AsciiDocEditor description;
 
+  protected final SimpleStringProperty tookString = new SimpleStringProperty("");
+
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     AsciiDocEditor.load(descriptionView.getChildren()::add, ade -> this.description = ade);
@@ -74,6 +77,10 @@ public class WorkOnTask extends BaseController<Task> {
       }
     });
     store.getBinding().registerClearOnRefresh(overTime);
+
+    Tooltip tooltip = new Tooltip();
+    tooltip.textProperty().bind(tookString);
+    estimatedTimeBar.setTooltip(tooltip);
   }
 
   @Override
@@ -151,21 +158,22 @@ public class WorkOnTask extends BaseController<Task> {
     Task task = store.getModel();
     Duration estimatedTime = task.getEstimatedTime();
     if (estimatedTime == null || estimatedTime.toMillis() == 0) {
-      Platform.runLater(() -> estimatedTimeBar.setProgress(-0.1D));
+      controller.getJavaFXExecutor().submit(() -> estimatedTimeBar.setProgress(-0.1D));
     } else {
       Task reloaded = PersistentWork.from(Task.class, (r, q, b) -> {
         q.where(b.equal(r.get("id"), task.getId()));
       }, (t) -> t.getWorkUnits().forEach(u -> u.getStart())).get(0);
 
       Duration took = reloaded.getTotalWorkDuration();
+      controller.getJavaFXExecutor().submit(() -> tookString.set(getHourMinutesString(took)));
 
       if (took.compareTo(estimatedTime) < 0) {
         double progress = 100D / Math.max(estimatedTime.toMillis(), 1) * took.toMillis() / 100D;
-        Platform.runLater(() -> estimatedTimeBar.setProgress(progress));
+        controller.getJavaFXExecutor().submit(() -> estimatedTimeBar.setProgress(progress));
       } else {
         Duration over = took.minus(estimatedTime);
 
-        Platform.runLater(() -> overTime.setText(getHourMinutesString(over)));
+        controller.getJavaFXExecutor().submit(() -> overTime.setText(getHourMinutesString(over)));
       }
     }
   }
