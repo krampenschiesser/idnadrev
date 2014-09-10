@@ -31,8 +31,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
 public class ImportExportTaskTest {
@@ -57,6 +56,7 @@ public class ImportExportTaskTest {
     XlsxImporter importer = new XlsxImporter();
     XlsxImportResultCollector results = importer.importFromFile(tempFile);
     log.info(results.describe());
+    assertTrue(results.isSuccessful());
 
     PersistentWork.wrap(() -> {
       assertEntiyExists(Tag.class, "tag1");
@@ -73,6 +73,7 @@ public class ImportExportTaskTest {
       assertNotNull("Context not set", task.getContext());
 
       assertEquals("Tags not added to task", 2, task.getTags().size());
+      assertEquals("WorkUnits not added to task", 2, task.getWorkUnits().size());
     });
   }
 

@@ -32,8 +32,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
 public class XlsxImporterTest {
@@ -53,7 +52,7 @@ public class XlsxImporterTest {
     XlsxImporter importer = new XlsxImporter(MoreExecutors.sameThreadExecutor());
     XlsxImportResultCollector result = importer.importFromFile(thoughtsFile);
     log.info(result.describe());
-
+    assertTrue(result.isSuccessful());
 
     List<Thought> thoughts = PersistentWork.from(Thought.class);
     assertEquals(142, thoughts.size());
