@@ -35,6 +35,10 @@ public class EntityExportSource<T extends AbstractPersistentObject> implements I
     this.root = root;
   }
 
+  public Collection<Long> getIds() {
+    return ids;
+  }
+
   public Class<T> getRoot() {
     return root;
   }

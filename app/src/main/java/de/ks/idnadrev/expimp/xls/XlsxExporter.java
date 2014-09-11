@@ -43,12 +43,11 @@ import java.util.stream.Collectors;
 public class XlsxExporter implements Exporter {
   private static final Logger log = LoggerFactory.getLogger(XlsxExporter.class);
   protected final SXSSFWorkbook workbook;
-  protected final ExecutorService executorService;
+  protected ExecutorService executorService;
   protected final ColumnProvider provider;
 
   public XlsxExporter() {
     this(MoreExecutors.sameThreadExecutor());
-
   }
 
   public XlsxExporter(ExecutorService executorService) {
@@ -56,6 +55,10 @@ public class XlsxExporter implements Exporter {
     workbook.setCompressTempFiles(true);
     this.executorService = executorService;
     provider = new ColumnProvider(CDI.current().select(DependencyGraph.class).get());
+  }
+
+  public void setExecutorService(ExecutorService executorService) {
+    this.executorService = executorService;
   }
 
   @Override
@@ -69,14 +72,16 @@ public class XlsxExporter implements Exporter {
     if (file.exists()) {
       file.delete();
     }
-    List<Future<?>> futures = sources.stream().map(s -> {
-      return executorService.submit(() -> {
-        String identifier = s.getIdentifier();
-        log.info("Exporting {} to {}", identifier, file);
-        Sheet sheet = workbook.createSheet(identifier);
-        exportSource(sheet, s);
-      });
-    }).collect(Collectors.toList());
+    List<Future<?>> futures = sources.stream()//
+            .filter(s -> s.getIds().size() > 0)//
+            .map(s -> {
+              return executorService.submit(() -> {
+                String identifier = s.getIdentifier();
+                log.info("Exporting {} to {}", identifier, file);
+                Sheet sheet = workbook.createSheet(identifier);
+                exportSource(sheet, s);
+              });
+            }).collect(Collectors.toList());
 
     join(futures);
 
@@ -123,7 +128,11 @@ public class XlsxExporter implements Exporter {
       rowId++;
     }
     for (int columnId = 0; columnId < columns.size(); columnId++) {
-      sheet.autoSizeColumn(columnId);
+      try {
+        sheet.autoSizeColumn(columnId);
+      } catch (NullPointerException e) {
+        //
+      }
     }
   }
 
