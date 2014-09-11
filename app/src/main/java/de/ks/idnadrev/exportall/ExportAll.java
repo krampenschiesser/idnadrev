@@ -35,7 +35,6 @@ import org.controlsfx.dialog.Dialogs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -57,12 +56,9 @@ public class ExportAll extends BaseController<Void> {
 
   protected final SimpleObjectProperty<File> exportFile = new SimpleObjectProperty<>();
   protected final java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
-  @Inject
-  XlsxExporter exporter;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    exporter.setExecutorService(controller.getExecutorService());
     exportBtn.disableProperty().bind(validationRegistry.invalidProperty());
     filePath.textProperty().bindBidirectional(exportFile, new StringConverter<File>() {
       @Override
@@ -114,11 +110,15 @@ public class ExportAll extends BaseController<Void> {
 
   @Override
   public void duringSave(Void model) {
+
+
     List<EntityExportSource<? extends AbstractPersistentObject>> entityExportSources = PersistentWork.read(em -> {
       @SuppressWarnings("unchecked") List<Class<? extends AbstractPersistentObject>> entityClasses = em.getEntityManagerFactory().getMetamodel().getEntities().stream().map(e -> (Class<? extends AbstractPersistentObject>) e.getJavaType()).collect(Collectors.toList());
       List<EntityExportSource<? extends AbstractPersistentObject>> exportSources = entityClasses.stream().map(c -> new EntityExportSource<>(PersistentWork.idsFrom(c), c)).collect(Collectors.toList());
       return exportSources;
     });
+
+    XlsxExporter exporter = new XlsxExporter(controller.getExecutorService());
 
     File file = exportFile.get();
     try {
