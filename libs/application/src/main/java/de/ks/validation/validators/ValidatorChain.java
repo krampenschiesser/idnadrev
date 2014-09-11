@@ -26,16 +26,16 @@ public class ValidatorChain<T> implements Validator<T> {
   protected final List<Validator<T>> delegates = new LinkedList<>();
 
   @Override
-  public ValidationResult apply(Control control, T t) {
+  public synchronized ValidationResult apply(Control control, T t) {
     List<ValidationResult> results = delegates.stream().map(d -> d.apply(control, t)).collect(Collectors.toList());
     return ValidationResult.fromResults(results);
   }
 
-  public void addValidator(Validator<T> delegate) {
+  public synchronized void addValidator(Validator<T> delegate) {
     delegates.add(delegate);
   }
 
-  public boolean removeValidator(Validator<T> delegate) {
+  public synchronized boolean removeValidator(Validator<T> delegate) {
     return delegates.remove(delegate);
   }
 

@@ -12,6 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.ks.validation.validators;
 
 import de.ks.i18n.Localized;
@@ -19,12 +20,34 @@ import javafx.scene.control.Control;
 import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.Validator;
 
-public class NotEmptyValidator implements Validator<String> {
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class FileExtensionValidator implements Validator<String> {
+
+  private final List<String> fileExtensions;
+
+  public FileExtensionValidator(String... extensions) {
+    fileExtensions = Arrays.asList(extensions).stream().map(ext -> ext.startsWith(".") ? ext : "." + ext).collect(Collectors.toList());
+  }
+
   @Override
   public ValidationResult apply(Control control, String s) {
+    String validationMsg = Localized.get("validation.file.extension", fileExtensions);
+    ValidationResult validationResult = ValidationResult.fromError(control, validationMsg);
+
     if (s == null || s.isEmpty()) {
-      String validationMsg = Localized.get("validation.notEmpty");
-      return ValidationResult.fromError(control, validationMsg);
+      return validationResult;
+    } else {
+      int index = s.lastIndexOf(".");
+      if (index < 0) {
+        return validationResult;
+      }
+      String end = s.substring(index);
+      if (!fileExtensions.contains(end)) {
+        return validationResult;
+      }
     }
     return null;
   }

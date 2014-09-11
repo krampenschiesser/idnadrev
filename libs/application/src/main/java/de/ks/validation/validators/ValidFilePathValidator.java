@@ -12,6 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.ks.validation.validators;
 
 import de.ks.i18n.Localized;
@@ -19,12 +20,32 @@ import javafx.scene.control.Control;
 import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.Validator;
 
-public class NotEmptyValidator implements Validator<String> {
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Paths;
+
+public class ValidFilePathValidator implements Validator<String> {
   @Override
   public ValidationResult apply(Control control, String s) {
+    String validationMsg = Localized.get("validation.invalidpath", s);
+    ValidationResult validationResult = ValidationResult.fromError(control, validationMsg);
+
     if (s == null || s.isEmpty()) {
-      String validationMsg = Localized.get("validation.notEmpty");
-      return ValidationResult.fromError(control, validationMsg);
+      return validationResult;
+    } else {
+      try {
+        Paths.get(s);
+        File file = new File(s);
+        file.toPath().toAbsolutePath();
+        file.getCanonicalPath();
+        file.exists();
+        if (file.getParentFile() == null) {
+          return validationResult;
+        }
+      } catch (InvalidPathException | IOException e) {
+        return validationResult;
+      }
     }
     return null;
   }
