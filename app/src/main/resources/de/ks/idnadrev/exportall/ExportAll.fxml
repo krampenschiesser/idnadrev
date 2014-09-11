@@ -35,10 +35,10 @@
         <TextField fx:id="filePath" GridPane.rowIndex="1"/>
         <Button mnemonicParsing="false" onAction="#showFileChooser" text="%choose.file" GridPane.columnIndex="1"
                 GridPane.rowIndex="1"/>
-        <Button fx:id="exportBtn" mnemonicParsing="false" onAction="#export" text="%export"
-                GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.rowIndex="3"/>
         <CheckBox fx:id="openAfterExport" mnemonicParsing="false" selected="true" text="%export.openafter"
                   GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        <Button fx:id="exportBtn" mnemonicParsing="false" onAction="#export" text="%export"
+                GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.rowIndex="3"/>
         <ProgressBar fx:id="progress" maxWidth="1.7976931348623157E308" progress="0.0" GridPane.hgrow="ALWAYS"
                      GridPane.rowIndex="2"/>
     </children>
