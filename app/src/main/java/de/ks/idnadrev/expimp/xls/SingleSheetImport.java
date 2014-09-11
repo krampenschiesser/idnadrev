@@ -49,16 +49,20 @@ public class SingleSheetImport implements Callable<Void> {
   protected final ColumnProvider columnProvider;
   private final Class<?> clazz;
   private final InputStream sheetStream;
+  private final DependencyGraph graph;
   private final XlsxImportSheetResult result;
+  private final XlsImportCfg importCfg;
   private final EntityType<?> entityType;
   private final XSSFReader reader;
 
   protected final LinkedList<Runnable> runAfterImport = new LinkedList<>();
 
-  public SingleSheetImport(Class<?> clazz, InputStream sheetStream, DependencyGraph graph, XSSFReader reader, XlsxImportSheetResult result) {
+  public SingleSheetImport(Class<?> clazz, InputStream sheetStream, DependencyGraph graph, XSSFReader reader, XlsxImportSheetResult result, XlsImportCfg importCfg) {
     this.clazz = clazz;
     this.sheetStream = sheetStream;
+    this.graph = graph;
     this.result = result;
+    this.importCfg = importCfg;
     this.entityType = graph.getEntityType(clazz);
     this.reader = reader;
     columnProvider = new ColumnProvider(graph);
@@ -94,16 +98,46 @@ public class SingleSheetImport implements Callable<Void> {
       return;
     }
 
-    Object instance = ReflectionUtil.newInstance(clazz);
+    String name;
+    if (NamedPersistentObject.class.isAssignableFrom(clazz)) {
+      Optional<ImportValue> first = importValues.stream().filter(v -> v.getColumnDef().getIdentifier().equals("name")).findFirst();
+      name = (String) first.get().getValue();
+    } else {
+      name = null;
+    }
 
-
-    List<ToOneRelationAssignment> manadatoryRelations = getManadatoryRelations(importValues, instance);
-    List<ToOneRelationAssignment> optionalRelations = getOptionalRelations(importValues);
-    List<ToManyRelationAssignment> toManyRelations = getToManyRelations(importValues);
 
     PersistentWork.run(em -> {
+      Object instance;
+      boolean keepExisting = importCfg.isKeepExisting();
+      boolean exists;
+
+      if (name != null) {
+        @SuppressWarnings("unchecked") Class<? extends NamedPersistentObject> npoClass = (Class<? extends NamedPersistentObject>) clazz;
+        NamedPersistentObject loaded = PersistentWork.forName(npoClass, name);
+        if (loaded != null) {
+          instance = loaded;
+          exists = true;
+        } else {
+          exists = false;
+          instance = ReflectionUtil.newInstance(clazz);
+        }
+      } else {
+        exists = false;
+        instance = ReflectionUtil.newInstance(clazz);
+      }
+      if (exists && keepExisting) {
+        result.success("Ignored " + clazz.getName() + " with identifier " + name, importValues.get(0).getCellId());
+        return;
+      }
+
+      List<ToOneRelationAssignment> manadatoryRelations = getManadatoryRelations(importValues, instance);
+      List<ToOneRelationAssignment> optionalRelations = getOptionalRelations(importValues);
+      List<ToManyRelationAssignment> toManyRelations = getToManyRelations(importValues);
       try {
-        manadatoryRelations.forEach(r -> r.run());
+        manadatoryRelations.forEach(r -> {
+          r.run();
+        });
         importValues.forEach(v -> {
           XlsxColumn columnDef = v.getColumnDef();
           Object value = v.getValue();
@@ -115,21 +149,27 @@ public class SingleSheetImport implements Callable<Void> {
             return resolveEntity(clazz, identifier);
           };
         });
-        em.persist(instance);
+
+
+        if (!exists) {
+          em.persist(instance);
+        }
         result.success(instance.toString(), importValues.get(0).getCellId());
+        toManyRelations.forEach(r -> {
+          r.ownerResolver = () -> {
+            Object identifier = getIdentifier(instance);
+            return resolveEntity(clazz, identifier);
+          };
+        });
+        runAfterImport.addAll(optionalRelations);
+        runAfterImport.addAll(toManyRelations);
+
       } catch (Exception e) {
         result.error("Could not persist entity " + instance, e, importValues.get(0).getCellId());
+        throw e;
       }
     });
 
-    toManyRelations.forEach(r -> {
-      r.ownerResolver = () -> {
-        Object identifier = getIdentifier(instance);
-        return resolveEntity(clazz, identifier);
-      };
-    });
-    runAfterImport.addAll(optionalRelations);
-    runAfterImport.addAll(toManyRelations);
   }
 
   private List<ToOneRelationAssignment> getManadatoryRelations(List<ImportValue> importValues, Object instance) {

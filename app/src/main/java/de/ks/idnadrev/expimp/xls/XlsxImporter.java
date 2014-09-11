@@ -27,7 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.spi.CDI;
-import javax.persistence.metamodel.EntityType;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,10 +39,12 @@ import java.util.stream.Collectors;
 public class XlsxImporter {
   private static final Logger log = LoggerFactory.getLogger(XlsxImporter.class);
 
-  private XlsxImportResultCollector resultCollector;
-  private final ExecutorService executorService;
-  private DependencyGraph dependencyGraph;
+  protected XlsxImportResultCollector resultCollector;
+  protected final ExecutorService executorService;
+  protected DependencyGraph dependencyGraph;
   protected boolean throwOnError = false;
+
+  protected XlsImportCfg importCfg = new XlsImportCfg().replaceExisting();
 
   public XlsxImporter() {
     this(MoreExecutors.sameThreadExecutor());
@@ -52,6 +53,15 @@ public class XlsxImporter {
   public XlsxImporter(ExecutorService executorService) {
     this.executorService = executorService;
     dependencyGraph = CDI.current().select(DependencyGraph.class).get();
+  }
+
+  public XlsxImporter setImportCfg(XlsImportCfg importCfg) {
+    this.importCfg = importCfg;
+    return this;
+  }
+
+  public XlsImportCfg getImportCfg() {
+    return importCfg;
   }
 
   public XlsxImportResultCollector importFromFile(File file) {
@@ -72,7 +82,7 @@ public class XlsxImporter {
         String sheetName = iterator.getSheetName();
         final XlsxImportSheetResult result = resultCollector.getSheetResult(sheetName);
 
-        Class<?> class2Import = null;
+        Class<?> class2Import;
         try {
           class2Import = getClass().getClassLoader().loadClass(sheetName);
         } catch (ClassNotFoundException e) {
@@ -82,10 +92,13 @@ public class XlsxImporter {
         }
 
         if (class2Import != null) {
+          if (importCfg.getIgnored().contains(class2Import)) {
+            continue;
+          }
           int stage = dependencyGraph.getStage(class2Import);
-          EntityType<?> entityType = dependencyGraph.getEntityType(class2Import);
-          importStages.putIfAbsent(stage, new LinkedList<SingleSheetImport>());
-          importStages.get(stage).add(new SingleSheetImport(class2Import, sheetStream, dependencyGraph, reader, result));
+          importStages.putIfAbsent(stage, new LinkedList<>());
+          SingleSheetImport singleSheetImport = new SingleSheetImport(class2Import, sheetStream, dependencyGraph, reader, result, importCfg);
+          importStages.get(stage).add(singleSheetImport);
         }
       }
 

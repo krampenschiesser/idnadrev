@@ -44,7 +44,7 @@ public class ImportExportTaskTest {
   }
 
   @Test
-  public void testExportImportTasks() throws Exception {
+  public void testExportImportTasksWithCleanup() throws Exception {
     List<EntityExportSource<?>> sources = getSourcesToExport();
 
     File tempFile = File.createTempFile("taskExport", ".xlsx");
@@ -66,6 +66,40 @@ public class ImportExportTaskTest {
       assertEntiyExists(Task.class, "parent");
 
       assertEquals("did not import the workunits", 2, PersistentWork.from(WorkUnit.class).size());
+    });
+    PersistentWork.wrap(() -> {
+      Task task = PersistentWork.forName(Task.class, "test");
+      assertNotNull("Parent not set", task.getParent());
+      assertNotNull("Context not set", task.getContext());
+
+      assertEquals("Tags not added to task", 2, task.getTags().size());
+      assertEquals("WorkUnits not added to task", 2, task.getWorkUnits().size());
+    });
+  }
+
+  @Test
+  public void testExportImportTasksNoCleanup() throws Exception {
+    List<EntityExportSource<?>> sources = getSourcesToExport();
+
+    File tempFile = File.createTempFile("taskExport", ".xlsx");
+    XlsxExporter exporter = new XlsxExporter();
+    exporter.export(tempFile, sources);
+
+    XlsxImporter importer = new XlsxImporter();
+    importer.getImportCfg().keepExisting();
+
+    XlsxImportResultCollector results = importer.importFromFile(tempFile);
+    log.info(results.describe());
+    assertTrue(results.isSuccessful());
+
+    PersistentWork.wrap(() -> {
+      assertEntiyExists(Tag.class, "tag1");
+      assertEntiyExists(Tag.class, "tag2");
+      assertEntiyExists(Context.class, "context");
+      assertEntiyExists(Task.class, "test");
+      assertEntiyExists(Task.class, "parent");
+
+      assertEquals("did not import the workunits", 4, PersistentWork.from(WorkUnit.class).size());
     });
     PersistentWork.wrap(() -> {
       Task task = PersistentWork.forName(Task.class, "test");
