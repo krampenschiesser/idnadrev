@@ -15,15 +15,13 @@
   ~ limitations under the License.
   -->
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <GridPane hgap="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-          prefHeight="400.0" prefWidth="600.0" vgap="10.0" xmlns:fx="http://javafx.com/fxml/1"
-          xmlns="http://javafx.com/javafx/8" fx:controller="de.ks.idnadrev.exportall.ExportAll">
+          prefHeight="400.0" prefWidth="600.0" vgap="10.0" xmlns="http://javafx.com/javafx/8"
+          xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.idnadrev.exportall.ExportAll">
     <columnConstraints>
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
         <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
     </columnConstraints>
     <rowConstraints>
@@ -41,5 +39,7 @@
                 GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.rowIndex="3"/>
         <CheckBox fx:id="openAfterExport" mnemonicParsing="false" selected="true" text="%export.openafter"
                   GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        <ProgressBar fx:id="progress" maxWidth="1.7976931348623157E308" progress="0.0" GridPane.hgrow="ALWAYS"
+                     GridPane.rowIndex="2"/>
     </children>
 </GridPane>

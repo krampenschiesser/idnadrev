@@ -20,11 +20,14 @@ import de.ks.idnadrev.expimp.EntityExportSource;
 import de.ks.idnadrev.expimp.xls.XlsxExporter;
 import de.ks.persistence.PersistentWork;
 import de.ks.persistence.entity.AbstractPersistentObject;
+import de.ks.validation.validators.FileExtensionValidator;
 import de.ks.validation.validators.NotEmptyValidator;
+import de.ks.validation.validators.ValidFilePathValidator;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.util.StringConverter;
@@ -49,6 +52,8 @@ public class ExportAll extends BaseController<Void> {
   private CheckBox openAfterExport;
   @FXML
   private TextField filePath;
+  @FXML
+  private ProgressIndicator progress;
 
   protected final SimpleObjectProperty<File> exportFile = new SimpleObjectProperty<>();
   protected final java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
@@ -77,7 +82,11 @@ public class ExportAll extends BaseController<Void> {
         }
       }
     });
-    validationRegistry.registerValidator(exportBtn, true, new NotEmptyValidator());
+    validationRegistry.registerValidator(filePath, true, new NotEmptyValidator());
+    validationRegistry.registerValidator(filePath, true, new ValidFilePathValidator());
+    validationRegistry.registerValidator(filePath, true, new FileExtensionValidator(".xlsx"));
+
+    progress.setProgress(-1D);
   }
 
   @FXML
@@ -92,7 +101,15 @@ public class ExportAll extends BaseController<Void> {
 
   @FXML
   void export() {
+    progress.setVisible(true);
     controller.save();
+    controller.reload();
+  }
+
+  @Override
+  protected void onRefresh(Void model) {
+    super.onRefresh(model);
+    progress.setVisible(false);
   }
 
   @Override
