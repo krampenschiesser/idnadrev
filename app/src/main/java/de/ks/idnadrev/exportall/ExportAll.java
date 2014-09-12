@@ -110,8 +110,6 @@ public class ExportAll extends BaseController<Void> {
 
   @Override
   public void duringSave(Void model) {
-
-
     List<EntityExportSource<? extends AbstractPersistentObject>> entityExportSources = PersistentWork.read(em -> {
       @SuppressWarnings("unchecked") List<Class<? extends AbstractPersistentObject>> entityClasses = em.getEntityManagerFactory().getMetamodel().getEntities().stream().map(e -> (Class<? extends AbstractPersistentObject>) e.getJavaType()).collect(Collectors.toList());
       List<EntityExportSource<? extends AbstractPersistentObject>> exportSources = entityClasses.stream().map(c -> new EntityExportSource<>(PersistentWork.idsFrom(c), c)).collect(Collectors.toList());
