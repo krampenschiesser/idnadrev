@@ -99,7 +99,7 @@ public class ImportExportTaskTest {
       assertEntiyExists(Task.class, "test");
       assertEntiyExists(Task.class, "parent");
 
-      assertEquals("did not import the workunits", 4, PersistentWork.from(WorkUnit.class).size());
+      assertEquals("did not import the workunits", 2, PersistentWork.from(WorkUnit.class).size());
     });
     PersistentWork.wrap(() -> {
       Task task = PersistentWork.forName(Task.class, "test");
