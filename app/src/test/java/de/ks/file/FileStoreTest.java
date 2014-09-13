@@ -18,13 +18,12 @@ import com.google.common.base.Charsets;
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityController;
 import de.ks.activity.ActivityHint;
+import de.ks.idnadrev.entity.Cleanup;
 import de.ks.idnadrev.entity.FileReference;
 import de.ks.idnadrev.entity.Thought;
 import de.ks.idnadrev.thought.add.AddThoughtActivity;
-import de.ks.option.Option;
 import de.ks.option.Options;
 import de.ks.persistence.PersistentWork;
-import de.ks.persistence.entity.Sequence;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -42,6 +41,8 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 import static org.junit.Assert.*;
 
@@ -54,6 +55,9 @@ public class FileStoreTest {
   FileStore fileStore;
   @Inject
   ActivityController controller;
+  @Inject
+  protected Cleanup cleanup;
+
   private String fileStoreDir;
   private static final String md5 = DigestUtils.md5Hex("hello world");
   private static final String content = "hello world";
@@ -62,7 +66,7 @@ public class FileStoreTest {
   public void setUp() throws Exception {
     controller.startOrResume(new ActivityHint(AddThoughtActivity.class));
 
-    PersistentWork.deleteAllOf(Sequence.class, FileReference.class, Thought.class, Option.class);
+    cleanup.cleanup();
     fileStoreDir = TMPDIR + File.separator + "idnadrevTestStore";
     Options.store(fileStoreDir, FileOptions.class).getFileStoreDir();
     File file = new File(fileStoreDir);
@@ -99,47 +103,38 @@ public class FileStoreTest {
 
   @Test
   public void testSaveFileWithThought() throws Exception {
-    File file = createTmpFile();
-    Thought bla = new Thought("bla");
-    PersistentWork.persist(bla);
+    final File file = createTmpFile();
 
-    FileReference fileReference = fileStore.getReference(bla, file).get();
-    fileReference.setThought(bla);
-    fileStore.saveInFileStore(fileReference, file);
-    assertEquals(0, fileReference.getId());
+    FileReference fileReference = PersistentWork.read(em -> {
+      Thought bla = new Thought("bla");
+      em.persist(bla);
+      FileReference ref = null;
+      try {
+        ref = fileStore.getReference(file).get();
+      } catch (InterruptedException | ExecutionException e) {
+        throw new RuntimeException(e);
+      }
+      bla.getFiles().add(ref);
+      fileStore.scheduleCopy(ref, file);
+      return ref;
+    });
 
-    Sequence sequence = PersistentWork.from(Sequence.class).get(0);
-
-    String expectedFileStorePath = String.format("%09d", sequence.getSeqNr()) + File.separator + file.getName();
-    assertEquals(expectedFileStorePath, fileReference.getFileStorePath());
     assertNotNull(fileReference.getMd5Sum());
     assertEquals(fileReference.getMd5Sum(), md5);
     log.info("Generated md5sum {}", fileReference.getMd5Sum());
+
+    String expectedFileStorePath = fileReference.getMd5Sum();
     assertTrue(new File(fileStoreDir + File.separator + expectedFileStorePath).exists());
 
-    file = fileStore.getFile(fileReference);
-    assertTrue(file.exists());
-  }
+    File reloaded = fileStore.getFile(fileReference);
+    assertTrue(reloaded + " does not exist", reloaded.exists());
 
-  @Test
-  public void testMove() throws Exception {
-    Options.store(false, FileOptions.class).shouldCopy();
-
-    File file = createTmpFile();
-    Thought bla = new Thought("bla");
-    PersistentWork.persist(bla);
-
-    FileReference fileReference = fileStore.getReference(bla, file).get();
-    PersistentWork.run(em -> {
-      Thought reload = PersistentWork.reload(bla);
-      fileReference.setThought(reload);
-      fileStore.scheduleCopy(fileReference, file);
-      em.persist(fileReference);
+    PersistentWork.wrap(() -> {
+      Thought thought = PersistentWork.forName(Thought.class, "bla");
+      Set<FileReference> files = thought.getFiles();
+      assertEquals(1, files.size());
+      assertEquals(file.getName(), files.iterator().next().getName());
     });
-
-    assertFalse(file.exists());
-    File newFile = new File(fileStoreDir + File.separator + fileReference.getFileStorePath());
-    assertTrue(newFile.toString() + " does not exist", newFile.exists());
   }
 
   @Test
@@ -148,17 +143,17 @@ public class FileStoreTest {
 
     Thought bla = new Thought("bla");
     PersistentWork.persist(bla);
-    FileReference fileReference = fileStore.getReference(bla, file).get();
+    FileReference fileReference = fileStore.getReference(file).get();
     PersistentWork.run(em -> {
       Thought reload = PersistentWork.reload(bla);
-      fileReference.setThought(reload);
+      reload.addFileReference(fileReference);
       fileStore.scheduleCopy(fileReference, file);
       em.persist(fileReference);
     });
 
     com.google.common.io.Files.write("hello sauerland", file, Charsets.US_ASCII);
 
-    FileReference newReference = fileStore.getReference(bla, file).get();
+    FileReference newReference = fileStore.getReference(file).get();
     fileStore.saveInFileStore(newReference, file);
 
     assertEquals(fileReference.getId(), newReference.getId());

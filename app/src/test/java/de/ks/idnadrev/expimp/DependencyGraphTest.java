@@ -18,6 +18,7 @@ package de.ks.idnadrev.expimp;
 import de.ks.LauncherRunner;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.WorkUnit;
+import de.ks.idnadrev.entity.information.Information;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -25,9 +26,9 @@ import javax.inject.Inject;
 import javax.persistence.metamodel.EntityType;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
 public class DependencyGraphTest {
@@ -41,6 +42,12 @@ public class DependencyGraphTest {
     assertEquals(2, importTasks.size());
     assertTrue("Workunit not in 2nd stage", importTasks.get(1).stream().filter(t -> t.getJavaType().equals(WorkUnit.class)).findFirst().isPresent());
     assertTrue("Task not in 1nd stage", importTasks.get(0).stream().filter(t -> t.getJavaType().equals(Task.class)).findFirst().isPresent());
+  }
 
+  @Test
+  public void testOptionalRelations() throws Exception {
+    List<ToOneRelation> relations = graph.getOptionalToOneRelations();
+    Optional<ToOneRelation> first = relations.stream().filter(r -> r.getDeclaringClass().equals(Information.class)).findFirst();
+    assertFalse(first.isPresent());
   }
 }

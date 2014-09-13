@@ -12,26 +12,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.entity.validation;
+package de.ks.idnadrev.entity.information;
 
-import javax.validation.Constraint;
-import javax.validation.Payload;
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import javax.persistence.AssociationOverride;
+import javax.persistence.AssociationOverrides;
+import javax.persistence.Entity;
+import javax.persistence.JoinTable;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+@Entity
+@AssociationOverrides(@AssociationOverride(name = "tags", joinTable = @JoinTable(name = "hyperlinkinfo_tag")))
+public class HyperLinkInfo extends Information {
 
-@Target({TYPE})
-@Retention(RUNTIME)
-@Documented
-@Constraint(validatedBy = {})
-public @interface OwnerFilled {
+  protected HyperLinkInfo() {
+  }
 
-  String message() default "{validation.fileReference.ownerFilled}";
-
-  Class<?>[] groups() default {};
-
-  Class<? extends Payload>[] payload() default {};
+  public HyperLinkInfo(String name) {
+    super(name);
+  }
 }

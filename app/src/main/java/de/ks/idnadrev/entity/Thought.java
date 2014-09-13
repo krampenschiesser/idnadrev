@@ -19,10 +19,7 @@ import de.ks.idnadrev.thought.ThoughtOptions;
 import de.ks.option.Options;
 import de.ks.persistence.entity.NamedPersistentObject;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -35,14 +32,15 @@ import java.util.Set;
 @Entity
 public class Thought extends NamedPersistentObject<Thought> implements FileContainer<Thought> {
   private static final long serialVersionUID = 1L;
+  public static final String THOUGHT_FILE_JOINTABLE = "thought_file";
 
   @Column(length = Integer.MAX_VALUE)
   protected String description;
   protected LocalDate postponedDate;
 
-  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "thought")
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+  @JoinTable(name = THOUGHT_FILE_JOINTABLE)
   protected Set<FileReference> files = new HashSet<>();
-  protected String fileStoreDir;
 
   public Thought() {
   }
@@ -53,17 +51,6 @@ public class Thought extends NamedPersistentObject<Thought> implements FileConta
 
   public Thought setDescription(String description) {
     this.description = description;
-    return this;
-  }
-
-  @Override
-  public String getFileStoreDir() {
-    return fileStoreDir;
-  }
-
-  @Override
-  public Thought setFileStoreDir(String dir) {
-    this.fileStoreDir = dir;
     return this;
   }
 

@@ -29,13 +29,20 @@
 
         <class>de.ks.idnadrev.entity.Category</class>
         <class>de.ks.idnadrev.entity.Context</class>
-        <class>de.ks.idnadrev.entity.Note</class>
         <class>de.ks.idnadrev.entity.FileReference</class>
         <class>de.ks.idnadrev.entity.Tag</class>
         <class>de.ks.idnadrev.entity.Task</class>
         <class>de.ks.idnadrev.entity.Thought</class>
         <class>de.ks.idnadrev.entity.WorkType</class>
         <class>de.ks.idnadrev.entity.WorkUnit</class>
+
+        <class>de.ks.idnadrev.entity.information.Information</class>
+        <class>de.ks.idnadrev.entity.information.ChartInfo</class>
+        <class>de.ks.idnadrev.entity.information.FileInfo</class>
+        <class>de.ks.idnadrev.entity.information.HyperLinkInfo</class>
+        <class>de.ks.idnadrev.entity.information.TextInfo</class>
+        <class>de.ks.idnadrev.entity.information.DiaryInfo</class>
+        <class>de.ks.idnadrev.entity.information.UmlDiagramInfo</class>
 
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>

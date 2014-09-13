@@ -14,19 +14,18 @@
  */
 package de.ks.idnadrev.entity;
 
-import java.util.Set;
+public class FileSize {
+  private final long bytes;
 
-public interface FileContainer<T> {
-
-  Set<FileReference> getFiles();
-
-  default void addFileReference(FileReference ref) {
-    getFiles().add(ref);
+  public FileSize(long bytes) {
+    this.bytes = bytes;
   }
 
-  long getId();
+  public double getSizeM() {
+    return bytes / 1000D / 1000D;
+  }
 
-  String getDescription();
-
-  T setDescription(String description);
+  public double getSizeG() {
+    return bytes / 1000D / 1000D / 1000D;
+  }
 }

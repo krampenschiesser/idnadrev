@@ -12,21 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.entity;
+package de.ks.idnadrev.entity.information;
 
-import java.util.Set;
-
-public interface FileContainer<T> {
-
-  Set<FileReference> getFiles();
-
-  default void addFileReference(FileReference ref) {
-    getFiles().add(ref);
-  }
-
-  long getId();
-
-  String getDescription();
-
-  T setDescription(String description);
+public enum UmlDiagramType {
+  SEQUENCE, USECASE, CLASS, ACTIVITY, COMPONENT, STATE, OBJECT;
 }

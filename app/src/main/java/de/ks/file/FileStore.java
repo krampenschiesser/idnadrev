@@ -15,11 +15,9 @@
 package de.ks.file;
 
 import de.ks.activity.executor.ActivityExecutor;
-import de.ks.idnadrev.entity.FileContainer;
 import de.ks.idnadrev.entity.FileReference;
 import de.ks.option.Options;
 import de.ks.persistence.PersistentWork;
-import de.ks.persistence.entity.Sequence;
 import de.ks.persistence.transaction.TransactionProvider;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,12 +30,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.concurrent.CompletableFuture;
 
 public class FileStore {
   private static final Logger log = LoggerFactory.getLogger(FileStore.class);
-  private static final String FILESTORE_SEQUENCE = "filestore";
   private final FileOptions options;
 
   @Inject
@@ -47,7 +45,7 @@ public class FileStore {
     options = Options.get(FileOptions.class);
   }
 
-  public CompletableFuture<FileReference> getReference(FileContainer owner, File file) {
+  public CompletableFuture<FileReference> getReference(File file) {
     if (!file.exists()) {
       throw new IllegalArgumentException("File " + file + " does not exist");
     }
@@ -57,6 +55,9 @@ public class FileStore {
   }
 
   protected FileReference resolveReference(String md5, File file) {
+    String mimeType = getMimeType(file);
+    long size = getFileSize(file);
+
     FileReference fileReference = PersistentWork.forName(FileReference.class, file.getName());
     if (fileReference != null) {
       String originalMd5 = fileReference.getMd5Sum();
@@ -64,38 +65,34 @@ public class FileStore {
         log.info("MD5Sum of file {} has changed from {} to {}", file.getName(), originalMd5, md5);
       }
       fileReference.setMd5Sum(md5);
+      fileReference.setMimeType(mimeType);
+      fileReference.setSizeInBytes(size);
       return fileReference;
     } else {
       FileReference reference = new FileReference(file.getName(), md5);
+      reference.setSizeInBytes(size);
+      reference.setMimeType(mimeType);
       return reference;
     }
   }
 
-  public String getFileStoreInternalDir(FileContainer specifier) {
-    if (specifier.getFileStoreDir() == null) {
-      specifier.setFileStoreDir(generateFileStoreDir());
+  private long getFileSize(File file) {
+    try {
+      return Files.size(file.toPath());
+    } catch (IOException e) {
+      log.error("Could not get filesize from {}", file, e);
+      return -1;
     }
-    return specifier.getFileStoreDir();
   }
 
-  protected String generateFileStoreDir() {
-    long nextSeq = Sequence.getNextSequenceNr(FILESTORE_SEQUENCE);
-    String folder = String.format("%09d", nextSeq);
-    return folder;
-  }
-
-  private Path getTargetPath(FileContainer specifier) {
-    String fileStoreInternalDir = getFileStoreInternalDir(specifier);
-    File file = new File(options.getFileStoreDir() + File.separator + fileStoreInternalDir);
-    if (!file.exists()) {
-      try {
-        Files.createDirectories(file.toPath());
-      } catch (IOException e) {
-        log.error("Could not create file {}", file);
-        throw new RuntimeException(e);
-      }
+  private String getMimeType(File file) {
+    Path path = file.toPath();
+    try {
+      return Files.probeContentType(path);
+    } catch (IOException e) {
+      log.error("Could not get mime type from ", file, e);
+      return null;
     }
-    return file.toPath();
   }
 
   protected String getMd5(File file) {
@@ -108,21 +105,13 @@ public class FileStore {
   }
 
   public File getFile(FileReference fileReference) {
-    FileContainer owner = fileReference.getOwner();
-    if (owner == null) {
-      throw new IllegalArgumentException("owner of " + fileReference + " must not be null!");
-    }
-    Path targetDirectory = getTargetPath(owner);
-    Path targetPath = targetDirectory.resolve(fileReference.getName());
-    return targetPath.toFile();
+    Path path = Paths.get(getFileStoreDir(), fileReference.getMd5Sum(), fileReference.getName());
+    return path.toFile();
   }
 
-  public void scheduleCopy(FileReference fileReference, File file) {
-    String fileStoreInternalDir = getFileStoreInternalDir(fileReference.getOwner());
-    fileReference.setFileStorePath(fileStoreInternalDir + File.separator + file.getName());
-
+  public void scheduleCopy(FileReference reference, File file) {
     CopyFileAfterCommit synchronization = new CopyFileAfterCommit(() -> {
-      saveInFileStore(fileReference, file);
+      saveInFileStore(reference, file);
     });
     TransactionProvider.instance.getCurrentTransaction().ifPresent(tx -> {
       tx.registerSynchronization(synchronization);
@@ -133,12 +122,19 @@ public class FileStore {
     if (!file.exists()) {
       throw new IllegalArgumentException("File " + file + " has to exist");
     }
-    if (ref.getFileStorePath() == null) {
-      String fileStoreInternalDir = getFileStoreInternalDir(ref.getOwner());
-      ref.setFileStorePath(fileStoreInternalDir + File.separator + file.getName());
+    if (ref.getMd5Sum() == null) {
+      throw new IllegalArgumentException("MD5 sum has to be calculated");
     }
 
-    Path targetPath = getTargetPath(ref.getOwner()).resolve(file.getName());
+    Path dir = Paths.get(getFileStoreDir(), ref.getMd5Sum());
+    try {
+      Files.createDirectories(dir);
+    } catch (IOException e) {
+      log.error("Could not store create parent directory {}", dir, e);
+      return;
+    }
+
+    Path targetPath = Paths.get(getFileStoreDir(), ref.getMd5Sum(), ref.getName());
     if (options.shouldCopy()) {
       try {
         Files.copy(file.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);

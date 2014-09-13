@@ -14,12 +14,58 @@
  */
 package de.ks.idnadrev.entity;
 
+import de.ks.idnadrev.expimp.DependencyGraph;
+import de.ks.idnadrev.expimp.ToOneRelation;
 import de.ks.persistence.PersistentWork;
-import de.ks.persistence.entity.Sequence;
-import de.ks.scheduler.Schedule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Root;
+import javax.persistence.metamodel.EntityType;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Cleanup {
+  private static final Logger log = LoggerFactory.getLogger(Cleanup.class);
+
+  @Inject
+  DependencyGraph graph;
+
   public void cleanup() {
-    PersistentWork.deleteAllOf(FileReference.class, Sequence.class, WorkUnit.class, Task.class, Schedule.class, Context.class, Tag.class, Thought.class);
+    Set<String> joinTables = graph.getJoinTables();
+    PersistentWork.deleteJoinTables(joinTables);
+
+
+    List<ToOneRelation> optionalToOneRelations = graph.getOptionalToOneRelations();
+    for (ToOneRelation relation : optionalToOneRelations) {
+      PersistentWork.run(em -> {
+        Class owner = relation.getDeclaringClass();
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+
+        CriteriaUpdate update = criteriaBuilder.createCriteriaUpdate(owner);
+
+        @SuppressWarnings("unchecked") Root root = update.from(owner);
+        update.set(root.get(relation.getName()), criteriaBuilder.nullLiteral(relation.getRelationClass()));
+
+        int i = em.createQuery(update).executeUpdate();
+        if (i > 0) {
+          log.debug("Set {} references {}.{} to null", i, owner.getName(), relation.getName());
+        }
+      });
+    }
+
+
+    List<Collection<EntityType<?>>> importOrder = graph.getImportOrder();
+    Collections.reverse(importOrder);
+    for (Collection<EntityType<?>> entityTypes : importOrder) {
+      List<Class<?>> toDelete = entityTypes.stream().map(t -> t.getJavaType()).collect(Collectors.toList());
+      PersistentWork.deleteAllOf(toDelete);
+    }
   }
 }

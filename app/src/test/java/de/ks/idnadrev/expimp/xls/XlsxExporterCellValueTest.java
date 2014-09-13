@@ -15,16 +15,19 @@
 
 package de.ks.idnadrev.expimp.xls;
 
+import de.ks.LauncherRunner;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.RichTextString;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 
+@RunWith(LauncherRunner.class)
 public class XlsxExporterCellValueTest {
 
   @Test

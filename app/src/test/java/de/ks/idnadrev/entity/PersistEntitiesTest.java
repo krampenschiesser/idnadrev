@@ -16,18 +16,18 @@
 package de.ks.idnadrev.entity;
 
 import de.ks.LauncherRunner;
+import de.ks.idnadrev.entity.information.TextInfo;
 import de.ks.persistence.PersistentWork;
-import de.ks.persistence.entity.AbstractPersistentObject;
 import de.ks.persistence.entity.NamedPersistentObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -37,7 +37,8 @@ import static org.junit.Assert.assertEquals;
  */
 @RunWith(LauncherRunner.class)
 public class PersistEntitiesTest {
-  private List<Class<? extends AbstractPersistentObject<?>>> allEntityClasses = Arrays.asList(Category.class, FileReference.class, Note.class, Tag.class, Thought.class, WorkUnit.class, Task.class, Context.class);
+  @Inject
+  Cleanup cleanup;
 
   private List<NamedPersistentObject> simpleEntities = new ArrayList<NamedPersistentObject>() {{
     add(new Category("myCategory"));
@@ -48,9 +49,7 @@ public class PersistEntitiesTest {
 
   @Before
   public void setUp() throws Exception {
-    for (Class<?> clazz : allEntityClasses) {
-      PersistentWork.deleteAllOf(clazz);
-    }
+    cleanup.cleanup();
   }
 
   @Test
@@ -78,16 +77,16 @@ public class PersistEntitiesTest {
   }
 
   @Test
-  public void testPersistNote() throws Exception {
-    Note note = new Note("myNote");
+  public void testPersistTextInfo() throws Exception {
+    TextInfo information = new TextInfo("myNote");
 
     PersistentWork.run((em) -> {
-      em.persist(note);
+      em.persist(information);
     });
 
     PersistentWork.run((em) -> {
-      Note readNote = em.find(Note.class, note.getId());
-      assertEquals(note, readNote);
+      TextInfo readInformation = em.find(TextInfo.class, information.getId());
+      assertEquals(information, readInformation);
     });
   }
 

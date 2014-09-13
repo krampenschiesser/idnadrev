@@ -15,6 +15,7 @@
 
 package de.ks.idnadrev.entity;
 
+import de.ks.idnadrev.entity.information.*;
 import de.ks.persistence.converter.DurationConverter;
 import de.ks.persistence.converter.LocalDateConverter;
 import de.ks.persistence.converter.LocalDateTimeConverter;
@@ -27,10 +28,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Created by Christian Loehnert
@@ -69,9 +67,6 @@ public class Task extends NamedPersistentObject<Task> implements FileContainer<T
   @ManyToOne(cascade = CascadeType.ALL)
   protected Schedule schedule;
 
-  @OneToMany(cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH}, orphanRemoval = false, mappedBy = "task")
-  protected Set<Note> notes = new HashSet<>();
-
   @ManyToOne
   protected Task parent;
 
@@ -101,9 +96,24 @@ public class Task extends NamedPersistentObject<Task> implements FileContainer<T
   @JoinTable(name = TASK_TAG_JOINTABLE)
   protected Set<Tag> tags = new HashSet<>();
 
-  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "task")
+  @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.DETACH}, orphanRemoval = true)
+  @JoinTable(name = "task_file")
   protected Set<FileReference> files = new HashSet<>();
-  protected String fileStoreDir;
+
+  @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.DETACH}, mappedBy = "task")
+  protected Set<ChartInfo> chartInfos = new HashSet<>();
+
+  @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.DETACH}, mappedBy = "task")
+  protected Set<FileInfo> fileInfos = new HashSet<>();
+
+  @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.DETACH}, mappedBy = "task")
+  protected Set<HyperLinkInfo> hyperLinkInfos = new HashSet<>();
+
+  @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.DETACH}, mappedBy = "task")
+  protected Set<TextInfo> textInfos = new HashSet<>();
+
+  @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.DETACH}, mappedBy = "task")
+  protected Set<UmlDiagramInfo> umlInfos = new HashSet<>();
 
   protected Task() {
     this.creationTime = LocalDateTime.now();
@@ -138,17 +148,6 @@ public class Task extends NamedPersistentObject<Task> implements FileContainer<T
 
   public Task setDescription(String description) {
     this.description = description;
-    return this;
-  }
-
-  @Override
-  public String getFileStoreDir() {
-    return fileStoreDir;
-  }
-
-  @Override
-  public Task setFileStoreDir(String dir) {
-    this.fileStoreDir = dir;
     return this;
   }
 
@@ -272,16 +271,6 @@ public class Task extends NamedPersistentObject<Task> implements FileContainer<T
     return this;
   }
 
-  public Task addNote(Note note) {
-    this.getNotes().add(note);
-    note.setTask(this);
-    return this;
-  }
-
-  public Set<Note> getNotes() {
-    return notes;
-  }
-
   public Set<Task> getChildren() {
     return children;
   }
@@ -361,6 +350,38 @@ public class Task extends NamedPersistentObject<Task> implements FileContainer<T
 
   public void setSchedule(Schedule schedule) {
     this.schedule = schedule;
+  }
+
+  public List<Information> getInformation() {
+    List<Information> retval = new ArrayList<>();
+
+    retval.addAll(getUmlInfos());
+    retval.addAll(getTextInfos());
+    retval.addAll(getChartInfos());
+    retval.addAll(getHyperLinkInfos());
+    retval.addAll(getFileInfos());
+
+    return retval;
+  }
+
+  public Set<UmlDiagramInfo> getUmlInfos() {
+    return umlInfos;
+  }
+
+  public Set<TextInfo> getTextInfos() {
+    return textInfos;
+  }
+
+  public Set<HyperLinkInfo> getHyperLinkInfos() {
+    return hyperLinkInfos;
+  }
+
+  public Set<FileInfo> getFileInfos() {
+    return fileInfos;
+  }
+
+  public Set<ChartInfo> getChartInfos() {
+    return chartInfos;
   }
 
   @Override

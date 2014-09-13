@@ -15,39 +15,25 @@
 
 package de.ks.idnadrev.entity;
 
-import de.ks.idnadrev.entity.validation.OwnerFilled;
 import de.ks.persistence.entity.NamedPersistentObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
-/**
- * Created by Christian Loehnert
- * Krampenschiesser@freenet.de
- * All rights reserved by now, license may come later.
- */
-
 @Entity
-@OwnerFilled
-public class FileReference extends NamedPersistentObject<FileReference> {//TODO use file storage path and md5 checksum
-  public static final String FILESTORE_VAR = "$filestore$";
+public class FileReference extends NamedPersistentObject<FileReference> {
   private static final Logger log = LoggerFactory.getLogger(FileReference.class);
+  public static final String FILESTORE_VAR = "$filestore$";
   private static final long serialVersionUID = 1L;
 
-  @ManyToOne(cascade = CascadeType.ALL)
-  protected Note note;
-  @ManyToOne(cascade = CascadeType.ALL)
-  protected Thought thought;
-  @ManyToOne(cascade = CascadeType.ALL)
-  protected Task task;
-
-  protected String md5Sum;
   @NotNull
-  protected String fileStorePath;
+  @Column(length = 32)
+  protected String md5Sum;
+  protected String mimeType;
+  protected long sizeInBytes;
 
   public FileReference() {
     //
@@ -58,45 +44,6 @@ public class FileReference extends NamedPersistentObject<FileReference> {//TODO 
     md5Sum = md5;
   }
 
-  public Thought getThought() {
-    return thought;
-  }
-
-  public void setThought(Thought thought) {
-    this.thought = thought;
-    this.task = null;
-    this.note = null;
-  }
-
-  public Note getNote() {
-    return note;
-  }
-
-  protected void setNote(Note note) {
-    this.note = note;
-    this.task = null;
-    this.thought = null;
-  }
-
-  public Task getTask() {
-    return task;
-  }
-
-  public void setTask(Task task) {
-    this.task = task;
-    this.thought = null;
-    this.note = null;
-  }
-
-  public String getFileStorePath() {
-    return fileStorePath;
-  }
-
-  public FileReference setFileStorePath(String fileStorePath) {
-    this.fileStorePath = fileStorePath;
-    return this;
-  }
-
   public String getMd5Sum() {
     return md5Sum;
   }
@@ -105,25 +52,52 @@ public class FileReference extends NamedPersistentObject<FileReference> {//TODO 
     this.md5Sum = md5Sum;
   }
 
-  public void setOwner(FileContainer owner) {
-    if (owner instanceof Thought) {
-      setThought((Thought) owner);
-    } else if (owner instanceof Task) {
-      setTask((Task) owner);
-    } else if (owner instanceof Note) {
-      setNote((Note) owner);
-    }
+  public long getSizeInBytes() {
+    return sizeInBytes;
   }
 
-  public FileContainer<?> getOwner() {
-    if (getTask() != null) {
-      return getTask();
-    } else if (getThought() != null) {
-      return getThought();
-    } else if (getNote() != null) {
-      return getNote();
-    }
-    return null;
+  public FileSize getSize() {
+    return new FileSize(sizeInBytes);
+  }
+
+  public void setSizeInBytes(long sizeInBytes) {
+    this.sizeInBytes = sizeInBytes;
+  }
+
+  public String getMimeType() {
+    return mimeType;
+  }
+
+  public void setMimeType(String mimeType) {
+    this.mimeType = mimeType;
+  }
+
+  public boolean isImage() {
+    return checkMimeType("iamge");
+  }
+
+  public boolean isAudio() {
+    return checkMimeType("audio");
+  }
+
+  public boolean isVideo() {
+    return checkMimeType("video");
+  }
+
+  public boolean isApplication() {
+    return checkMimeType("application");
+  }
+
+  public boolean isText() {
+    return checkMimeType("text");
+  }
+
+  public boolean isMessage() {
+    return checkMimeType("message");
+  }
+
+  private boolean checkMimeType(String audio) {
+    return mimeType != null && mimeType.startsWith(audio);
   }
 }
 

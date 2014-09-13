@@ -18,13 +18,11 @@ package de.ks.idnadrev.task.work;
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityController;
 import de.ks.activity.ActivityHint;
-import de.ks.activity.context.ActivityStore;
 import de.ks.idnadrev.entity.*;
 import de.ks.idnadrev.task.view.ViewTasksActvity;
 import de.ks.idnadrev.thought.add.AddThought;
 import de.ks.idnadrev.thought.add.AddThoughtActivity;
 import de.ks.persistence.PersistentWork;
-import de.ks.persistence.entity.Sequence;
 import de.ks.util.FXPlatform;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -47,12 +45,14 @@ public class WorkOnTaskTest {
   @Inject
   ActivityController activityController;
   @Inject
-  ActivityStore store;
+  Cleanup cleanup;
+
   private WorkOnTask controller;
 
   @Before
   public void setUp() throws Exception {
-    PersistentWork.deleteAllOf(FileReference.class, Thought.class, Sequence.class, WorkUnit.class, Task.class, Context.class, Tag.class);
+    cleanup.cleanup();
+
     Context context = new Context("context");
     Task task = new Task("task").setProject(true);
     task.setContext(context);

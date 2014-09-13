@@ -15,21 +15,20 @@
 package de.ks.idnadrev.task.create;
 
 import de.ks.LauncherRunner;
+import de.ks.activity.ActivityCfg;
 import de.ks.activity.ActivityController;
-import de.ks.activity.ActivityHint;
 import de.ks.activity.context.ActivityStore;
+import de.ks.idnadrev.ActivityTest;
 import de.ks.idnadrev.entity.*;
 import de.ks.persistence.PersistentWork;
-import de.ks.persistence.entity.Sequence;
-import de.ks.scheduler.Schedule;
 import de.ks.text.AsciiDocEditor;
 import de.ks.util.FXPlatform;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -40,7 +39,7 @@ import java.util.function.Consumer;
 import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
-public class CreateTaskTest {
+public class CreateTaskTest extends ActivityTest {
   @Inject
   ActivityController activityController;
   @Inject
@@ -51,23 +50,23 @@ public class CreateTaskTest {
   private EffortInfo effortInfo;
   private TaskSchedule taskSchedule;
 
+  @Override
+  protected Class<? extends ActivityCfg> getActivityClass() {
+    return CreateTaskActivity.class;
+  }
+
+  @Override
+  protected void createTestData(EntityManager em) {
+    em.persist(new Context("context"));
+  }
+
   @Before
   public void setUp() throws Exception {
-    PersistentWork.deleteAllOf(FileReference.class, Sequence.class, WorkUnit.class, Task.class, Schedule.class, Context.class, Tag.class, Thought.class);
-    PersistentWork.persist(new Context("context"));
-
-    activityController.startOrResume(new ActivityHint(CreateTaskActivity.class));
-    activityController.waitForTasks();
     createTask = activityController.<CreateTask>getCurrentController();
     controller = createTask.mainInfoController;
     effortInfo = activityController.getControllerInstance(EffortInfo.class);
     taskSchedule = activityController.getControllerInstance(TaskSchedule.class);
     expectedOutcomeEditor = createTask.expectedOutcomeController.expectedOutcome;
-  }
-
-  @After
-  public void tearDown() throws Exception {
-    activityController.stop(CreateTaskActivity.class.getSimpleName(), false);
   }
 
   @Test

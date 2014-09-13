@@ -13,22 +13,21 @@
  * limitations under the License.
  */
 
-package de.ks.idnadrev.entity;
+package de.ks.idnadrev.entity.information;
 
+import de.ks.idnadrev.entity.Category;
+import de.ks.idnadrev.entity.Tag;
+import de.ks.idnadrev.entity.Task;
 import de.ks.persistence.entity.NamedPersistentObject;
 
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Created by Christian Loehnert
- * Krampenschiesser@freenet.de
- * All rights reserved by now, license may come later.
- */
-@Entity
-public class Note extends NamedPersistentObject<Note> implements FileContainer<Note> {
-  public static final String NOTE_TAG_JOINTABLE = "note_tag";
+@MappedSuperclass
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+public abstract class Information extends NamedPersistentObject<Information> {
+  public static final String INFORMATION_TAG_JOINTABLE = "information_tag";
 
   private static final long serialVersionUID = 1L;
 
@@ -39,22 +38,17 @@ public class Note extends NamedPersistentObject<Note> implements FileContainer<N
   @ManyToOne
   protected Task task;
 
-  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "note")
-  protected Set<FileReference> files = new HashSet<>();
-
   @ManyToMany(cascade = CascadeType.PERSIST)
-  @JoinTable(name = NOTE_TAG_JOINTABLE)
   protected Set<Tag> tags = new HashSet<>();
 
   @ManyToOne
   protected Category category;
-  protected String fileStoreDir;
 
-  public Note() {
+  protected Information() {
     //
   }
 
-  public Note(String name) {
+  public Information(String name) {
     super(name);
   }
 
@@ -66,15 +60,7 @@ public class Note extends NamedPersistentObject<Note> implements FileContainer<N
     this.content = content;
   }
 
-  public Task getTask() {
-    return task;
-  }
-
-  public void setTask(Task task) {
-    this.task = task;
-  }
-
-  public Note addTag(Tag tag) {
+  public Information addTag(Tag tag) {
     getTags().add(tag);
     return this;
   }
@@ -91,29 +77,11 @@ public class Note extends NamedPersistentObject<Note> implements FileContainer<N
     this.category = category;
   }
 
-  public Set<FileReference> getFiles() {
-    return files;
+  public Task getTask() {
+    return task;
   }
 
-  @Override
-  public String getDescription() {
-    return content;
-  }
-
-  @Override
-  public Note setDescription(String description) {
-    setContent(description);
-    return this;
-  }
-
-  @Override
-  public String getFileStoreDir() {
-    return fileStoreDir;
-  }
-
-  @Override
-  public Note setFileStoreDir(String dir) {
-    this.fileStoreDir = dir;
-    return this;
+  public void setTask(Task task) {
+    this.task = task;
   }
 }

@@ -20,7 +20,7 @@ import de.ks.activity.context.ActivityContext;
 import de.ks.activity.executor.ActivityExecutor;
 import de.ks.activity.executor.ActivityJavaFXExecutor;
 import de.ks.application.fxml.DefaultLoader;
-import de.ks.idnadrev.entity.FileReference;
+import de.ks.idnadrev.entity.Cleanup;
 import de.ks.idnadrev.entity.Thought;
 import de.ks.persistence.PersistentWork;
 import de.ks.reflection.PropertyPath;
@@ -34,12 +34,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
+import javax.inject.Inject;
 import java.util.List;
 
 import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
 public class NamedPersistentObjectSelectionTest {
+  @Inject
+  Cleanup cleanup;
 
   private NamedPersistentObjectSelection<Thought> selection;
   private ActivityExecutor executorService;
@@ -48,7 +51,7 @@ public class NamedPersistentObjectSelectionTest {
 
   @Before
   public void setUp() throws Exception {
-    PersistentWork.deleteAllOf(FileReference.class, Thought.class);
+    cleanup.cleanup();
     PersistentWork.persist(new Thought("test1"), new Thought("test2").setDescription("bla"), new Thought("other"));
 
     executorService = new ActivityExecutor("test", 2, 4);

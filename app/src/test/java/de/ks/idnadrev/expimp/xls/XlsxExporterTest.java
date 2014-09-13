@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
@@ -45,10 +46,12 @@ import static org.junit.Assert.*;
 public class XlsxExporterTest {
   private static final Logger log = LoggerFactory.getLogger(XlsxExporterTest.class);
   public static final int COUNT = 142;
+  @Inject
+  protected Cleanup cleanup;
 
   @Before
   public void setUp() throws Exception {
-    new Cleanup().cleanup();
+    cleanup.cleanup();
 
     PersistentWork.run(em -> {
       for (int i = 0; i < COUNT; i++) {

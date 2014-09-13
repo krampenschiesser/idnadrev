@@ -16,58 +16,56 @@
 package de.ks.idnadrev.task.create;
 
 import de.ks.LauncherRunner;
-import de.ks.activity.ActivityController;
-import de.ks.activity.ActivityHint;
-import de.ks.activity.context.ActivityStore;
+import de.ks.activity.ActivityCfg;
 import de.ks.file.FileStore;
 import de.ks.file.FileViewController;
-import de.ks.idnadrev.entity.*;
+import de.ks.idnadrev.ActivityTest;
+import de.ks.idnadrev.entity.Context;
+import de.ks.idnadrev.entity.FileReference;
+import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.entity.Thought;
 import de.ks.persistence.PersistentWork;
-import de.ks.persistence.entity.Sequence;
-import de.ks.scheduler.Schedule;
 import de.ks.text.AsciiDocEditor;
 import de.ks.util.FXPlatform;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 @RunWith(LauncherRunner.class)
-public class CreateTaskWithFilesTest {
-  @Inject
-  ActivityController activityController;
-  @Inject
-  ActivityStore store;
+public class CreateTaskWithFilesTest extends ActivityTest {
   @Inject
   FileStore fileStore;
   private MainTaskInfo controller;
   private CreateTask createTask;
   private AsciiDocEditor expectedOutcomeEditor;
 
+  @Override
+  protected Class<? extends ActivityCfg> getActivityClass() {
+    return CreateTaskActivity.class;
+  }
+
+  @Override
+  protected void createTestData(EntityManager em) {
+    em.persist(new Context("context"));
+  }
+
   @Before
   public void setUp() throws Exception {
-    PersistentWork.deleteAllOf(FileReference.class, Sequence.class, WorkUnit.class, Task.class, Schedule.class, Context.class, Tag.class, Thought.class);
-    PersistentWork.persist(new Context("context"));
-
-    activityController.startOrResume(new ActivityHint(CreateTaskActivity.class));
-    activityController.waitForTasks();
     createTask = activityController.<CreateTask>getCurrentController();
     controller = createTask.mainInfoController;
     expectedOutcomeEditor = createTask.expectedOutcomeController.expectedOutcome;
-  }
-
-  @After
-  public void tearDown() throws Exception {
-    activityController.stop(CreateTaskActivity.class.getSimpleName(), false);
   }
 
   @Test
@@ -91,17 +89,17 @@ public class CreateTaskWithFilesTest {
     PersistentWork.wrap(() -> {
       List<FileReference> fileReferences = PersistentWork.from(FileReference.class);
       assertEquals(1, fileReferences.size());
-      assertNull(fileReferences.get(0).getThought());
-      Task task = fileReferences.get(0).getTask();
-      assertNotNull(task);
-      assertEquals("fileDir", task.getFileStoreDir());
+      List<Task> tasks = PersistentWork.from(Task.class);
+      assertEquals(1, tasks.size());
+      Set<FileReference> files = tasks.get(0).getFiles();
+      assertEquals(1, files.size());
+      assertEquals(fileReferences.get(0), files.iterator().next());
     });
   }
 
   @Test
   public void testAddFile() throws Exception {
     createThoughtAndTestFile();
-    PersistentWork.deleteAllOf(FileReference.class);
 
     @SuppressWarnings("unchecked") CreateTaskDS datasource = (CreateTaskDS) store.getDatasource();
     activityController.reload();
@@ -120,12 +118,11 @@ public class CreateTaskWithFilesTest {
     PersistentWork.wrap(() -> {
       List<FileReference> fileReferences = PersistentWork.from(FileReference.class);
       assertEquals(1, fileReferences.size());
-      assertNull(fileReferences.get(0).getThought());
-      Task task = fileReferences.get(0).getTask();
-      assertNotNull(task);
-      long seqNr = PersistentWork.from(Sequence.class).get(0).getSeqNr();
-      String dir = String.format("%09d", seqNr);
-      assertEquals(dir, task.getFileStoreDir());
+      List<Task> tasks = PersistentWork.from(Task.class);
+      assertEquals(1, tasks.size());
+      Set<FileReference> files = tasks.get(0).getFiles();
+      assertEquals(1, files.size());
+      assertEquals(fileReferences.get(0), files.iterator().next());
     });
   }
 
@@ -149,11 +146,9 @@ public class CreateTaskWithFilesTest {
 
     return PersistentWork.wrap(() -> {
       Thought thought = new Thought("Bla").setDescription("description");
-      thought.setFileStoreDir("fileDir");
       FileReference reference = new FileReference("test", "md5123");
-      reference.setFileStorePath("fileDir" + File.separator + "test");
+      thought.addFileReference(reference);
       PersistentWork.persist(thought);
-      reference.setOwner(thought);
       PersistentWork.persist(reference);
       return thought;
     });

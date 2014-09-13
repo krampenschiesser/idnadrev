@@ -16,14 +16,11 @@ package de.ks.idnadrev.thought.add;
 
 import de.ks.LauncherRunner;
 import de.ks.TempFileRule;
-import de.ks.activity.ActivityController;
-import de.ks.activity.ActivityHint;
+import de.ks.activity.ActivityCfg;
+import de.ks.idnadrev.ActivityTest;
 import de.ks.idnadrev.entity.FileReference;
 import de.ks.idnadrev.entity.Thought;
-import de.ks.launch.JavaFXService;
-import de.ks.launch.Launcher;
 import de.ks.persistence.PersistentWork;
-import de.ks.persistence.entity.Sequence;
 import de.ks.text.command.InsertImage;
 import de.ks.util.FXPlatform;
 import javafx.event.ActionEvent;
@@ -33,8 +30,6 @@ import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
 import javafx.scene.layout.GridPane;
-import javafx.stage.Stage;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -42,7 +37,7 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
+import javax.persistence.EntityManager;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.Arrays;
@@ -55,38 +50,30 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
-public class AddThoughtTest {
+public class AddThoughtTest extends ActivityTest {
   private static final Logger log = LoggerFactory.getLogger(AddThoughtTest.class);
   @Rule
   public TempFileRule testFiles = new TempFileRule(2);
   private Scene scene;
-  @Inject
-  ActivityController controller;
 
   private AddThought addThought;
 
+  @Override
+  protected Class<? extends ActivityCfg> getActivityClass() {
+    return AddThoughtActivity.class;
+  }
+
+  @Override
+  protected void createTestData(EntityManager em) {
+    super.createTestData(em);
+  }
+
   @Before
   public void setUp() throws Exception {
-    FXPlatform.waitForFX();
-    PersistentWork.deleteAllOf(Sequence.class, FileReference.class);
-    PersistentWork.deleteAllOf(Thought.class);
-
-    JavaFXService service = Launcher.instance.getService(JavaFXService.class);
-    Stage stage = service.getStage();
-    scene = stage.getScene();
-    controller.startOrResume(new ActivityHint(AddThoughtActivity.class));
-    controller.waitForTasks();
-
-    addThought = controller.getCurrentController();
+    addThought = activityController.getCurrentController();
     FXPlatform.invokeLater(() -> {
       Clipboard.getSystemClipboard().clear();
     });
-  }
-
-  @After
-  public void tearDown() throws Exception {
-    FXPlatform.waitForFX();
-    controller.stop(AddThoughtActivity.class.getSimpleName(), false);
   }
 
   @Test
@@ -150,11 +137,11 @@ public class AddThoughtTest {
       addThought.description.setText("desc");
     });
     Thread.sleep(50);
-    controller.waitForTasks();
+    activityController.waitForTasks();
     FXPlatform.invokeLater(() -> {
       addThought.save.getOnAction().handle(new ActionEvent());
     });
-    controller.waitForTasks();
+    activityController.waitForTasks();
 
     List<Thought> thoughts = PersistentWork.from(Thought.class);
     assertEquals(1, thoughts.size());
@@ -189,8 +176,8 @@ public class AddThoughtTest {
       addThought.save.getOnAction().handle(new ActionEvent());
     });
     Thread.sleep(100);
-    controller.waitForTasks();
-    controller.getExecutorService().waitForAllTasksDone();
+    activityController.waitForTasks();
+    activityController.getExecutorService().waitForAllTasksDone();
 
 
     List<Thought> thoughts = PersistentWork.from(Thought.class, thought -> thought.getFiles().size());
@@ -217,7 +204,7 @@ public class AddThoughtTest {
       addThought.processClipboard(clipboard);
     });
     FXPlatform.waitForFX();
-    controller.waitForTasks();
+    activityController.waitForTasks();
 
     assertFalse(addThought.name.textProperty().isEmpty().get());
     assertFalse(addThought.description.getText().isEmpty());
@@ -232,8 +219,8 @@ public class AddThoughtTest {
       addThought.save.getOnAction().handle(new ActionEvent());
     });
     FXPlatform.waitForFX();
-    controller.waitForDataSource();
-    controller.waitForTasks();
+    activityController.waitForDataSource();
+    activityController.waitForTasks();
 
 
     List<Thought> thoughts = PersistentWork.from(Thought.class, thought -> thought.getFiles().size());
@@ -271,10 +258,10 @@ public class AddThoughtTest {
     FXPlatform.waitForFX();
     assertThat(addThought.description.getText(), containsString("test.jpg"));
 
-    controller.save();
+    activityController.save();
     Thread.sleep(100);
-    controller.waitForTasks();
-    controller.waitForTasks();
+    activityController.waitForTasks();
+    activityController.waitForTasks();
 
     PersistentWork.wrap(() -> {
       List<FileReference> references = PersistentWork.from(FileReference.class);
@@ -288,10 +275,10 @@ public class AddThoughtTest {
       FileReference fileReference = references.get(0);
 
       assertEquals("test.jpg", fileReference.getName());
-      assertEquals(thought, fileReference.getOwner());
+      assertEquals(1, thought.getFiles().size());
 
       assertThat(thought.getDescription(), not(containsString("file://" + file.getAbsolutePath())));
-      assertThat(thought.getDescription(), containsString(fileReference.getFileStorePath()));
+      assertThat(thought.getDescription(), containsString(fileReference.getMd5Sum()));
       assertThat(thought.getDescription(), containsString(FileReference.FILESTORE_VAR));
     });
 

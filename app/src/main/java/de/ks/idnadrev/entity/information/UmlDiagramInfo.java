@@ -12,25 +12,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.entity.validation;
+package de.ks.idnadrev.entity.information;
 
-import de.ks.idnadrev.entity.FileReference;
+import javax.persistence.*;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+@Entity
+@AssociationOverrides(@AssociationOverride(name = "tags", joinTable = @JoinTable(name = "umldiagraminfo_tag")))
+public class UmlDiagramInfo extends Information {
+  @Enumerated(EnumType.STRING)
+  protected UmlDiagramType diagramType;
 
-public class OwnerFilledValidator implements ConstraintValidator<OwnerFilled, FileReference> {
-  @Override
-  public void initialize(OwnerFilled constraintAnnotation) {
-    //none
+  public UmlDiagramInfo() {
   }
 
-  @Override
-  public boolean isValid(FileReference value, ConstraintValidatorContext context) {
-    if (value.getOwner() == null) {
-      return false;
-    } else {
-      return true;
-    }
+  public UmlDiagramInfo(String name) {
+    super(name);
+  }
+
+  public UmlDiagramType getDiagramType() {
+    return diagramType;
+  }
+
+  public void setDiagramType(UmlDiagramType diagramType) {
+    this.diagramType = diagramType;
   }
 }

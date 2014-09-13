@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.time.Duration;
 import java.util.function.Consumer;
 
 public class CreateTaskDS extends NewInstanceDataSource<Task> {
@@ -53,11 +52,8 @@ public class CreateTaskDS extends NewInstanceDataSource<Task> {
           Thought reloaded = PersistentWork.reload(fromThought);
           task.setName(reloaded.getName());
           task.setDescription(reloaded.getDescription());
-          task.setFileStoreDir(reloaded.getFileStoreDir());
           task.getFiles().addAll(reloaded.getFiles());
-          reloaded.getFiles().forEach(f -> f.setOwner(task));
         }
-        task.setEstimatedTime(Duration.ofMinutes(5));//fixme remove later
         task.setProject(false);
         furtherProcessing.accept(task);
         return task;

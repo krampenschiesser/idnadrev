@@ -16,14 +16,15 @@
 package de.ks.idnadrev.entity;
 
 import de.ks.LauncherRunner;
+import de.ks.idnadrev.entity.information.Information;
+import de.ks.idnadrev.entity.information.TextInfo;
 import de.ks.persistence.PersistentWork;
-import de.ks.persistence.entity.AbstractPersistentObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import javax.inject.Inject;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -34,22 +35,18 @@ import static org.junit.Assert.*;
  */
 @RunWith(LauncherRunner.class)
 public class TaskTest {
+  @Inject
+  Cleanup cleanup;
 
   @Before
   public void setUp() throws Exception {
-    PersistentWork.run((em) -> em.createNativeQuery("delete from " + Note.NOTE_TAG_JOINTABLE).executeUpdate());
-
-    List<Class<? extends AbstractPersistentObject<?>>> entitiesToDelete = Arrays.asList(//
-            Tag.class, WorkUnit.class, FileReference.class, Note.class, Task.class, Context.class);
-    for (Class<? extends AbstractPersistentObject<?>> clazz : entitiesToDelete) {
-      PersistentWork.deleteAllOf(clazz);
-    }
+    cleanup.cleanup();
   }
 
   @Test
   public void testPersist() throws Exception {
     Task task = new Task("bla");
-    persistTask(task);
+    PersistentWork.persist(task);
     assertNotNull(task.getCreationTime());
     Task reload = PersistentWork.reload(task);
     assertNotSame(task, reload);
@@ -70,7 +67,7 @@ public class TaskTest {
     LocalDateTime end = last.getStart().plusMinutes(3);
     last.setEnd(end);
 
-    persistTask(task);
+    PersistentWork.persist(task);
     PersistentWork.run((em) -> {
       Task readTask = em.find(Task.class, task.getId());
       assertEquals(workUnitAmount, readTask.getWorkUnits().size());
@@ -83,25 +80,26 @@ public class TaskTest {
     final String fileName = "img.jpg";
     final String tagName = "bla";
 
-    Note note = new Note("a note");
+    TextInfo information = new TextInfo("a note");
     Task task = new Task("test");
-    task.addNote(note);
     Tag tag = new Tag(tagName);
-    note.addTag(tag);
+    information.addTag(tag);
+    information.setTask(task);
 
-    persistTask(task);
+    PersistentWork.persist(task, tag, information);
 
     PersistentWork.run((em) -> {
       Task readTask = em.find(Task.class, task.getId());
-      assertEquals(1, readTask.getNotes().size());
-      Note readNote = readTask.getNotes().iterator().next();
-      assertEquals(1, readNote.getTags().size());
-      assertEquals(tagName, readNote.getTags().iterator().next().getName());
+
+      assertEquals(1, readTask.getInformation().size());
+      Information readInformation = readTask.getInformation().iterator().next();
+      assertEquals(1, readInformation.getTags().size());
+      assertEquals(tagName, readInformation.getTags().iterator().next().getName());
     });
 
     PersistentWork.run((em) -> {
-      Note readNote = em.find(Note.class, note.getId());
-      em.remove(readNote);
+      TextInfo readInformation = em.find(TextInfo.class, information.getId());
+      em.remove(readInformation);
     });
     PersistentWork.run((em) -> {
       Tag readTag = em.find(Tag.class, tag.getId());
@@ -118,7 +116,7 @@ public class TaskTest {
     Task task = new Task("blubber");
     task.setContext(new Context(contextName));
 
-    persistTask(task);
+    PersistentWork.persist(task);
 
     PersistentWork.run((em) -> {
       Task readTask = em.find(Task.class, task.getId());
@@ -143,7 +141,7 @@ public class TaskTest {
     parent.addChild(child2);
     child2.addChild(new Task("SubChild"));
 
-    persistTask(parent);
+    PersistentWork.persist(parent);
 
     PersistentWork.run((em) -> {
       Task readParent = em.find(parent.getClass(), parent.getId());
@@ -167,11 +165,4 @@ public class TaskTest {
       assertEquals(0, foundTasks.size());
     });
   }
-
-  private void persistTask(final Task task) {
-    PersistentWork.run((em) -> {
-      em.persist(task);
-    });
-  }
-
 }

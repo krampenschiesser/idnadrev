@@ -26,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -37,9 +38,12 @@ import static org.junit.Assert.*;
 public class ImportExportTaskTest {
   private static final Logger log = LoggerFactory.getLogger(ImportExportTaskTest.class);
 
+  @Inject
+  protected Cleanup cleanup;
+
   @Before
   public void setUp() throws Exception {
-    new Cleanup().cleanup();
+    cleanup.cleanup();
     createTaskExportData();
   }
 
@@ -51,7 +55,7 @@ public class ImportExportTaskTest {
     XlsxExporter exporter = new XlsxExporter();
     exporter.export(tempFile, sources);
 
-    new Cleanup().cleanup();
+    cleanup.cleanup();
 
     XlsxImporter importer = new XlsxImporter();
     XlsxImportResultCollector results = importer.importFromFile(tempFile);

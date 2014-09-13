@@ -31,6 +31,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -130,10 +131,36 @@ public class PersistentWork {
   }
 
   public static void deleteAllOf(Class<?>... classes) {
+    deleteAllOf(Arrays.asList(classes));
+  }
+
+  public static void deleteAllOf(Collection<Class<?>> classes) {
     run((em) -> {
       for (Class<?> clazz : classes) {
-        int deletedLines = em.createQuery("delete from " + clazz.getName()).executeUpdate();
-        log.debug("Deleted {} from {}", deletedLines, clazz.getSimpleName());
+        try {
+          int deletedLines = em.createQuery("delete from " + clazz.getName()).executeUpdate();
+          if (deletedLines > 0) {
+            log.debug("Deleted {} from {}", deletedLines, clazz.getSimpleName());
+          }
+        } catch (Exception e) {
+          log.error("Could not delete from {}", clazz.getSimpleName(), e);
+          throw e;
+        }
+      }
+    });
+  }
+
+  public static void deleteJoinTables(String... joinTables2) {
+    deleteJoinTables(Arrays.asList(joinTables2));
+  }
+
+  public static void deleteJoinTables(Collection<String> joinTables) {
+    run((em) -> {
+      for (String joinTable : joinTables) {
+        int deletedLines = em.createNativeQuery("delete from " + joinTable).executeUpdate();
+        if (deletedLines > 0) {
+          log.debug("Deleted {} from {}", deletedLines, joinTable);
+        }
       }
     });
   }
@@ -266,4 +293,5 @@ public class PersistentWork {
     }
     return null;
   }
+
 }

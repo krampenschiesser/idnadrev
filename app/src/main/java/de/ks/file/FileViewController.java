@@ -99,7 +99,7 @@ public class FileViewController implements Initializable, DatasourceCallback<Fil
 
       files.forEach(file -> {
         if (!fileReferences.containsKey(file) && file.exists()) {
-          fileReferences.put(file, fileStore.getReference(thought, file));
+          fileReferences.put(file, fileStore.getReference(file));
         }
       });
     });
@@ -244,14 +244,15 @@ public class FileViewController implements Initializable, DatasourceCallback<Fil
         File file = entry.getKey();
         CompletableFuture<FileReference> cf = entry.getValue();
         FileReference fileReference = cf.get();
+        model.getFiles().remove(fileReference);
+        model.addFileReference(PersistentWork.reload(fileReference));//ensure it is saved
         if (fileReference.getId() > 0) {
           return;
         }
-        fileReference.setOwner(model);
         fileStore.scheduleCopy(fileReference, file);
 
         String search = "file:///" + file.getAbsolutePath();
-        String replacement = FileReference.FILESTORE_VAR + fileReference.getFileStorePath();
+        String replacement = FileReference.FILESTORE_VAR + fileReference.getMd5Sum();
         String newDescription = StringUtils.replace(model.getDescription(), search, replacement);
         model.setDescription(newDescription);
         log.info("Adding file reference {}", fileReference);

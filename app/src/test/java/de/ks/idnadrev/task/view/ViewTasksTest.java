@@ -15,8 +15,9 @@
 package de.ks.idnadrev.task.view;
 
 import de.ks.LauncherRunner;
+import de.ks.activity.ActivityCfg;
 import de.ks.activity.ActivityController;
-import de.ks.activity.ActivityHint;
+import de.ks.idnadrev.ActivityTest;
 import de.ks.idnadrev.entity.*;
 import de.ks.idnadrev.task.create.CreateTaskActivity;
 import de.ks.idnadrev.task.create.MainTaskInfo;
@@ -26,7 +27,6 @@ import de.ks.util.FXPlatform;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableView;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,13 +34,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
 import java.util.List;
 
 import static de.ks.JunitMatchers.withRetry;
 import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
-public class ViewTasksTest {
+public class ViewTasksTest extends ActivityTest {
   private static final Logger log = LoggerFactory.getLogger(ViewTasksTest.class);
   @Inject
   ActivityController activityController;
@@ -48,8 +49,13 @@ public class ViewTasksTest {
   private TreeTableView<Task> tasksView;
   private ViewTasksMaster master;
 
-  @Before
-  public void setUp() throws Exception {
+  @Override
+  protected Class<? extends ActivityCfg> getActivityClass() {
+    return ViewTasksActvity.class;
+  }
+
+  @Override
+  protected void createTestData(EntityManager em) {
     PersistentWork.deleteAllOf(FileReference.class, Sequence.class, WorkUnit.class, Task.class, Context.class, Tag.class);
 
     Context context = new Context("context");
@@ -67,18 +73,13 @@ public class ViewTasksTest {
     Task other = new Task("other").setContext(context);
 
     PersistentWork.persist(context, project1, other);
+  }
 
-    activityController.startOrResume(new ActivityHint(ViewTasksActvity.class));
-    activityController.waitForTasks();
+  @Before
+  public void setUp() throws Exception {
     controller = activityController.getControllerInstance(ViewTasks.class);
     master = activityController.getControllerInstance(ViewTasksMaster.class);
     tasksView = master.getTasksView();
-  }
-
-  @After
-  public void tearDown() throws Exception {
-    activityController.stopAll();
-    FXPlatform.waitForFX();
   }
 
   @Test

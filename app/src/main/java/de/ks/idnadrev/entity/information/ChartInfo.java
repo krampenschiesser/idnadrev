@@ -12,21 +12,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.entity;
+package de.ks.idnadrev.entity.information;
 
-import java.util.Set;
+import javax.persistence.*;
 
-public interface FileContainer<T> {
+@Entity
+@AssociationOverrides(@AssociationOverride(name = "tags", joinTable = @JoinTable(name = "chartinfo_tag")))
+public class ChartInfo extends Information {
+  @Enumerated(EnumType.STRING)
+  protected ChartType chartType;
 
-  Set<FileReference> getFiles();
-
-  default void addFileReference(FileReference ref) {
-    getFiles().add(ref);
+  protected ChartInfo() {
   }
 
-  long getId();
+  public ChartInfo(String name, ChartType chartType) {
+    super(name);
+    this.chartType = chartType;
+  }
 
-  String getDescription();
+  public ChartType getChartType() {
+    return chartType;
+  }
 
-  T setDescription(String description);
+  public void setChartType(ChartType chartType) {
+    this.chartType = chartType;
+  }
 }

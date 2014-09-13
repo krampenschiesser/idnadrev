@@ -32,6 +32,8 @@ public abstract class ActivityTest {
   protected ActivityController activityController;
   @Inject
   protected ActivityStore store;
+  @Inject
+  protected Cleanup cleanup;
 
   @Before
   public void startActivity() throws Exception {
@@ -51,7 +53,7 @@ public abstract class ActivityTest {
   }
 
   protected void cleanup() {
-    new Cleanup().cleanup();
+    cleanup.cleanup();
   }
 
   protected void createTestData(EntityManager em) {
