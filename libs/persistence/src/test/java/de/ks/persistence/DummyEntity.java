@@ -111,4 +111,13 @@ public class DummyEntity extends AbstractPersistentObject<DummyEntity> {
     return getClass().getSimpleName() + ": [name=" + name + "]";
   }
 
+  @Override
+  public String getIdPropertyName() {
+    return "name";
+  }
+
+  @Override
+  public Object getIdValue() {
+    return getName();
+  }
 }

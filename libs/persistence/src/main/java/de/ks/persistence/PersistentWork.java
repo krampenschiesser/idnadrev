@@ -16,6 +16,7 @@
 package de.ks.persistence;
 
 import de.ks.persistence.entity.AbstractPersistentObject;
+import de.ks.persistence.entity.IdentifyableEntity;
 import de.ks.persistence.entity.NamedPersistentObject;
 import de.ks.persistence.transaction.SimpleTransaction;
 import de.ks.persistence.transaction.TransactionProvider;
@@ -161,6 +162,18 @@ public class PersistentWork {
       query.where(restriction);
     }, null);
     return results;
+  }
+
+  public static <T extends IdentifyableEntity> T findByIdentification(Class<T> clazz, String identifierProperty, Object identifier) {
+    List<T> results = from(clazz, (Root<T> root, CriteriaQuery<T> query, CriteriaBuilder builder) -> {
+      Predicate restriction = builder.equal(builder.lower(root.get(identifierProperty)), identifier);
+      query.where(restriction);
+    }, null);
+    if (results.size() != 1) {
+      return null;
+    } else {
+      return results.get(0);
+    }
   }
 
   public static <T> List<T> from(Class<T> clazz) {

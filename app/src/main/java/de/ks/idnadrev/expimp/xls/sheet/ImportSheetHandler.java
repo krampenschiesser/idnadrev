@@ -17,8 +17,7 @@ package de.ks.idnadrev.expimp.xls.sheet;
 import com.google.common.primitives.Primitives;
 import de.ks.idnadrev.expimp.xls.ColumnProvider;
 import de.ks.idnadrev.expimp.xls.XlsxColumn;
-import de.ks.persistence.entity.AbstractPersistentObject;
-import de.ks.persistence.entity.NamedPersistentObject;
+import de.ks.persistence.entity.IdentifyableEntity;
 import org.apache.poi.xssf.model.SharedStringsTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -197,16 +196,13 @@ public class ImportSheetHandler extends DefaultHandler {
       return new LongValueParser();
     }
 
-    if (NamedPersistentObject.class.isAssignableFrom(fieldType)) {
+    if (IdentifyableEntity.class.isAssignableFrom(fieldType)) {
       if (cellType.equals(CELL_TYPE_INLINESTRING)) {
         return new InlineStringValueParser();
       } else if (cellType.equals(CELL_TYPE_STRING)) {
         return new SharedStringValueParser(sharedStringsTable);
       }
-    } else if (AbstractPersistentObject.class.isAssignableFrom(fieldType)) {
-      return new LongValueParser();
     }
-
     log.warn("No value parser for celltype {} and coumndef {}", cellType, columnDef);
     return null;
   }

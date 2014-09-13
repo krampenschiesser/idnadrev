@@ -48,6 +48,16 @@ public abstract class NamedPersistentObject<T extends NamedPersistentObject<T>> 
   }
 
   @Override
+  public String getIdPropertyName() {
+    return "name";
+  }
+
+  @Override
+  public Object getIdValue() {
+    return getName();
+  }
+
+  @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;

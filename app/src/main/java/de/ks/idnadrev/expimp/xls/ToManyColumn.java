@@ -14,8 +14,7 @@
  */
 package de.ks.idnadrev.expimp.xls;
 
-import de.ks.persistence.entity.AbstractPersistentObject;
-import de.ks.persistence.entity.NamedPersistentObject;
+import de.ks.persistence.entity.IdentifyableEntity;
 import de.ks.reflection.ReflectionUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
@@ -55,13 +54,15 @@ public class ToManyColumn implements XlsxColumn {
       Collection collection = (Collection) ReflectionUtil.getFieldValue(object, attribute.getName());
       for (java.util.Iterator iterator = collection.iterator(); iterator.hasNext(); ) {
         Object next = iterator.next();
-        if (NamedPersistentObject.class.isAssignableFrom(next.getClass())) {
-          String name = (String) ReflectionUtil.getFieldValue(next, "name");
-          name = StringUtils.replace(name, SEPARATOR, SEPARATOR_REPLACEMENT);
-          builder.append(name).append(SEPARATOR);
-        } else if (AbstractPersistentObject.class.isAssignableFrom(next.getClass())) {
-          Long id = (Long) ReflectionUtil.getFieldValue(next, "id");
-          builder.append(id).append(SEPARATOR);
+
+        if (IdentifyableEntity.class.isAssignableFrom(next.getClass())) {
+          Object idValue = ((IdentifyableEntity) next).getIdValue();
+          if (idValue instanceof String) {
+            String replaced = StringUtils.replace(String.valueOf(idValue), SEPARATOR, SEPARATOR_REPLACEMENT);
+            builder.append(replaced).append(SEPARATOR);
+          } else {
+            builder.append(idValue).append(SEPARATOR);
+          }
         }
       }
       if (builder.length() == 0) {

@@ -14,6 +14,8 @@
  */
 package de.ks.idnadrev.expimp;
 
+import de.ks.persistence.entity.IdentifyableEntity;
+import de.ks.reflection.ReflectionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,11 +24,12 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.SingularAttribute;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class DependencyGraph {
   private static final Logger log = LoggerFactory.getLogger(DependencyGraph.class);
-
+  private final Map<Class<?>, String> class2IdentifierPropertyName = new ConcurrentHashMap<>();
   @Inject
   EntityManagerFactory factory;
 
@@ -84,5 +87,15 @@ public class DependencyGraph {
             }).collect(Collectors.toList());
     entities.removeAll(roots);
     return roots;
+  }
+
+  public String getIdentifierProperty(Class<?> clazz) {
+    return class2IdentifierPropertyName.computeIfAbsent(clazz, c -> {
+      if (IdentifyableEntity.class.isAssignableFrom(c)) {
+        @SuppressWarnings("unchecked") IdentifyableEntity entity = ReflectionUtil.newInstance((Class<? extends IdentifyableEntity>) c);
+        return entity.getIdPropertyName();
+      }
+      return null;
+    });
   }
 }

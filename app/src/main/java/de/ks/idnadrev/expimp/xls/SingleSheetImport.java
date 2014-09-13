@@ -19,8 +19,7 @@ import de.ks.idnadrev.expimp.xls.result.XlsxImportSheetResult;
 import de.ks.idnadrev.expimp.xls.sheet.ImportSheetHandler;
 import de.ks.idnadrev.expimp.xls.sheet.ImportValue;
 import de.ks.persistence.PersistentWork;
-import de.ks.persistence.entity.AbstractPersistentObject;
-import de.ks.persistence.entity.NamedPersistentObject;
+import de.ks.persistence.entity.IdentifyableEntity;
 import de.ks.reflection.ReflectionUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -98,12 +97,14 @@ public class SingleSheetImport implements Callable<Void> {
       return;
     }
 
-    String name;
-    if (NamedPersistentObject.class.isAssignableFrom(clazz)) {
-      Optional<ImportValue> first = importValues.stream().filter(v -> v.getColumnDef().getIdentifier().equals("name")).findFirst();
-      name = (String) first.get().getValue();
+
+    Object idProperty;
+    if (IdentifyableEntity.class.isAssignableFrom(clazz)) {
+      String idPropertyName = graph.getIdentifierProperty(clazz);
+      Optional<ImportValue> first = importValues.stream().filter(v -> v.getColumnDef().getIdentifier().equals(idPropertyName)).findFirst();
+      idProperty = first.get().getValue();
     } else {
-      name = null;
+      idProperty = null;
     }
 
 
@@ -112,9 +113,10 @@ public class SingleSheetImport implements Callable<Void> {
       boolean keepExisting = importCfg.isKeepExisting();
       boolean exists;
 
-      if (name != null) {
-        @SuppressWarnings("unchecked") Class<? extends NamedPersistentObject> npoClass = (Class<? extends NamedPersistentObject>) clazz;
-        NamedPersistentObject loaded = PersistentWork.forName(npoClass, name);
+      if (idProperty != null) {
+        String idPropertyName = graph.getIdentifierProperty(clazz);
+
+        @SuppressWarnings("unchecked") IdentifyableEntity loaded = PersistentWork.findByIdentification((Class<IdentifyableEntity>) clazz, idPropertyName, idProperty);
         if (loaded != null) {
           instance = loaded;
           exists = true;
@@ -127,7 +129,7 @@ public class SingleSheetImport implements Callable<Void> {
         instance = ReflectionUtil.newInstance(clazz);
       }
       if (exists && keepExisting) {
-        result.success("Ignored " + clazz.getName() + " with identifier " + name, importValues.get(0).getCellId());
+        result.success("Ignored " + clazz.getName() + " with identifier " + idProperty, importValues.get(0).getCellId());
         return;
       }
 
@@ -146,7 +148,8 @@ public class SingleSheetImport implements Callable<Void> {
         optionalRelations.forEach(r -> {
           r.ownerResolver = () -> {
             Object identifier = getIdentifier(instance);
-            return resolveEntity(clazz, identifier);
+            String identifierProperty = graph.getIdentifierProperty(clazz);
+            return resolveEntity(clazz, identifierProperty, identifier);
           };
         });
 
@@ -158,7 +161,8 @@ public class SingleSheetImport implements Callable<Void> {
         toManyRelations.forEach(r -> {
           r.ownerResolver = () -> {
             Object identifier = getIdentifier(instance);
-            return resolveEntity(clazz, identifier);
+            String identifierProperty = graph.getIdentifierProperty(instance.getClass());
+            return resolveEntity(clazz, identifierProperty, identifier);
           };
         });
         runAfterImport.addAll(optionalRelations);
@@ -185,8 +189,9 @@ public class SingleSheetImport implements Callable<Void> {
       ImportValue importValue = found.get();
       importValues.remove(importValue);
 
+      String identifierProperty = graph.getIdentifierProperty(r.getJavaType());
       Consumer<Object> resultWriter = o -> result.warn("could not find association of '" + o + "' via '" + r.getName() + "' to '" + importValue.getValue() + "'", importValue.getCellId());
-      return new ToOneRelationAssignment(resultWriter, () -> instance, r, importValue.getColumnDef(), importValue.getValue());
+      return new ToOneRelationAssignment(resultWriter, () -> instance, r, importValue.getColumnDef(), identifierProperty, importValue.getValue());
     }).collect(Collectors.toList());
   }
 
@@ -201,7 +206,8 @@ public class SingleSheetImport implements Callable<Void> {
       ImportValue importValue = found.get();
       importValues.remove(importValue);
       Consumer<Object> resultWriter = o -> result.warn("could not find association of '" + o + "' via '" + r.getName() + "' to '" + importValue.getValue() + "'", importValue.getCellId());
-      return new ToOneRelationAssignment(resultWriter, null, r, importValue.getColumnDef(), importValue.getValue());
+      String identifierProperty = graph.getIdentifierProperty(r.getJavaType());
+      return new ToOneRelationAssignment(resultWriter, null, r, importValue.getColumnDef(), identifierProperty, importValue.getValue());
     }).filter(r -> r != null).collect(Collectors.toList());
   }
 
@@ -215,40 +221,30 @@ public class SingleSheetImport implements Callable<Void> {
       }
       ImportValue importValue = found.get();
       importValues.remove(importValue);
-      return new ToManyRelationAssignment(importValue.getColumnDef(), r, (String) importValue.getValue());
+      String identifierProperty = graph.getIdentifierProperty(r.getElementType().getJavaType());
+      return new ToManyRelationAssignment(importValue.getColumnDef(), r, identifierProperty, (String) importValue.getValue());
     }).filter(r -> r != null).collect(Collectors.toList());
   }
 
   static Object getIdentifier(Object instance) {
-    if (NamedPersistentObject.class.isAssignableFrom(instance.getClass())) {
-      return ReflectionUtil.getFieldValue(instance, "name");
-    } else if (AbstractPersistentObject.class.isAssignableFrom(instance.getClass())) {
-      return ReflectionUtil.getFieldValue(instance, "id");
+    if (IdentifyableEntity.class.isAssignableFrom(instance.getClass())) {
+      return ((IdentifyableEntity) instance).getIdValue();
     }
     return null;
   }
 
-  static Object resolveEntity(Class<?> type, Object identifier) {
-    if (NamedPersistentObject.class.isAssignableFrom(type)) {
-      @SuppressWarnings("unchecked") Object o = PersistentWork.forName((Class<? extends NamedPersistentObject>) type, (String) identifier);
-      return o;
-    } else if (AbstractPersistentObject.class.isAssignableFrom(type)) {
-      Long id;
-      if (identifier instanceof String) {
-        id = Long.parseLong((String) identifier);
-      } else {
-        id = (Long) identifier;
-      }
-      @SuppressWarnings("unchecked") Object o = PersistentWork.byId((Class<? extends AbstractPersistentObject>) type, id);
-      return o;
+  static Object resolveEntity(Class<?> type, String identifierProperty, Object identifier) {
+    if (IdentifyableEntity.class.isAssignableFrom(type)) {
+      @SuppressWarnings("unchecked") IdentifyableEntity identifyableEntity = PersistentWork.findByIdentification((Class<IdentifyableEntity>) type, identifierProperty, identifier);
+      return identifyableEntity;
     }
     return null;
   }
 
-  static List<Object> resolveToManyRelation(Class<?> type, List<String> singleIdentifiers) {
+  static List<Object> resolveToManyRelation(Class<?> type, String identifierProperty, List<String> singleIdentifiers) {
     LinkedList<Object> retval = new LinkedList<>();
     for (String identifier : singleIdentifiers) {
-      Object entity = resolveEntity(type, identifier);
+      Object entity = resolveEntity(type, identifierProperty, identifier);
       retval.add(entity);
     }
     return retval;
@@ -261,11 +257,11 @@ public class SingleSheetImport implements Callable<Void> {
     Supplier<Object> ownerResolver;
     Supplier<Object> relationResolver;
 
-    ToOneRelationAssignment(Consumer<Object> resultWriter, Supplier<Object> ownerResolver, SingularAttribute<?, ?> relation, XlsxColumn ownerColumn, Object relationIdentifier) {
+    ToOneRelationAssignment(Consumer<Object> resultWriter, Supplier<Object> ownerResolver, SingularAttribute<?, ?> relation, XlsxColumn ownerColumn, String identifierPropertyName, Object relationIdentifier) {
       this.resultWriter = resultWriter;
       this.ownerColumn = ownerColumn;
       this.ownerResolver = ownerResolver;
-      relationResolver = () -> resolveEntity(relation.getJavaType(), relationIdentifier);
+      relationResolver = () -> resolveEntity(relation.getJavaType(), identifierPropertyName, relationIdentifier);
     }
 
     @Override
@@ -288,7 +284,7 @@ public class SingleSheetImport implements Callable<Void> {
     Supplier<Object> ownerResolver;
     Supplier<List<Object>> relationResolver;
 
-    ToManyRelationAssignment(XlsxColumn ownerColumn, PluralAttribute relation, String relationString) {
+    ToManyRelationAssignment(XlsxColumn ownerColumn, PluralAttribute relation, String identifierPropertyName, String relationString) {
       this.ownerColumn = ownerColumn;
 
       String[] split = StringUtils.split(relationString, "|");
@@ -297,7 +293,7 @@ public class SingleSheetImport implements Callable<Void> {
         String id = StringUtils.replace(string, ToManyColumn.SEPARATOR, ToManyColumn.SEPARATOR_REPLACEMENT);
         singleIdentifiers.add(id);
       }
-      relationResolver = () -> resolveToManyRelation(relation.getElementType().getJavaType(), singleIdentifiers);
+      relationResolver = () -> resolveToManyRelation(relation.getElementType().getJavaType(), identifierPropertyName, singleIdentifiers);
     }
 
     @Override

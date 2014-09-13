@@ -18,7 +18,7 @@ import com.google.common.primitives.Primitives;
 import de.ks.idnadrev.expimp.DependencyGraph;
 import de.ks.idnadrev.expimp.EntityExportSource;
 import de.ks.persistence.entity.AbstractPersistentObject;
-import de.ks.persistence.entity.NamedPersistentObject;
+import de.ks.persistence.entity.IdentifyableEntity;
 import de.ks.reflection.ReflectionUtil;
 
 import javax.persistence.metamodel.Attribute;
@@ -76,8 +76,7 @@ public class ColumnProvider {
     retval = retval || field.getType().equals(LocalDate.class);
     retval = retval || field.getType().equals(LocalDateTime.class);
     retval = retval || Boolean.class.equals(Primitives.unwrap(field.getType()));
-    retval = retval || AbstractPersistentObject.class.isAssignableFrom(field.getType());
-    retval = retval || NamedPersistentObject.class.isAssignableFrom(field.getType());
+    retval = retval || IdentifyableEntity.class.isAssignableFrom(field.getType());
     return retval;
   }
 }

@@ -37,7 +37,7 @@ import java.time.LocalDateTime;
 public class WorkUnit extends AbstractPersistentObject<WorkUnit> implements Comparable<WorkUnit> {
   private static final long serialVersionUID = 1L;
 
-  @Column(columnDefinition = "TIMESTAMP")
+  @Column(columnDefinition = "TIMESTAMP", unique = true)
   @Convert(converter = LocalDateTimeConverter.class)
   protected LocalDateTime start;
   @Column(columnDefinition = "TIMESTAMP")
@@ -144,5 +144,15 @@ public class WorkUnit extends AbstractPersistentObject<WorkUnit> implements Comp
     sb.append(", task=").append(task);
     sb.append('}');
     return sb.toString();
+  }
+
+  @Override
+  public String getIdPropertyName() {
+    return "start";
+  }
+
+  @Override
+  public Object getIdValue() {
+    return getStart();
   }
 }

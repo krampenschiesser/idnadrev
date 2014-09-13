@@ -22,6 +22,7 @@ import de.ks.persistence.entity.AbstractPersistentObject;
 import javax.persistence.*;
 import java.time.*;
 import java.time.temporal.ChronoUnit;
+import java.util.UUID;
 
 /**
  *
@@ -50,7 +51,10 @@ public class Schedule extends AbstractPersistentObject<Schedule> {
   @Enumerated(EnumType.STRING)
   protected RepetitionType repetition = null;
 
+  protected String identifier;
+
   public Schedule() {
+    this(null, null);
   }
 
   public Schedule(LocalDate scheduledDate) {
@@ -58,9 +62,9 @@ public class Schedule extends AbstractPersistentObject<Schedule> {
   }
 
   public Schedule(LocalDate scheduledDate, RepetitionType repetition) {
-    this();
     this.scheduledDate = scheduledDate;
     this.repetition = repetition;
+    identifier = UUID.randomUUID().toString();
   }
 
   public boolean isScheduledToday() {
@@ -164,5 +168,19 @@ public class Schedule extends AbstractPersistentObject<Schedule> {
   public Schedule setProposedYear(int proposedYear) {
     this.proposedYear = proposedYear;
     return this;
+  }
+
+  public String getIdentifier() {
+    return identifier;
+  }
+
+  @Override
+  public String getIdPropertyName() {
+    return "identifier";
+  }
+
+  @Override
+  public Object getIdValue() {
+    return getIdentifier();
   }
 }

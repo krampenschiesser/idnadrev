@@ -15,8 +15,7 @@
 package de.ks.idnadrev.expimp.xls;
 
 import com.google.common.primitives.Primitives;
-import de.ks.persistence.entity.AbstractPersistentObject;
-import de.ks.persistence.entity.NamedPersistentObject;
+import de.ks.persistence.entity.IdentifyableEntity;
 import de.ks.reflection.ReflectionUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -85,10 +84,8 @@ public class ReflectionColumn implements XlsxColumn {
   @Override
   public Object getValue(Object object) {
     Object valueInternal = getValueInternal(object);
-    if (valueInternal instanceof NamedPersistentObject) {
-      return ((NamedPersistentObject) valueInternal).getName();
-    } else if (valueInternal instanceof AbstractPersistentObject) {
-      return ((AbstractPersistentObject) valueInternal).getId();
+    if (valueInternal instanceof IdentifyableEntity) {
+      return ((IdentifyableEntity) valueInternal).getIdValue();
     } else {
       return valueInternal;
     }
