@@ -16,12 +16,12 @@ package de.ks.launch;
 
 import de.ks.fxcontrols.weekview.WeekHelper;
 import de.ks.idnadrev.entity.*;
-import de.ks.option.Option;
 import de.ks.persistence.PersistentWork;
 import de.ks.scheduler.Schedule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.enterprise.inject.spi.CDI;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -49,7 +49,7 @@ public class DummyData extends Service {
   }
 
   public void createData() {
-    PersistentWork.deleteAllOf(Option.class, Tag.class, WorkUnit.class, FileReference.class, Thought.class, Task.class, Context.class);
+    CDI.current().select(Cleanup.class).get().cleanup();
     ArrayList<Task> tasks = new ArrayList<>();
 
     log.info("Creating dummy data.");
