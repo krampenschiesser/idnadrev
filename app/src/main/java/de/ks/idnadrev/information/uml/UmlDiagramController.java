@@ -64,8 +64,10 @@ public class UmlDiagramController extends BaseController<UmlDiagramInfo> {
   protected Button saveBtn;
 
   protected WebView webView;
+  protected WebView fullScreenWebView;
 
   private LastTextChange lastTextChange;
+  protected boolean showFullScreen = false;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -75,8 +77,11 @@ public class UmlDiagramController extends BaseController<UmlDiagramInfo> {
       webView.setPrefSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
       previewContainer.getChildren().add(webView);
     });
-
-//    diagramType.setItems(FXCollections.observableArrayList(UmlDiagramType.values()));
+    CompletableFuture.supplyAsync(() -> new WebView(), controller.getJavaFXExecutor()).thenAccept(view -> {
+      fullScreenWebView = view;
+      fullScreenWebView.setMinSize(100, 100);
+      fullScreenWebView.setPrefSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
+    });
 
     StringProperty nameProperty = store.getBinding().getStringProperty(UmlDiagramInfo.class, t -> t.getName());
     name.textProperty().bindBidirectional(nameProperty);
@@ -92,46 +97,49 @@ public class UmlDiagramController extends BaseController<UmlDiagramInfo> {
 
     lastTextChange = new LastTextChange(content, 750, controller.getExecutorService());
     lastTextChange.registerHandler(f -> {
-      f.thenApply(s -> genereateSvg(s, webView.getWidth())).thenAcceptAsync(this::showRenderedFile, controller.getJavaFXExecutor());
+      f.thenApplyAsync(s -> genereateSvg(s, getFullScreenWidth(), getFullScreenImagePath()), controller.getExecutorService()).thenAcceptAsync(file -> {
+        if (showFullScreen) {
+          showRenderedFile(file, fullScreenWebView);
+        }
+      }, controller.getJavaFXExecutor());
+
+      f.thenApply(s -> genereateSvg(s, webView.getWidth(), getImagePath())).thenAcceptAsync(file -> showRenderedFile(file, webView), controller.getJavaFXExecutor());
     });
 
-    SplitPane.Divider divider = splitPane.getDividers().get(0);
     webView.widthProperty().addListener((p, o, n) -> {
       lastTextChange.trigger();
     });
   }
 
-  private void showRenderedFile(File file) {
+  private void showRenderedFile(File file, WebView view) {
     if (file == null) {
       return;
     }
     try {
-      log.info("(####");
       URL url = file.toURI().toURL();
-      webView.getEngine().load(url.toExternalForm());
+      view.getEngine().load(url.toExternalForm());
     } catch (MalformedURLException e) {
       log.error("Could not load {}", file, e);
     }
   }
 
-  private File genereateSvg(String uml, double width) {
+  private File genereateSvg(String uml, double width, Path path) {
     StringBuilder builder = new StringBuilder();
     builder.append("@startuml\n");
     builder.append("scale ");
-    builder.append(width);
+    builder.append((int) width);
     builder.append(" width \n");
     builder.append(uml);
     builder.append("\n@enduml");
 
     try {
-      Path file = getImagePath();
-      try (FileOutputStream outStream = new FileOutputStream(file.toFile())) {
+      try (FileOutputStream outStream = new FileOutputStream(path.toFile())) {
         SourceStringReader reader = new SourceStringReader(builder.toString());
         String desc = reader.generateImage(outStream, new FileFormatOption(FileFormat.PNG));
 
         log.info(desc);
       }
-      return file.toFile();
+      return path.toFile();
     } catch (Exception e) {
       log.error("Could not create uml diagram", e);
       return null;
@@ -140,6 +148,10 @@ public class UmlDiagramController extends BaseController<UmlDiagramInfo> {
 
   private Path getImagePath() {
     return Paths.get(System.getProperty("java.io.tmpdir"), "idnadrev_uml_editor.png");
+  }
+
+  private Path getFullScreenImagePath() {
+    return Paths.get(System.getProperty("java.io.tmpdir"), "idnadrev_uml_editor_fullscreen.png");
   }
 
   @Override
@@ -157,29 +169,41 @@ public class UmlDiagramController extends BaseController<UmlDiagramInfo> {
 //    controller.save();
   }
 
+  private double getFullScreenWidth() {
+    Screen primary = Screen.getPrimary();
+    Rectangle2D visualBounds = primary.getVisualBounds();
+    return visualBounds.getWidth();
+  }
+
   @FXML
   public void onShowFullScreen() {
-    log.info("Showing fullscreen");
-
     Screen primary = Screen.getPrimary();
     Rectangle2D visualBounds = primary.getVisualBounds();
 
-    CompletableFuture<File> future = CompletableFuture.supplyAsync(() -> genereateSvg(content.getText(), visualBounds.getWidth()), controller.getExecutorService());
-    future.thenAcceptAsync(this::showRenderedFile, controller.getJavaFXExecutor());
+    this.showFullScreen = true;
+    CompletableFuture<File> future = CompletableFuture.supplyAsync(() -> {
+      Path path = getFullScreenImagePath();
+      if (path.toFile().exists()) {
+        return path.toFile();
+      } else {
+        return null;
+      }
+    }, controller.getExecutorService());
+
+    future.thenAcceptAsync(file -> showRenderedFile(file, fullScreenWebView), controller.getJavaFXExecutor());
 
     Popup popup = new Popup();
     StackPane pane = new StackPane();
     pane.setPrefWidth(visualBounds.getWidth());
     pane.setPrefHeight(visualBounds.getHeight());
-    pane.getChildren().add(webView);
+    pane.getChildren().add(fullScreenWebView);
 
     popup.getContent().add(pane);
     popup.setX(0);
     popup.setY(0);
     popup.setWidth(visualBounds.getWidth());
     popup.setHeight(visualBounds.getHeight());
-    popup.setOnHiding(e -> previewContainer.getChildren().add(webView));
-
+    popup.setOnHiding(e -> showFullScreen = false);
     popup.show(fullscreen.getScene().getWindow());
   }
 }
