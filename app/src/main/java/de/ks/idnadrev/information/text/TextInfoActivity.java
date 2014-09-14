@@ -17,7 +17,7 @@ package de.ks.idnadrev.information.text;
 import de.ks.activity.ActivityCfg;
 import de.ks.menu.MenuItem;
 
-@MenuItem("/main/info")
+@MenuItem(value = "/main/info", order = 3)
 public class TextInfoActivity extends ActivityCfg {
   public TextInfoActivity() {
     super(TextInfoDS.class, TextInfoController.class);

@@ -17,7 +17,7 @@ package de.ks.idnadrev.context;
 import de.ks.activity.ActivityCfg;
 import de.ks.menu.MenuItem;
 
-@MenuItem(order = 3, value = "/main/context")
+@MenuItem(order = 4, value = "/main/context")
 public class CreateContextActivity extends ActivityCfg {
   public CreateContextActivity() {
     super(CreateContextDS.class, CreateContext.class);
