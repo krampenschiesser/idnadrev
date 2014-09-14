@@ -25,6 +25,7 @@ import java.util.function.Consumer;
 public class LastTextChange extends LastExecutionGroup<String> {
   private static final Logger log = LoggerFactory.getLogger(LastTextChange.class);
   public static final int WAIT_TIME = 100;
+  private final TextInputControl textInput;
   private Consumer<CompletableFuture<String>> handler;
 
   public LastTextChange(TextInputControl textInput, ExecutorService executor) {
@@ -33,13 +34,23 @@ public class LastTextChange extends LastExecutionGroup<String> {
 
   public LastTextChange(TextInputControl textInput, long waitTime, ExecutorService executor) {
     super("lastTextChange-" + textInput.getId(), waitTime, executor);
+    this.textInput = textInput;
 
     textInput.textProperty().addListener((p, o, n) -> {
       if (n != null) {
         CompletableFuture<String> future = schedule(() -> n);
-        handler.accept(future);
+        if (future.getNumberOfDependents() == 0) {
+          handler.accept(future);
+        }
       }
     });
+  }
+
+  public void trigger() {
+    CompletableFuture<String> future = schedule(() -> textInput.getText());
+    if (future.getNumberOfDependents() == 0) {
+      handler.accept(future);
+    }
   }
 
   public void registerHandler(Consumer<CompletableFuture<String>> consumer) {
