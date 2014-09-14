@@ -15,6 +15,7 @@
   ~ limitations under the License.
   -->
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Accordion?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.TextField?>
@@ -34,7 +35,7 @@
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
     </rowConstraints>
     <children>
-        <TextField fx:id="name" styleClass="title" alignment="CENTER"/>
+        <TextField fx:id="name" styleClass="title"/>
         <StackPane fx:id="adocContainer" GridPane.rowIndex="1"/>
         <Accordion GridPane.rowIndex="3">
             <panes>
@@ -57,4 +58,7 @@
         <Button defaultButton="true" mnemonicParsing="false" text="%save" GridPane.halignment="CENTER"
                 GridPane.rowIndex="4"/>
     </children>
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+    </padding>
 </GridPane>
