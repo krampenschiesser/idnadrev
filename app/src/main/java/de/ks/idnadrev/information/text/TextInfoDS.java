@@ -15,48 +15,11 @@
 
 package de.ks.idnadrev.information.text;
 
-import de.ks.datasource.DataSource;
+import de.ks.datasource.CreateEditDS;
 import de.ks.idnadrev.entity.information.TextInfo;
-import de.ks.persistence.PersistentWork;
 
-import java.util.function.Consumer;
-
-public class TextInfoDS implements DataSource<TextInfo> {
-
-  private TextInfo hint;
-
-  @Override
-  public void setLoadingHint(Object dataSourceHint) {
-    if (dataSourceHint instanceof TextInfo) {
-      hint = ((TextInfo) dataSourceHint);
-    }
-  }
-
-  @Override
-  public TextInfo loadModel(Consumer<TextInfo> furtherProcessing) {
-    if (hint != null) {
-      TextInfo read = PersistentWork.read(em -> {
-        TextInfo reloaded = PersistentWork.reload(hint);
-        furtherProcessing.accept(reloaded);
-        return reloaded;
-      });
-      return read;
-    } else {
-      TextInfo textInfo = new TextInfo("");
-      furtherProcessing.accept(textInfo);
-      return textInfo;
-    }
-  }
-
-  @Override
-  public void saveModel(TextInfo model, Consumer<TextInfo> beforeSaving) {
-    PersistentWork.run(em -> {
-      TextInfo reloaded = PersistentWork.reload(model);
-      beforeSaving.accept(reloaded);
-      if (reloaded.getId() == 0) {
-        em.persist(reloaded);
-      }
-    });
-    hint = null;
+public class TextInfoDS extends CreateEditDS<TextInfo> {
+  public TextInfoDS() {
+    super(TextInfo.class);
   }
 }
