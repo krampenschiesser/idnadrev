@@ -37,7 +37,7 @@ import java.util.*;
  */
 
 @Entity
-public class Task extends NamedPersistentObject<Task> implements FileContainer<Task> {
+public class Task extends NamedPersistentObject<Task> implements FileContainer<Task>, Tagged {
   private static final long serialVersionUID = 1L;
   private static final String TASK_TAG_JOINTABLE = "task_tag";
 
@@ -297,16 +297,9 @@ public class Task extends NamedPersistentObject<Task> implements FileContainer<T
     return this;
   }
 
+  @Override
   public Set<Tag> getTags() {
     return tags;
-  }
-
-  public void addTag(Tag tag) {
-    tags.add(tag);
-  }
-
-  public void addTag(String tag) {
-    tags.add(new Tag(tag));
   }
 
   public Outcome getOutcome() {

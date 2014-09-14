@@ -12,21 +12,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package de.ks.idnadrev.tag;
 
-package de.ks.idnadrev.entity;
+import de.ks.datasource.NewInstanceDataSource;
 
-import de.ks.persistence.entity.NamedPersistentObject;
+import java.util.function.Consumer;
 
-import javax.persistence.Entity;
+public class TestTagDS extends NewInstanceDataSource<TestTagged> {
+  public TestTagged saved;
 
-@Entity
-public class Tag extends NamedPersistentObject<Tag> {
-
-  public Tag() {
-    //
+  public TestTagDS() {
+    super(TestTagged.class);
   }
 
-  public Tag(String name) {
-    super(name);
+  @Override
+  public void saveModel(TestTagged model, Consumer<TestTagged> beforeSaving) {
+    beforeSaving.accept(model);
+    saved = model;
   }
 }

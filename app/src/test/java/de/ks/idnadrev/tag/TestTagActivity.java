@@ -12,21 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package de.ks.idnadrev.tag;
 
-package de.ks.idnadrev.entity;
+import de.ks.activity.ActivityCfg;
 
-import de.ks.persistence.entity.NamedPersistentObject;
-
-import javax.persistence.Entity;
-
-@Entity
-public class Tag extends NamedPersistentObject<Tag> {
-
-  public Tag() {
-    //
-  }
-
-  public Tag(String name) {
-    super(name);
+public class TestTagActivity extends ActivityCfg {
+  public TestTagActivity() {
+    super(TestTagDS.class, TagContainer.class);
   }
 }

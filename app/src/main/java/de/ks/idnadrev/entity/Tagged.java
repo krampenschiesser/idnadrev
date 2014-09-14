@@ -12,21 +12,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package de.ks.idnadrev.entity;
 
-import de.ks.persistence.entity.NamedPersistentObject;
+import java.util.Set;
 
-import javax.persistence.Entity;
+public interface Tagged {
 
-@Entity
-public class Tag extends NamedPersistentObject<Tag> {
-
-  public Tag() {
-    //
+  default void addTag(String tag) {
+    getTags().add(new Tag(tag));
   }
 
-  public Tag(String name) {
-    super(name);
+  default void addTag(Tag tag) {
+    getTags().add(tag);
   }
+
+  default void removeTag(Tag tag) {
+    getTags().remove(tag);
+  }
+
+  default void removeTag(String tag) {
+    getTags().remove(new Tag(tag));
+  }
+
+  Set<Tag> getTags();
 }

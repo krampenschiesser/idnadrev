@@ -12,21 +12,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package de.ks.idnadrev.tag;
 
-package de.ks.idnadrev.entity;
+import de.ks.idnadrev.entity.Tag;
+import de.ks.idnadrev.entity.Tagged;
 
-import de.ks.persistence.entity.NamedPersistentObject;
+import java.util.HashSet;
+import java.util.Set;
 
-import javax.persistence.Entity;
+public class TestTagged implements Tagged {
+  protected final Set<Tag> tags = new HashSet<>();
 
-@Entity
-public class Tag extends NamedPersistentObject<Tag> {
-
-  public Tag() {
-    //
-  }
-
-  public Tag(String name) {
-    super(name);
+  @Override
+  public Set<Tag> getTags() {
+    return tags;
   }
 }
