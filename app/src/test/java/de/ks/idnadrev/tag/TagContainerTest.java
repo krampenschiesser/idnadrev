@@ -71,6 +71,7 @@ public class TagContainerTest extends ActivityTest {
     TagContainer container = activityController.getControllerInstance(TagContainer.class);
 
     FXPlatform.invokeLater(() -> container.addTag("bla"));
+    Thread.sleep(100);
     activityController.waitForTasks();
     FXPlatform.waitForFX();
     assertEquals(1, container.tagPane.getChildren().size());
