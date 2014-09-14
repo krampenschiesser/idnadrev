@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -50,7 +51,26 @@ public class DefaultLoader<V extends Node, C> {
   private C loadedInstance;
 
   public DefaultLoader(Class<?> modelController) {
-    this(modelController, modelController.getResource(modelController.getSimpleName() + ".fxml"));
+    this(modelController, guessFxmlFile(modelController));
+  }
+
+  private static URL guessFxmlFile(Class<?> modelController) {
+    String controllerName = modelController.getSimpleName();
+    URL resource = modelController.getResource(controllerName + ".fxml");
+    if (resource == null) {
+      resource = modelController.getResource(controllerName + "View.fxml");
+    }
+    if (resource == null) {
+      if (controllerName.toLowerCase(Locale.ENGLISH).endsWith("controller")) {
+        String substring = controllerName.substring(0, controllerName.length() - "controller".length());
+
+        resource = modelController.getResource(substring);
+        if (resource == null) {
+          resource = modelController.getResource(substring + "View.fxml");
+        }
+      }
+    }
+    return resource;
   }
 
   public DefaultLoader(URL fxmlFile) {
