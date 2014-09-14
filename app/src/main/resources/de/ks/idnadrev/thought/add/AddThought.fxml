@@ -38,7 +38,7 @@
                 <Insets/>
             </GridPane.margin>
         </Button>
-        <Label text="%thought.files" GridPane.rowIndex="2"/>
+        <Label text="%files" GridPane.rowIndex="2"/>
 
 
     </children>

@@ -48,7 +48,7 @@
                         </StackPane>
                     </content>
                 </Tab>
-                <Tab text="%task.create.files">
+                <Tab text="%files">
                     <content>
                         <StackPane>
                             <children>
