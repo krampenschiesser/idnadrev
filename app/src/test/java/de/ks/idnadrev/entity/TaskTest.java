@@ -92,7 +92,7 @@ public class TaskTest {
       Task readTask = em.find(Task.class, task.getId());
 
       assertEquals(1, readTask.getInformation().size());
-      Information readInformation = readTask.getInformation().iterator().next();
+      Information<?> readInformation = readTask.getInformation().iterator().next();
       assertEquals(1, readInformation.getTags().size());
       assertEquals(tagName, readInformation.getTags().iterator().next().getName());
     });
