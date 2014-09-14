@@ -21,7 +21,7 @@ import javax.persistence.JoinTable;
 
 @Entity
 @AssociationOverrides(@AssociationOverride(name = "tags", joinTable = @JoinTable(name = "hyperlinkinfo_tag")))
-public class HyperLinkInfo extends Information {
+public class HyperLinkInfo extends Information<HyperLinkInfo> {
 
   protected HyperLinkInfo() {
   }

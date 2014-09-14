@@ -21,7 +21,7 @@ import java.time.LocalDate;
 
 @Entity
 @AssociationOverrides(@AssociationOverride(name = "tags", joinTable = @JoinTable(name = "diaryinfo_tag")))
-public class DiaryInfo extends Information {
+public class DiaryInfo extends Information<DiaryInfo> {
   @Column(columnDefinition = "DATE", unique = true)
   @Convert(converter = LocalDateConverter.class)
   protected LocalDate date;

@@ -18,7 +18,7 @@ import javax.persistence.*;
 
 @Entity
 @AssociationOverrides(@AssociationOverride(name = "tags", joinTable = @JoinTable(name = "chartinfo_tag")))
-public class ChartInfo extends Information {
+public class ChartInfo extends Information<ChartInfo> {
   @Enumerated(EnumType.STRING)
   protected ChartType chartType;
 

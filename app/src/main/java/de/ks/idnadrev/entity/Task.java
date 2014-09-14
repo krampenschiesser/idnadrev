@@ -345,8 +345,8 @@ public class Task extends NamedPersistentObject<Task> implements FileContainer<T
     this.schedule = schedule;
   }
 
-  public List<Information> getInformation() {
-    List<Information> retval = new ArrayList<>();
+  public List<Information<?>> getInformation() {
+    List<Information<?>> retval = new ArrayList<>();
 
     retval.addAll(getUmlInfos());
     retval.addAll(getTextInfos());

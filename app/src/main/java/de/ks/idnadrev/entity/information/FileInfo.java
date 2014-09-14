@@ -23,7 +23,7 @@ import java.util.Set;
 
 @Entity
 @AssociationOverrides(@AssociationOverride(name = "tags", joinTable = @JoinTable(name = "fileinfo_tag")))
-public class FileInfo extends Information implements FileContainer<FileInfo> {
+public class FileInfo extends Information<FileInfo> implements FileContainer<FileInfo> {
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
   @JoinTable(name = "fileinfo_file")
   protected Set<FileReference> files = new HashSet<>();

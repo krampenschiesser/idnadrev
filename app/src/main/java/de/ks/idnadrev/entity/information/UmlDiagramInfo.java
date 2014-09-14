@@ -18,7 +18,7 @@ import javax.persistence.*;
 
 @Entity
 @AssociationOverrides(@AssociationOverride(name = "tags", joinTable = @JoinTable(name = "umldiagraminfo_tag")))
-public class UmlDiagramInfo extends Information {
+public class UmlDiagramInfo extends Information<UmlDiagramInfo> {
   @Enumerated(EnumType.STRING)
   protected UmlDiagramType diagramType;
 
