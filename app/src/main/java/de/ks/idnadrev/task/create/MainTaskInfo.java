@@ -15,13 +15,11 @@
 package de.ks.idnadrev.task.create;
 
 import de.ks.BaseController;
-import de.ks.application.fxml.DefaultLoader;
 import de.ks.idnadrev.entity.Context;
-import de.ks.idnadrev.entity.Tag;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.TaskState;
 import de.ks.idnadrev.selection.NamedPersistentObjectSelection;
-import de.ks.idnadrev.tag.TagInfo;
+import de.ks.idnadrev.tag.TagContainer;
 import de.ks.persistence.PersistentWork;
 import de.ks.persistence.entity.NamedPersistentObject;
 import de.ks.reflection.PropertyPath;
@@ -36,8 +34,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.util.Callback;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
@@ -46,7 +42,6 @@ import org.controlsfx.control.textfield.TextFields;
 import java.net.URL;
 import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public class MainTaskInfo extends BaseController<Task> {
@@ -55,7 +50,7 @@ public class MainTaskInfo extends BaseController<Task> {
   @FXML
   protected NamedPersistentObjectSelection<Context> contextController;
   @FXML
-  protected NamedPersistentObjectSelection<Tag> tagAddController;
+  protected TagContainer tagAddController;
 
   @FXML
   protected TextField name;
@@ -65,8 +60,6 @@ public class MainTaskInfo extends BaseController<Task> {
   protected StackPane descriptionContainer;
   @FXML
   protected TextField estimatedTimeDuration;
-  @FXML
-  protected FlowPane tagPane;
   @FXML
   protected ComboBox<TaskState> state;
 
@@ -93,7 +86,6 @@ public class MainTaskInfo extends BaseController<Task> {
     }).enableValidation();
 
     contextController.from(Context.class).enableValidation();
-    tagAddController.from(Tag.class);
 
     durationValidator = new DurationValidator();
 
@@ -106,7 +98,6 @@ public class MainTaskInfo extends BaseController<Task> {
     project.setText("");
     project.selectedProperty().bindBidirectional(store.getBinding().getBooleanProperty(Task.class, (t) -> t.isProject()));
 
-    tagAddController.setOnAction(e -> addTag(tagAddController.getInput().getText()));
 
     state.setItems(states);
     states.add(TaskState.NONE);
@@ -126,21 +117,6 @@ public class MainTaskInfo extends BaseController<Task> {
         return Collections.emptyList();
       }
     };
-  }
-
-  private void addTag(String tag) {
-    CompletableFuture.supplyAsync(() -> {
-      DefaultLoader<GridPane, TagInfo> loader = new DefaultLoader<>(TagInfo.class);
-      loader.load();
-      return loader;
-    }, controller.getExecutorService()).thenAcceptAsync((loader) -> {
-      TagInfo ctrller = loader.getController();
-      ctrller.getName().setText(tag);
-      GridPane view = loader.getView();
-      view.setId(tag);
-      ctrller.getRemove().setOnAction((e) -> tagPane.getChildren().remove(view));
-      tagPane.getChildren().add(view);
-    }, controller.getJavaFXExecutor());
   }
 
   @Override
@@ -193,12 +169,6 @@ public class MainTaskInfo extends BaseController<Task> {
 
     task.setEstimatedTime(getEstimatedDuration());
     task.setState(state.getValue());
-
-    tagPane.getChildren().stream().map(c -> new Tag(c.getId())).forEach(tag -> {
-      Tag readTag = PersistentWork.forName(Tag.class, tag.getName());
-      readTag = readTag == null ? tag : readTag;
-      task.addTag(readTag);
-    });
   }
 
   private <T extends NamedPersistentObject<T>> void setToOne(Task model, Class<T> clazz, String name, Consumer<T> consumer) {

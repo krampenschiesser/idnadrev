@@ -80,11 +80,10 @@
         <Label text="%tags" GridPane.rowIndex="9"/>
         <StackPane GridPane.columnIndex="1" GridPane.rowIndex="9" GridPane.valignment="TOP" GridPane.vgrow="NEVER">
             <children>
-                <fx:include fx:id="tagAdd" source="../../selection/NamedPersistentObjectSelection.fxml"/>
+                <fx:include fx:id="tagAdd" source="../../tag/TagContainer.fxml"/>
             </children>
         </StackPane>
 
-        <FlowPane fx:id="tagPane" hgap="5.0" vgap="5.0" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
 
     </children>
     <padding>

@@ -23,6 +23,8 @@ import de.ks.persistence.PersistentWork;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
@@ -99,5 +101,13 @@ public class TagContainer extends BaseController<Tagged> {
       readTag = readTag == null ? tag : readTag;
       model.addTag(readTag);
     });
+  }
+
+  public TextField getInput() {
+    return tagAddController.getInput();
+  }
+
+  public EventHandler<ActionEvent> getOnAction() {
+    return tagAddController.getOnAction();
   }
 }
