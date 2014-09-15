@@ -16,14 +16,17 @@ package de.ks.idnadrev.information.uml;
 
 import de.ks.BaseController;
 import de.ks.executor.group.LastTextChange;
+import de.ks.i18n.Localized;
 import de.ks.idnadrev.entity.information.TextInfo;
 import de.ks.idnadrev.entity.information.UmlDiagramInfo;
 import de.ks.validation.validators.NamedEntityMustNotExistValidator;
 import de.ks.validation.validators.NotEmptyValidator;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
+import javafx.geometry.HPos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebView;
 import javafx.stage.Popup;
@@ -31,12 +34,16 @@ import javafx.stage.Screen;
 import net.sourceforge.plantuml.FileFormat;
 import net.sourceforge.plantuml.FileFormatOption;
 import net.sourceforge.plantuml.SourceStringReader;
+import net.sourceforge.plantuml.cucadiagram.dot.GraphvizUtils;
+import org.controlsfx.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -75,6 +82,9 @@ public class UmlDiagramController extends BaseController<UmlDiagramInfo> {
       webView = view;
       webView.setMinSize(100, 100);
       webView.setPrefSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
+      webView.widthProperty().addListener((p, o, n) -> {
+        lastTextChange.trigger();
+      });
       previewContainer.getChildren().add(webView);
     });
     CompletableFuture.supplyAsync(() -> new WebView(), controller.getJavaFXExecutor()).thenAccept(view -> {
@@ -104,10 +114,6 @@ public class UmlDiagramController extends BaseController<UmlDiagramInfo> {
       }, controller.getJavaFXExecutor());
 
       f.thenApply(s -> genereateSvg(s, webView.getWidth(), getImagePath())).thenAcceptAsync(file -> showRenderedFile(file, webView), controller.getJavaFXExecutor());
-    });
-
-    webView.widthProperty().addListener((p, o, n) -> {
-      lastTextChange.trigger();
     });
   }
 
@@ -157,6 +163,33 @@ public class UmlDiagramController extends BaseController<UmlDiagramInfo> {
   @Override
   protected void onRefresh(UmlDiagramInfo model) {
     super.onRefresh(model);
+    File s = GraphvizUtils.getDotExe();
+    if (s == null) {
+      Dialog dialog = new Dialog(saveBtn.getScene().getRoot(), Localized.get("install.graphviz"), true);
+
+      GridPane gridPane = new GridPane();
+      gridPane.setVgap(10);
+      Label label = new Label(Localized.get("install.graphviz.detailed"));
+      Hyperlink link = new Hyperlink("http://www.graphviz.org/Download.php");
+      link.setOnAction(e -> openGraphvizUrl());
+
+      gridPane.add(label, 0, 0);
+      gridPane.add(link, 0, 1);
+      GridPane.setHalignment(link, HPos.CENTER);
+      dialog.setContent(gridPane);
+
+      dialog.show();
+    }
+  }
+
+  private void openGraphvizUrl() {
+    controller.getJavaFXExecutor().submit(() -> {
+      try {
+        java.awt.Desktop.getDesktop().browse(URI.create("http://www.graphviz.org/Download.php"));
+      } catch (IOException e) {
+        log.error("Could not open graphviz browse", e);
+      }
+    });
   }
 
   @FXML
