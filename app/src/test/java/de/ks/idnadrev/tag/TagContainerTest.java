@@ -64,6 +64,11 @@ public class TagContainerTest extends ActivityTest {
     TestTagDS ds = (TestTagDS) store.getDatasource();
     assertNotNull(ds.saved);
     assertEquals(2, ds.saved.getTags().size());
+
+    activityController.reload();
+    activityController.waitForDataSource();
+
+    assertEquals(0, container.tagPane.getChildren().size());
   }
 
   @Test

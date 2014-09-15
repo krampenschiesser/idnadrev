@@ -33,10 +33,9 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 
 import java.net.URL;
-import java.util.Optional;
-import java.util.ResourceBundle;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public class TagContainer extends BaseController<Tagged> {
   @FXML
@@ -61,22 +60,23 @@ public class TagContainer extends BaseController<Tagged> {
   }
 
   private void onTagsChanged(SetChangeListener.Change<? extends String> change) {
-    String tag = change.getElementAdded();
-    if (tag != null) {
+    String addedTag = change.getElementAdded();
+    if (addedTag != null) {
       CompletableFuture.supplyAsync(() -> {
         DefaultLoader<GridPane, TagInfo> loader = new DefaultLoader<>(TagInfo.class);
         loader.load();
         return loader;
       }, controller.getExecutorService()).thenAcceptAsync((loader) -> {
-        currentTags.add(tag);
+//        currentTags.add(addedTag);
         TagInfo ctrl = loader.getController();
-        ctrl.getName().setText(tag);
+        ctrl.getName().setText(addedTag);
         GridPane view = loader.getView();
-        view.setId(tag);
+        view.setId(addedTag);
         ctrl.getRemove().setOnAction((e) -> tagPane.getChildren().remove(view));
         tagPane.getChildren().add(view);
       }, controller.getJavaFXExecutor());
     }
+
     String removedTag = change.getElementRemoved();
     if (removedTag != null) {
       Optional<Node> first = tagPane.getChildren().stream().filter(n -> removedTag.equals(n.getId())).findFirst();
@@ -101,6 +101,22 @@ public class TagContainer extends BaseController<Tagged> {
       readTag = readTag == null ? tag : readTag;
       model.addTag(readTag);
     });
+  }
+
+  @Override
+  public void duringLoad(Tagged model) {
+    super.duringLoad(model);
+    model.getTags().forEach(t -> t.getName());
+  }
+
+  @Override
+  protected void onRefresh(Tagged model) {
+    super.onRefresh(model);
+    currentTags.clear();
+
+    List<String> tags = model.getTags().stream().map(t -> t.getName()).collect(Collectors.toList());
+    Collections.sort(tags);
+    currentTags.addAll(tags);
   }
 
   public TextField getInput() {
