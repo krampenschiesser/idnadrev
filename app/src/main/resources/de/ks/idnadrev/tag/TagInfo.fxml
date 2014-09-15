@@ -30,7 +30,7 @@
         <RowConstraints minHeight="10.0" vgrow="NEVER"/>
     </rowConstraints>
     <children>
-        <Button fx:id="remove" mnemonicParsing="false" text="%remove" visible="false" GridPane.columnIndex="1"/>
+        <Button fx:id="remove" mnemonicParsing="false" text="%removeTag" visible="false" GridPane.columnIndex="1"/>
         <Label id="TagInfo" fx:id="name" stylesheets="@../idnadrev.css" text="MyTag123"/>
     </children>
     <opaqueInsets>

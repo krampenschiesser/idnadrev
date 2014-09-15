@@ -22,19 +22,29 @@
           minWidth="-Infinity" vgap="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
           fx:controller="de.ks.idnadrev.information.text.TextInfoController">
     <columnConstraints>
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+        <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
         <ColumnConstraints hgrow="ALWAYS" minWidth="10.0"/>
     </columnConstraints>
     <rowConstraints>
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
         <RowConstraints minHeight="10.0" vgrow="ALWAYS"/>
-        <RowConstraints minHeight="10.0" vgrow="NEVER"/>
         <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
     </rowConstraints>
     <children>
+        <Label text="%name:"/>
         <TextField fx:id="name" GridPane.columnIndex="1"/>
-        <StackPane fx:id="adocContainer" GridPane.columnSpan="2" GridPane.rowIndex="1"/>
+
+        <Label text="%tags:" GridPane.rowIndex="1" GridPane.valignment="TOP"/>
+        <StackPane GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1">
+            <children>
+                <fx:include fx:id="tagContainer" source="../../tag/TagContainer.fxml"/>
+            </children>
+        </StackPane>
+
+        <StackPane fx:id="adocContainer" GridPane.columnSpan="2" GridPane.rowIndex="2"/>
+
         <Accordion GridPane.columnSpan="2" GridPane.rowIndex="3">
             <panes>
                 <TitledPane animated="false" style="-fx-font-size: 13px;" text="%files">
@@ -48,14 +58,8 @@
                 </TitledPane>
             </panes>
         </Accordion>
-        <StackPane GridPane.columnSpan="2" GridPane.rowIndex="2">
-            <children>
-                <fx:include fx:id="tagContainer" source="../../tag/TagContainer.fxml"/>
-            </children>
-        </StackPane>
         <Button defaultButton="true" mnemonicParsing="false" text="%save" GridPane.columnSpan="2"
                 GridPane.halignment="CENTER" GridPane.rowIndex="4"/>
-        <Label text="%name:"/>
     </children>
     <padding>
         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
