@@ -33,7 +33,7 @@
     </rowConstraints>
     <children>
         <TextField fx:id="name" GridPane.columnIndex="1"/>
-        <Label text="%name"/>
+        <Label text="%name:"/>
         <Button fx:id="saveBtn" defaultButton="true" mnemonicParsing="false" onAction="#onSave" text="%save"
                 GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.rowIndex="2"/>
         <SplitPane fx:id="splitPane" dividerPositions="0.5" GridPane.columnSpan="2147483647" GridPane.rowIndex="1">

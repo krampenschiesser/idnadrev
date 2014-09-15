@@ -29,6 +29,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebView;
+import javafx.stage.FileChooser;
 import javafx.stage.Popup;
 import javafx.stage.Screen;
 import net.sourceforge.plantuml.FileFormat;
@@ -45,6 +46,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ResourceBundle;
@@ -63,8 +65,6 @@ public class UmlDiagramController extends BaseController<UmlDiagramInfo> {
 
   @FXML
   protected SplitPane splitPane;
-  //  @FXML
-//  protected ComboBox<UmlDiagramType> diagramType;
   @FXML
   protected TextArea content;
   @FXML
@@ -73,7 +73,7 @@ public class UmlDiagramController extends BaseController<UmlDiagramInfo> {
   protected WebView webView;
   protected WebView fullScreenWebView;
 
-  private LastTextChange lastTextChange;
+  protected LastTextChange lastTextChange;
   protected boolean showFullScreen = false;
 
   @Override
@@ -103,7 +103,6 @@ public class UmlDiagramController extends BaseController<UmlDiagramInfo> {
     validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(UmlDiagramInfo.class, t -> t.getId() == store.<TextInfo>getModel().getId()));
 
     saveBtn.disableProperty().bind(validationRegistry.invalidProperty());
-
 
     lastTextChange = new LastTextChange(content, 750, controller.getExecutorService());
     lastTextChange.registerHandler(f -> {
@@ -195,11 +194,24 @@ public class UmlDiagramController extends BaseController<UmlDiagramInfo> {
   @FXML
   protected void onSave() {
     controller.save();
+    controller.stopCurrent();
   }
 
   @FXML
   protected void onSaveImage() {
-//    controller.save();
+    FileChooser fileChooser = new FileChooser();
+    fileChooser.setInitialFileName("umlDiagram");
+    FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("png", "png");
+    fileChooser.setSelectedExtensionFilter(filter);
+
+    File file = fileChooser.showOpenDialog(saveBtn.getScene().getWindow());
+    if (file != null) {
+      try {
+        Files.copy(getFullScreenImagePath(), file.toPath());
+      } catch (IOException e) {
+        log.error("could nto save file {}", file, e);
+      }
+    }
   }
 
   private double getFullScreenWidth() {
