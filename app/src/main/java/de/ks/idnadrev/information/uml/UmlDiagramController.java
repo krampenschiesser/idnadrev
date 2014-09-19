@@ -16,9 +16,12 @@ package de.ks.idnadrev.information.uml;
 
 import de.ks.BaseController;
 import de.ks.executor.group.LastTextChange;
+import de.ks.file.FileOptions;
 import de.ks.i18n.Localized;
 import de.ks.idnadrev.entity.information.TextInfo;
 import de.ks.idnadrev.entity.information.UmlDiagramInfo;
+import de.ks.option.Options;
+import de.ks.text.PersistentStoreBack;
 import de.ks.validation.validators.NamedEntityMustNotExistValidator;
 import de.ks.validation.validators.NotEmptyValidator;
 import javafx.beans.property.StringProperty;
@@ -75,6 +78,7 @@ public class UmlDiagramController extends BaseController<UmlDiagramInfo> {
 
   protected LastTextChange lastTextChange;
   protected boolean showFullScreen = false;
+  protected PersistentStoreBack persistentStoreBack;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -111,9 +115,12 @@ public class UmlDiagramController extends BaseController<UmlDiagramInfo> {
           showRenderedFile(file, fullScreenWebView);
         }
       }, controller.getJavaFXExecutor());
-
+      f.thenAcceptAsync(persistentStoreBack::save, controller.getExecutorService());
       f.thenApply(s -> genereateSvg(s, webView.getWidth(), getImagePath())).thenAcceptAsync(file -> showRenderedFile(file, webView), controller.getJavaFXExecutor());
     });
+
+
+    persistentStoreBack = new PersistentStoreBack(getClass().getSimpleName(), new File(Options.get(FileOptions.class).getFileStoreDir()));
   }
 
   private void showRenderedFile(File file, WebView view) {
@@ -140,7 +147,8 @@ public class UmlDiagramController extends BaseController<UmlDiagramInfo> {
     try {
       try (FileOutputStream outStream = new FileOutputStream(path.toFile())) {
         SourceStringReader reader = new SourceStringReader(builder.toString());
-        String desc = reader.generateImage(outStream, new FileFormatOption(FileFormat.PNG));
+        FileFormatOption fileFormatOption = new FileFormatOption(FileFormat.PNG);
+        String desc = reader.generateImage(outStream, fileFormatOption);
 
         log.info(desc);
       }
@@ -179,6 +187,10 @@ public class UmlDiagramController extends BaseController<UmlDiagramInfo> {
 
       dialog.show();
     }
+    if (content.textProperty().getValueSafe().trim().isEmpty()) {
+      String text = persistentStoreBack.load();
+      content.setText(text);
+    }
   }
 
   private void openGraphvizUrl() {
@@ -189,6 +201,11 @@ public class UmlDiagramController extends BaseController<UmlDiagramInfo> {
         log.error("Could not open graphviz browse", e);
       }
     });
+  }
+
+  @Override
+  public void duringSave(UmlDiagramInfo model) {
+    persistentStoreBack.delete();
   }
 
   @FXML
