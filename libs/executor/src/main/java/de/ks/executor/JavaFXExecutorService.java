@@ -198,6 +198,8 @@ public class JavaFXExecutorService extends AbstractExecutorService {
         log.trace("Executing runnable #{}", count);
         try {
           runnable.run();
+        } catch (Throwable e) {
+          log.error("Could not execute runnable #{}", count, e);
         } finally {
           queue.poll();
           count++;
