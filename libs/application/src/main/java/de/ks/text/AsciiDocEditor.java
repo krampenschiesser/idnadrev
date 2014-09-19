@@ -15,10 +15,14 @@
 package de.ks.text;
 
 import com.google.common.base.Charsets;
+import com.google.common.eventbus.Subscribe;
 import com.google.common.io.Files;
 import de.ks.activity.ActivityController;
+import de.ks.activity.ActivityLoadFinishedEvent;
 import de.ks.activity.initialization.ActivityInitialization;
 import de.ks.application.fxml.DefaultLoader;
+import de.ks.eventsystem.bus.HandlingThread;
+import de.ks.eventsystem.bus.Threading;
 import de.ks.executor.group.LastExecutionGroup;
 import de.ks.i18n.Localized;
 import de.ks.javafx.FxCss;
@@ -34,6 +38,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
@@ -99,10 +104,12 @@ public class AsciiDocEditor implements Initializable {
   protected HBox editorCommandPane;
   @FXML
   protected TextArea plainHtml;
+  protected File lastFile;
 
   protected Dialog helpDialog;
   protected WebView helpView;
   protected WebView preview;
+  protected WebView popupPreview;
   protected final SimpleStringProperty text = new SimpleStringProperty();
   protected LastExecutionGroup<String> renderGroup;
   protected String previewHtmlString;
@@ -111,6 +118,9 @@ public class AsciiDocEditor implements Initializable {
   protected SelectImageController selectImageController;
   protected boolean focusOnEditor = true;
   protected final Map<Class<?>, AsciiDocEditorCommand> commands = new HashMap<>();
+
+  protected Dialog previewPopupDialog;
+  protected volatile PersistentStoreBack persistentStoreBack;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -128,12 +138,18 @@ public class AsciiDocEditor implements Initializable {
               pane.getStyleClass().add("webviewContainer");
               previewTab.setContent(pane);
             });
+    CompletableFuture.supplyAsync(() -> new WebView(), controller.getJavaFXExecutor())//
+            .thenAccept(webView -> {
+              popupPreview = webView;
+            });
 
     text.bindBidirectional(editor.textProperty());
 
     editor.textProperty().addListener((p, o, n) -> {
       if (n != null) {
-        CompletableFuture<String> future = renderGroup.schedule(() -> parser.parse(n));
+        CompletableFuture<String> future = renderGroup.schedule(() -> n);
+        future.thenAcceptAsync(this::storeBack, controller.getExecutorService());
+        future = future.thenApplyAsync(s -> parser.parse(s));
         future.thenAcceptAsync(this::applyRenderedHtml, controller.getJavaFXExecutor());
         future.exceptionally(t -> {
           log.error("Could not parse asciidoc {}", n, t);
@@ -157,6 +173,7 @@ public class AsciiDocEditor implements Initializable {
     tabPane.getSelectionModel().selectedIndexProperty().addListener((p, o, n) -> {
       if (n != null && n.intValue() == 1) {
         preview.getEngine().loadContent(previewHtmlString);
+        Platform.runLater(() -> preview.requestFocus());
       }
       if (o == null || n == null) {
         return;
@@ -166,6 +183,27 @@ public class AsciiDocEditor implements Initializable {
       }
     });
     addCommands();
+
+    editor.setOnKeyPressed(e -> {
+      String character = e.getCharacter();
+      String text1 = e.getText();
+
+      KeyCode code = e.getCode();
+      if (code == KeyCode.S && e.isControlDown()) {
+        saveToFile();
+        e.consume();
+      }
+      if (e.getCode() == KeyCode.P && e.isControlDown()) {
+        showPreviewPopup();
+        e.consume();
+      }
+    });
+  }
+
+  protected void storeBack(String storeBack) {
+    if (this.persistentStoreBack != null) {
+      this.persistentStoreBack.save(storeBack);
+    }
   }
 
   protected void applyRenderedHtml(String html) {
@@ -173,6 +211,8 @@ public class AsciiDocEditor implements Initializable {
     plainHtml.setText(html);
     if (tabPane.getSelectionModel().getSelectedIndex() == 1) {
       preview.getEngine().loadContent(html);
+    } else if (previewPopupDialog != null && previewPopupDialog.getWindow().isShowing()) {
+      popupPreview.getEngine().loadContent(html);
     }
   }
 
@@ -196,14 +236,29 @@ public class AsciiDocEditor implements Initializable {
   @FXML
   void saveToFile() {
     FileChooser fileChooser = new FileChooser();
-    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("html", "html"));
-    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("adoc", "adoc"));
-    fileChooser.setInitialFileName("export.html");
+
+    FileChooser.ExtensionFilter htmlFilter = new FileChooser.ExtensionFilter("html", "html");
+    FileChooser.ExtensionFilter adocFilter = new FileChooser.ExtensionFilter("adoc", "adoc");
+
+    fileChooser.getExtensionFilters().add(htmlFilter);
+    fileChooser.getExtensionFilters().add(adocFilter);
+    if (lastFile != null) {
+      fileChooser.setInitialDirectory(lastFile.getParentFile());
+      fileChooser.setInitialFileName(lastFile.getName());
+      if (lastFile.getName().endsWith(".html")) {
+        fileChooser.setSelectedExtensionFilter(htmlFilter);
+      } else {
+        fileChooser.setSelectedExtensionFilter(adocFilter);
+      }
+    } else {
+      fileChooser.setInitialFileName("export.html");
+    }
 
     File file = fileChooser.showSaveDialog(saveToFileButton.getScene().getWindow());
     if (file == null) {
       return;
     }
+    this.lastFile = file;
     String extension = fileChooser.getSelectedExtensionFilter().getExtensions().get(0);
     if (!file.getName().endsWith(extension)) {
       file = new File(file.getPath() + extension);
@@ -237,6 +292,21 @@ public class AsciiDocEditor implements Initializable {
     stage.initModality(Modality.NONE);
 
     helpDialog.show();
+  }
+
+  @FXML
+  void showPreviewPopup() {
+    String title = Localized.get("adoc.preview");
+    previewPopupDialog = new Dialog(this.help, title);
+    previewPopupDialog.setContent(popupPreview);
+
+    Stage stage = (Stage) previewPopupDialog.getWindow();
+    stage.initModality(Modality.NONE);
+    stage.setOnShowing(e -> {
+      popupPreview.getEngine().load(previewHtmlString);
+    });
+
+    previewPopupDialog.show();
   }
 
   public SimpleStringProperty textProperty() {
@@ -281,5 +351,30 @@ public class AsciiDocEditor implements Initializable {
 
   public WebView getPreview() {
     return preview;
+  }
+
+  public AsciiDocEditor setPersistentStoreBack(String id, File dir) {
+    this.persistentStoreBack = new PersistentStoreBack(id, dir);
+    return this;
+  }
+
+  public boolean removePersistentStoreBack() {
+    if (persistentStoreBack != null) {
+      persistentStoreBack = null;
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  @Subscribe
+  @Threading(HandlingThread.JavaFX)
+  public void onRefresh(ActivityLoadFinishedEvent e) {
+    if (editor.textProperty().getValueSafe().trim().isEmpty()) {
+      if (persistentStoreBack != null) {
+        String text = persistentStoreBack.load();
+        editor.setText(text);
+      }
+    }
   }
 }

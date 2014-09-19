@@ -70,6 +70,7 @@
         </GridPane>
         <HBox maxHeight="-Infinity" maxWidth="-Infinity" spacing="5.0" StackPane.alignment="TOP_RIGHT">
             <children>
+                <Button mnemonicParsing="false" onAction="#showPreviewPopup" text="%preview.popup"/>
                 <Button fx:id="saveToFileButton" focusTraversable="false" onAction="#saveToFile" text="%saveToFile"/>
                 <Button fx:id="help" focusTraversable="false" onAction="#showHelp" text="%help"
                         StackPane.alignment="TOP_RIGHT">

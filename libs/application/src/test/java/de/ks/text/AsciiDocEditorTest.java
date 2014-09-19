@@ -15,12 +15,14 @@
 
 package de.ks.text;
 
-import de.ks.JunitMatchers;
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityCfg;
 import de.ks.activity.ActivityController;
 import de.ks.activity.ActivityHint;
 import de.ks.application.Navigator;
+import de.ks.executor.group.LastTextChange;
 import de.ks.launch.JavaFXService;
 import de.ks.launch.Launcher;
 import de.ks.text.command.InsertImage;
@@ -38,8 +40,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
+import java.io.File;
+import java.util.List;
 import java.util.concurrent.Future;
 
+import static de.ks.JunitMatchers.withRetry;
 import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
@@ -87,13 +92,14 @@ public class AsciiDocEditorTest {
   @Test
   public void testAdocParsing() throws Exception {
     FXPlatform.invokeLater(() -> adocEditor.editor.setText("= Title\n== more"));
-    activityController.waitForTasks();
+
+    withRetry(() -> adocEditor.previewHtmlString != null);
     assertNotNull("preview string is null", adocEditor.previewHtmlString);
 
     assertNull("document is not null", adocEditor.preview.getEngine().getDocument());
 
     FXPlatform.invokeLater(() -> adocEditor.tabPane.getSelectionModel().select(1));
-    JunitMatchers.withRetry(() -> adocEditor.preview.getEngine().getDocument() != null);
+    withRetry(() -> adocEditor.preview.getEngine().getDocument() != null);
     assertNotNull("document did not load, is still null", adocEditor.preview.getEngine().getDocument());
 
     FXPlatform.invokeLater(() -> adocEditor.tabPane.getSelectionModel().select(0));
@@ -120,5 +126,28 @@ public class AsciiDocEditorTest {
     });
 
     assertThat(adocEditor.editor.getText(), Matchers.containsString("image::file:////de/ks/images/keymap.jpg"));
+  }
+
+  @Test
+  public void testPersistentStoreBack() throws Exception {
+    File file = new File(System.getProperty("java.io.tmpdir"));
+    adocEditor.setPersistentStoreBack("test", file);
+    FXPlatform.invokeLater(() -> adocEditor.setText("bla blubb"));
+    Thread.sleep(LastTextChange.WAIT_TIME * 2);
+    activityController.waitForTasks();
+
+    List<String> strings = Files.readLines(new File(file, "test"), Charsets.UTF_8);
+    assertEquals(1, strings.size());
+
+    adocEditor.removePersistentStoreBack();
+    FXPlatform.invokeLater(() -> adocEditor.setText(""));
+    Thread.sleep(LastTextChange.WAIT_TIME * 2);
+    activityController.waitForTasks();
+
+    adocEditor.setPersistentStoreBack("test", file);
+    FXPlatform.invokeLater(() -> adocEditor.onRefresh(null));
+
+    activityController.waitForTasks();
+    assertEquals("bla blubb", adocEditor.getText());
   }
 }

@@ -16,8 +16,10 @@
 package de.ks.idnadrev.thought.add;
 
 import de.ks.BaseController;
+import de.ks.file.FileOptions;
 import de.ks.file.FileViewController;
 import de.ks.idnadrev.entity.Thought;
+import de.ks.option.Options;
 import de.ks.reflection.PropertyPath;
 import de.ks.text.AsciiDocEditor;
 import de.ks.validation.validators.NamedEntityMustNotExistValidator;
@@ -84,6 +86,7 @@ public class AddThought extends BaseController<Thought> {
     descriptionBinding.bindBidirectional(description.textProperty());
 
     fileViewController.setImageData(description.getImages());
+
   }
 
   private void bindValidation() {
@@ -94,6 +97,8 @@ public class AddThought extends BaseController<Thought> {
 
   private void setDescription(AsciiDocEditor description) {
     this.description = description;
+    FileOptions fileOptions = Options.get(FileOptions.class);
+    description.setPersistentStoreBack(getClass().getSimpleName(), new File(fileOptions.getFileStoreDir()));
   }
 
   @FXML
