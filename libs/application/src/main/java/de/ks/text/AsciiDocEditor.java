@@ -371,12 +371,14 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
   @Subscribe
   @Threading(HandlingThread.JavaFX)
   public void onRefresh(ActivityLoadFinishedEvent e) {
-    if (editor.textProperty().getValueSafe().trim().isEmpty()) {
-      if (persistentStoreBack != null) {
-        String text = persistentStoreBack.load();
-        editor.setText(text);
+    controller.getJavaFXExecutor().submit(() -> {
+      if (editor.textProperty().getValueSafe().trim().isEmpty()) {
+        if (persistentStoreBack != null) {
+          String text = persistentStoreBack.load();
+          editor.setText(text);
+        }
       }
-    }
+    });
   }
 
   @Override
@@ -389,5 +391,9 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
     if (persistentStoreBack != null) {
       persistentStoreBack.delete();
     }
+  }
+
+  public PersistentStoreBack getPersistentStoreBack() {
+    return persistentStoreBack;
   }
 }

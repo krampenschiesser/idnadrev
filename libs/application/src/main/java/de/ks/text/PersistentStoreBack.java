@@ -45,14 +45,14 @@ public class PersistentStoreBack {
     }
   }
 
-  public void delete() {
+  public synchronized void delete() {
     File file = new File(targetDirectory, id);
     if (file.exists()) {
       file.delete();
     }
   }
 
-  public String load() {
+  public synchronized String load() {
     File file = new File(targetDirectory, id);
     if (file.exists()) {
       try {
