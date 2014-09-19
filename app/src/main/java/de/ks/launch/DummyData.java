@@ -16,6 +16,7 @@ package de.ks.launch;
 
 import de.ks.fxcontrols.weekview.WeekHelper;
 import de.ks.idnadrev.entity.*;
+import de.ks.idnadrev.entity.information.DiaryInfo;
 import de.ks.persistence.PersistentWork;
 import de.ks.scheduler.Schedule;
 import org.slf4j.Logger;
@@ -124,6 +125,9 @@ public class DummyData extends Service {
 
     scheduled.setSchedule(schedule);
     persist(scheduled);
+
+
+    PersistentWork.persist(new DiaryInfo(LocalDate.now().minusDays(1)).setContent("wuza!"));
   }
 
   @Override
