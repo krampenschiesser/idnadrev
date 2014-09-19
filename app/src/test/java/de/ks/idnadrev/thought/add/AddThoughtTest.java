@@ -71,6 +71,7 @@ public class AddThoughtTest extends ActivityTest {
   @Before
   public void setUp() throws Exception {
     addThought = activityController.getCurrentController();
+    FXPlatform.invokeLater(() -> addThought.description.removePersistentStoreBack());
     FXPlatform.invokeLater(() -> {
       Clipboard.getSystemClipboard().clear();
     });
