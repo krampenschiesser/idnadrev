@@ -15,21 +15,27 @@
 package de.ks.idnadrev.information.text;
 
 import de.ks.BaseController;
+import de.ks.file.FileOptions;
 import de.ks.file.FileViewController;
 import de.ks.idnadrev.entity.information.TextInfo;
 import de.ks.idnadrev.tag.TagContainer;
+import de.ks.option.Options;
 import de.ks.text.AsciiDocEditor;
 import de.ks.validation.validators.NamedEntityMustNotExistValidator;
 import de.ks.validation.validators.NotEmptyValidator;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class TextInfoController extends BaseController<TextInfo> {
+  @FXML
+  protected Button save;
   @FXML
   protected StackPane adocContainer;
   @FXML
@@ -46,6 +52,9 @@ public class TextInfoController extends BaseController<TextInfo> {
     AsciiDocEditor.load(pane -> adocContainer.getChildren().add(pane), editor -> {
       this.content = editor;
       editor.hideActionBar();
+
+      FileOptions fileOptions = Options.get(FileOptions.class);
+      editor.setPersistentStoreBack(getClass().getSimpleName(), new File(fileOptions.getFileStoreDir()));
     });
 
     StringProperty nameProperty = store.getBinding().getStringProperty(TextInfo.class, t -> t.getName());
@@ -56,6 +65,13 @@ public class TextInfoController extends BaseController<TextInfo> {
 
     validationRegistry.registerValidator(name, new NotEmptyValidator());
     validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(TextInfo.class, t -> t.getId() == store.<TextInfo>getModel().getId()));
+
+    save.disableProperty().bind(validationRegistry.invalidProperty());
   }
 
+  @FXML
+  public void onSave() {
+    controller.save();
+    controller.reload();
+  }
 }
