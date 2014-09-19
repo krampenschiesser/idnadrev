@@ -57,8 +57,10 @@ public abstract class Information<E extends Information<E>> extends NamedPersist
     return content;
   }
 
-  public void setContent(String content) {
+  @SuppressWarnings("unchecked")
+  public E setContent(String content) {
     this.content = content;
+    return (E) this;
   }
 
   @Override
