@@ -82,7 +82,7 @@ public class JavaFXService extends Service {
 
   @Override
   public int getPriority() {
-    return 2;
+    return 5;
   }
 
   public Future<?> getFx() {

@@ -29,4 +29,9 @@ public class CDIService extends Service {
   protected void doStop() {
     cdiContainer.shutdown();
   }
+
+  @Override
+  public int getPriority() {
+    return 2;
+  }
 }
