@@ -66,6 +66,7 @@ public class ActivityStore {
 
   protected final SimpleObjectProperty<Object> model = new SimpleObjectProperty<>();
   protected final SimpleBooleanProperty loading = new SimpleBooleanProperty(false);
+  protected final SimpleBooleanProperty stopping = new SimpleBooleanProperty(false);
 
   protected final ConcurrentLinkedDeque<LoadOrSave> queue = new ConcurrentLinkedDeque<>();
   protected final AtomicBoolean inExecution = new AtomicBoolean();
@@ -124,6 +125,9 @@ public class ActivityStore {
   }
 
   private void syncSetLoadingProperty() {
+    if (stopping.get()) {
+      return;
+    }
     try {
       javaFXExecutor.submit(() -> loading.set(true)).get();
     } catch (InterruptedException e) {
@@ -280,5 +284,9 @@ public class ActivityStore {
 
   public ReadOnlyBooleanProperty loadingProperty() {
     return loading;
+  }
+
+  public void stop() {
+    stopping.set(true);
   }
 }

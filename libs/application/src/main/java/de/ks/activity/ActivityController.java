@@ -232,6 +232,7 @@ public class ActivityController {
         }
 
         context.startActivity(id);
+        store.stop();
         initialization.getActivityCallbacks().forEach(ActivityCallback::onStop);
         initialization.getControllers().forEach((controller) -> eventBus.unregister(controller));
         store.waitForDataSource();
