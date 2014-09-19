@@ -57,7 +57,7 @@ public class PersistentStoreBack {
     if (file.exists()) {
       try {
         StringBuilder builder = new StringBuilder();
-        Files.readLines(file, Charsets.UTF_8).forEach(l -> builder.append(l));
+        Files.readLines(file, Charsets.UTF_8).forEach(l -> builder.append(l).append("\n"));
         return builder.toString();
       } catch (IOException e) {
         log.error("Could not read from {}", file, e);

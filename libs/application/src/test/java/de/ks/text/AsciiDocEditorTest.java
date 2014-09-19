@@ -148,6 +148,6 @@ public class AsciiDocEditorTest {
     FXPlatform.invokeLater(() -> adocEditor.onRefresh(null));
 
     activityController.waitForTasks();
-    assertEquals("bla blubb", adocEditor.getText());
+    assertEquals("bla blubb\n", adocEditor.getText());
   }
 }

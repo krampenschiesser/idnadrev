@@ -20,6 +20,7 @@ import com.google.common.io.Files;
 import de.ks.activity.ActivityController;
 import de.ks.activity.ActivityLoadFinishedEvent;
 import de.ks.activity.initialization.ActivityInitialization;
+import de.ks.activity.initialization.DatasourceCallback;
 import de.ks.application.fxml.DefaultLoader;
 import de.ks.eventsystem.bus.HandlingThread;
 import de.ks.eventsystem.bus.Threading;
@@ -64,7 +65,7 @@ import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-public class AsciiDocEditor implements Initializable {
+public class AsciiDocEditor implements Initializable, DatasourceCallback<Object> {
   public static CompletableFuture<DefaultLoader<Node, AsciiDocEditor>> load(Consumer<StackPane> viewConsumer, Consumer<AsciiDocEditor> controllerConsumer) {
     ActivityInitialization initialization = CDI.current().select(ActivityInitialization.class).get();
     return initialization.loadAdditionalController(AsciiDocEditor.class)//
@@ -375,6 +376,18 @@ public class AsciiDocEditor implements Initializable {
         String text = persistentStoreBack.load();
         editor.setText(text);
       }
+    }
+  }
+
+  @Override
+  public void duringLoad(Object model) {
+    //nope
+  }
+
+  @Override
+  public void duringSave(Object model) {
+    if (persistentStoreBack != null) {
+      persistentStoreBack.delete();
     }
   }
 }
