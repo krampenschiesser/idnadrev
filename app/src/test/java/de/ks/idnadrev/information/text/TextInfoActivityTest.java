@@ -22,6 +22,7 @@ import de.ks.idnadrev.entity.Tag;
 import de.ks.idnadrev.entity.information.TextInfo;
 import de.ks.persistence.PersistentWork;
 import de.ks.util.FXPlatform;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -36,6 +37,12 @@ public class TextInfoActivityTest extends ActivityTest {
   @Override
   protected Class<? extends ActivityCfg> getActivityClass() {
     return TextInfoActivity.class;
+  }
+
+  @Before
+  public void setUp() throws Exception {
+    TextInfoController controller = activityController.getControllerInstance(TextInfoController.class);
+    FXPlatform.invokeLater(() -> controller.content.removePersistentStoreBack());
   }
 
   @Test
