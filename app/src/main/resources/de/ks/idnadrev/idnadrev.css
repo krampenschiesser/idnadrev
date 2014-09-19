@@ -21,6 +21,10 @@
     -fx-background-color: derive(-fx-background, 0%);/*maybe use 95% later*/
 }
 
+.activeDateCell {
+    -fx-background-color: derive(-fx-accent, 80%);
+}
+
 .week-weekfield {
   -fx-font-weight: bold;
 }

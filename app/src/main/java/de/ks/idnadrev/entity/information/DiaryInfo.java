@@ -29,8 +29,8 @@ public class DiaryInfo extends Information<DiaryInfo> {
   protected DiaryInfo() {
   }
 
-  public DiaryInfo(String name, LocalDate date) {
-    super(name);
+  public DiaryInfo(LocalDate date) {
+    super(DiaryInfo.class.getSimpleName() + "-" + date);
     this.date = date;
   }
 
@@ -41,4 +41,5 @@ public class DiaryInfo extends Information<DiaryInfo> {
   public void setDate(LocalDate date) {
     this.date = date;
   }
+
 }
