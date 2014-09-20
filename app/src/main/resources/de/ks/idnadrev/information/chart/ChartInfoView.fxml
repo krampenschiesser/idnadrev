@@ -29,7 +29,10 @@
     <rowConstraints>
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
         <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS"/>
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+        <RowConstraints minHeight="10.0" vgrow="ALWAYS"/>
+        <RowConstraints/>
+        <RowConstraints/>
     </rowConstraints>
     <children>
         <Label text="%name:"/>
@@ -43,11 +46,16 @@
         </StackPane>
 
         <Button fx:id="saveBtn" defaultButton="true" mnemonicParsing="false" onAction="#onSave" text="%save"
-                GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.rowIndex="4"/>
-        <SplitPane fx:id="splitPane" dividerPositions="0.5" GridPane.columnSpan="2147483647" GridPane.rowIndex="2">
+                GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.rowIndex="5"/>
+        <SplitPane fx:id="splitPane" dividerPositions="0.5" minHeight="250.0" GridPane.columnSpan="2147483647"
+                   GridPane.rowIndex="3">
             <items>
-                <!--<TextArea fx:id="content"/>-->
-                <StackPane fx:id="contentContainer"/>
+                <ScrollPane fx:id="contentContainer" fitToWidth="true" hbarPolicy="ALWAYS" prefViewportHeight="500.0"
+                            vbarPolicy="ALWAYS">
+                    <content>
+                        <fx:include fx:id="editor" source="ChartDataEditor.fxml"/>
+                    </content>
+                </ScrollPane>
                 <StackPane fx:id="previewContainer"/>
             </items>
         </SplitPane>
@@ -58,6 +66,8 @@
                 <Button fx:id="fullscreen" mnemonicParsing="false" onAction="#onShowFullScreen" text="%fullscreen"/>
             </children>
         </HBox>
+        <ComboBox fx:id="chartType" prefWidth="150.0" GridPane.columnIndex="2" GridPane.halignment="RIGHT"
+                  GridPane.rowIndex="2"/>
     </children>
     <padding>
         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
