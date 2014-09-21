@@ -14,34 +14,40 @@
  */
 package de.ks.idnadrev.information.chart;
 
+import javafx.beans.property.SimpleStringProperty;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 public class ChartRow {
-  protected String category;
+  protected SimpleStringProperty category = new SimpleStringProperty();
 
-  protected Map<Integer, String> values = new HashMap<>();
+  protected Map<Integer, SimpleStringProperty> values = new HashMap<>();
 
-  public String getValue(int columnId) {
+  public SimpleStringProperty getValue(int columnId) {
+    values.putIfAbsent(columnId, new SimpleStringProperty());
     return values.get(columnId);
   }
 
   public void setValue(int columnId, String newValue) {
-    values.put(columnId, newValue);
+    SimpleStringProperty retval = values.putIfAbsent(columnId, new SimpleStringProperty(newValue));
+    if (retval != null) {
+      retval.set(newValue);
+    }
   }
 
-  public String getCategory() {
+  public SimpleStringProperty getCategory() {
     return category;
   }
 
   public void setCategory(String category) {
-    this.category = category;
+    this.category.set(category);
   }
 
   public boolean isEmpty() {
-    boolean empty = getCategory() == null || getCategory().isEmpty();
-    Optional<Boolean> emptyValues = values.values().stream().map(s -> s == null || s.isEmpty()).reduce((o1, o2) -> o1 && o2);
+    boolean empty = getCategory().getValueSafe().isEmpty();
+    Optional<Boolean> emptyValues = values.values().stream().map(s -> s == null || s.getValueSafe().isEmpty()).reduce((o1, o2) -> o1 && o2);
     if (emptyValues.isPresent()) {
       return empty && emptyValues.get();
     } else {

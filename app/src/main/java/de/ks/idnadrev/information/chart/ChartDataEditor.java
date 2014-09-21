@@ -42,6 +42,7 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
+import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.dialog.Dialogs;
 import org.controlsfx.validation.ValidationResult;
 import org.slf4j.Logger;
@@ -87,7 +88,6 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
     columnHeaders.add(new SimpleStringProperty(Localized.get("col", 2)));
 
     validationRegistry.registerValidator(xaxisTitle, new NotEmptyValidator());
-
   }
 
   protected void onRowsChanged(ListChangeListener.Change<? extends ChartRow> c) {
@@ -103,7 +103,8 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
 
         for (int i = 0; i < columnHeaders.size(); i++) {
           TextField editor = createValueEditor(chartRow, rowNum, i);
-          editor.setText(chartRow.getValue(i));
+          SimpleStringProperty value = chartRow.getValue(i);
+          editor.textProperty().bindBidirectional(value);
         }
       }
     }
@@ -111,12 +112,11 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
 
   private TextField createCategoryEditor(ChartRow chartRow, int rowNum) {
     TextField categoryEditor = new TextField();
-    categoryEditor.setText(chartRow.getCategory());
+    categoryEditor.textProperty().bindBidirectional(chartRow.getCategory());
 
     categoryEditor.focusedProperty().addListener(getEditorFocusListener(rowNum, categoryEditor));
 
     categoryEditor.textProperty().addListener((p, o, n) -> {
-      chartRow.setCategory(categoryEditor.getText());
       categoryEditor.setUserData(true);
     });
     BiFunction<Integer, Integer, TextField> nextCategoryField = (row, column) -> {
@@ -126,11 +126,24 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
         return null;
       }
     };
-    BiConsumer<Integer, Integer> multiLineStringHandler = (row, col) -> {
+    BiConsumer<Integer, Integer> clipBoardHandler = (row, col) -> {
       String string = Clipboard.getSystemClipboard().getString();
-      log.info("Got copy&waste {}", string);
+      if (StringUtils.containsWhitespace(string)) {
+        List<String> datas = Arrays.asList(StringUtils.split(string, "\n"));
+        int missingRows = (row + datas.size()) - rows.size();
+        if (missingRows > 0) {
+          for (int i = 0; i < missingRows; i++) {
+            rows.add(new ChartRow());
+          }
+        }
+        for (int i = row; i < row + datas.size(); i++) {
+          ChartRow currentChartRow = rows.get(i);
+          String data = datas.get(i - row);
+          currentChartRow.setCategory(data);
+        }
+      }
     };
-    categoryEditor.setOnKeyTyped(getInputKeyHandler(rowNum, -1, nextCategoryField, multiLineStringHandler));
+    categoryEditor.setOnKeyReleased(getInputKeyHandler(rowNum, -1, nextCategoryField, clipBoardHandler));
 
     validationRegistry.registerValidator(categoryEditor, (control, value) -> {
       if (value != null) {
@@ -166,10 +179,10 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
 
         for (int i = 0; i < rows.size(); i++) {
           ChartRow chartRow = rows.get(i);
-          String value = chartRow.getValue(columnIndex);
+          SimpleStringProperty value = chartRow.getValue(columnIndex);
 
           TextField editor = createValueEditor(chartRow, i, columnIndex);
-          editor.setText(value);
+          editor.textProperty().bindBidirectional(value);
         }
       }
       ArrayList<Node> childrensToSort = new ArrayList<>(dataContainer.getChildren());
@@ -206,27 +219,37 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
     editor.focusedProperty().addListener(getEditorFocusListener(rowNum, editor));
 
     editor.textProperty().addListener((p, o, n) -> {
-      chartRow.setValue(column, n);
+//      chartRow.setValue(column, n);
       editor.setUserData(true);
     });
 
     BiFunction<Integer, Integer, TextField> nextTextField = (row, col) -> valueEditors.row(row).get(col);
-    BiConsumer<Integer, Integer> multiLineStringHandler = (row, col) -> {
+    BiConsumer<Integer, Integer> clipBoardHandler = (row, col) -> {
       String string = Clipboard.getSystemClipboard().getString();
-      log.info("Got copy&waste {}", string);
+      if (StringUtils.containsWhitespace(string)) {
+        List<String> datas = Arrays.asList(StringUtils.split(string));
+        int missingRows = (row + datas.size()) - rows.size();
+        if (missingRows > 0) {
+          for (int i = 0; i < missingRows; i++) {
+            rows.add(new ChartRow());
+          }
+        }
+        for (int i = row; i < row + datas.size(); i++) {
+          ChartRow currentChartRow = rows.get(i);
+          String data = datas.get(i - row);
+          currentChartRow.setValue(column, data);
+        }
+      }
     };
-    editor.setOnKeyReleased(getInputKeyHandler(rowNum, column, nextTextField, multiLineStringHandler));
+    editor.setOnKeyReleased(getInputKeyHandler(rowNum, column, nextTextField, clipBoardHandler));
     return editor;
   }
 
-  private EventHandler<KeyEvent> getInputKeyHandler(int rowNum, int column, BiFunction<Integer, Integer, TextField> nextTextField, BiConsumer<Integer, Integer> multiLineStringHandler) {
+  private EventHandler<KeyEvent> getInputKeyHandler(int rowNum, int column, BiFunction<Integer, Integer, TextField> nextTextField, BiConsumer<Integer, Integer> clipBoardHandler) {
     return e -> {
       KeyCode code = e.getCode();
       if (e.isControlDown() && code == KeyCode.V) {
-        String clibBoard = Clipboard.getSystemClipboard().getString();
-        if (clibBoard != null && clibBoard.contains("\n") || clibBoard.contains("\r")) {
-          multiLineStringHandler.accept(rowNum, column);
-        }
+        clipBoardHandler.accept(rowNum, column);
         e.consume();
       }
       boolean selectNext = false;
@@ -263,7 +286,7 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
 
   private boolean isRowEmpty(int rowNum) {
     ChartRow row = rows.get(rowNum);
-    return row.getCategory() == null || row.getCategory().isEmpty();
+    return row.getCategory().getValueSafe().trim().isEmpty();
   }
 
   protected void triggerRedraw() {
@@ -303,7 +326,7 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
   public ChartPreviewData getData() {
     ChartPreviewData data = new ChartPreviewData();
     this.rows.forEach(r -> {
-      data.getCategories().add(r.getCategory());
+      data.getCategories().add(r.getCategory().getValueSafe());
     });
 
     for (int i = 0; i < columnHeaders.size(); i++) {
@@ -311,12 +334,12 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
       LinkedList<Double> values = new LinkedList<>();
       for (int rowNum = 0; rowNum < rows.size(); rowNum++) {
         ChartRow row = rows.get(rowNum);
-        if (row.getCategory() == null) {
+        if (row.getCategory().getValueSafe().trim().isEmpty()) {
           continue;
         }
-        String value = row.getValue(i);
-        if (value != null) {
-          double val = Double.parseDouble(value);
+        SimpleStringProperty value = row.getValue(i);
+        if (value != null && !value.getValueSafe().trim().isEmpty()) {
+          double val = Double.parseDouble(value.getValueSafe());
           values.add(val);
         } else {
           values.add(0d);
