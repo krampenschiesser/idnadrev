@@ -23,16 +23,21 @@ import de.ks.validation.ValidationMessage;
 import de.ks.validation.validators.DoubleValidator;
 import de.ks.validation.validators.NotEmptyValidator;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.TextField;
+import javafx.scene.input.Clipboard;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -44,6 +49,8 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -70,6 +77,9 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
+    dataContainer.getChildren().remove(xaxisTitle);//FXML loader doesn't set row and column in gridpane :(
+    dataContainer.add(xaxisTitle, 0, 0);
+
     columnHeaders.addListener((ListChangeListener<SimpleStringProperty>) c -> onColumnsChanged(c));
     rows.addListener((ListChangeListener<ChartRow>) c -> onRowsChanged(c));
     rows.add(new ChartRow());
@@ -77,6 +87,7 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
     columnHeaders.add(new SimpleStringProperty(Localized.get("col", 2)));
 
     validationRegistry.registerValidator(xaxisTitle, new NotEmptyValidator());
+
   }
 
   protected void onRowsChanged(ListChangeListener.Change<? extends ChartRow> c) {
@@ -101,41 +112,26 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
   private TextField createCategoryEditor(ChartRow chartRow, int rowNum) {
     TextField categoryEditor = new TextField();
     categoryEditor.setText(chartRow.getCategory());
-    categoryEditor.focusedProperty().addListener((p, o, n) -> {
-      if (n) {
-        if (rowNum + ROW_OFFSET == rows.size()) {
-          rows.add(new ChartRow());
-        }
-        categoryEditor.setUserData(false);
-      } else if (o && !n) {
-        boolean edited = (Boolean) (categoryEditor.getUserData() == null ? false : categoryEditor.getUserData());
-        if (edited) {
-          triggerRedraw();
-          categoryEditor.setUserData(false);
-        }
-      }
-    });
+
+    categoryEditor.focusedProperty().addListener(getEditorFocusListener(rowNum, categoryEditor));
+
     categoryEditor.textProperty().addListener((p, o, n) -> {
       chartRow.setCategory(categoryEditor.getText());
       categoryEditor.setUserData(true);
     });
-    categoryEditor.setOnKeyTyped(e -> {
-      boolean selectNext = false;
-      if (e.getCode() == KeyCode.UNDEFINED) {
-        if (e.getCharacter().equals("\r")) {
-          selectNext = true;
-        }
-      } else if (e.getCode() == KeyCode.ENTER) {
-        selectNext = true;
+    BiFunction<Integer, Integer, TextField> nextCategoryField = (row, column) -> {
+      if (categoryEditors.size() > row) {
+        return categoryEditors.get(row);
+      } else {
+        return null;
       }
-      if (selectNext) {
-        int next = rowNum + ROW_OFFSET;
-        if (categoryEditors.size() > next) {
-          categoryEditors.get(next).requestFocus();
-        }
-        e.consume();
-      }
-    });
+    };
+    BiConsumer<Integer, Integer> multiLineStringHandler = (row, col) -> {
+      String string = Clipboard.getSystemClipboard().getString();
+      log.info("Got copy&waste {}", string);
+    };
+    categoryEditor.setOnKeyTyped(getInputKeyHandler(rowNum, -1, nextCategoryField, multiLineStringHandler));
+
     validationRegistry.registerValidator(categoryEditor, (control, value) -> {
       if (value != null) {
         Set<String> values = categoryEditors.stream()//
@@ -176,6 +172,20 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
           editor.setText(value);
         }
       }
+      ArrayList<Node> childrensToSort = new ArrayList<>(dataContainer.getChildren());
+      childrensToSort.forEach(child -> {
+        Integer rowIndex = GridPane.getRowIndex(child);
+        Integer columnIndex = GridPane.getColumnIndex(child);
+        log.info("Child {}, row={}, column={}", child, rowIndex, columnIndex);
+      });
+
+      Comparator<Node> rowCompare = Comparator.comparing(GridPane::getRowIndex);
+      Comparator<Node> columnCompare = Comparator.comparing(GridPane::getColumnIndex);
+
+      Collections.sort(childrensToSort, rowCompare.thenComparing(columnCompare));
+
+      dataContainer.getChildren().clear();
+      dataContainer.getChildren().addAll(childrensToSort);
     }
   }
 
@@ -193,12 +203,54 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
     validationRegistry.registerValidator(editor, new DoubleValidator());
     dataContainer.add(editor, column + COLUMN_OFFSET, rowNum + ROW_OFFSET);
 
-    editor.focusedProperty().addListener((p, o, n) -> {
-      if (n) {
-        if (rowNum + ROW_OFFSET == rows.size()) {
-          rows.add(new ChartRow());
-          editor.setUserData(false);
+    editor.focusedProperty().addListener(getEditorFocusListener(rowNum, editor));
+
+    editor.textProperty().addListener((p, o, n) -> {
+      chartRow.setValue(column, n);
+      editor.setUserData(true);
+    });
+
+    BiFunction<Integer, Integer, TextField> nextTextField = (row, col) -> valueEditors.row(row).get(col);
+    BiConsumer<Integer, Integer> multiLineStringHandler = (row, col) -> {
+      String string = Clipboard.getSystemClipboard().getString();
+      log.info("Got copy&waste {}", string);
+    };
+    editor.setOnKeyReleased(getInputKeyHandler(rowNum, column, nextTextField, multiLineStringHandler));
+    return editor;
+  }
+
+  private EventHandler<KeyEvent> getInputKeyHandler(int rowNum, int column, BiFunction<Integer, Integer, TextField> nextTextField, BiConsumer<Integer, Integer> multiLineStringHandler) {
+    return e -> {
+      KeyCode code = e.getCode();
+      if (e.isControlDown() && code == KeyCode.V) {
+        String clibBoard = Clipboard.getSystemClipboard().getString();
+        if (clibBoard != null && clibBoard.contains("\n") || clibBoard.contains("\r")) {
+          multiLineStringHandler.accept(rowNum, column);
         }
+        e.consume();
+      }
+      boolean selectNext = false;
+      if (e.getCode() == KeyCode.ENTER) {
+        selectNext = true;
+      }
+      if (selectNext) {
+        int next = rowNum + 1;
+        TextField textField = nextTextField.apply(next, column);
+        if (textField != null) {
+          textField.requestFocus();
+        }
+        e.consume();
+      }
+    };
+  }
+
+  private ChangeListener<Boolean> getEditorFocusListener(int rowNum, TextField editor) {
+    return (p, o, n) -> {
+      if (n) {
+        if (!isRowEmpty(rowNum) && rowNum + ROW_OFFSET == rows.size()) {
+          rows.add(new ChartRow());
+        }
+        editor.setUserData(false);
       } else if (o && !n) {
         boolean edited = (Boolean) (editor.getUserData() == null ? false : editor.getUserData());
         if (edited) {
@@ -206,30 +258,12 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
           editor.setUserData(false);
         }
       }
-    });
-    editor.textProperty().addListener((p, o, n) -> {
-      chartRow.setValue(column, n);
-      editor.setUserData(true);
-    });
-    editor.setOnKeyTyped(e -> {
-      boolean selectNext = false;
-      if (e.getCode() == KeyCode.UNDEFINED) {
-        if (e.getCharacter().equals("\r")) {
-          selectNext = true;
-        }
-      } else if (e.getCode() == KeyCode.ENTER) {
-        selectNext = true;
-      }
-      if (selectNext) {
-        int next = rowNum + 1;
-        if (valueEditors.containsRow(next)) {
-          TextField textField = valueEditors.row(next).get(column);
-          textField.requestFocus();
-        }
-        e.consume();
-      }
-    });
-    return editor;
+    };
+  }
+
+  private boolean isRowEmpty(int rowNum) {
+    ChartRow row = rows.get(rowNum);
+    return row.getCategory() == null || row.getCategory().isEmpty();
   }
 
   protected void triggerRedraw() {
