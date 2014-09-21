@@ -34,7 +34,7 @@ public class Thought extends NamedPersistentObject<Thought> implements FileConta
   private static final long serialVersionUID = 1L;
   public static final String THOUGHT_FILE_JOINTABLE = "thought_file";
 
-  @Column(length = Integer.MAX_VALUE)
+  @Lob
   protected String description;
   protected LocalDate postponedDate;
 

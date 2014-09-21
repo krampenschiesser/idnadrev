@@ -41,7 +41,9 @@ public class Task extends NamedPersistentObject<Task> implements FileContainer<T
   private static final long serialVersionUID = 1L;
   private static final String TASK_TAG_JOINTABLE = "task_tag";
 
-  @Column(length = 4048)
+//  @Column(length = 40000)
+
+  @Lob
   protected String description;
 
   @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true, mappedBy = "task")
