@@ -45,7 +45,7 @@
             </children>
         </StackPane>
         <Button fx:id="addColumn" mnemonicParsing="false" onAction="#onAddColumn" text="%column.add"
-                GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="2">
+                GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="2">
             <GridPane.margin>
                 <Insets right="20.0"/>
             </GridPane.margin>
