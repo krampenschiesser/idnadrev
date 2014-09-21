@@ -32,8 +32,9 @@ import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Control;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.KeyCode;
@@ -43,7 +44,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import org.apache.commons.lang3.StringUtils;
-import org.controlsfx.dialog.Dialogs;
 import org.controlsfx.validation.ValidationResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,8 +61,6 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
   private static final int COLUMN_OFFSET = 1;
   @FXML
   public TextField xaxisTitle;
-  @FXML
-  protected Button addColumn;
   @FXML
   protected GridPane dataContainer;
   @FXML
@@ -153,7 +151,7 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
                 .filter(v -> !v.isEmpty())//
                 .collect(Collectors.toSet());
         if (values.contains(value)) {
-          ValidationMessage message = new ValidationMessage(Localized.get("validation.noDuplicates"), control, value);
+          ValidationMessage message = new ValidationMessage(Localized.get("validation.noDuplicates", value), control, value);
           return ValidationResult.fromMessages(message);
         }
       }
@@ -166,6 +164,7 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
   protected void onColumnsChanged(ListChangeListener.Change<? extends SimpleStringProperty> c) {
     while (c.next()) {
       List<? extends SimpleStringProperty> added = c.getAddedSubList();
+      List<? extends SimpleStringProperty> removed = c.getRemoved();
 
       for (SimpleStringProperty column : added) {
         int columnIndex = columnHeaders.indexOf(column);
@@ -174,6 +173,13 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
         TextField title = new TextField();
         title.textProperty().bindBidirectional(column);
         title.getStyleClass().add("editorViewLabel");
+
+        MenuItem deleteColumnItem = new MenuItem(Localized.get("column.delete"));
+        deleteColumnItem.setOnAction(e -> {
+          columnHeaders.remove(column);
+        });
+        title.setContextMenu(new ContextMenu(deleteColumnItem));
+
         headers.add(title);
         dataContainer.add(title, columnIndex + COLUMN_OFFSET, 0);
 
@@ -185,21 +191,32 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
           editor.textProperty().bindBidirectional(value);
         }
       }
-      ArrayList<Node> childrensToSort = new ArrayList<>(dataContainer.getChildren());
-      childrensToSort.forEach(child -> {
-        Integer rowIndex = GridPane.getRowIndex(child);
-        Integer columnIndex = GridPane.getColumnIndex(child);
-        log.info("Child {}, row={}, column={}", child, rowIndex, columnIndex);
-      });
+      for (SimpleStringProperty column : removed) {
+        int columnIndex = dataContainer.getChildren().stream().filter(n -> GridPane.getRowIndex(n) == 0).map(n -> (TextField) n).filter(t -> t.getText().equals(column.getValue())).map(t -> GridPane.getColumnIndex(t)).findFirst().get();
+        rows.forEach(r -> {
+          SimpleStringProperty value = r.getValue(columnIndex);
+          value.set("");
+          value.unbind();
+        });
+        List<Node> childrenToRemove = dataContainer.getChildren().stream().filter(n -> GridPane.getColumnIndex(n) == columnIndex).collect(Collectors.toList());
+        dataContainer.getChildren().removeAll(childrenToRemove);
+        dataContainer.getColumnConstraints().remove(dataContainer.getColumnConstraints().size() - 1);
+      }
 
-      Comparator<Node> rowCompare = Comparator.comparing(GridPane::getRowIndex);
-      Comparator<Node> columnCompare = Comparator.comparing(GridPane::getColumnIndex);
-
-      Collections.sort(childrensToSort, rowCompare.thenComparing(columnCompare));
-
-      dataContainer.getChildren().clear();
-      dataContainer.getChildren().addAll(childrensToSort);
+      sortGridPane();
     }
+  }
+
+  protected void sortGridPane() {
+    ArrayList<Node> childrensToSort = new ArrayList<>(dataContainer.getChildren());
+
+    Comparator<Node> rowCompare = Comparator.comparing(GridPane::getRowIndex);
+    Comparator<Node> columnCompare = Comparator.comparing(GridPane::getColumnIndex);
+
+    Collections.sort(childrensToSort, rowCompare.thenComparing(columnCompare));
+
+    dataContainer.getChildren().clear();
+    dataContainer.getChildren().addAll(childrensToSort);
   }
 
   protected void addRowConstraint() {
@@ -292,14 +309,6 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
   protected void triggerRedraw() {
     if (callback != null && !validationRegistry.isInvalid()) {
       callback.accept(getData());
-    }
-  }
-
-  @FXML
-  void onAddColumn() {
-    Optional<String> input = Dialogs.create().message(Localized.get("column.title")).showTextInput();
-    if (input.isPresent()) {
-      addColumnHeader(input.get());
     }
   }
 

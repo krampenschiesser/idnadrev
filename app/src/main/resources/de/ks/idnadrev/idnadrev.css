@@ -47,3 +47,7 @@
 .fullScreenBg {
     -fx-background-color: -fx-control-inner-background;
 }
+
+.fullScreenChart {
+    -fx-font-size: 1.5em;
+}
