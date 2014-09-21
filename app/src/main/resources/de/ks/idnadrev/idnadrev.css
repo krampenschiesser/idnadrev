@@ -43,3 +43,7 @@
     -fx-font-style: italic;
     -fx-text-fill: derive(black, 10%);
 }
+
+.fullScreenBg {
+    -fx-background-color: -fx-control-inner-background;
+}

@@ -42,7 +42,7 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
             </rowConstraints>
             <children>
-                <TextField styleClass="title" text="%xaxis"/>
+                <TextField fx:id="xaxisTitle" styleClass="title" text="%category"/>
             </children>
         </GridPane>
     </children>
