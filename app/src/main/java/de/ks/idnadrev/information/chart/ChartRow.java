@@ -16,6 +16,7 @@ package de.ks.idnadrev.information.chart;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class ChartRow {
   protected String category;
@@ -36,5 +37,15 @@ public class ChartRow {
 
   public void setCategory(String category) {
     this.category = category;
+  }
+
+  public boolean isEmpty() {
+    boolean empty = getCategory() == null || getCategory().isEmpty();
+    Optional<Boolean> emptyValues = values.values().stream().map(s -> s == null || s.isEmpty()).reduce((o1, o2) -> o1 && o2);
+    if (emptyValues.isPresent()) {
+      return empty && emptyValues.get();
+    } else {
+      return empty;
+    }
   }
 }
