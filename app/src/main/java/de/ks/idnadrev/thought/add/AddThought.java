@@ -149,7 +149,6 @@ public class AddThought extends BaseController<Thought> {
   @FXML
   void onDragOver(DragEvent event) {
     Object source = event.getSource();
-    Object gestureTarget = event.getGestureTarget();
     log.trace("Drag detected from source {}", source);
     event.acceptTransferModes(TransferMode.ANY);
     event.consume();
