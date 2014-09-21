@@ -3,15 +3,15 @@
 
 Idnadrev is thought of as an task management tool that helps you with your work on your computer.
 
-Currently in version 0.4 only the task management is implemented.
-In 0.5 basic information management will be included.
-In 0.6 (or maybe even 0.5) synchronizations will be included.
-All in all this is still a really early version but you can give it a try.
-Due to automated integration testing with travis and a local jenkins most commits are ready to use.
-I was able to do incremental changes to the internal database schema from version 0.3 to 0.4.
-However I broke this with the now upcoming development for 0.5.
-So in non developer speek: a new 0.x version might brake your data. *Export* and *import* it before and after an update!
-Only with the release of version 1.0 you will have a stable release that you can use for a long time :)
+Currently in version 0.4 only the task management is implemented. +
+In 0.5 basic information management will be included. +
+In 0.6 (or maybe even 0.5) synchronizations will be included. +
+All in all this is still a really early version but you can give it a try. +
+Due to automated integration testing with travis and a local jenkins most commits are ready to use. +
+I was able to do incremental changes to the internal database schema from version 0.3 to 0.4. +
+However I broke this with the now upcoming development for 0.5. +
+So in non developer speek: a new 0.x version might brake your data. *Export* and *import* it before and after an update! +
+Only with the release of version 1.0 you will have a stable release that you can use for a long time :) +
 
 If you are looking for a download, there is non, you have to build it yourself:
 
@@ -22,7 +22,6 @@ If you are looking for a download, there is non, you have to build it yourself:
 gradlew run
 
 * create a distribution with
-
 [source,bash]
 gradlew distzip
 
