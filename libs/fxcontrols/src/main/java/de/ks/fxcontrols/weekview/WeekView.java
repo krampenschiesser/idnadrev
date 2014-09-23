@@ -616,20 +616,20 @@ public class WeekView<T> extends GridPane {
 
       DayOfWeek dayOfWeek = currentDay.getDayOfWeek();
       label.setText(dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ". " + currentDay.getDayOfMonth());
-      currentDay = currentDay.plusDays(1);
 
       for (int hours = 0; hours < 24; hours++) {
-        ObservableList<String> styleClass = cells.get(hours, i).getStyleClass();
+        ObservableList<String> styleClass = cells.get(hours, i + 1).getStyleClass();
         styleClass.remove("week-bg-even-today");
         styleClass.remove("week-bg-odd-today");
       }
       if (currentDay.equals(LocalDate.now())) {
         for (int hours = 0; hours < 24; hours++) {
-          ObservableList<String> styleClass = cells.get(hours, i).getStyleClass();
+          ObservableList<String> styleClass = cells.get(hours, i + 1).getStyleClass();
           String cellStyle = hours % 2 == 0 ? "week-bg-even-today" : "week-bg-odd-today";
           styleClass.add(cellStyle);
         }
       }
+      currentDay = currentDay.plusDays(1);
     }
   }
 
