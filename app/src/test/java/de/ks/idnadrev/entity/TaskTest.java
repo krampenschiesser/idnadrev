@@ -165,4 +165,22 @@ public class TaskTest {
       assertEquals(0, foundTasks.size());
     });
   }
+
+  @Test
+  public void testFinish() throws Exception {
+    Task task = new Task("bla");
+    task.setState(TaskState.LATER);
+    PersistentWork.persist(task);
+
+    PersistentWork.wrap(() -> {
+      PersistentWork.reload(task).setFinished(true);
+    });
+
+    PersistentWork.wrap(() -> {
+      Task reload = PersistentWork.reload(task);
+      assertEquals(TaskState.NONE, reload.getState());
+      assertTrue(reload.isFinished());
+      assertNotNull(reload.getFinishTime());
+    });
+  }
 }
