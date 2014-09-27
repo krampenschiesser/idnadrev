@@ -15,13 +15,10 @@
 package de.ks.idnadrev.task.finish;
 
 import de.ks.BaseController;
-import de.ks.activity.ActivityHint;
 import de.ks.idnadrev.entity.Task;
-import de.ks.idnadrev.task.view.ViewTasksActvity;
 import de.ks.text.AsciiDocEditor;
 import de.ks.text.view.AsciiDocContent;
 import de.ks.text.view.AsciiDocViewer;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
@@ -70,9 +67,8 @@ public class FinishTask extends BaseController<Task> {
   }
 
   @FXML
-  void onSave(ActionEvent event) {
+  void onSave() {
     controller.save();
     controller.stopCurrent();
-    controller.startOrResume(new ActivityHint(ViewTasksActvity.class));
   }
 }
