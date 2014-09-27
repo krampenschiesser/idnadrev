@@ -64,7 +64,15 @@ public abstract class AbstractPersistentObject<T extends AbstractPersistentObjec
     return creationTime;
   }
 
+  public void setCreationTime(LocalDateTime creationTime) {
+    this.creationTime = creationTime;
+  }
+
   public LocalDateTime getUpdateTime() {
     return updateTime;
+  }
+
+  public void setUpdateTime(LocalDateTime updateTime) {
+    this.updateTime = updateTime;
   }
 }
