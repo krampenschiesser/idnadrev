@@ -21,6 +21,7 @@ import de.ks.persistence.entity.NamedPersistentObject;
 import de.ks.persistence.transaction.SimpleTransaction;
 import de.ks.persistence.transaction.TransactionProvider;
 import de.ks.persistence.transaction.Transactional;
+import de.ks.reflection.PropertyPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -232,6 +233,20 @@ public class PersistentWork {
 
   public static <T> List<Long> idsFrom(Class<T> clazz) {
     return idsFrom(clazz, null);
+  }
+
+  public static <T, V> List<V> projection(Class<T> clazz, Function<T, V> resolver) {
+    final String property = PropertyPath.property(clazz, t -> resolver.apply(t));
+
+    return read((em) -> {
+      CriteriaQuery<Object> query = em.getCriteriaBuilder().createQuery();
+
+      Root<T> root = query.from(clazz);
+      query.select(root.get(property));
+
+      @SuppressWarnings("unchecked") List<V> resultList = (List<V>) em.createQuery(query).getResultList();
+      return resultList;
+    });
   }
 
   public static <T> List<Long> idsFrom(Class<T> clazz, QueryConsumer<T, Long> consumer) {
