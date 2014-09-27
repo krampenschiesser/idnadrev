@@ -15,8 +15,8 @@
 
 package de.ks.validation.validators;
 
-public class DoubleValidator extends BaseNumberValidator<Double> {
-  public DoubleValidator() {
-    super(s -> Double.valueOf(s), "validation.mustBeDouble");
+public class IntegerValidator extends BaseNumberValidator<Integer> {
+  public IntegerValidator() {
+    super(s -> Integer.valueOf(s), "validation.mustBeInteger");
   }
 }
