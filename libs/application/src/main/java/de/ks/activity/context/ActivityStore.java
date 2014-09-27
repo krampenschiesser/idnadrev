@@ -68,7 +68,7 @@ public class ActivityStore {
   protected final SimpleBooleanProperty loading = new SimpleBooleanProperty(false);
   protected final SimpleBooleanProperty stopping = new SimpleBooleanProperty(false);
 
-  protected final ConcurrentLinkedDeque<LoadOrSave> queue = new ConcurrentLinkedDeque<>();
+  protected final ConcurrentLinkedDeque<Runnable> queue = new ConcurrentLinkedDeque<>();
   protected final AtomicBoolean inExecution = new AtomicBoolean();
   protected DataSource datasource;
   protected volatile CompletableFuture<Void> loadingFuture;
@@ -107,17 +107,12 @@ public class ActivityStore {
   }
 
   protected boolean advanceInQueue() {
-    LoadOrSave first = queue.peekFirst();
+    Runnable first = queue.peekFirst();
     if (first != null && inExecution.compareAndSet(false, true)) {
       syncSetLoadingProperty();
       log.trace("Advanced in queue, next task is {}", first);
-      if (first == LoadOrSave.SAVE) {
-        doSave();
-        return true;
-      } else if (first == LoadOrSave.LOAD) {
-        doReload();
-        return true;
-      }
+      first.run();
+      return true;
     } else {
       log.trace("Could not advance in queue");
     }
@@ -183,6 +178,18 @@ public class ActivityStore {
 
   }
 
+  protected void runFromQueue(Runnable runnable) {
+    CompletableFuture<Void> future = CompletableFuture.runAsync(runnable, executor);
+
+    future.thenRun(() -> finishExecution());
+
+    future.exceptionally(t -> {
+      log.info("Could not execute runnable {}", runnable);
+      finishExecution();
+      return null;
+    });
+  }
+
   @SuppressWarnings("unchecked")
   protected void doSave() {
     savingFuture = null;
@@ -220,12 +227,17 @@ public class ActivityStore {
   }
 
   public void reload() {
-    queue.add(LoadOrSave.LOAD);
+    queue.add(() -> doReload());
     advanceInQueue();
   }
 
   public void save() {
-    queue.add(LoadOrSave.SAVE);
+    queue.add(() -> doSave());
+    advanceInQueue();
+  }
+
+  public void executeCustomRunnable(Runnable runnable) {
+    queue.add(() -> runFromQueue(runnable));
     advanceInQueue();
   }
 

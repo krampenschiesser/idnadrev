@@ -21,6 +21,7 @@ import de.ks.activity.context.ActivityStore;
 import de.ks.application.Navigator;
 import de.ks.launch.JavaFXService;
 import de.ks.launch.Launcher;
+import de.ks.util.FXPlatform;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,9 +30,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
 public class ActivityDatasourceTest {
@@ -97,5 +99,31 @@ public class ActivityDatasourceTest {
 
     datasource = (TestDataSource) store.getDatasource();
     assertEquals("I'll be back", datasource.getDataSourceHint());
+  }
+
+  @Test
+  public void testCustomRunnable() throws Exception {
+    ActivityHint activityHint = new ActivityHint(DatasourceActivity.class);
+    controller.startOrResume(activityHint);
+
+    CountDownLatch latch = new CountDownLatch(1);
+
+    Runnable runner = () -> {
+      try {
+        latch.await(60, TimeUnit.SECONDS);
+      } catch (InterruptedException e) {
+        //
+      }
+    };
+    assertFalse(store.loadingProperty().get());
+
+    store.executeCustomRunnable(runner);
+    FXPlatform.waitForFX();
+    assertTrue(store.loadingProperty().get());
+
+    latch.countDown();
+    controller.waitForDataSource();
+    FXPlatform.waitForFX();
+    assertFalse(store.loadingProperty().get());
   }
 }
