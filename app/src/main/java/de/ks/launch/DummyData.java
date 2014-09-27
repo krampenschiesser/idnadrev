@@ -58,6 +58,7 @@ public class DummyData extends Service {
     persist(new Thought("Go hiking").setDescription("maybe the CDT"));
 
     Context hiking = new Context("Hiking");
+
     Task backpack = new Task("Build a new backpack", "DIY").setProject(true);
     backpack.setContext(hiking);
     tasks.add(backpack);
@@ -76,7 +77,10 @@ public class DummyData extends Service {
     workUnit.setStart(LocalDateTime.now().minus(5, ChronoUnit.MINUTES));
     workUnit.stop();
     tasks.add(task);
+
+    Context work = new Context("Work");
     Task asciiDocSample = new Task("AsciiDocSample", asciiDocString).setEstimatedTime(Duration.ofMinutes(1));
+    asciiDocSample.setContext(work);
     asciiDocSample.getOutcome().setExpectedOutcome("= title\n\n== other\n");
     tasks.add(asciiDocSample);
 
@@ -84,8 +88,9 @@ public class DummyData extends Service {
     tasks.forEach((t) -> t.getMentalEffort().setAmount(ThreadLocalRandom.current().nextInt(0, 10)));
     tasks.forEach((t) -> t.getFunFactor().setAmount(ThreadLocalRandom.current().nextInt(-5, 5)));
 
-    persist(hiking, backpack, sketch, sew, task, workUnit, asciiDocSample);
-    persist(new Context("Work"), new Context("Studying"), new Context("Music"));
+    persist(hiking, work, backpack, sketch, sew, task, workUnit, asciiDocSample);
+
+    persist(new Context("Studying"), new Context("Music"));
 
     Task effort = new Task("effort");
     effort.getMentalEffort().setAmount(-3);
