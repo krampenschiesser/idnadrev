@@ -316,4 +316,12 @@ public class ViewTasksMaster extends BaseController<List<Task>> {
   public ObservableList<Task> getTasks() {
     return tasks;
   }
+
+  public String getSelectedContext() {
+    return contextSelection.getSelectionModel().getSelectedItem();
+  }
+
+  public ComboBox<String> getContextSelection() {
+    return contextSelection;
+  }
 }
