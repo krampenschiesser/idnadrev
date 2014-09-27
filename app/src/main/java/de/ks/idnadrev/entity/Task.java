@@ -118,12 +118,11 @@ public class Task extends NamedPersistentObject<Task> implements FileContainer<T
   protected Set<UmlDiagramInfo> umlInfos = new HashSet<>();
 
   protected Task() {
-    this.creationTime = LocalDateTime.now();
+    //
   }
 
   public Task(String name) {
     super(name);
-    this.creationTime = LocalDateTime.now();
   }
 
   public Task(String name, String description) {
@@ -193,10 +192,6 @@ public class Task extends NamedPersistentObject<Task> implements FileContainer<T
 
   public LocalDateTime getFinishTime() {
     return finishTime;
-  }
-
-  public void setCreationTime(LocalDateTime creationTime) {
-    this.creationTime = creationTime;
   }
 
   public SortedSet<WorkUnit> getWorkUnits() {
