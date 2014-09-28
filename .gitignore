@@ -18,3 +18,4 @@ data/*.css
 files/**
 version.info
 **/client_secrets.json
+app/files
