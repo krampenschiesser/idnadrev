@@ -18,7 +18,7 @@ package de.ks.application;
 import de.ks.i18n.Localized;
 import de.ks.imagecache.Images;
 import de.ks.javafx.FxCss;
-import de.ks.launch.JavaFXService;
+import de.ks.launch.ApplicationService;
 import de.ks.launch.Launcher;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -58,7 +58,7 @@ public class LaunchingApp extends Application {
         Launcher.instance.stopAll();
         Launcher.instance.awaitStop();
       });
-      Launcher.instance.getService(JavaFXService.class).setStage(stage);
+      Launcher.instance.getService(ApplicationService.class).setStage(stage);
       stage.show();
     } catch (Exception e) {
       log.error("Could not start JavaFXApp", e);

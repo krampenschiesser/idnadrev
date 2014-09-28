@@ -18,7 +18,7 @@ package de.ks.activity;
 import de.ks.LauncherRunner;
 import de.ks.activity.context.ActivityContext;
 import de.ks.application.Navigator;
-import de.ks.launch.JavaFXService;
+import de.ks.launch.ApplicationService;
 import de.ks.launch.Launcher;
 import org.junit.After;
 import org.junit.Before;
@@ -46,7 +46,7 @@ public class ActivityControllerTest {
   @Before
   public void setUp() throws Exception {
     Dummy.fail = false;
-    JavaFXService service = Launcher.instance.getService(JavaFXService.class);
+    ApplicationService service = Launcher.instance.getService(ApplicationService.class);
     Navigator.registerWithBorderPane(service.getStage());
     executorService = Executors.newCachedThreadPool();
     warmup();

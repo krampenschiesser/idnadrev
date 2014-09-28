@@ -15,7 +15,7 @@
 
 package de.ks.idnadrev;
 
-import de.ks.launch.JavaFXService;
+import de.ks.launch.ApplicationService;
 import de.ks.launch.Launcher;
 import de.ks.version.Versioning;
 import org.slf4j.Logger;
@@ -39,7 +39,7 @@ public class Application {
     launcher.setPreloader(IdnadrevPreloader.class);
     launcher.startAll(args);
     launcher.awaitStart();
-    launcher.getService(JavaFXService.class).waitUntilFXFinished();
+    launcher.getService(ApplicationService.class).waitUntilFXFinished();
     launcher.stopAll();
     launcher.awaitStop();
     log.info("Finishing main");

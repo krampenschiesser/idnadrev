@@ -19,7 +19,7 @@ import de.ks.activity.ActivityController;
 import de.ks.activity.ActivityHint;
 import de.ks.activity.context.ActivityStore;
 import de.ks.application.Navigator;
-import de.ks.launch.JavaFXService;
+import de.ks.launch.ApplicationService;
 import de.ks.launch.Launcher;
 import de.ks.util.FXPlatform;
 import org.junit.After;
@@ -45,7 +45,7 @@ public class ActivityDatasourceTest {
 
   @Before
   public void setUp() throws Exception {
-    JavaFXService service = Launcher.instance.getService(JavaFXService.class);
+    ApplicationService service = Launcher.instance.getService(ApplicationService.class);
     Navigator.registerWithBorderPane(service.getStage());
   }
 

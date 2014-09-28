@@ -18,7 +18,7 @@ package de.ks.menu.sink;
 import de.ks.LauncherRunner;
 import de.ks.eventsystem.bus.EventBus;
 import de.ks.i18n.Localized;
-import de.ks.launch.JavaFXService;
+import de.ks.launch.ApplicationService;
 import de.ks.launch.Launcher;
 import de.ks.menu.MenuItemDescriptor;
 import de.ks.menu.event.MenuItemClickedEvent;
@@ -51,7 +51,7 @@ public class PopupSinkTest {
   public void setUp() throws Exception {
     sink = CDI.current().select(PopupSink.class).get();
     sink.setMenuPath(About.MENUPATH);
-    stage = Launcher.instance.getService(JavaFXService.class).getStage();
+    stage = Launcher.instance.getService(ApplicationService.class).getStage();
     sink.mockWindow(stage);
   }
 

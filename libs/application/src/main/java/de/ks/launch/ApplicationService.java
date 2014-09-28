@@ -24,8 +24,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.*;
 
-public class JavaFXService extends Service {
-  private static final Logger log = LoggerFactory.getLogger(JavaFXService.class);
+public class ApplicationService extends Service {
+  private static final Logger log = LoggerFactory.getLogger(ApplicationService.class);
   public static final String IS_DEBUGGING = "is.debugging";
   private String[] args;
   private Stage stage;

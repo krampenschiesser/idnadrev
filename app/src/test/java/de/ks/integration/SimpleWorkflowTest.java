@@ -26,7 +26,7 @@ import de.ks.idnadrev.thought.add.AddThought;
 import de.ks.idnadrev.thought.add.AddThoughtActivity;
 import de.ks.idnadrev.thought.view.ViewThoughts;
 import de.ks.idnadrev.thought.view.ViewThoughtsActivity;
-import de.ks.launch.JavaFXService;
+import de.ks.launch.ApplicationService;
 import de.ks.launch.Launcher;
 import de.ks.persistence.PersistentWork;
 import de.ks.reflection.PropertyPath;
@@ -70,7 +70,7 @@ public class SimpleWorkflowTest extends GuiTest {
   public void setupGuiTest() throws Exception {
     PersistentWork.deleteAllOf(FileReference.class, Thought.class);
 
-    primaryStage = Launcher.instance.getService(JavaFXService.class).getStage();
+    primaryStage = Launcher.instance.getService(ApplicationService.class).getStage();
     FXPlatform.invokeLater(() -> primaryStage.setScene(null));
     setupStages(this);
   }
