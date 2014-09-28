@@ -69,6 +69,8 @@ public class ChooseNextTaskController extends BaseController<List<Task>> {
         super.updateItem(item, empty);
         if (item != null) {
           setText(item.getName());
+        } else {
+          setText("");
         }
       }
     });
