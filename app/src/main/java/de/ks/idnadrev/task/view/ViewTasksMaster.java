@@ -143,14 +143,20 @@ public class ViewTasksMaster extends BaseController<List<Task>> {
         }
       }
     };
+
     moreBtn.sceneProperty().addListener((p, o, n) -> {
       if (n == null && popOver != null) {
         popOver.hide();
+        if (o != null) {
+          o.getWindow().focusedProperty().removeListener(this.hideOnFocusLeave);
+        }
       } else if (n != null) {
         ReadOnlyBooleanProperty focused = moreBtn.getScene().getWindow().focusedProperty();
         log.info("Hiding popover because focus left scene");
         focused.removeListener(this.hideOnFocusLeave);
         focused.addListener(this.hideOnFocusLeave);
+      } else if (n == null && o != null) {
+        o.getWindow().focusedProperty().removeListener(this.hideOnFocusLeave);
       }
     });
   }
