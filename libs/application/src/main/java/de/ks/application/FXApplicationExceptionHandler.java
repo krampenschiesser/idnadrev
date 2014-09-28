@@ -14,6 +14,7 @@
  */
 package de.ks.application;
 
+import org.controlsfx.dialog.Dialogs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +31,7 @@ public class FXApplicationExceptionHandler implements Thread.UncaughtExceptionHa
   public void uncaughtException(Thread t, Throwable e) {
     log.error("got uncaught exception ", e);
     throwables.add(e);
+    Dialogs.create().showException(e);
   }
 
   public List<Throwable> getThrowables() {
