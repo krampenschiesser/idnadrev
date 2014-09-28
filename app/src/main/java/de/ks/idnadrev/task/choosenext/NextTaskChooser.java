@@ -129,12 +129,13 @@ public class NextTaskChooser {
 
 
       Predicate needsLessTime = builder.lessThanOrEqualTo(duration, durationInNs);
+      Predicate needsAtLeast2Minutes = builder.greaterThan(duration, TimeUnit.MINUTES.toNanos(2));
       Path<Object> state = root.get(KEY_STATE);
       Predicate notLater = builder.notEqual(state, TaskState.LATER);
       Predicate notDelegated = builder.notEqual(state, TaskState.DELEGATED);
       Predicate notFinished = builder.isNull(root.get(KEY_FINISHTIME));
 
-      query.where(needsLessTime, notFinished, notLater, notDelegated);
+      query.where(needsLessTime, needsAtLeast2Minutes, notFinished, notLater, notDelegated);
       query.orderBy(builder.asc(duration));
     }, null);
   }

@@ -59,6 +59,7 @@ public class NextTaskChooserTest {
     em.persist(new Task("workTask5MinFinished").setFinished(true).setEstimatedTime(Duration.ofMinutes(5)).setContext(workContext));
     em.persist(new Task("workTask5MinLater").setState(TaskState.LATER).setEstimatedTime(Duration.ofMinutes(5)).setContext(workContext));
     em.persist(new Task("workTask5MinDelegated").setState(TaskState.DELEGATED).setEstimatedTime(Duration.ofMinutes(5)).setContext(workContext));
+    em.persist(new Task("workTask2Min").setEstimatedTime(Duration.ofMinutes(2)).setContext(workContext));
 
     em.persist(new Task("workTask5Min").setEstimatedTime(Duration.ofMinutes(5)).setContext(workContext));
     em.persist(new Task("workTask8Min").setEstimatedTime(Duration.ofMinutes(8)).setContext(workContext));
