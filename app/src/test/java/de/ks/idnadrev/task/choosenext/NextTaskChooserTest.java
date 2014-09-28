@@ -16,10 +16,7 @@
 package de.ks.idnadrev.task.choosenext;
 
 import de.ks.LauncherRunner;
-import de.ks.idnadrev.entity.Cleanup;
-import de.ks.idnadrev.entity.Context;
-import de.ks.idnadrev.entity.Task;
-import de.ks.idnadrev.entity.TaskState;
+import de.ks.idnadrev.entity.*;
 import de.ks.persistence.PersistentWork;
 import org.junit.Before;
 import org.junit.Test;
@@ -65,15 +62,24 @@ public class NextTaskChooserTest {
     em.persist(new Task("workTask8Min").setEstimatedTime(Duration.ofMinutes(8)).setContext(workContext));
     em.persist(new Task("workTask15Min").setEstimatedTime(Duration.ofMinutes(15)).setContext(workContext));
 
+    Task taskWithWorkUnit = new Task("workTask9MinRemaining").setEstimatedTime(Duration.ofMinutes(20)).setContext(workContext);
+    WorkUnit workUnit = new WorkUnit(taskWithWorkUnit);
+    LocalDateTime start = LocalDateTime.now().minusDays(1);
+    workUnit.setStart(start);
+    workUnit.setEnd(start.plusMinutes(11));
+    taskWithWorkUnit.getWorkUnits().add(workUnit);
+    em.persist(taskWithWorkUnit);
+
     em.persist(new Task("otherTask").setContext(other));
   }
 
   @Test
   public void testAllPossibleTasks() throws Exception {
     List<Task> allPossibleTasks = chooser.getAllPossibleTasks(10, "work");
-    assertEquals(2, allPossibleTasks.size());
+    assertEquals(3, allPossibleTasks.size());
     assertEquals("workTask5Min", allPossibleTasks.get(0).getName());
     assertEquals("workTask8Min", allPossibleTasks.get(1).getName());
+    assertEquals("workTask9MinRemaining", allPossibleTasks.get(2).getName());
   }
 
   @Test

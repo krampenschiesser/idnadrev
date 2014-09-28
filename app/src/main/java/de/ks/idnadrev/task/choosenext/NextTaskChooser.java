@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * Chooses the next best task according to the following rules:
@@ -120,24 +120,30 @@ public class NextTaskChooser {
   }
 
   protected List<Task> getAllPossibleTasks(int minutes, String selectedContext) {
-    return PersistentWork.from(Task.class, (root, query, builder) -> {
-      Join<Task, Context> join = root.join(KEY_CONTEXT);
-      join.on(builder.equal(join.get(KEY_CONTEXT_NAME), selectedContext));
-
-      long durationInNs = TimeUnit.MINUTES.toNanos(minutes);
-      Path<Long> duration = root.get(KEY_ESTIMATED_DURATION);
+    List<Task> retval = PersistentWork.wrap(() -> {
+      List<Task> tasks = PersistentWork.from(Task.class, (root, query, builder) -> {
+        Join<Task, Context> join = root.join(KEY_CONTEXT);
+        join.on(builder.equal(join.get(KEY_CONTEXT_NAME), selectedContext));
 
 
-      Predicate needsLessTime = builder.lessThanOrEqualTo(duration, durationInNs);
-      Predicate needsAtLeast2Minutes = builder.greaterThan(duration, TimeUnit.MINUTES.toNanos(2));
-      Path<Object> state = root.get(KEY_STATE);
-      Predicate notLater = builder.notEqual(state, TaskState.LATER);
-      Predicate notDelegated = builder.notEqual(state, TaskState.DELEGATED);
-      Predicate notFinished = builder.isNull(root.get(KEY_FINISHTIME));
+        Path<Object> state = root.get(KEY_STATE);
+        Predicate notLater = builder.notEqual(state, TaskState.LATER);
+        Predicate notDelegated = builder.notEqual(state, TaskState.DELEGATED);
+        Predicate notFinished = builder.isNull(root.get(KEY_FINISHTIME));
 
-      query.where(needsLessTime, needsAtLeast2Minutes, notFinished, notLater, notDelegated);
-      query.orderBy(builder.asc(duration));
-    }, null);
+        query.where(notFinished, notLater, notDelegated);
+      }, null);
+
+      return tasks.stream()//super ugly, need to evict to save heap
+              .sorted(Comparator.comparing(c -> c.getEstimatedTime().toMinutes() - c.getSpentMinutes()))//
+              .filter(t -> {
+                long timeRemaining = t.getEstimatedTime().toMinutes() - t.getSpentMinutes();
+                log.info("Remaining time: {}", timeRemaining);
+                return timeRemaining < minutes && timeRemaining > 2;
+              })//
+              .collect(Collectors.toList());
+    });
+    return retval;
   }
 }
 
