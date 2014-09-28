@@ -79,11 +79,11 @@ public class WeekTitle extends GridPane {
     int column = 1;
 
 
-    Button button = new Button("<");
+    Button button = new Button("⇦");
     button.setOnAction(e -> weekOfYearProperty.set(weekOfYearProperty.getValue() - 1));
     add(button, column++, 0);
     add(week, column++, 0);
-    button = new Button(">");
+    button = new Button("⇨");
     button.setOnAction(e -> weekOfYearProperty.set(weekOfYearProperty.getValue() + 1));
     add(button, column++, 0);
 
@@ -95,11 +95,11 @@ public class WeekTitle extends GridPane {
     });
     add(this.today, column++, 0);
 
-    button = new Button("<");
+    button = new Button("⇦");
     button.setOnAction(e -> yearProperty.set(yearProperty.getValue() - 1));
     add(button, column++, 0);
     add(year, column++, 0);
-    button = new Button(">");
+    button = new Button("⇨");
     button.setOnAction(e -> yearProperty.set(yearProperty.getValue() + 1));
     add(button, column++, 0);
 
