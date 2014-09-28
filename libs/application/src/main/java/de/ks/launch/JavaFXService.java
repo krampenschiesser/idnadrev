@@ -15,6 +15,7 @@
 package de.ks.launch;
 
 import de.ks.application.App;
+import de.ks.application.ApplicationStartup;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
@@ -30,17 +31,29 @@ public class JavaFXService extends Service {
   private Stage stage;
   private final CountDownLatch latch = new CountDownLatch(1);
   private Future<?> fx;
+  private Launcher launcher;
+  private boolean hasPreloader;
 
   @Override
-  public void initialize(ExecutorService executorService, String[] args) {
-    super.initialize(executorService, args);
+  public void initialize(Launcher launcher, ExecutorService executorService, String[] args) {
+    super.initialize(launcher, executorService, args);
     this.args = args;
+    this.launcher = launcher;
+    hasPreloader = this.launcher.getPreloaderInstance() != null;
+    if (hasPreloader) {
+      this.stage = this.launcher.getPreloaderInstance().getStage();
+    }
   }
 
   @Override
   protected void doStart() {
     log.info("Starting {}", getClass().getSimpleName());
-    fx = executorService.submit(() -> Application.launch(App.class, args));
+
+    if (hasPreloader) {
+      Platform.runLater(() -> new ApplicationStartup().start(stage));
+    } else {
+      fx = executorService.submit(() -> Application.launch(App.class, args));
+    }
     waitForJavaFXInitialized();
   }
 
@@ -85,11 +98,11 @@ public class JavaFXService extends Service {
     return 5;
   }
 
-  public Future<?> getFx() {
-    return fx;
-  }
-
   public void waitUntilFXFinished() throws ExecutionException, InterruptedException {
-    fx.get();
+    if (hasPreloader) {
+      Launcher.instance.waitForPreloader();
+    } else {
+      fx.get();
+    }
   }
 }

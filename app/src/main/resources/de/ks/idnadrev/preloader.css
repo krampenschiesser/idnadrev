@@ -1,0 +1,27 @@
+.preloaderTitle {
+    -fx-font-size: 32px;
+    -fx-fill: black;
+    /*-fx-fill: #eeda65;*/
+}
+
+.preloaderBoxTop {
+    -fx-fill: rgba(255,255,255,.65)
+}
+
+.preloaderBoxBottom {
+    -fx-fill: rgba(255,255,255,.65)
+}
+
+.preloaderBg {
+  -fx-background-color: white;
+}
+
+.preloaderImg {
+
+}
+
+.preloaderLoadingInfo {
+    -fx-font-size: 24px;
+    -fx-fill: black;
+    /*-fx-fill: #eeda65;*/
+}

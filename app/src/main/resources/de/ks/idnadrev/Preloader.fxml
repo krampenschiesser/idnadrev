@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright [2014] [Christian Loehnert, krampenschiesser@gmail.com]
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.*?>
+<StackPane id="StackPane" fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+           minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" styleClass="preloaderBg"
+           xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="de.ks.idnadrev.Preloader">
+    <children>
+        <ImageView fx:id="image" fitHeight="800.0" fitWidth="1920.0" pickOnBounds="true" preserveRatio="true"
+                   styleClass="preloaderImg">
+            <image>
+                <Image url="@../images/bg.jpg"/>
+            </image>
+        </ImageView>
+        <Rectangle arcHeight="5.0" arcWidth="5.0" height="37.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0"
+                   styleClass="preloaderBoxTop" width="1900.0" StackPane.alignment="TOP_LEFT"/>
+
+        <Text fx:id="title" fill="WHITE" fontSmoothingType="LCD" stroke="BLACK" strokeType="OUTSIDE" strokeWidth="0.0"
+              styleClass="preloaderTitle" text="Idnadrev" StackPane.alignment="TOP_LEFT">
+            <font>
+                <Font size="12.0"/>
+            </font>
+        </Text>
+        <Text fx:id="version" fill="WHITE" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0"
+              styleClass="preloaderTitle" text="Version" StackPane.alignment="TOP_RIGHT">
+            <font>
+                <Font size="12.0"/>
+            </font>
+        </Text>
+        <Rectangle arcHeight="5.0" arcWidth="5.0" height="37.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0"
+                   styleClass="preloaderBoxBottom" width="1900.0" StackPane.alignment="BOTTOM_LEFT"/>
+        <Text fx:id="loadingInfo" fill="WHITE" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0"
+              styleClass="preloaderLoadingInfo" text="loadingInformation" StackPane.alignment="BOTTOM_CENTER">
+            <font>
+                <Font size="12.0"/>
+            </font>
+        </Text>
+    </children>
+</StackPane>

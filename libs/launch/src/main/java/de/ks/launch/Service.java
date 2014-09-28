@@ -112,7 +112,7 @@ public abstract class Service {
     await();
   }
 
-  public void initialize(ExecutorService executorService, String[] args) {
+  public void initialize(Launcher launcher, ExecutorService executorService, String[] args) {
     this.executorService = executorService;
   }
 

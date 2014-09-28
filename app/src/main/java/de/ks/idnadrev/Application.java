@@ -36,6 +36,7 @@ public class Application {
     versioning.upgradeToCurrentVersion();
 
     Launcher launcher = Launcher.instance;
+    launcher.setPreloader(IdnadrevPreloader.class);
     launcher.startAll(args);
     launcher.awaitStart();
     launcher.getService(JavaFXService.class).waitUntilFXFinished();

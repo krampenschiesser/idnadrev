@@ -16,14 +16,15 @@ package de.ks.launch;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import de.ks.SubclassInstantiator;
+import de.ks.preload.LaunchListener;
+import de.ks.preload.LaunchListenerAdapter;
+import de.ks.preload.PreloaderApplication;
+import javafx.application.Application;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 public class Launcher {
@@ -40,6 +41,11 @@ public class Launcher {
   private final SubclassInstantiator instantiator;
 
   private volatile CountDownLatch latch;
+  private volatile LaunchListener launchListener = new LaunchListenerAdapter();
+  private Class<? extends PreloaderApplication> preloader;
+  private Future<?> preloaderFuture;
+  private PreloaderApplication preloaderInstance;
+  private final CountDownLatch preloaderLatch = new CountDownLatch(1);
 
   protected Launcher(boolean excludeTestResources) {
     instantiator = new SubclassInstantiator(executorService, getClass().getPackage(), SERVICE_PROPERTIES_FILENAME, SERVICE_PACKAGES, PACKAGE_SEPARATOR);
@@ -90,7 +96,12 @@ public class Launcher {
   }
 
   public void startAll(String... args) {
+    if (preloader != null) {
+      startPreloader();
+    }
     TreeMap<Integer, List<Service>> waves = getServiceWaves();
+    launchListener.totalWaves(waves.keySet().size());
+    launchListener.wavePriorities(waves.keySet());
     latch = new CountDownLatch(waves.keySet().size());
     Iterator<Integer> iter = waves.keySet().iterator();
     startWave(iter, waves, args);
@@ -102,11 +113,12 @@ public class Launcher {
       return;
     }
     Integer prio = iter.next();
+    launchListener.waveStarted(prio);
     log.info("Starting services with prio {}", prio);
     List<CompletableFuture<Void>> waveFutures = waves.get(prio).stream()//
             .map((s) -> {
               return CompletableFuture.supplyAsync(() -> {
-                s.initialize(executorService, args);
+                s.initialize(this, executorService, args);
                 return s.start();
               }, executorService)//
                       .thenAccept((service) -> log.info("Successfully started service {}", service.getName()));
@@ -115,12 +127,14 @@ public class Launcher {
     CompletableFuture<Void> allOf = CompletableFuture.allOf(waveFutures.toArray(new CompletableFuture[waveFutures.size()]));
     allOf.thenRun(() -> log.info("Started services with prio {}", prio))//
             .thenRun(() -> latch.countDown())//
+            .thenRun(() -> launchListener.waveFinished(prio))//
             .thenRun(() -> startWave(iter, waves, args))//
             .exceptionally((t) -> {
               while (latch.getCount() > 0) {
                 latch.countDown();
               }
               startupExceptions.add(t);
+              launchListener.failure(t.toString());
               //throw new RuntimeException(t);
               return null;
             });
@@ -190,14 +204,63 @@ public class Launcher {
   }
 
   public void awaitStop() {
+    if (latch != null) {
+      try {
+        latch.await();
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+    }
+    waitForPreloader();
+  }
+
+  public void waitForPreloader() {
+    if (preloaderFuture != null) {
+      try {
+        preloaderFuture.get();
+      } catch (InterruptedException e) {
+        //ok
+      } catch (ExecutionException e) {
+        log.error("Error from preloader ", e);
+      }
+    }
+  }
+
+  public void startPreloader() {
+    preloaderFuture = executorService.submit(() -> Application.launch(preloader));
     try {
-      latch.await();
+      preloaderLatch.await();
     } catch (InterruptedException e) {
-      throw new RuntimeException(e);
+      //
     }
   }
 
   public ExecutorService getExecutorService() {
     return executorService;
+  }
+
+  public void setPreloader(Class<? extends PreloaderApplication> preloader) {
+    this.preloader = preloader;
+  }
+
+  public Class<? extends PreloaderApplication> getPreloader() {
+    return preloader;
+  }
+
+  public void setLaunchListener(LaunchListener launchListener) {
+    this.launchListener = launchListener;
+  }
+
+  public LaunchListener getLaunchListener() {
+    return launchListener;
+  }
+
+  public void setPreloaderInstance(PreloaderApplication preloaderInstance) {
+    this.preloaderInstance = preloaderInstance;
+    preloaderLatch.countDown();
+  }
+
+  public PreloaderApplication getPreloaderInstance() {
+    return preloaderInstance;
   }
 }

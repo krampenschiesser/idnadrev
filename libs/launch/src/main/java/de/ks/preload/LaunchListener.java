@@ -13,21 +13,19 @@
  * limitations under the License.
  */
 
-package de.ks.application;
+package de.ks.preload;
 
-import javafx.application.Application;
-import javafx.stage.Stage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Set;
 
-/**
- *
- */
-public class App extends Application {
-  private static final Logger log = LoggerFactory.getLogger(App.class);
+public interface LaunchListener {
 
-  @Override
-  public void start(Stage stage) throws Exception {
-    new ApplicationStartup().start(stage);
-  }
+  void totalWaves(int count);
+
+  void waveStarted(int prio);
+
+  void waveFinished(int prio);
+
+  void failure(String msg);
+
+  void wavePriorities(Set<Integer> integers);
 }
