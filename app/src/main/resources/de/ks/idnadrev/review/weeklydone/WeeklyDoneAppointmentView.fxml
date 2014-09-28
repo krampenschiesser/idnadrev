@@ -33,7 +33,7 @@
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS"/>
     </rowConstraints>
     <children>
-        <Label fx:id="name" styleClass="title" text="name!!" GridPane.columnSpan="2147483647"
+        <Label fx:id="name" styleClass="pageTitle" text="name!!" GridPane.columnSpan="2147483647"
                GridPane.halignment="LEFT"/>
         <Label text="%startTime:" GridPane.rowIndex="2"/>
         <Label text="%duration:" GridPane.rowIndex="3"/>

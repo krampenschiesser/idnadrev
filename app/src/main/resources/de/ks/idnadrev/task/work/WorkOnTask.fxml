@@ -34,7 +34,7 @@
         <RowConstraints minHeight="10.0" vgrow="NEVER"/>
     </rowConstraints>
     <children>
-        <Label fx:id="name" styleClass="title" text="Label" GridPane.columnSpan="2" GridPane.halignment="CENTER"
+        <Label fx:id="name" styleClass="pageTitle" text="Label" GridPane.columnSpan="2" GridPane.halignment="CENTER"
                GridPane.rowSpan="3"/>
         <Button defaultButton="true" mnemonicParsing="false" onAction="#stopWork" text="%task.stop"
                 GridPane.rowIndex="4"/>
@@ -43,9 +43,9 @@
         <ProgressBar fx:id="estimatedTimeBar" maxWidth="1.7976931348623157E308" progress="0.0" GridPane.columnIndex="2"
                      GridPane.columnSpan="2147483647"/>
         <Label text="%task.estimatedTime:" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
-        <Label fx:id="estimatedTime" styleClass="title" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+        <Label fx:id="estimatedTime" styleClass="pageTitle" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
         <Label text="%task.overTime:" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
-        <Label fx:id="overTime" styleClass="title" GridPane.columnIndex="3" GridPane.rowIndex="2"/>
+        <Label fx:id="overTime" styleClass="pageTitle" GridPane.columnIndex="3" GridPane.rowIndex="2"/>
         <StackPane fx:id="descriptionView" prefHeight="150.0" prefWidth="200.0" GridPane.columnSpan="2147483647"
                    GridPane.rowIndex="3"/>
         <FlowPane hgap="5.0" GridPane.columnIndex="1" GridPane.rowIndex="4">

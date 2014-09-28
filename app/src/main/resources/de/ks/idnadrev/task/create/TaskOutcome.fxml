@@ -31,7 +31,7 @@
         <RowConstraints minHeight="30.0" vgrow="ALWAYS"/>
     </rowConstraints>
     <children>
-        <Label styleClass="title" stylesheets="@../../idnadrev.css" text="%task.outcome.title"/>
+        <Label styleClass="pageTitle" stylesheets="@../../idnadrev.css" text="%task.outcome.title"/>
         <Separator prefWidth="200.0" GridPane.rowIndex="1">
             <effect>
                 <DropShadow/>

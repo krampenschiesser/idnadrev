@@ -37,7 +37,8 @@
     <children>
         <Label text="%name" GridPane.rowIndex="1"/>
         <TextField fx:id="name" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-        <Label styleClass="title" text="%create.context" GridPane.columnSpan="2147483647" GridPane.halignment="LEFT"/>
+        <Label styleClass="pageTitle" text="%create.context" GridPane.columnSpan="2147483647"
+               GridPane.halignment="LEFT"/>
         <Button fx:id="saveButton" defaultButton="true" mnemonicParsing="false" onAction="#save" text="%save"
                 GridPane.columnIndex="1" GridPane.rowIndex="2"/>
     </children>
