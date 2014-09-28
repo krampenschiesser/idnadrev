@@ -70,6 +70,13 @@ public class NextTaskChooserTest {
     taskWithWorkUnit.getWorkUnits().add(workUnit);
     em.persist(taskWithWorkUnit);
 
+    Task taskOverTime = new Task("taskOverTime").setEstimatedTime(Duration.ofMinutes(20)).setContext(workContext);
+    workUnit = new WorkUnit(taskOverTime);
+    workUnit.setStart(start.plusHours(1));
+    workUnit.setEnd(start.plusHours(1).plusMinutes(60));
+    taskOverTime.getWorkUnits().add(workUnit);
+    em.persist(taskOverTime);
+
     em.persist(new Task("otherTask").setContext(other));
   }
 
