@@ -70,7 +70,7 @@ public class ChooseNextTaskActivityTest extends ActivityTest {
 
     FXPlatform.invokeLater(() -> controller.onChooseTask());
     activityController.waitForDataSource();
-    assertEquals(2, controller.taskList.getItems().size());
+    assertEquals(3, controller.taskList.getItems().size());
     FXPlatform.invokeLater(() -> controller.taskList.getSelectionModel().select(0));
 
     assertFalse(controller.startWork.isDisabled());
