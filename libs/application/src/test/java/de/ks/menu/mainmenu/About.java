@@ -19,13 +19,15 @@ import de.ks.menu.MenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 
+import java.util.Locale;
+
 /**
  *
  */
 @MenuItem(order = 99, value = About.MENUPATH)
 public class About extends StackPane {
   public static final String MENUPATH = "/main/options";
-  public static final String ITEMPATH = MENUPATH + "/" + About.class.getSimpleName().toLowerCase();
+  public static final String ITEMPATH = MENUPATH + "/" + About.class.getSimpleName().toLowerCase(Locale.ENGLISH);
 
   public About() {
     getChildren().add(new Label("hello world"));

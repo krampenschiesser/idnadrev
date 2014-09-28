@@ -25,6 +25,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 public class NamedPersistentObjectAutoCompletion<T extends NamedPersistentObject<T>> implements Callback<AutoCompletionBinding.ISuggestionRequest, Collection<String>> {
   private final Class<T> entityClass;
@@ -52,7 +53,7 @@ public class NamedPersistentObjectAutoCompletion<T extends NamedPersistentObject
     Path<String> nameSelection = root.get("name");
     criteria.select(nameSelection);
 
-    Predicate like = builder.like(builder.lower(nameSelection), userText.toLowerCase() + "%");
+    Predicate like = builder.like(builder.lower(nameSelection), userText.toLowerCase(Locale.ENGLISH) + "%");
     if (filter != null) {
       filter.accept(root, criteria, builder);
       criteria.where(criteria.getRestriction(), like);

@@ -188,9 +188,9 @@ public class ViewTasksMaster extends BaseController<List<Task>> {
           return false;
         }
       }
-      String nameSearch = searchField.textProperty().getValueSafe().trim().toLowerCase();
+      String nameSearch = searchField.textProperty().getValueSafe().trim().toLowerCase(Locale.ENGLISH);
       if (!nameSearch.isEmpty()) {
-        if (task.getName().toLowerCase().contains(nameSearch)) {
+        if (task.getName().toLowerCase(Locale.ENGLISH).contains(nameSearch)) {
           return true;
         } else {
           return false;

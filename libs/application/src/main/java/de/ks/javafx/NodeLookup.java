@@ -29,13 +29,7 @@ import java.util.stream.Collectors;
 public class NodeLookup {
 
   public static Set<Node> getAllIdNodes(Node node) {
-    if (node == null) {
-      "".toLowerCase();
-    }
     return getAllNodes(node, m -> {
-      if (m == null) {
-        "".toLowerCase();
-      }
       return m.getId() != null;
     });
   }

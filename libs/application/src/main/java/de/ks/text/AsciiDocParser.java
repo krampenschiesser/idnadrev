@@ -31,6 +31,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
@@ -71,7 +72,7 @@ public class AsciiDocParser {
   }
 
   public OptionsBuilder getDefaultOptions(AttributesBuilder attributes) {
-    return OptionsBuilder.options().headerFooter(true).backend(AsciiDocBackend.HTML5.name().toLowerCase()).attributes(attributes.get());
+    return OptionsBuilder.options().headerFooter(true).backend(AsciiDocBackend.HTML5.name().toLowerCase(Locale.ENGLISH)).attributes(attributes.get());
   }
 
   public String parse(String input) {
@@ -82,7 +83,7 @@ public class AsciiDocParser {
   public String parse(String input, boolean removeFooter, boolean addMathJax, String mathjaxDir, OptionsBuilder options) {
     String render = asciidoctor.render(input, options);
     String backend = (String) options.asMap().get(Options.BACKEND);
-    if (backend.equals(AsciiDocBackend.HTML5.name().toLowerCase())) {
+    if (backend.equals(AsciiDocBackend.HTML5.name().toLowerCase(Locale.ENGLISH))) {
       if (removeFooter) {
         render = removeFooter(render);
       }
@@ -109,7 +110,7 @@ public class AsciiDocParser {
     attributes.imagesDir(dataDir.getName());
 
     OptionsBuilder options = getDefaultOptions(attributes);
-    options.backend(backend.name().toLowerCase());
+    options.backend(backend.name().toLowerCase(Locale.ENGLISH));
 
     String parse = parse(input, false, needsMathJax, mathjaxDir, options);
     try {

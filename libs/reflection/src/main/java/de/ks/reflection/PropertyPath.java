@@ -27,10 +27,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -62,9 +59,9 @@ public class PropertyPath {
   public static String toFirstLowerCase(String methodName, int start) {
     String substring = methodName.substring(start);
     if (substring.length() == 1) {
-      return substring.toLowerCase();
+      return substring.toLowerCase(Locale.ENGLISH);
     } else {
-      return substring.substring(0, 1).toLowerCase() + substring.substring(1);
+      return substring.substring(0, 1).toLowerCase(Locale.ENGLISH) + substring.substring(1);
     }
   }
 
@@ -226,7 +223,7 @@ public class PropertyPath {
       }
     }
     try {
-      String methodName = lastMethod.getName().toLowerCase();
+      String methodName = lastMethod.getName().toLowerCase(Locale.ENGLISH);
 
       boolean isBooleanGetter = methodName.startsWith("is");
       boolean isSimpleGetter = methodName.startsWith("get");
@@ -235,7 +232,7 @@ public class PropertyPath {
         int index = isBooleanGetter ? 2 : 3;
         Class<?> declaringClass = lastMethod.getDeclaringClass();
         Optional<Method> methodOptional = Arrays.asList(declaringClass.getDeclaredMethods()).stream()//
-                .filter((m) -> m.getName().startsWith("set") && m.getName().toLowerCase().endsWith(methodName.substring(index)))//
+                .filter((m) -> m.getName().startsWith("set") && m.getName().toLowerCase(Locale.ENGLISH).endsWith(methodName.substring(index)))//
                 .findFirst();
         if (methodOptional.isPresent()) {
           Method method = methodOptional.get();
@@ -329,10 +326,10 @@ public class PropertyPath {
     } else if (methodName.startsWith("is")) {
       methodName = methodName.substring(2);
     }
-    methodName = methodName.toLowerCase();
+    methodName = methodName.toLowerCase(Locale.ENGLISH);
     List<Field> fieldsRecursive = ReflectionUtil.getAllFields(method.getDeclaringClass());
     for (Field field : fieldsRecursive) {
-      if (field.getName().toLowerCase().equals(methodName)) {
+      if (field.getName().toLowerCase(Locale.ENGLISH).equals(methodName)) {
         return field;
       }
     }

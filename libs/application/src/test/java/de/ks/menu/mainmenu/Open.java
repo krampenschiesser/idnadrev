@@ -17,11 +17,13 @@ package de.ks.menu.mainmenu;
 
 import de.ks.menu.MenuItem;
 
+import java.util.Locale;
+
 /**
  *
  */
 @MenuItem(Open.MENUPATH)
 public class Open {
   public static final String MENUPATH = "/main/file";
-  public static final String ITEMPATH = MENUPATH + "/" + Open.class.getSimpleName().toLowerCase();
+  public static final String ITEMPATH = MENUPATH + "/" + Open.class.getSimpleName().toLowerCase(Locale.ENGLISH);
 }

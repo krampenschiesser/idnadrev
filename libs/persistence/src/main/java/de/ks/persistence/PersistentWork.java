@@ -31,10 +31,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
@@ -183,9 +180,9 @@ public class PersistentWork {
     List<T> results = from(clazz, (Root<T> root, CriteriaQuery<T> query, CriteriaBuilder builder) -> {
       Predicate restriction;
       if (like) {
-        restriction = builder.like(builder.lower(root.get("name")), name.toLowerCase() + "%");
+        restriction = builder.like(builder.lower(root.get("name")), name.toLowerCase(Locale.ENGLISH) + "%");
       } else {
-        restriction = builder.equal(builder.lower(root.get("name")), name.toLowerCase());
+        restriction = builder.equal(builder.lower(root.get("name")), name.toLowerCase(Locale.ENGLISH));
       }
       query.where(restriction);
     }, null);

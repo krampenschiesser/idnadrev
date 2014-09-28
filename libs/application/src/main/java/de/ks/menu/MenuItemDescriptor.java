@@ -17,6 +17,8 @@ package de.ks.menu;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
 
+import java.util.Locale;
+
 /**
  *
  */
@@ -37,7 +39,7 @@ public class MenuItemDescriptor implements Comparable<MenuItemDescriptor> {
 
   public MenuItemDescriptor(String menuPath, int order, String imagePath, Class<?> target) {
     this.menuPath = menuPath;
-    this.menuItemPath = menuPath + "/" + target.getSimpleName().toLowerCase();
+    this.menuItemPath = menuPath + "/" + target.getSimpleName().toLowerCase(Locale.ENGLISH);
     this.imagePath = imagePath;
     this.target = target;
     this.order = order;

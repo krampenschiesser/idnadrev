@@ -38,6 +38,7 @@ import org.junit.runner.RunWith;
 
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
+import java.util.Locale;
 
 import static org.junit.Assert.*;
 
@@ -105,7 +106,7 @@ public class MenuBarPresenterTest {
       MenuBar menu = this.presenter.getMenu("/main/file");
       menu.getMenus().get(0).getItems().get(0).getOnAction().handle(new ActionEvent());
       assertNotNull(eventItem);
-      assertEquals(Open.ITEMPATH.toLowerCase(), eventItem.getMenuItemPath());
+      assertEquals(Open.ITEMPATH.toLowerCase(Locale.ENGLISH), eventItem.getMenuItemPath());
     } finally {
       bus.unregister(this);
     }

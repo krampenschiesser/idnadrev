@@ -24,10 +24,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -79,7 +76,7 @@ public class MenuBarPresenter extends AbstractPresenter<MenuBar> {
   private void createMenu(String menuPath) {
     Menu menu = new Menu();
     menu.setId(menuPath);
-    menu.setText(Localized.get(menuPath.toLowerCase().substring(1).replace("/", ".")));
+    menu.setText(Localized.get(menuPath.toLowerCase(Locale.ENGLISH).substring(1).replace("/", ".")));
     menus.put(menuPath, menu);
   }
 
