@@ -25,6 +25,7 @@ import de.ks.application.fxml.DefaultLoader;
 import de.ks.eventsystem.bus.HandlingThread;
 import de.ks.eventsystem.bus.Threading;
 import de.ks.executor.group.LastExecutionGroup;
+import de.ks.executor.group.LastTextChange;
 import de.ks.i18n.Localized;
 import de.ks.javafx.FxCss;
 import de.ks.text.command.AsciiDocEditorCommand;
@@ -35,10 +36,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -60,12 +58,16 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public class AsciiDocEditor implements Initializable, DatasourceCallback<Object> {
+
+  private LastTextChange searchRequest;
+
   public static CompletableFuture<DefaultLoader<Node, AsciiDocEditor>> load(Consumer<StackPane> viewConsumer, Consumer<AsciiDocEditor> controllerConsumer) {
     ActivityInitialization initialization = CDI.current().select(ActivityInitialization.class).get();
     return initialization.loadAdditionalController(AsciiDocEditor.class)//
@@ -104,6 +106,10 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
   @FXML
   protected HBox editorCommandPane;
   @FXML
+  protected StackPane editorContainer;
+  @FXML
+  protected TextField searchField;
+  @FXML
   protected TextArea plainHtml;
   protected File lastFile;
 
@@ -122,6 +128,7 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
 
   protected Dialog previewPopupDialog;
   protected volatile PersistentStoreBack persistentStoreBack;
+  protected volatile LastSearch lastSearch = null;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -158,6 +165,7 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
         });
       }
     });
+
 
     tabPane.focusedProperty().addListener((p, o, n) -> {
       if (n) {
@@ -198,7 +206,76 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
         showPreviewPopup();
         e.consume();
       }
+      if (e.getCode() == KeyCode.F && e.isControlDown()) {
+        showSearchField();
+        e.consume();
+      }
     });
+    searchField.setVisible(false);
+    searchField.setOnKeyTyped(e -> {
+      if (e.getCode() == KeyCode.ENTER) {
+        log.info("Ä'''''''!BDSAVK");
+      }
+    });
+    searchField.setOnKeyPressed(e -> {
+      if (e.getCode() == KeyCode.ENTER) {
+        searchForText();
+        e.consume();
+      }
+    });
+    searchField.setOnKeyReleased(e -> {
+      if (e.getCode() == KeyCode.ESCAPE) {
+        if (searchField.textProperty().getValueSafe().trim().isEmpty()) {
+          searchField.setVisible(false);
+          editor.requestFocus();
+        } else {
+          searchField.setText("");
+        }
+      }
+    });
+  }
+
+  protected void searchForText() {
+    String searchKey = searchField.textProperty().getValueSafe().toLowerCase(Locale.ENGLISH);
+    String editorContent = editor.textProperty().getValueSafe().toLowerCase(Locale.ENGLISH);
+    searchField.setDisable(true);
+    CompletableFuture<Integer> search = CompletableFuture.supplyAsync(() -> {
+      if (lastSearch != null && lastSearch.matches(searchKey, editorContent)) {
+        int startPoint = lastSearch.getPosition() + searchKey.length();
+        int newPosition;
+        if (startPoint >= editorContent.length()) {
+          newPosition = -1;
+        } else {
+          newPosition = editorContent.substring(startPoint).indexOf(searchKey);
+          if (newPosition >= 0) {
+            newPosition += lastSearch.getPosition() + searchKey.length();
+          }
+        }
+
+        if (newPosition == -1) {
+          newPosition = editorContent.indexOf(searchKey);
+        }
+        lastSearch.setPosition(newPosition);
+        return newPosition;
+      } else {
+        int newPosition = editorContent.indexOf(searchKey);
+        lastSearch = new LastSearch(searchKey, editorContent).setPosition(newPosition);
+        return newPosition;
+      }
+    }, controller.getExecutorService());
+
+    search.thenAcceptAsync(index -> {
+      searchField.setDisable(false);
+      if (index >= 0) {
+        editor.positionCaret(index);
+        editor.requestFocus();
+      }
+    }, controller.getJavaFXExecutor());
+  }
+
+  protected void showSearchField() {
+    searchField.setVisible(true);
+    searchField.requestFocus();
   }
 
   protected void storeBack(String storeBack) {

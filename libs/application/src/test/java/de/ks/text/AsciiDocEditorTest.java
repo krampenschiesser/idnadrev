@@ -150,4 +150,42 @@ public class AsciiDocEditorTest {
     activityController.waitForTasks();
     assertEquals("bla blubb\n", adocEditor.getText());
   }
+
+  @Test
+  public void testSearching() throws Exception {
+    FXPlatform.invokeLater(() -> {
+      adocEditor.searchField.setText("b");
+      adocEditor.setText("a\na\na\nb\nb\na\nb");
+      adocEditor.searchForText();
+    });
+    activityController.waitForTasks();
+    assertEquals(6, adocEditor.editor.getCaretPosition());
+
+    FXPlatform.invokeLater(() -> adocEditor.searchForText());
+    activityController.waitForTasks();
+    assertEquals(8, adocEditor.editor.getCaretPosition());
+
+    FXPlatform.invokeLater(() -> adocEditor.searchForText());
+    activityController.waitForTasks();
+    assertEquals(12, adocEditor.editor.getCaretPosition());
+
+    FXPlatform.invokeLater(() -> adocEditor.searchForText());
+    activityController.waitForTasks();
+    assertEquals(6, adocEditor.editor.getCaretPosition());
+  }
+
+  @Test
+  public void testSearchingEmptyText() throws Exception {
+    FXPlatform.invokeLater(() -> {
+      adocEditor.searchField.setText("b");
+      adocEditor.setText(null);
+      adocEditor.searchForText();
+    });
+    activityController.waitForTasks();
+    assertEquals(0, adocEditor.editor.getCaretPosition());
+
+    FXPlatform.invokeLater(() -> adocEditor.searchForText());
+    activityController.waitForTasks();
+    assertEquals(0, adocEditor.editor.getCaretPosition());
+  }
 }

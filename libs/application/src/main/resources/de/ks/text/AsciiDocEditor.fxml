@@ -34,23 +34,35 @@
                     <tabs>
                         <Tab text="%edit">
                             <content>
-                                <GridPane>
-                                    <columnConstraints>
-                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
-                                    </columnConstraints>
-                                    <rowConstraints>
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS"/>
-                                    </rowConstraints>
+                                <StackPane fx:id="editorContainer">
                                     <children>
-                                        <HBox fx:id="editorCommandPane" spacing="5.0" GridPane.halignment="CENTER">
-                                            <padding>
-                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-                                            </padding>
-                                        </HBox>
-                                        <TextArea fx:id="editor" styleClass="asciidocEditor" GridPane.rowIndex="1"/>
+                                        <GridPane>
+                                            <columnConstraints>
+                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                                            </columnConstraints>
+                                            <rowConstraints>
+                                                <RowConstraints minHeight="30.0" vgrow="SOMETIMES"/>
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS"/>
+                                            </rowConstraints>
+                                            <children>
+                                                <HBox fx:id="editorCommandPane" spacing="5.0"
+                                                      GridPane.halignment="CENTER">
+                                                    <padding>
+                                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                                    </padding>
+                                                </HBox>
+                                                <TextArea fx:id="editor" styleClass="asciidocEditor"
+                                                          GridPane.rowIndex="1"/>
+                                            </children>
+                                        </GridPane>
+                                        <TextField fx:id="searchField" maxHeight="-Infinity" maxWidth="-Infinity"
+                                                   StackPane.alignment="TOP_RIGHT">
+                                            <StackPane.margin>
+                                                <Insets top="5.0"/>
+                                            </StackPane.margin>
+                                        </TextField>
                                     </children>
-                                </GridPane>
+                                </StackPane>
                             </content>
                         </Tab>
                         <Tab fx:id="previewTab" text="%preview">
