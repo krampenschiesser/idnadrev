@@ -44,6 +44,11 @@
     -fx-text-fill: derive(black, 10%);
 }
 
+.taskViewAsap {
+    -fx-font-weight: bold;
+    -fx-text-fill: derive(black, 10%);
+}
+
 .fullScreenBg {
     -fx-background-color: -fx-control-inner-background;
 }

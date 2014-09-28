@@ -20,6 +20,7 @@ import de.ks.datasource.DataSource;
 import de.ks.i18n.Localized;
 import de.ks.idnadrev.entity.Context;
 import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.entity.TaskState;
 import de.ks.persistence.PersistentWork;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyBooleanProperty;
@@ -87,16 +88,22 @@ public class ViewTasksMaster extends BaseController<List<Task>> {
         @Override
         protected void updateItem(Task item, boolean empty) {
           super.updateItem(item, empty);
+          String styleClassFinished = "taskViewFinished";
+          String styleClassASAP = "taskViewAsap";
+
+          getTreeTableRow().getStyleClass().remove(styleClassFinished);
+          getTreeTableRow().getStyleClass().remove(styleClassASAP);
+
           if (item != null) {
             setText(item.getName());
             if (item.isFinished()) {
-              getTreeTableRow().getStyleClass().add("taskViewFinished");
-            } else {
-              getTreeTableRow().getStyleClass().remove("taskViewFinished");
+              getTreeTableRow().getStyleClass().add(styleClassFinished);
+            }
+            if (item.getState() == TaskState.ASAP) {
+              getTreeTableRow().getStyleClass().add(styleClassASAP);
             }
           } else {
             setText("");
-            getTreeTableRow().getStyleClass().remove("taskViewFinished");
           }
         }
       };
