@@ -64,7 +64,7 @@ public class DefaultLoader<V extends Node, C> {
       if (controllerName.toLowerCase(Locale.ENGLISH).endsWith("controller")) {
         String substring = controllerName.substring(0, controllerName.length() - "controller".length());
 
-        resource = modelController.getResource(substring);
+        resource = modelController.getResource(substring + ".fxml");
         if (resource == null) {
           resource = modelController.getResource(substring + "View.fxml");
         }
