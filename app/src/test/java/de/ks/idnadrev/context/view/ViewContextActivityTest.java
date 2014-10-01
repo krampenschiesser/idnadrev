@@ -55,7 +55,7 @@ public class ViewContextActivityTest extends ActivityTest {
 
   @Test
   public void testEmpty() throws Exception {
-    PersistentWork.deleteAllOf(Context.class);
+    PersistentWork.deleteAllOf(Task.class, Context.class);
 
     activityController.reload();
     activityController.waitForDataSource();
@@ -67,7 +67,11 @@ public class ViewContextActivityTest extends ActivityTest {
 
   @Test
   public void testDelete() throws Exception {
-    FXPlatform.invokeLater(() -> controller.contextList.getSelectionModel().select(new Context("context2")));
+    assertEquals(2, controller.contextList.getItems().size());
+    FXPlatform.invokeLater(() -> controller.contextList.getSelectionModel().select(1));
+    FXPlatform.waitForFX();
+    assertEquals("context2", controller.contextList.getSelectionModel().getSelectedItem().getName());
+
     FXPlatform.invokeLater(() -> controller.onDelete());
     activityController.waitForDataSource();
     PersistentWork.wrap(() -> {
