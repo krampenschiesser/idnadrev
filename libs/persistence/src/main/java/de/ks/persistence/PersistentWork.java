@@ -53,19 +53,9 @@ public class PersistentWork {
     PersistentWork.run(em -> runnable.run());
   }
 
-  public static CompletableFuture<Void> runAsync(Consumer<EntityManager> consumer) {
-    ExecutorService executorService = CDI.current().select(ExecutorService.class).get();
-    return runAsync(consumer, executorService);
-  }
-
   public static CompletableFuture<Void> runAsync(Consumer<EntityManager> consumer, ExecutorService executorService) {
     CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(() -> run(consumer), executorService);
     return completableFuture;
-  }
-
-  public static <T> CompletableFuture<T> readAsync(Function<EntityManager, T> function) {
-    ExecutorService executorService = CDI.current().select(ExecutorService.class).get();
-    return readAsync(function, executorService);
   }
 
   public static <T> CompletableFuture<T> readAsync(Function<EntityManager, T> function, ExecutorService executorService) {
