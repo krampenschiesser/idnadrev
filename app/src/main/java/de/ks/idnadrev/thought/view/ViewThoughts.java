@@ -106,7 +106,7 @@ public class ViewThoughts extends BaseController<List<Thought>> {
     Thought selectedItem = thoughtTable.getSelectionModel().getSelectedItem();
     if (selectedItem != null) {
 
-      PersistentWork.runAsync((em) -> em.find(Thought.class, selectedItem.getId()).postPone())//
+      PersistentWork.runAsync((em) -> em.find(Thought.class, selectedItem.getId()).postPone(), controller.getExecutorService())//
               .thenRun(() -> {
                 log.info("Postponing {}", selectedItem);
                 controller.reload();
