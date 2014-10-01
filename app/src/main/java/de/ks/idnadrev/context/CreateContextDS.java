@@ -14,22 +14,11 @@
  */
 package de.ks.idnadrev.context;
 
-import de.ks.datasource.NewInstanceDataSource;
+import de.ks.datasource.CreateEditDS;
 import de.ks.idnadrev.entity.Context;
-import de.ks.persistence.PersistentWork;
 
-import java.util.function.Consumer;
-
-public class CreateContextDS extends NewInstanceDataSource<Context> {
+public class CreateContextDS extends CreateEditDS<Context> {
   public CreateContextDS() {
     super(Context.class);
-  }
-
-  @Override
-  public void saveModel(Context model, Consumer<Context> beforeSaving) {
-    PersistentWork.wrap(() -> {
-      beforeSaving.accept(model);
-      PersistentWork.persist(model);
-    });
   }
 }
