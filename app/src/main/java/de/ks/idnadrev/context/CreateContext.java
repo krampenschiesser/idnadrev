@@ -17,7 +17,6 @@ package de.ks.idnadrev.context;
 import de.ks.activity.ActivityController;
 import de.ks.activity.context.ActivityStore;
 import de.ks.idnadrev.entity.Context;
-import de.ks.idnadrev.entity.Task;
 import de.ks.reflection.PropertyPath;
 import de.ks.validation.ValidationRegistry;
 import de.ks.validation.validators.NamedEntityMustNotExistValidator;
@@ -48,7 +47,7 @@ public class CreateContext implements Initializable {
     StringProperty nameProperty = store.getBinding().getStringProperty(Context.class, c -> c.getName());
     name.textProperty().bindBidirectional(nameProperty);
 
-    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(Context.class, t -> t.getId() == store.<Task>getModel().getId()));
+    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(Context.class, t -> t.getId() == store.<Context>getModel().getId()));
     validationRegistry.registerBeanValidationValidator(name, Context.class, PropertyPath.property(Context.class, c -> c.getName()));
 
     saveButton.disableProperty().bind(validationRegistry.invalidProperty());
@@ -57,6 +56,6 @@ public class CreateContext implements Initializable {
   @FXML
   protected void save() {
     controller.save();
-    controller.reload();
+    controller.stopCurrent();
   }
 }

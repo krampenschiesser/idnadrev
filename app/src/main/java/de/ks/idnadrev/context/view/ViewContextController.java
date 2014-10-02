@@ -16,6 +16,7 @@ package de.ks.idnadrev.context.view;
 
 import de.ks.BaseController;
 import de.ks.activity.ActivityHint;
+import de.ks.fxcontrols.cell.ConvertingListCell;
 import de.ks.idnadrev.context.CreateContextActivity;
 import de.ks.idnadrev.entity.Context;
 import de.ks.idnadrev.entity.Task;
@@ -27,6 +28,9 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.input.KeyCode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaUpdate;
@@ -37,6 +41,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class ViewContextController extends BaseController<List<Context>> {
+  private static final Logger log = LoggerFactory.getLogger(ViewContextController.class);
   private static final String key_context = PropertyPath.property(Task.class, t -> t.getContext());
   @FXML
   protected ListView<Context> contextList;
@@ -56,11 +61,33 @@ public class ViewContextController extends BaseController<List<Context>> {
     edit.disableProperty().bind(nothingSelected.or(invalidProperty));
     delete.disableProperty().bind(nothingSelected.or(invalidProperty));
     create.disableProperty().bind(invalidProperty);
+
+    contextList.setCellFactory(v -> new ConvertingListCell<>(c -> c.getName()));
+    contextList.setOnKeyPressed(e -> {
+      if (e.getCode() == KeyCode.ENTER) {
+        onEdit();
+        e.consume();
+      }
+      if (e.getCode() == KeyCode.DELETE) {
+        onDelete();
+        e.consume();
+      }
+    });
   }
 
   @Override
   protected void onRefresh(List<Context> model) {
+    int selectedIndex = contextList.getSelectionModel().getSelectedIndex();
+    selectedIndex = selectedIndex == -1 ? 0 : selectedIndex;
+    if (selectedIndex > model.size()) {
+      selectedIndex = 0;
+    }
+
+    final int select = selectedIndex;
     contextList.setItems(FXCollections.observableArrayList(model));
+    if (!model.isEmpty()) {
+      controller.getJavaFXExecutor().submit(() -> contextList.getSelectionModel().select(select));
+    }
   }
 
   @FXML
