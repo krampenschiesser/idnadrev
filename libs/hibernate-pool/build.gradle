@@ -21,6 +21,8 @@ dependencies {
     compile "org.hibernate:hibernate-core:$hibernate"
     compile "org.hibernate:hibernate-entitymanager:$hibernate"
 
+    compile "org.jboss:jandex:$jandex"
+
     testRuntime "com.h2database:h2:$h2"
     testRuntime "org.javassist:javassist:$javassist"
 
