@@ -85,7 +85,8 @@ public class SubclassInstantiator {
     }
     addDefaultPackage(builder);
     builder.filterInputsBy(filterBuilder);
-    return builder.addScanners(new SubTypesScanner()).build();
+    builder.addScanners(new SubTypesScanner());
+    return new Reflections(builder);
   }
 
   private void addDefaultPackage(ConfigurationBuilder builder) {
