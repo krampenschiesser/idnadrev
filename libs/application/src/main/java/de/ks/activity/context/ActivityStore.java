@@ -147,7 +147,17 @@ public class ActivityStore {
     CompletableFuture<Object> load = CompletableFuture.supplyAsync(() -> {
       return datasource.loadModel(m -> {
         if (m != null) {
-          initialization.getDataStoreCallbacks().forEach(c -> c.duringLoad(m));
+          initialization.getDataStoreCallbacks().forEach(c -> {
+            try {
+              c.duringLoad(m);
+            } catch (ClassCastException e) {
+              if (c.ignoreTypeMismatch()) {
+                log.trace("Type mismatch in callback: ", e);
+              } else {
+                throw e;
+              }
+            }
+          });
         }
       });
     }, executor);
@@ -199,7 +209,17 @@ public class ActivityStore {
       log.debug("Start saving model");
       datasource.saveModel(model, m -> {
         getBinding().applyControllerContent(m);
-        initialization.getDataStoreCallbacks().forEach(c -> c.duringSave(m));
+        initialization.getDataStoreCallbacks().forEach(c -> {
+          try {
+            c.duringSave(m);
+          } catch (ClassCastException e) {
+            if (c.ignoreTypeMismatch()) {
+              log.trace("Type mismatch in callback: ", e);
+            } else {
+              throw e;
+            }
+          }
+        });
       });
       log.debug("Initially saved model '{}'", model);
       return model;

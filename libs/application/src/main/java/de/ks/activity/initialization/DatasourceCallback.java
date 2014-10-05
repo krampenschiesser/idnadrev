@@ -33,4 +33,8 @@ public interface DatasourceCallback<M> extends Comparable<DatasourceCallback<M>>
   default int compareTo(DatasourceCallback<M> o) {
     return Integer.compare(getPriority(), o.getPriority());
   }
+
+  default boolean ignoreTypeMismatch() {
+    return true;
+  }
 }
