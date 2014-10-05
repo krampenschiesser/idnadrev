@@ -56,8 +56,8 @@ public class ActivityInitialization {
 
   protected void loadControllers(ActivityCfg activityCfg) {
     loadController(activityCfg.getInitialController());
-    activityCfg.getAdditionalControllers().forEach(c -> loadController(c));
-    preloads.values().forEach(l -> l.join());
+    activityCfg.getAdditionalControllers().forEach(this::loadController);
+    preloads.values().forEach(CompletableFuture::join);
   }
 
   private boolean shouldLoadInFXThread(Class<?> clazz) {
@@ -127,9 +127,9 @@ public class ActivityInitialization {
 
   public void initalizeControllers() {
     dataStoreCallbacks.clear();
-    dataStoreCallbacks.addAll(controllers.values().stream().map(p -> p.getLeft()).filter(o -> o instanceof DatasourceCallback).map(o -> (DatasourceCallback) o).collect(Collectors.toList()));
+    dataStoreCallbacks.addAll(controllers.values().stream().map(Pair::getLeft).filter(o -> o instanceof DatasourceCallback).map(o -> (DatasourceCallback) o).collect(Collectors.toList()));
     activityCallbacks.clear();
-    activityCallbacks.addAll(controllers.values().stream().map(p -> p.getLeft()).filter(o -> o instanceof ActivityCallback).map(o -> (ActivityCallback) o).collect(Collectors.toList()));
+    activityCallbacks.addAll(controllers.values().stream().map(Pair::getLeft).filter(o -> o instanceof ActivityCallback).map(o -> (ActivityCallback) o).collect(Collectors.toList()));
     Collections.sort(dataStoreCallbacks);
   }
 
@@ -149,7 +149,7 @@ public class ActivityInitialization {
   }
 
   public Collection<Object> getControllers() {
-    return controllers.values().stream().map(pair -> pair.getKey()).collect(Collectors.toList());
+    return controllers.values().stream().map(Pair::getKey).collect(Collectors.toList());
   }
 
   public List<DatasourceCallback> getDataStoreCallbacks() {
