@@ -38,6 +38,7 @@ public class CategoryBrowserTest extends ActivityTest {
     PersistentWork.persist(new Category("hello"));
 
     browser.onResume();
+    Thread.sleep(150);
     activityController.waitForTasks();
     FXPlatform.waitForFX();
     assertEquals(1, browser.categoryPane.getChildren().size());
@@ -45,6 +46,7 @@ public class CategoryBrowserTest extends ActivityTest {
     PersistentWork.persist(new Category("sauerland"));
     browser.onResume();
     activityController.waitForTasks();
+    Thread.sleep(150);
     FXPlatform.waitForFX();
     assertEquals(2, browser.categoryPane.getChildren().size());
   }
