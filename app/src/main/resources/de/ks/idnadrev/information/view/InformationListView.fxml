@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<GridPane hgap="5.0" minHeight="300.0" minWidth="400.0" vgap="5.0" xmlns="http://javafx.com/javafx/8"
+          xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.idnadrev.information.view.InformationListView">
+    <columnConstraints>
+        <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="10.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+    </rowConstraints>
+    <children>
+        <Label text="%name"/>
+        <Label text="%type" GridPane.rowIndex="1"/>
+        <Label text="%tags" GridPane.rowIndex="2"/>
+        <TextField fx:id="nameSearch" GridPane.columnIndex="1"/>
+        <ComboBox fx:id="typeCombo" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <Label text="%category" GridPane.rowIndex="3"/>
+        <StackPane GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <children>
+                <fx:include fx:id="tagContainer" source="../../tag/TagContainer.fxml"/>
+            </children>
+        </StackPane>
+        <StackPane GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+        <TableView fx:id="informationList" GridPane.columnSpan="2147483647" GridPane.rowIndex="4">
+            <columns>
+                <TableColumn fx:id="nameColumn" minWidth="200.0" prefWidth="300.0" text="%name"/>
+                <TableColumn fx:id="typeColumn" prefWidth="98.0" text="%type"/>
+                <TableColumn fx:id="creationDateColumn" prefWidth="161.0" text="%creationDate"/>
+            </columns>
+        </TableView>
+    </children>
+    <padding>
+        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+    </padding>
+</GridPane>

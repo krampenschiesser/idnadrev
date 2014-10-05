@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<GridPane minHeight="200.0" minWidth="200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="de.ks.idnadrev.information.view.InformationOverviewController">
+    <columnConstraints>
+        <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+    </rowConstraints>
+    <children>
+        <StackPane minHeight="100.0" minWidth="200.0">
+            <children>
+                <fx:include source="InformationListView.fxml"/>
+            </children>
+        </StackPane>
+        <StackPane fx:id="previewContainer" minHeight="100.0" minWidth="200.0" GridPane.columnIndex="1"/>
+    </children>
+</GridPane>
