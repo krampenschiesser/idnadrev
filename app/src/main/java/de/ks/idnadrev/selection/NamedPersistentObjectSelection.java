@@ -156,7 +156,7 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
   }
 
   @FXML
-  void showBrowser() {
+  protected void showBrowser() {
     ActivityExecutor executorService = controller.getExecutorService();
     JavaFXExecutorService javaFXExecutor = controller.getJavaFXExecutor();
     CompletableFuture.supplyAsync(this::readEntities, executorService)//
