@@ -21,11 +21,6 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-/**
- * Created by Christian Loehnert
- * Krampenschiesser@freenet.de
- * All rights reserved by now, license may come later.
- */
 @MappedSuperclass
 public abstract class AbstractPersistentObject<T extends AbstractPersistentObject<T>> implements Serializable, IdentifyableEntity {
   private static final long serialVersionUID = 1L;
