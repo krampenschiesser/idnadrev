@@ -95,10 +95,8 @@ public class FileViewController implements Initializable, DatasourceCallback<Fil
     edit.disableProperty().bind(isDirectory);
 
     files.addListener((ListChangeListener<File>) change -> {
-      FileContainer thought = store.getModel();
-
       files.forEach(file -> {
-        if (!fileReferences.containsKey(file) && file.exists()) {
+        if (!fileReferences.containsKey(file) && file.exists() && !file.isDirectory()) {
           fileReferences.put(file, fileStore.getReference(file));
         }
       });
