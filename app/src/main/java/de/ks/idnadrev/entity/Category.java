@@ -20,8 +20,11 @@ import de.ks.persistence.entity.NamedPersistentObject;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Christian Loehnert
@@ -30,19 +33,31 @@ import java.util.Set;
  */
 @Entity
 public class Category extends NamedPersistentObject<Category> {
-
+  private static final List<String> defaultColors = Arrays.asList("#f3622d", "#fba71b", "#57b757", "#41a9c92", "#4258c9", "#9a42c8", "#c84164", "#888888");
   @ManyToOne
   protected Category parent;
 
   @OneToMany(mappedBy = "parent")
   protected Set<Category> children = new HashSet<>();
 
-  public Category() {
+  @ManyToOne
+  protected FileReference image;
+
+  protected String color;
+
+  protected Category() {
     super();
+    fillDefaultColor();
   }
 
   public Category(String name) {
     super(name);
+    fillDefaultColor();
+  }
+
+  protected void fillDefaultColor() {
+    int nextColor = ThreadLocalRandom.current().nextInt(0, defaultColors.size());
+    setColor(defaultColors.get(nextColor));
   }
 
   public Set<Category> getChildren() {
@@ -60,5 +75,17 @@ public class Category extends NamedPersistentObject<Category> {
 
   public void setParent(Category parent) {
     this.parent = parent;
+  }
+
+  public String getColor() {
+    return color;
+  }
+
+  public void setColor(String color) {
+    this.color = color;
+  }
+
+  public FileReference getImage() {
+    return image;
   }
 }
