@@ -42,8 +42,8 @@ public class EventHandlerTest {
 
     Method validMethod = ReflectionUtil.getMethod(Handler.class, "validHandler");
 
-    assertTrue(new EventHandler(new Handler(), consumingMethod).handleEvent(null, false));
-    assertFalse(new EventHandler(new Handler(), nonConsumingMethod).handleEvent(null, false));
-    assertFalse(new EventHandler(new Handler(), validMethod).handleEvent(null, false));
+    assertTrue(new EventHandler(null, null, new Handler(), consumingMethod).handleEvent(null, false));
+    assertFalse(new EventHandler(null, null, new Handler(), nonConsumingMethod).handleEvent(null, false));
+    assertFalse(new EventHandler(null, null, new Handler(), validMethod).handleEvent(null, false));
   }
 }

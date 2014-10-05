@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.Produces;
+import javax.inject.Singleton;
 
 public class EventSystem {
   private static final Logger log = LoggerFactory.getLogger(EventSystem.class);
@@ -43,6 +44,7 @@ public class EventSystem {
   }
 
   @Produces
+  @Singleton
   public EventBus getEventBus() {
     return bus;
   }

@@ -19,6 +19,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.eventbus.DeadEvent;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.primitives.Primitives;
+import de.ks.executor.JavaFXExecutorService;
 import de.ks.reflection.ReflectionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.CDI;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
@@ -44,6 +46,8 @@ public class EventBus {
   protected final ArrayListMultimap<Class<?>, EventHandler> handlers = ArrayListMultimap.create();
   protected final HandlerComparator handlerComparator = new HandlerComparator();
   protected final ReadWriteLock lock = new ReentrantReadWriteLock(true);
+  protected ExecutorService executorService = null;
+  protected JavaFXExecutorService javaFXExecutorService = null;
 
   public EventBus register(Object handler) {
     @SuppressWarnings("unchecked") List<Method> methods = ReflectionUtil.getAllMethods(handler.getClass(),//
@@ -55,7 +59,7 @@ public class EventBus {
     try {
       for (Method method : methods) {
         Class<?> eventType = getEventType(method);
-        handlers.put(eventType, new EventHandler(handler, method));
+        handlers.put(eventType, new EventHandler(executorService, javaFXExecutorService, handler, method));
         List<EventHandler> eventHandlers = handlers.get(eventType);//could be optimized by not sorting an event type multiple times
         Collections.sort(eventHandlers, getHandlerComparator());
       }
@@ -171,5 +175,21 @@ public class EventBus {
       return Primitives.wrap(type);
     }
     return type;
+  }
+
+  public ExecutorService getExecutorService() {
+    return executorService;
+  }
+
+  public void setExecutorService(ExecutorService executorService) {
+    this.executorService = executorService;
+  }
+
+  public JavaFXExecutorService getJavaFXExecutorService() {
+    return javaFXExecutorService;
+  }
+
+  public void setJavaFXExecutorService(JavaFXExecutorService javaFXExecutorService) {
+    this.javaFXExecutorService = javaFXExecutorService;
   }
 }

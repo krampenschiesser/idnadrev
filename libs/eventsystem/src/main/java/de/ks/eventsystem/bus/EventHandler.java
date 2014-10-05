@@ -15,7 +15,7 @@
 
 package de.ks.eventsystem.bus;
 
-import de.ks.executor.ExecutorService;
+import de.ks.executor.JavaFXExecutorService;
 import de.ks.reflection.ReflectionUtil;
 import javafx.application.Platform;
 import org.slf4j.Logger;
@@ -25,6 +25,7 @@ import javax.enterprise.inject.spi.CDI;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
@@ -37,9 +38,10 @@ class EventHandler {
   protected final Method method;
   protected final Integer priority;
   protected final HandlingThread handlingThread;
-  protected final ExecutorService service = CDI.current().select(ExecutorService.class).get();
+  protected final ExecutorService service;
+  protected final JavaFXExecutorService fxExecutor;
 
-  protected EventHandler(Object target, Method method) {
+  protected EventHandler(ExecutorService service, JavaFXExecutorService fxExecutor, Object target, Method method) {
     this.target = new WeakReference<>(target);
     this.method = method;
     if (method.isAnnotationPresent(Priority.class)) {
@@ -52,6 +54,16 @@ class EventHandler {
       handlingThread = method.getAnnotation(Threading.class).value();
     } else {
       handlingThread = HandlingThread.Sync;
+    }
+    if (service == null) {
+      this.service = CDI.current().select(de.ks.executor.ExecutorService.class).get();
+    } else {
+      this.service = service;
+    }
+    if (fxExecutor == null) {
+      this.fxExecutor = new JavaFXExecutorService();
+    } else {
+      this.fxExecutor = fxExecutor;
     }
   }
 
@@ -92,12 +104,11 @@ class EventHandler {
   }
 
   protected Object handleInJavaFXThread(Object event, Object targetInstance, boolean wait) {
-    Object retval = null;
     if (Platform.isFxApplicationThread()) {
-      retval = ReflectionUtil.invokeMethod(method, targetInstance, event);
+      ReflectionUtil.invokeMethod(method, targetInstance, event);
     } else {
       FutureTask<Class<Void>> task = new FutureTask<>(() -> ReflectionUtil.invokeMethod(method, targetInstance, event), Void.class);
-      service.executeInJavaFXThread(task);
+      fxExecutor.submit(task);
       if (wait) {
         try {
           task.get();
@@ -106,6 +117,6 @@ class EventHandler {
         }
       }
     }
-    return retval;
+    return null;
   }
 }

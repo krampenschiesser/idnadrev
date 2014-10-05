@@ -15,6 +15,9 @@
 
 package de.ks.activity.context;
 
+import de.ks.activity.executor.ActivityExecutor;
+import de.ks.activity.executor.ActivityJavaFXExecutor;
+import de.ks.eventsystem.bus.EventBus;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +33,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
@@ -37,6 +41,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class ActivityContext implements Context {
   private static final Logger log = LoggerFactory.getLogger(ActivityContext.class);
+  private static final AtomicBoolean registeredWithEventBus = new AtomicBoolean();
+
   protected final ConcurrentHashMap<String, ActivityHolder> activities = new ConcurrentHashMap<>();
   protected volatile String currentActivity = null;
 
@@ -44,8 +50,17 @@ public class ActivityContext implements Context {
   private final BeanManager beanManager;
 
   public static void start(String id) {
-    ActivityContext context = (ActivityContext) CDI.current().getBeanManager().getContext(ActivityScoped.class);
+    CDI<Object> cdi = CDI.current();
+    ActivityContext context = (ActivityContext) cdi.getBeanManager().getContext(ActivityScoped.class);
     context.startActivity(id);
+
+    if (!registeredWithEventBus.get()) {
+      EventBus eventBus = cdi.select(EventBus.class).get();
+      ActivityExecutor activityExecutor = cdi.select(ActivityExecutor.class).get();
+      ActivityJavaFXExecutor fxExecutor = cdi.select(ActivityJavaFXExecutor.class).get();
+      eventBus.setExecutorService(activityExecutor);
+      eventBus.setExecutorService(fxExecutor);
+    }
   }
 
   public static void stop(String id) {
