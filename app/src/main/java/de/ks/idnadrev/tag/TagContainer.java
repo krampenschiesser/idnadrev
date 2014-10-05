@@ -15,6 +15,7 @@
 package de.ks.idnadrev.tag;
 
 import de.ks.BaseController;
+import de.ks.activity.ActivityLoadFinishedEvent;
 import de.ks.application.fxml.DefaultLoader;
 import de.ks.idnadrev.entity.Tag;
 import de.ks.idnadrev.entity.Tagged;
@@ -46,6 +47,7 @@ public class TagContainer extends BaseController<Tagged> {
   protected FlowPane tagPane;
 
   protected final ObservableSet<String> currentTags = FXCollections.observableSet(new TreeSet<String>());
+  protected boolean readOnly = false;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -96,27 +98,42 @@ public class TagContainer extends BaseController<Tagged> {
 
   @Override
   public void duringSave(Tagged model) {
-    tagPane.getChildren().stream().map(c -> new Tag(c.getId())).forEach(tag -> {
-      Tag readTag = PersistentWork.forName(Tag.class, tag.getName());
-      readTag = readTag == null ? tag : readTag;
-      model.addTag(readTag);
-    });
+    if (!readOnly) {
+      tagPane.getChildren().stream().map(c -> new Tag(c.getId())).forEach(tag -> {
+        Tag readTag = PersistentWork.forName(Tag.class, tag.getName());
+        readTag = readTag == null ? tag : readTag;
+        model.addTag(readTag);
+      });
+    }
   }
 
   @Override
   public void duringLoad(Tagged model) {
     super.duringLoad(model);
-    model.getTags().forEach(t -> t.getName());
+    if (!readOnly) {
+      model.getTags().forEach(t -> t.getName());
+    }
   }
 
   @Override
   protected void onRefresh(Tagged model) {
     super.onRefresh(model);
-    currentTags.clear();
+    if (!readOnly) {
+      currentTags.clear();
 
-    List<String> tags = model.getTags().stream().map(t -> t.getName()).collect(Collectors.toList());
-    Collections.sort(tags);
-    currentTags.addAll(tags);
+      List<String> tags = model.getTags().stream().map(t -> t.getName()).collect(Collectors.toList());
+      Collections.sort(tags);
+      currentTags.addAll(tags);
+    }
+  }
+
+  @Override
+  protected Tagged extractFromEvent(ActivityLoadFinishedEvent e) {
+    if (readOnly) {
+      return null;
+    } else {
+      return super.extractFromEvent(e);
+    }
   }
 
   public TextField getInput() {
@@ -125,5 +142,13 @@ public class TagContainer extends BaseController<Tagged> {
 
   public EventHandler<ActionEvent> getOnAction() {
     return tagAddController.getOnAction();
+  }
+
+  public boolean isReadOnly() {
+    return readOnly;
+  }
+
+  public void setReadOnly(boolean readOnly) {
+    this.readOnly = readOnly;
   }
 }
