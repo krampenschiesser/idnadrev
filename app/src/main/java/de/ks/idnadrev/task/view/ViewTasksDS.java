@@ -17,10 +17,10 @@ package de.ks.idnadrev.task.view;
 import de.ks.activity.initialization.ActivityInitialization;
 import de.ks.datasource.ListDataSource;
 import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.entity.WorkUnit;
 import de.ks.persistence.PersistentWork;
 import de.ks.persistence.QueryConsumer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import de.ks.persistence.entity.NamedPersistentObject;
 
 import javax.enterprise.inject.spi.CDI;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -31,7 +31,6 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class ViewTasksDS implements ListDataSource<Task> {
-  private static final Logger log = LoggerFactory.getLogger(ViewTasksDS.class);
   private Task taskToSelect;
   private QueryConsumer<Task, Task> filter;
 
@@ -77,8 +76,8 @@ public class ViewTasksDS implements ListDataSource<Task> {
       task.getContext().getName();
     }
     task.getChildren().forEach(this::loadChildren);
-    task.getTags().forEach(tag -> tag.getName());
-    task.getWorkUnits().forEach(workUnit -> workUnit.getDuration());
+    task.getTags().forEach(NamedPersistentObject::getName);
+    task.getWorkUnits().forEach(WorkUnit::getDuration);
   }
 
   @Override
