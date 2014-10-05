@@ -30,7 +30,11 @@ public class ConvertingListCell<T> extends ListCell<T> {
   protected void updateItem(T item, boolean empty) {
     super.updateItem(item, empty);
     if (!empty) {
-      setText(converter.apply(item));
+      if (item == null) {
+        setText("");
+      } else {
+        setText(converter.apply(item));
+      }
     } else {
       setText("");
     }
