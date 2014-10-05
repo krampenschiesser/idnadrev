@@ -16,17 +16,21 @@
 package de.ks.idnadrev.entity;
 
 import de.ks.LauncherRunner;
+import de.ks.idnadrev.entity.information.Information;
 import de.ks.idnadrev.entity.information.TextInfo;
 import de.ks.persistence.PersistentWork;
 import de.ks.persistence.entity.NamedPersistentObject;
+import de.ks.reflection.PropertyPath;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +41,7 @@ import static org.junit.Assert.assertEquals;
  */
 @RunWith(LauncherRunner.class)
 public class PersistEntitiesTest {
+  private static final Logger log = LoggerFactory.getLogger(PersistEntitiesTest.class);
   @Inject
   Cleanup cleanup;
 
@@ -90,4 +95,74 @@ public class PersistEntitiesTest {
     });
   }
 
+  @Test
+  public void testTaggedTextInfo() throws Exception {
+    PersistentWork.run(em -> {
+      TextInfo info1 = new TextInfo("bla");
+      TextInfo info2 = new TextInfo("blubb");
+      Tag tag1 = new Tag("tag1");
+      Tag tag2 = new Tag("tag2");
+      Tag tag3 = new Tag("tag3");
+      Tag tag4 = new Tag("tag4");
+      Tag tag5 = new Tag("tag5");
+      info1.addTag(tag1);
+      info1.addTag(tag2);
+      info1.addTag(tag3);
+
+      info2.addTag(tag3);
+      info2.addTag(tag4);
+      info2.addTag(tag5);
+      em.persist(info1);
+      em.persist(info2);
+    });
+
+    PersistentWork.wrap(() -> {
+      List<TextInfo> textInfos = PersistentWork.from(TextInfo.class);
+      assertEquals(2, textInfos.size());
+      assertEquals(3, textInfos.get(0).getTags().size());
+    });
+    PersistentWork.run(em -> {
+      Tag tag1 = PersistentWork.forName(Tag.class, "tag1");
+      Tag tag2 = PersistentWork.forName(Tag.class, "tag2");
+      Tag tag3 = PersistentWork.forName(Tag.class, "tag3");
+      Tag tag4 = PersistentWork.forName(Tag.class, "tag4");
+      Tag tag5 = PersistentWork.forName(Tag.class, "tag5");
+
+      List<TextInfo> infos = getInfosByTag(em, tag1, tag2);
+      log.info("Found {}", infos);
+      assertEquals(1, infos.size());
+      assertEquals("bla", infos.get(0).getName());
+
+      infos = getInfosByTag(em, tag1, tag5);
+      log.info("Found {}", infos);
+      assertEquals(2, infos.size());
+
+      infos = getInfosByTag(em, tag3);
+      log.info("Found {}", infos);
+      assertEquals(2, infos.size());
+
+      infos = getInfosByTag(em, tag5);
+      log.info("Found {}", infos);
+      assertEquals(1, infos.size());
+      assertEquals("blubb", infos.get(0).getName());
+    });
+  }
+
+  @SuppressWarnings("varargs")
+  private List<TextInfo> getInfosByTag(EntityManager em, Tag... tags) {
+    String KEY_TAGS = PropertyPath.property(Information.class, Information::getTags);
+    CriteriaBuilder builder = em.getCriteriaBuilder();
+
+    CriteriaQuery<TextInfo> query = builder.createQuery(TextInfo.class);
+    Root<TextInfo> root = query.from(TextInfo.class);
+
+    SetJoin<TextInfo, Tag> tagJoin = root.joinSet(KEY_TAGS);
+    Predicate predicate = tagJoin.in(tags);
+    query.distinct(true);
+    query.where(predicate);
+
+    query.select(root);
+
+    return em.createQuery(query).getResultList();
+  }
 }
