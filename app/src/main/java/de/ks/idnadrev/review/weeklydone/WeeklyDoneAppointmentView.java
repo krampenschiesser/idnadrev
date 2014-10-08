@@ -56,7 +56,7 @@ public class WeeklyDoneAppointmentView extends BaseController<List<WeekViewAppoi
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    CompletableFuture<DefaultLoader<Node, AsciiDocViewer>> future = activityInitialization.loadAdditionalController(AsciiDocViewer.class);
+    CompletableFuture<DefaultLoader<Node, AsciiDocViewer>> future = activityInitialization.loadAdditionalControllerWithFuture(AsciiDocViewer.class);
     future.thenAcceptAsync(loader -> {
       descriptionContainer.getChildren().add(loader.getView());
       viewer = loader.getController();
