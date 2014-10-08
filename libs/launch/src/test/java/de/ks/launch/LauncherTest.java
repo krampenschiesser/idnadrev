@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ForkJoinPool;
 
 import static org.junit.Assert.*;
@@ -48,11 +49,14 @@ public class LauncherTest {
     Thread.sleep(50);
     TestService serviceA = (TestService) launcher.getServices().get(0);
     TestService serviceB = (TestService) launcher.getServices().get(1);
+    withRetry(() -> serviceA.getState() != ServiceRuntimeState.STOPPED);
     assertEquals(ServiceRuntimeState.STARTING, serviceA.getState());
     assertEquals(ServiceRuntimeState.STOPPED, serviceB.getState());
     serviceA.await();
     Thread.sleep(100);
+
     assertEquals(ServiceRuntimeState.RUNNING, serviceA.getState());
+    withRetry(() -> serviceB.getState() != ServiceRuntimeState.STOPPED);
     assertEquals(ServiceRuntimeState.STARTING, serviceB.getState());
     serviceB.await();
     Thread.sleep(100);
@@ -117,11 +121,13 @@ public class LauncherTest {
 
     launcher.stopAll();
     assertEquals(ServiceRuntimeState.RUNNING, serviceA.getState());
+    withRetry(() -> serviceB.getState() != ServiceRuntimeState.RUNNING);
     assertEquals(ServiceRuntimeState.STOPPING, serviceB.getState());
 
     serviceB.await();
     Thread.sleep(100);
     assertEquals(ServiceRuntimeState.STOPPING, serviceA.getState());
+    withRetry(() -> serviceA.getState() != ServiceRuntimeState.RUNNING);
     assertEquals(ServiceRuntimeState.STOPPED, serviceB.getState());
 
     serviceA.await();
@@ -130,5 +136,26 @@ public class LauncherTest {
     assertEquals(ServiceRuntimeState.STOPPED, serviceB.getState());
 
     launcher.awaitStop();
+  }
+
+  public static boolean withRetry(Callable<Boolean> delegate) {
+    int rate = 20;
+    int timeout = 5000;
+    int count = 0;
+
+    boolean success = false;
+    while (count < timeout / 20) {
+      try {
+        if (delegate.call()) {
+          return true;
+        }
+        Thread.sleep(rate);
+        count++;
+      } catch (Exception e) {
+        log.error("Could not execute {}", delegate, e);
+        return false;
+      }
+    }
+    return false;
   }
 }
