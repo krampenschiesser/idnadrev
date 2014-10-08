@@ -32,7 +32,7 @@ public class InitalizationController implements Initializable {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    CompletableFuture<DefaultLoader<Node, OtherController>> callback = initialization.loadAdditionalController(OtherController.class);
+    CompletableFuture<DefaultLoader<Node, OtherController>> callback = initialization.loadAdditionalControllerWithFuture(OtherController.class);
     callback.thenAccept(loader -> other = (OtherController) loader.getController());
     callback.thenRun(() -> didLoadOtherController = true);
   }

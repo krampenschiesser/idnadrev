@@ -31,7 +31,7 @@ public class TaskOutcome extends BaseController<Task> {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    activityInitialization.loadAdditionalController(AsciiDocEditor.class).thenAcceptAsync(loader -> {
+    activityInitialization.loadAdditionalControllerWithFuture(AsciiDocEditor.class).thenAcceptAsync(loader -> {
       expectedOutcome = loader.getController();
       expectedOutcomeContainer.getChildren().add(loader.getView());
       expectedOutcome.hideActionBar();

@@ -70,7 +70,7 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
 
   public static CompletableFuture<DefaultLoader<Node, AsciiDocEditor>> load(Consumer<StackPane> viewConsumer, Consumer<AsciiDocEditor> controllerConsumer) {
     ActivityInitialization initialization = CDI.current().select(ActivityInitialization.class).get();
-    return initialization.loadAdditionalController(AsciiDocEditor.class)//
+    return initialization.loadAdditionalControllerWithFuture(AsciiDocEditor.class)//
             .thenApply(loader -> {
               viewConsumer.accept((StackPane) loader.getView());
               controllerConsumer.accept(loader.getController());

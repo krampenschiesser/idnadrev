@@ -66,7 +66,7 @@ public class ViewThoughts extends BaseController<List<Thought>> {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    activityInitialization.loadAdditionalController(AsciiDocViewer.class).thenAcceptAsync(l -> {
+    activityInitialization.loadAdditionalControllerWithFuture(AsciiDocViewer.class).thenAcceptAsync(l -> {
       asciiDocViewer = l.getController();
       asciiDocViewer.addPreProcessor(fileStore::replaceFileStoreDir);
       thoughtTable.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {

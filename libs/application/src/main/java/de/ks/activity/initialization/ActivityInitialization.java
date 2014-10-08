@@ -65,8 +65,8 @@ public class ActivityInitialization {
   }
 
   @SuppressWarnings("unchecked")
-  public <T> CompletableFuture<DefaultLoader<Node, T>> loadAdditionalController(Class<T> controllerClass) {
-    DefaultLoader<Node, Object> loader = new DefaultLoader<>(controllerClass);
+  public <T> DefaultLoader<Node, T> loadAdditionalController(Class<T> controllerClass) {
+    DefaultLoader<Node, T> loader = new DefaultLoader<>(controllerClass);
 
     if (shouldLoadInFXThread(controllerClass)) {
       loader = controller.getJavaFXExecutor().invokeInJavaFXThread(loader::load);
@@ -76,6 +76,11 @@ public class ActivityInitialization {
       log.info("Loaded additional controller {} in current thread", controllerClass);
     }
     currentlyLoadedControllers.get().add(loader.getController());
+    return loader;
+  }
+
+  public <T> CompletableFuture<DefaultLoader<Node, T>> loadAdditionalControllerWithFuture(Class<T> controllerClass) {
+    DefaultLoader<Node, T> loader = loadAdditionalController(controllerClass);
     CompletableFuture completed = CompletableFuture.completedFuture(loader);
     return completed;
   }

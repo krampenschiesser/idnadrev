@@ -43,7 +43,7 @@ import java.util.function.Function;
 public class AsciiDocViewer implements Initializable {
   public static CompletableFuture<DefaultLoader<Node, AsciiDocViewer>> load(Consumer<StackPane> viewConsumer, Consumer<AsciiDocViewer> controllerConsumer) {
     ActivityInitialization initialization = CDI.current().select(ActivityInitialization.class).get();
-    return initialization.loadAdditionalController(AsciiDocViewer.class)//
+    return initialization.loadAdditionalControllerWithFuture(AsciiDocViewer.class)//
             .thenApply(loader -> {
               viewConsumer.accept((StackPane) loader.getView());
               controllerConsumer.accept(loader.getController());

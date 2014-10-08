@@ -46,7 +46,7 @@ public class InsertImage implements AsciiDocEditorCommand {
     this.button = button;
     images = edior.getImages();
     try {
-      selectImageController = initialization.loadAdditionalController(SelectImageController.class).get().getController();
+      selectImageController = initialization.loadAdditionalControllerWithFuture(SelectImageController.class).get().getController();
     } catch (InterruptedException | ExecutionException e) {
       throw new RuntimeException(e);
     }

@@ -103,7 +103,7 @@ public class ViewTasks extends BaseController<List<Task>> {
   public void initialize(URL location, ResourceBundle resources) {
     TreeTableView<Task> tasksView = viewController.getTasksView();
 
-    activityInitialization.loadAdditionalController(AsciiDocViewer.class).thenAcceptAsync(l -> {
+    activityInitialization.loadAdditionalControllerWithFuture(AsciiDocViewer.class).thenAcceptAsync(l -> {
       asciiDocViewer = l.getController();
       asciiDocViewer.addPreProcessor(fileStore::replaceFileStoreDir);
       tasksView.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
