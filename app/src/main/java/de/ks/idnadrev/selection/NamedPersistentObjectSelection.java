@@ -15,41 +15,22 @@
 package de.ks.idnadrev.selection;
 
 import com.google.common.base.Ascii;
-import de.ks.activity.ActivityController;
 import de.ks.activity.executor.ActivityExecutor;
 import de.ks.executor.JavaFXExecutorService;
-import de.ks.executor.group.LastTextChange;
 import de.ks.i18n.Localized;
-import de.ks.javafx.FxCss;
 import de.ks.persistence.PersistentWork;
-import de.ks.persistence.QueryConsumer;
 import de.ks.persistence.entity.NamedPersistentObject;
 import de.ks.reflection.PropertyPath;
-import de.ks.validation.ValidationRegistry;
-import de.ks.validation.validators.NamedEntityValidator;
-import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
+import javafx.scene.Node;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
-import org.controlsfx.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.spi.CDI;
 import javax.persistence.criteria.Predicate;
 import java.net.URL;
 import java.util.List;
@@ -57,28 +38,14 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 
-public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> implements Initializable {
+public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> extends BaseNamedPersistentObjectSelection<T> {
   private static final Logger log = LoggerFactory.getLogger(NamedPersistentObjectSelection.class);
-  @FXML
-  protected TextField input;
-  @FXML
-  protected GridPane root;
-  @FXML
-  protected Button browse;
-  protected Class<T> entityClass;
-  protected TableView<T> tableView;
 
-  protected SimpleObjectProperty<T> selectedValue = new SimpleObjectProperty<>();
-  protected ActivityController controller = CDI.current().select(ActivityController.class).get();
-  protected QueryConsumer<T, T> filter;
-  private Dialog dialog;
-  private CustomAutoCompletionBinding autoCompletion;
-  private EventHandler<ActionEvent> onAction;
-  private NamedPersistentObjectAutoCompletion<T> namedPersistentObjectAutoCompletion;
-  private LastTextChange lastInputTextChange;
+  protected TableView<T> tableView;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
+    super.initialize(location, resources);
     tableView = new TableView<>();
     TableColumn<T, String> column = new TableColumn<>(Localized.get("name"));
     column.setCellValueFactory(param -> {
@@ -103,57 +70,13 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
       }
     });
 
-    browse.disableProperty().bind(input.disabledProperty());
-
     tableView.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
       if (n != null) {
         selectedValue.set(n);
       }
     });
-    selectedValue.addListener((p, o, n) -> {
-      if (n != null) {
-        input.setText(n.getName());
-        if (onAction != null) {
-          onAction.handle(new ActionEvent());
-        }
-      }
-    });
   }
 
-  protected void findAndSetLastValue(String name) {
-    T namedObject = PersistentWork.forName(entityClass, name);
-
-    controller.getJavaFXExecutor().submit(() -> {
-      setSelectedValue(namedObject);
-    });
-  }
-
-  public NamedPersistentObjectSelection<T> from(Class<T> namedEntity) {
-    from(namedEntity, null);
-    return this;
-  }
-
-  public NamedPersistentObjectSelection<T> from(Class<T> namedEntity, QueryConsumer<T, T> filter) {
-    this.entityClass = namedEntity;
-    this.filter = filter;
-    Platform.runLater(() -> {
-      namedPersistentObjectAutoCompletion = new NamedPersistentObjectAutoCompletion<>(entityClass, filter);
-      autoCompletion = new CustomAutoCompletionBinding(input, namedPersistentObjectAutoCompletion);
-    });
-    lastInputTextChange = new LastTextChange(input, controller.getExecutorService());
-    lastInputTextChange.registerHandler(cf -> {
-      cf.thenAccept(this::findAndSetLastValue);
-    });
-    return this;
-  }
-
-  public NamedPersistentObjectSelection<T> enableValidation() {
-    ValidationRegistry validationRegistry = CDI.current().select(ValidationRegistry.class).get();
-    Platform.runLater(() -> {
-      validationRegistry.registerValidator(input, new NamedEntityValidator(entityClass));
-    });
-    return this;
-  }
 
   @FXML
   protected void showBrowser() {
@@ -162,16 +85,7 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
     CompletableFuture.supplyAsync(this::readEntities, executorService)//
             .thenAcceptAsync(this::setTableItems, javaFXExecutor);
 
-    StackPane content = new StackPane();
-    content.getChildren().add(tableView);
-
-    dialog = new Dialog(this.browse, Localized.get("select.namedEntity." + entityClass.getSimpleName()));
-    dialog.setContent(tableView);
-    dialog.show();
-    Instance<String> styleSheets = CDI.current().select(String.class, FxCss.LITERAL);
-    styleSheets.forEach((sheet) -> {
-      dialog.getStylesheets().add(sheet);
-    });
+    super.showBrowser();
 
     tableView.requestFocus();
   }
@@ -199,59 +113,8 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
     }, null);
   }
 
-  public BooleanProperty disableProperty() {
-    return input.disableProperty();
-  }
-
-  public TextField getInput() {
-    return input;
-  }
-
-  protected void submit() {
-    dialog.hide();
-    autoCompletion.hidePopup();
-  }
-
-  @FXML
-  void onKeyPressed(KeyEvent event) {
-    KeyCode code = event.getCode();
-    if (code == KeyCode.ENTER) {
-      if (onAction != null) {
-        event.consume();
-        onAction.handle(new ActionEvent());
-        input.clear();
-      }
-    }
-  }
-
-  public void setOnAction(EventHandler<ActionEvent> handler) {
-    this.onAction = handler;
-  }
-
-  public EventHandler<ActionEvent> getOnAction() {
-    return onAction;
-  }
-
-  public boolean isSelectingProject() {
-    return dialog != null && dialog.getWindow() != null && dialog.getWindow().isShowing();
-  }
-
-  public void hideBrowserBtn() {
-    if (root.getChildren().contains(browse)) {
-      root.getChildren().remove(browse);
-    }
-    root.setHgap(0.0D);
-  }
-
-  public T getSelectedValue() {
-    return selectedValue.get();
-  }
-
-  public SimpleObjectProperty<T> selectedValueProperty() {
-    return selectedValue;
-  }
-
-  public void setSelectedValue(T selectedValue) {
-    this.selectedValue.set(selectedValue);
+  @Override
+  protected Node getPopupNode() {
+    return tableView;
   }
 }
