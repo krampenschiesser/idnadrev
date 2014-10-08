@@ -49,7 +49,7 @@ public class XlsxImporterTest {
 
   @Test
   public void testImportThought() throws Exception {
-    XlsxImporter importer = new XlsxImporter(MoreExecutors.sameThreadExecutor());
+    XlsxImporter importer = new XlsxImporter(MoreExecutors.newDirectExecutorService());
     XlsxImportResultCollector result = importer.importFromFile(thoughtsFile);
     log.info(result.describe());
     assertTrue(result.isSuccessful());

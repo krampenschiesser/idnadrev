@@ -47,7 +47,7 @@ public class XlsxExporter implements Exporter {
   protected final ColumnProvider provider;
 
   public XlsxExporter() {
-    this(MoreExecutors.sameThreadExecutor());
+    this(MoreExecutors.newDirectExecutorService());
   }
 
   public XlsxExporter(ExecutorService executorService) {

@@ -47,7 +47,7 @@ public class XlsxImporter {
   protected XlsImportCfg importCfg = new XlsImportCfg().replaceExisting();
 
   public XlsxImporter() {
-    this(MoreExecutors.sameThreadExecutor());
+    this(MoreExecutors.newDirectExecutorService());
   }
 
   public XlsxImporter(ExecutorService executorService) {
