@@ -32,6 +32,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -157,7 +158,7 @@ public class PersistEntitiesTest {
     Root<TextInfo> root = query.from(TextInfo.class);
 
     SetJoin<TextInfo, Tag> tagJoin = root.joinSet(KEY_TAGS);
-    Predicate predicate = tagJoin.in(tags);
+    Predicate predicate = tagJoin.in(Arrays.asList(tags));
     query.distinct(true);
     query.where(predicate);
 
