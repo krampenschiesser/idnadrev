@@ -78,8 +78,7 @@ public class CategoryItemController {
       Image image = Images.get(file.getAbsolutePath());
       imageView.setImage(image);
     }
-    root.setStyle("-fx-background-color: " + category.getColor() + ";");
-    root.setStyle("-fx-background-radius: 15;");
+    root.setStyle("-fx-background-color: " + category.getColor() + "; -fx-background-radius: 15;");
     root.setOnMouseClicked(e -> {
       if (selectionProperty != null) {
         selectionProperty.set(category);

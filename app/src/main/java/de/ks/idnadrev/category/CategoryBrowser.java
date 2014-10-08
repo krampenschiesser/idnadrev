@@ -110,7 +110,7 @@ public class CategoryBrowser extends BaseController<Object> {
 
   protected CategoryItemController loadSingleItemController(Category category, CategoryFilter filter) {
     try {
-      DefaultLoader<Node, CategoryItemController> loader = activityInitialization.loadAdditionalController(CategoryItemController.class).get();
+      DefaultLoader<Node, CategoryItemController> loader = activityInitialization.loadAdditionalControllerWithFuture(CategoryItemController.class).get();
       CategoryItemController categoryItemController = loader.getController();
       categoryItemController.setCategory(category);
       categoryItemController.setFilter(filter);
