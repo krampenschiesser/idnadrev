@@ -46,5 +46,4 @@
     </root>
     <logger name="de.ks" level="debug"/>
     <logger name="de.ks.activity.context" level="info"/>
-    <logger name="de.ks.activity.context.ActivityStore" level="trace"/>
 </configuration>
