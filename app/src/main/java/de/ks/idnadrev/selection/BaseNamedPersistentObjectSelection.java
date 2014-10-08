@@ -115,7 +115,7 @@ public abstract class BaseNamedPersistentObjectSelection<T extends NamedPersiste
   @FXML
   protected void showBrowser() {
     dialog = new Dialog(this.browse, Localized.get("select.namedEntity." + entityClass.getSimpleName()));
-    dialog.setContent(getPopupNode());
+    dialog.setContent(getBrowseNode());
     dialog.show();
     Instance<String> styleSheets = CDI.current().select(String.class, FxCss.LITERAL);
     styleSheets.forEach((sheet) -> {
@@ -179,5 +179,5 @@ public abstract class BaseNamedPersistentObjectSelection<T extends NamedPersiste
     this.selectedValue.set(selectedValue);
   }
 
-  protected abstract Node getPopupNode();
+  protected abstract Node getBrowseNode();
 }

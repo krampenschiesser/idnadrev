@@ -77,7 +77,6 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
     });
   }
 
-
   @FXML
   protected void showBrowser() {
     ActivityExecutor executorService = controller.getExecutorService();
@@ -114,7 +113,7 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
   }
 
   @Override
-  protected Node getPopupNode() {
+  protected Node getBrowseNode() {
     return tableView;
   }
 }
