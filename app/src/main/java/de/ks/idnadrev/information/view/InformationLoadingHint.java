@@ -16,16 +16,16 @@
 package de.ks.idnadrev.information.view;
 
 import de.ks.idnadrev.entity.Category;
-import de.ks.idnadrev.entity.Tag;
 import de.ks.idnadrev.entity.information.Information;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class InformationLoadingHint {
   protected final int firstResult;
   protected final int maxResults;
-  protected final List<Tag> tags = new LinkedList<>();
+  protected final List<String> tags = new ArrayList<>();
   protected final Class<? extends Information<?>> type;
   protected final String name;
   protected final Category category;
@@ -38,11 +38,6 @@ public class InformationLoadingHint {
     this.category = category;
   }
 
-  public InformationLoadingHint addTag(Tag tag) {
-    tags.add(tag);
-    return this;
-  }
-
   public int getFirstResult() {
     return firstResult;
   }
@@ -51,7 +46,7 @@ public class InformationLoadingHint {
     return maxResults;
   }
 
-  public List<Tag> getTags() {
+  public List<String> getTags() {
     return tags;
   }
 
@@ -65,5 +60,9 @@ public class InformationLoadingHint {
 
   public Category getCategory() {
     return category;
+  }
+
+  public void setTags(Set<String> tags) {
+    this.tags.addAll(tags);
   }
 }

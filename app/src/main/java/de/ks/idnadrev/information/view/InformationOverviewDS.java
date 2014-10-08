@@ -49,8 +49,8 @@ public class InformationOverviewDS implements ListDataSource<InformationPreviewI
       classes.clear();
       classes.add(loadingHint.getType());
     }
-    String name = StringUtils.replace(loadingHint.getName(), "*", "%");
-    List<Tag> tags = loadingHint.getTags();
+    String name = "%" + StringUtils.replace(loadingHint.getName(), "*", "%") + "%";
+    List<String> tags = loadingHint.getTags();
     Category category = loadingHint.getCategory();
 
     List<InformationPreviewItem> retval = PersistentWork.read(em -> {
@@ -70,7 +70,7 @@ public class InformationOverviewDS implements ListDataSource<InformationPreviewI
     return retval;
   }
 
-  private List<InformationPreviewItem> getResults(String name, List<Tag> tags, Category category, EntityManager em, CriteriaBuilder builder, Class<? extends Information<?>> clazz) {
+  private List<InformationPreviewItem> getResults(String name, List<String> tagNames, Category category, EntityManager em, CriteriaBuilder builder, Class<? extends Information<?>> clazz) {
     CriteriaQuery<InformationPreviewItem> query = builder.createQuery(InformationPreviewItem.class);
     Root<? extends Information<?>> root = query.from(clazz);
 
@@ -78,7 +78,8 @@ public class InformationOverviewDS implements ListDataSource<InformationPreviewI
     if (!name.isEmpty()) {
       filters.add(builder.like(builder.lower(root.<String>get(KEY_NAME)), name));
     }
-    if (!tags.isEmpty()) {
+    if (!tagNames.isEmpty()) {
+      List<Tag> tags = getTags(tagNames, em);
       SetJoin<TextInfo, Tag> tagJoin = root.joinSet(KEY_TAGS);
       filters.add(tagJoin.in(tags));
     }
@@ -91,6 +92,17 @@ public class InformationOverviewDS implements ListDataSource<InformationPreviewI
     query.select(builder.construct(InformationPreviewItem.class, root.get(KEY_NAME), root.get(KEY_CREATIONTIME)));
     List<InformationPreviewItem> resultList = em.createQuery(query).getResultList();
     return resultList;
+  }
+
+  protected List<Tag> getTags(List<String> tagNames, EntityManager em) {
+    CriteriaBuilder builder = em.getCriteriaBuilder();
+    CriteriaQuery<Tag> query = builder.createQuery(Tag.class);
+    Root<Tag> root = query.from(Tag.class);
+    Path<String> namePath = root.get(KEY_NAME);
+    query.select(root);
+    query.where(namePath.in(tagNames));
+
+    return em.createQuery(query).getResultList();
   }
 
   @Override

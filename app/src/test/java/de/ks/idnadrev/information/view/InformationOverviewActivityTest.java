@@ -2,6 +2,7 @@ package de.ks.idnadrev.information.view;
 
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityCfg;
+import de.ks.executor.group.LastTextChange;
 import de.ks.idnadrev.ActivityTest;
 import de.ks.idnadrev.entity.Category;
 import de.ks.idnadrev.entity.Tag;
@@ -45,11 +46,37 @@ public class InformationOverviewActivityTest extends ActivityTest {
 
   @Test
   public void testFiltering() throws Exception {
-    assertEquals(5, listView.informationList.getItems().size());
+    expectItemCount(5);
 
-    listView.tagContainerController.addTag("tag1");
+    FXPlatform.invokeLater(() -> listView.tagContainerController.addTag("tag1"));
     activityController.waitForDataSource();
-    FXPlatform.waitForFX();
+    expectItemCount(1);
+    expectItem(0, "info1");
 
+    FXPlatform.invokeLater(() -> listView.tagContainerController.removeTag("tag1"));
+    activityController.waitForDataSource();
+    expectItemCount(5);
+
+    FXPlatform.invokeLater(() -> listView.categorySelectionController.getInput().setText("category3"));
+    Thread.sleep(LastTextChange.WAIT_TIME + 100);
+    activityController.waitForDataSource();
+    expectItemCount(1);
+    expectItem(0, "info3");
+
+    FXPlatform.invokeLater(() -> listView.categorySelectionController.getInput().setText(""));
+    FXPlatform.invokeLater(() -> listView.nameSearch.setText("4"));
+    Thread.sleep(LastTextChange.WAIT_TIME + 100);
+    activityController.waitForDataSource();
+    expectItemCount(1);
+    expectItem(0, "info4");
+  }
+
+  private void expectItemCount(int expected) {
+    assertEquals(expected, listView.informationList.getItems().size());
+  }
+
+  private void expectItem(int index, String name) {
+    InformationPreviewItem item = listView.informationList.getItems().get(index);
+    assertEquals(name, item.getName());
   }
 }

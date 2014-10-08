@@ -17,8 +17,8 @@ package de.ks.idnadrev.information.view;
 
 import de.ks.BaseController;
 import de.ks.executor.group.LastTextChange;
-import de.ks.fxcontrols.cell.ConvertingListCell;
 import de.ks.i18n.Localized;
+import de.ks.idnadrev.category.CategorySelection;
 import de.ks.idnadrev.entity.Tag;
 import de.ks.idnadrev.entity.information.*;
 import de.ks.idnadrev.tag.TagContainer;
@@ -26,12 +26,14 @@ import de.ks.reflection.PropertyPath;
 import de.ks.validation.validators.NamedEntityValidator;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.SetChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.util.StringConverter;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -46,6 +48,8 @@ public class InformationListView extends BaseController<List<InformationPreviewI
   protected TextField nameSearch;
   @FXML
   protected TagContainer tagContainerController;
+  @FXML
+  protected CategorySelection categorySelectionController;
   @FXML
   protected ComboBox<Class<? extends Information<?>>> typeCombo;
   @FXML
@@ -66,10 +70,28 @@ public class InformationListView extends BaseController<List<InformationPreviewI
     lastTextChange = new LastTextChange(nameSearch, controller.getExecutorService());
     lastTextChange.registerHandler(cf -> triggerReload());
 
-    typeCombo.setItems(FXCollections.observableArrayList(null, ChartInfo.class, FileInfo.class, HyperLinkInfo.class, TextInfo.class, UmlDiagramInfo.class));
-    typeCombo.setCellFactory(l -> new ConvertingListCell<Class<? extends Information<?>>>(c -> Localized.get(c.getSimpleName())));
+    typeCombo.setItems(FXCollections.observableArrayList(NoInfo.class, ChartInfo.class, FileInfo.class, HyperLinkInfo.class, TextInfo.class, UmlDiagramInfo.class));
+
+    typeCombo.setConverter(new StringConverter<Class<? extends Information<?>>>() {
+      @Override
+      public String toString(Class<? extends Information<?>> c) {
+        if (c.equals(NoInfo.class)) {
+          return "";
+        } else {
+          String translation = Localized.get(c.getSimpleName());
+          return translation;
+        }
+      }
+
+      @Override
+      public Class<? extends Information<?>> fromString(String string) {
+        return null;
+      }
+    });
     typeCombo.getSelectionModel().select(0);
     typeCombo.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> triggerReload());
+    tagContainerController.getCurrentTags().addListener((SetChangeListener<String>) change -> triggerReload());
+    categorySelectionController.selectedValueProperty().addListener((observable, oldValue, newValue) -> triggerReload());
 
     nameColumn.setCellValueFactory(new PropertyValueFactory<>(PropertyPath.property(InformationPreviewItem.class, i -> i.getName())));
     typeColumn.setCellValueFactory(cd -> {
@@ -104,8 +126,17 @@ public class InformationListView extends BaseController<List<InformationPreviewI
 //    int firstResult = pager.getCurrentPageIndex() * itemsPerPage;
     int itemsPerPage = -1;
     int firstResult = -1;
-    Class<? extends Information<?>> selectedItem = typeCombo.getSelectionModel().getSelectedItem();
+    Class<? extends Information<?>> infoClass = typeCombo.getSelectionModel().getSelectedItem();
+    infoClass = infoClass.equals(NoInfo.class) ? null : infoClass;
     String name = nameSearch.textProperty().getValueSafe().toLowerCase(Locale.ROOT).trim();
-    return new InformationLoadingHint(firstResult, itemsPerPage, selectedItem, name, null);
+
+    InformationLoadingHint loadingHint = new InformationLoadingHint(firstResult, itemsPerPage, infoClass, name, categorySelectionController.getSelectedValue());
+    Set<String> tags = tagContainerController.getCurrentTags();
+    loadingHint.setTags(tags);
+    return loadingHint;
+  }
+
+  protected static class NoInfo extends Information<NoInfo> {
+
   }
 }
