@@ -80,9 +80,11 @@ public class TagContainerTest extends ActivityTest {
     activityController.waitForTasks();
     FXPlatform.waitForFX();
     assertEquals(1, container.tagPane.getChildren().size());
+    assertEquals(1, container.getCurrentTags().size());
 
     FXPlatform.invokeLater(() -> container.removeTag("bla"));
     assertEquals(0, container.tagPane.getChildren().size());
+    assertEquals(0, container.getCurrentTags().size());
 
     addTag(container, "tag1");
 
@@ -92,6 +94,8 @@ public class TagContainerTest extends ActivityTest {
       lookup.getOnAction().handle(null);
     });
     assertEquals(0, container.tagPane.getChildren().size());
+    assertEquals(0, container.getCurrentTags().size());
+
   }
 
   private void addTag(TagContainer container, String tagName) throws Exception {

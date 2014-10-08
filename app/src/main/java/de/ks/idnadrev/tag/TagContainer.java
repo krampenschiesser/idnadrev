@@ -74,7 +74,10 @@ public class TagContainer extends BaseController<Tagged> {
         ctrl.getName().setText(addedTag);
         GridPane view = loader.getView();
         view.setId(addedTag);
-        ctrl.getRemove().setOnAction((e) -> tagPane.getChildren().remove(view));
+        ctrl.getRemove().setOnAction((e) -> {
+          currentTags.remove(addedTag);
+          tagPane.getChildren().remove(view);
+        });
         tagPane.getChildren().add(view);
       }, controller.getJavaFXExecutor());
     }
@@ -150,5 +153,9 @@ public class TagContainer extends BaseController<Tagged> {
 
   public void setReadOnly(boolean readOnly) {
     this.readOnly = readOnly;
+  }
+
+  public ObservableSet<String> getCurrentTags() {
+    return currentTags;
   }
 }
