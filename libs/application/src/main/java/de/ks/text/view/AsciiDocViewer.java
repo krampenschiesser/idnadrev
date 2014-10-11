@@ -44,11 +44,11 @@ public class AsciiDocViewer implements Initializable {
   public static CompletableFuture<DefaultLoader<Node, AsciiDocViewer>> load(Consumer<StackPane> viewConsumer, Consumer<AsciiDocViewer> controllerConsumer) {
     ActivityInitialization initialization = CDI.current().select(ActivityInitialization.class).get();
     return initialization.loadAdditionalControllerWithFuture(AsciiDocViewer.class)//
-            .thenApply(loader -> {
-              viewConsumer.accept((StackPane) loader.getView());
-              controllerConsumer.accept(loader.getController());
-              return loader;
-            });
+      .thenApply(loader -> {
+        viewConsumer.accept((StackPane) loader.getView());
+        controllerConsumer.accept(loader.getController());
+        return loader;
+      });
   }
 
   private static final Logger log = LoggerFactory.getLogger(AsciiDocViewer.class);
@@ -97,8 +97,8 @@ public class AsciiDocViewer implements Initializable {
     JavaFXExecutorService javaFXExecutor = controller.getJavaFXExecutor();
     load.forEach(t -> {
       CompletableFuture<Pair<String, String>> completableFuture = CompletableFuture.supplyAsync(() -> preProcess(t.getAdoc()), executorService)//
-              .thenApply(desc -> parser.parse(desc))//
-              .thenApply(html -> Pair.of(t.getIdentifier(), html));
+        .thenApply(desc -> parser.parse(desc))//
+        .thenApply(html -> Pair.of(t.getIdentifier(), html));
       completableFuture.thenApply(pair -> {
         preloaded.put(pair.getKey(), pair.getValue());
         return pair;
@@ -119,5 +119,9 @@ public class AsciiDocViewer implements Initializable {
 
   public void addPreProcessor(Function<String, String> processor) {
     this.preProcessors.add(processor);
+  }
+
+  public void clear() {
+    preloaded.clear();
   }
 }
