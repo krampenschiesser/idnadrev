@@ -14,17 +14,20 @@
  */
 package de.ks.file;
 
+import com.google.common.net.MediaType;
 import de.ks.activity.executor.ActivityExecutor;
 import de.ks.idnadrev.entity.FileReference;
 import de.ks.option.Options;
 import de.ks.persistence.PersistentWork;
 import de.ks.persistence.transaction.TransactionProvider;
+import de.ks.reflection.PropertyPath;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import javax.persistence.criteria.Predicate;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -32,10 +35,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class FileStore {
   private static final Logger log = LoggerFactory.getLogger(FileStore.class);
+  private static final String KEY_MIMETYPE = PropertyPath.property(FileReference.class, r -> r.getMimeType());
   private final FileOptions options;
 
   @Inject
@@ -163,5 +168,21 @@ public class FileStore {
     }
     String newDescription = StringUtils.replace(description, FileReference.FILESTORE_VAR, replacement);
     return newDescription;
+  }
+
+  public List<FileReference> getFilesByMimeType(MediaType mediaType) {
+    assert mediaType != null;
+
+    List<FileReference> references = PersistentWork.from(FileReference.class, (root, query, builder) -> {
+      javax.persistence.criteria.Path<String> mimeType = root.get(KEY_MIMETYPE);
+      if (!mediaType.type().equals("*")) {
+        String pattern = mediaType.type() + "%";
+        Predicate like = builder.like(mimeType, pattern);
+        query.where(like);
+      }
+    }, null);
+
+    log.info("Found {} references for mimeType {}", references.size(), mediaType.type());
+    return references;
   }
 }

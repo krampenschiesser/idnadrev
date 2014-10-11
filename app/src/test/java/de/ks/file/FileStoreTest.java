@@ -15,6 +15,7 @@
 package de.ks.file;
 
 import com.google.common.base.Charsets;
+import com.google.common.net.MediaType;
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityController;
 import de.ks.activity.ActivityHint;
@@ -35,15 +36,14 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
+import java.net.URL;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
@@ -163,5 +163,31 @@ public class FileStoreTest {
     List<String> lines = com.google.common.io.Files.readLines(fileStoreFile, Charsets.US_ASCII);
     assertEquals(1, lines.size());
     assertEquals("hello sauerland", lines.get(0));
+  }
+
+  @Test
+  public void testGetFileReferences() throws Exception {
+    Path path = Files.createTempFile("img", ".jpg");
+
+    URL resource = getClass().getResource("/de/ks/idnadrev/entity/img.jpg");
+    Path src = Paths.get(resource.toURI());
+    Files.copy(src, path, StandardCopyOption.REPLACE_EXISTING);
+    File file = path.toFile();
+
+    FileReference fileReference = fileStore.getReference(file).get();
+    PersistentWork.run(em -> {
+      fileStore.scheduleCopy(fileReference, file);
+      em.persist(fileReference);
+    });
+    assertThat(fileReference.getMimeType(), containsString("image"));
+
+    List<FileReference> references = fileStore.getFilesByMimeType(MediaType.ANY_IMAGE_TYPE);
+    assertEquals(1, references.size());
+
+    references = fileStore.getFilesByMimeType(MediaType.ANY_AUDIO_TYPE);
+    assertEquals(0, references.size());
+
+    references = fileStore.getFilesByMimeType(MediaType.ANY_TYPE);
+    assertEquals(1, references.size());
   }
 }
