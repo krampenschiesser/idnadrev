@@ -26,6 +26,7 @@ import de.ks.reflection.PropertyPath;
 import de.ks.validation.validators.NamedEntityValidator;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.SetChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -69,6 +70,7 @@ public class InformationListView extends BaseController<List<InformationPreviewI
   public void initialize(URL location, ResourceBundle resources) {
     lastTextChange = new LastTextChange(nameSearch, controller.getExecutorService());
     lastTextChange.registerHandler(cf -> triggerReload());
+    informationList.setItems(FXCollections.observableArrayList());
 
     typeCombo.setItems(FXCollections.observableArrayList(NoInfo.class, ChartInfo.class, FileInfo.class, HyperLinkInfo.class, TextInfo.class, UmlDiagramInfo.class));
 
@@ -113,7 +115,10 @@ public class InformationListView extends BaseController<List<InformationPreviewI
   protected void onRefresh(List<InformationPreviewItem> model) {
     super.onRefresh(model);
 
-    informationList.setItems(FXCollections.observableList(model));
+    ObservableList<InformationPreviewItem> items = informationList.getItems();
+    items.clear();
+    items.addAll(model);
+    informationList.sort();
   }
 
   private void triggerReload() {
@@ -137,6 +142,6 @@ public class InformationListView extends BaseController<List<InformationPreviewI
   }
 
   protected static class NoInfo extends Information<NoInfo> {
-
+    //dummy because javafx can't handle null values in observable list
   }
 }

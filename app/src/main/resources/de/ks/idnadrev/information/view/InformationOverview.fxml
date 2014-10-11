@@ -13,7 +13,7 @@
     <children>
         <StackPane minHeight="100.0" minWidth="200.0">
             <children>
-                <fx:include source="InformationListView.fxml"/>
+                <fx:include fx:id="list" source="InformationListView.fxml"/>
             </children>
         </StackPane>
         <StackPane fx:id="previewContainer" minHeight="100.0" minWidth="200.0" GridPane.columnIndex="1"/>

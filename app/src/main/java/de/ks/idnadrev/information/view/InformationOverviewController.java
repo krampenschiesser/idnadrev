@@ -16,22 +16,47 @@
 package de.ks.idnadrev.information.view;
 
 import de.ks.BaseController;
-import de.ks.idnadrev.entity.information.Information;
+import de.ks.idnadrev.entity.information.TextInfo;
+import de.ks.idnadrev.information.view.preview.InformationPreview;
+import de.ks.idnadrev.information.view.preview.TextInfoPreview;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.fxml.FXML;
+import javafx.scene.control.TableView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
 
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class InformationOverviewController extends BaseController<List<Information>> {
+public class InformationOverviewController extends BaseController<List<InformationPreviewItem>> {
   @FXML
   protected InformationListView listController;
   @FXML
   protected StackPane previewContainer;
+  protected InformationPreview<?> currentPreview;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
+    TableView<InformationPreviewItem> informationList = listController.informationList;
+    ReadOnlyObjectProperty<InformationPreviewItem> selectedItemProperty = informationList.getSelectionModel().selectedItemProperty();
+    selectedItemProperty.addListener((p, o, n) -> {
+      previewContainer.getChildren().clear();
+      if (n != null) {
+        if (n.getType().equals(TextInfo.class)) {
+          TextInfoPreview preview = activityInitialization.getControllerInstance(TextInfoPreview.class);
+          currentPreview = preview;
+          previewContainer.getChildren().add(preview.show(n));
+        }
+      }
+    });
 
+    informationList.setOnKeyReleased(e -> {
+      if (e.getCode() == KeyCode.ENTER) {
+        if (currentPreview != null) {
+          currentPreview.edit();
+        }
+      }
+    });
   }
 }

@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.information.view;
+package de.ks.idnadrev.information.view.preview;
 
-import de.ks.activity.ActivityCfg;
-import de.ks.idnadrev.information.view.preview.TextInfoPreview;
-import de.ks.menu.MenuItem;
+import de.ks.idnadrev.entity.information.Information;
+import de.ks.idnadrev.information.view.InformationPreviewItem;
+import javafx.scene.layout.Pane;
 
-@MenuItem(value = "/main/info", order = 3)
-public class InformationOverviewActivity extends ActivityCfg {
-  public InformationOverviewActivity() {
-    super(InformationOverviewDS.class, InformationOverviewController.class);
-    addAdditionalController(TextInfoPreview.class);
-  }
+public interface InformationPreview<T extends Information<T>> {
+  Pane show(InformationPreviewItem item);
+
+  void edit();
 }
