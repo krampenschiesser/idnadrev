@@ -117,7 +117,7 @@ public class AsciiDocParser {
     AttributesBuilder attributes = getDefaultAttributes();
     attributes.stylesDir(dataDir.getName());
     attributes.tableOfContents(true);
-    attributes.imagesDir(dataDir.getName());
+//    attributes.imagesDir(dataDir.getName());
 
     OptionsBuilder options = getDefaultOptions(attributes);
     options.backend(backend.name().toLowerCase(Locale.ENGLISH));

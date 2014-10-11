@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.text;
+package de.ks.text.image;
 
 public class ImageData {
   protected final String name;
@@ -62,8 +62,8 @@ public class ImageData {
   @Override
   public String toString() {
     return "ImageData{" +
-            "name='" + name + '\'' +
-            ", path='" + path + '\'' +
-            '}';
+      "name='" + name + '\'' +
+      ", path='" + path + '\'' +
+      '}';
   }
 }

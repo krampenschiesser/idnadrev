@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.text;
+package de.ks.text.image;
 
 import de.ks.activity.ActivityController;
 import de.ks.imagecache.Images;

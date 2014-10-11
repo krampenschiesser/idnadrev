@@ -240,12 +240,13 @@ public class AddThoughtTest extends ActivityTest {
     String contentType = Files.probeContentType(file.toPath());
     assertThat(contentType, containsString("image"));
 
-
     FXPlatform.invokeLater(() -> {
+      addThought.name.setText("test");
       addThought.fileViewController.addFiles(Arrays.asList(file));
     });
 
     InsertImage command = addThought.description.getCommand(InsertImage.class);
+    command.collectImages();
     for (Future<?> future : command.getSelectImageController().getLoadingFutures()) {
       future.get();
     }
@@ -259,10 +260,9 @@ public class AddThoughtTest extends ActivityTest {
     FXPlatform.waitForFX();
     assertThat(addThought.description.getText(), containsString("test.jpg"));
 
-    activityController.save();
     Thread.sleep(100);
-    activityController.waitForTasks();
-    activityController.waitForTasks();
+    activityController.save();
+    activityController.waitForDataSource();
 
     PersistentWork.wrap(() -> {
       List<FileReference> references = PersistentWork.from(FileReference.class);

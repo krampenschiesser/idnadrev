@@ -1,5 +1,6 @@
-/*
- * Copyright [2014] [Christian Loehnert, krampenschiesser@gmail.com]
+/**
+ * Copyright [2014] [Christian Loehnert]
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -12,15 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package de.ks.text.image;
 
-package de.ks.text;
+import java.util.Collection;
 
-import de.ks.activity.ActivityCfg;
-import de.ks.activity.DummyTestDataSource;
-import de.ks.text.image.SelectImageController;
-
-public class SelectImageActivity extends ActivityCfg {
-  public SelectImageActivity() {
-    super(DummyTestDataSource.class, SelectImageController.class);
-  }
+public interface ImageProvider {
+  Collection<ImageData> getImages();
 }

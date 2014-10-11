@@ -26,6 +26,9 @@ import de.ks.executor.group.LastTextChange;
 import de.ks.launch.ApplicationService;
 import de.ks.launch.Launcher;
 import de.ks.text.command.InsertImage;
+import de.ks.text.image.GlobalImageProvider;
+import de.ks.text.image.ImageData;
+import de.ks.text.image.SelectImageController;
 import de.ks.util.FXPlatform;
 import javafx.application.Platform;
 import javafx.scene.Node;
@@ -51,6 +54,8 @@ import static org.junit.Assert.*;
 public class AsciiDocEditorTest {
   @Inject
   ActivityController activityController;
+  @Inject
+  GlobalImageProvider imageProvider;
   private AsciiDocEditor adocEditor;
   private ActivityCfg wrapper;
 
@@ -109,9 +114,10 @@ public class AsciiDocEditorTest {
 
   @Test
   public void testImageInsertion() throws Exception {
-    adocEditor.getImages().add(new ImageData("test", "/de/ks/images/keymap.jpg"));
+    imageProvider.addImage(new ImageData("test", "/de/ks/images/keymap.jpg"));
 
     InsertImage command = adocEditor.getCommand(InsertImage.class);
+    command.collectImages();
     SelectImageController selectImageController = command.getSelectImageController();
     for (Future<?> future : selectImageController.getLoadingFutures()) {
       future.get();

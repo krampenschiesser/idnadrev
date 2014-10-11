@@ -29,10 +29,9 @@ import de.ks.executor.group.LastTextChange;
 import de.ks.i18n.Localized;
 import de.ks.javafx.FxCss;
 import de.ks.text.command.AsciiDocEditorCommand;
+import de.ks.text.image.SelectImageController;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -121,7 +120,6 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
   protected LastExecutionGroup<String> renderGroup;
   protected String previewHtmlString;
   protected Button insertImage = null;
-  protected final ObservableList<ImageData> images = FXCollections.observableArrayList();
   protected SelectImageController selectImageController;
   protected boolean focusOnEditor = true;
   protected final Map<Class<?>, AsciiDocEditorCommand> commands = new HashMap<>();
@@ -194,9 +192,6 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
     addCommands();
 
     editor.setOnKeyPressed(e -> {
-      String character = e.getCharacter();
-      String text1 = e.getText();
-
       KeyCode code = e.getCode();
       if (code == KeyCode.S && e.isControlDown()) {
         saveToFile();
@@ -399,10 +394,6 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
     rowConstraints.setMinHeight(0.0);
     rowConstraints.setPrefHeight(0.0);
     rowConstraints.setMaxHeight(0.0);
-  }
-
-  public ObservableList<ImageData> getImages() {
-    return images;
   }
 
   public TextArea getEditor() {

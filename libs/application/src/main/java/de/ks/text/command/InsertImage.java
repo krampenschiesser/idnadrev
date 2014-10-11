@@ -18,10 +18,12 @@ import de.ks.activity.initialization.ActivityInitialization;
 import de.ks.i18n.Localized;
 import de.ks.javafx.FxCss;
 import de.ks.text.AsciiDocEditor;
-import de.ks.text.ImageData;
-import de.ks.text.SelectImageController;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
+import de.ks.text.image.ImageData;
+import de.ks.text.image.ImageProvider;
+import de.ks.text.image.SelectImageController;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableSet;
+import javafx.collections.SetChangeListener;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import org.controlsfx.dialog.Dialog;
@@ -29,21 +31,25 @@ import org.controlsfx.dialog.Dialog;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
-import java.util.List;
+import java.util.Comparator;
+import java.util.TreeSet;
 
 public class InsertImage implements AsciiDocEditorCommand {
   @Inject
   ActivityInitialization initialization;
+  @Inject
+  Instance<ImageProvider> imageProviders;
 
-  protected ObservableList<ImageData> images;
+  protected final ObservableSet<ImageData> images = FXCollections.observableSet(new TreeSet<ImageData>(Comparator.comparing(id -> id.getName())));
   protected SelectImageController selectImageController;
   private Dialog dialog;
   private Button button;
 
   @Override
-  public void initialize(AsciiDocEditor edior, Button button) {
+  public void initialize(AsciiDocEditor editor, Button button) {
     this.button = button;
-    images = edior.getImages();
+
+    collectImages();
     selectImageController = initialization.loadAdditionalController(SelectImageController.class).getController();
 
     images.addListener(this::imagesModified);
@@ -52,8 +58,12 @@ public class InsertImage implements AsciiDocEditorCommand {
         dialog.hide();
       }
 
-      insert(edior.getEditor(), n);
+      insert(editor.getEditor(), n);
     });
+  }
+
+  public void collectImages() {
+    imageProviders.forEach(p -> images.addAll(p.getImages()));
   }
 
   @Override
@@ -63,6 +73,7 @@ public class InsertImage implements AsciiDocEditorCommand {
 
   @Override
   public void execute(TextArea editor) {
+    collectImages();
     dialog = new Dialog(button, Localized.get("select.image"));
     dialog.setContent(selectImageController.getImagePane());
     Instance<String> styleSheets = CDI.current().select(String.class, FxCss.LITERAL);
@@ -80,12 +91,14 @@ public class InsertImage implements AsciiDocEditorCommand {
     editor.requestFocus();
   }
 
-  public void imagesModified(ListChangeListener.Change<? extends ImageData> change) {
-    while (change.next()) {
-      List<? extends ImageData> addedSubList = change.getAddedSubList();
-      List<? extends ImageData> removed = change.getRemoved();
-      addedSubList.forEach(i -> selectImageController.addImage(i.getName(), i.getPath()));
-      removed.forEach(i -> selectImageController.removeImage(i.getName()));
+  public void imagesModified(SetChangeListener.Change<? extends ImageData> change) {
+    if (change.wasAdded()) {
+      ImageData elementAdded = change.getElementAdded();
+      selectImageController.addImage(elementAdded.getName(), elementAdded.getPath());
+    }
+    if (change.wasRemoved()) {
+      ImageData elementRemoved = change.getElementRemoved();
+      selectImageController.removeImage(elementRemoved.getName());
     }
   }
 
