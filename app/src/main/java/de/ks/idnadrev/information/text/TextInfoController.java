@@ -72,6 +72,6 @@ public class TextInfoController extends BaseController<TextInfo> {
   @FXML
   public void onSave() {
     controller.save();
-    controller.reload();
+    controller.stopCurrent();
   }
 }
