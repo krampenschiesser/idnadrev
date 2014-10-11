@@ -17,6 +17,7 @@ package de.ks.idnadrev.tag;
 
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityCfg;
+import de.ks.executor.group.LastTextChange;
 import de.ks.idnadrev.ActivityTest;
 import de.ks.idnadrev.entity.Tag;
 import de.ks.util.FXPlatform;
@@ -103,7 +104,7 @@ public class TagContainerTest extends ActivityTest {
       container.tagAddController.getInput().setText(tagName);
       container.tagAddController.getOnAction().handle(null);
     });
-
+    Thread.sleep(LastTextChange.WAIT_TIME + 10);
     activityController.waitForTasks();
     FXPlatform.waitForFX();
   }
