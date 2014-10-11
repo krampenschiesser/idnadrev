@@ -42,19 +42,23 @@ public class AsciiDocParser {
   private static final Logger log = LoggerFactory.getLogger(AsciiDocParser.class);
 
   protected static final String mathJaxStart = "   <script type=\"text/x-mathjax-config\">\n" +
-          "    MathJax.Hub.Config({\n" +
-          "    asciimath2jax: {\n" +
-          "    delimiters: [['`','`'], ['$$','$$'], ['||','||']]\n" +
-          "    }\n" +
-          "    });\n" +
-          "    </script>\n<script type=\"text/javascript\"\n" +
-          "  src=\"";
+    "    MathJax.Hub.Config({\n" +
+    "    asciimath2jax: {\n" +
+    "    delimiters: [['`','`'], ['$$','$$'], ['||','||']]\n" +
+    "    }\n" +
+    "    });\n" +
+    "    </script>\n<script type=\"text/javascript\"\n" +
+    "  src=\"";
   protected static final String mathJaxEnd = "MathJax.js?config=AM_HTMLorMML-full\">\n" + "</script>";
   private static final Pattern footerPattern = Pattern.compile("<div id=\"footer\">\n<div id=\"footer-text\">\n" +
-          ".*\n" +
-          "</div>\n</div>");
+    ".*\n" +
+    "</div>\n</div>");
   public static final String DATADIR_NAME = "_data";
-  private final Asciidoctor asciidoctor = Asciidoctor.Factory.create();
+  private final ThreadLocal<Asciidoctor> asciidoctor = ThreadLocal.withInitial(() -> {
+    synchronized (AsciiDocParser.class) {
+      return Asciidoctor.Factory.create();
+    }
+  });
   private final OptionsBuilder defaultOptions;
   private final Map<String, String> cssCache = new ConcurrentHashMap<>();
   private final File dataDir;
@@ -63,11 +67,12 @@ public class AsciiDocParser {
   public AsciiDocParser() {
     dataDir = new AsciiDocMetaData().disocverDataDir();
     defaultOptions = getDefaultOptions(getDefaultAttributes());
+    asciidoctor.get();
   }
 
   public AttributesBuilder getDefaultAttributes() {
     AttributesBuilder attributes = AttributesBuilder.attributes()//
-            .experimental(true).sourceHighlighter("coderay").copyCss(true).stylesDir(dataDir.toURI().toString());
+      .experimental(true).sourceHighlighter("coderay").copyCss(true).stylesDir(dataDir.toURI().toString());
     return attributes;
   }
 
@@ -76,12 +81,17 @@ public class AsciiDocParser {
   }
 
   public String parse(String input) {
-    String mathjaxDir = new File(dataDir, "mathjax").toURI().toString() + File.separator;
-    return parse(input, true, true, mathjaxDir, defaultOptions);
+    try {
+      String mathjaxDir = new File(dataDir, "mathjax").toURI().toString() + File.separator;
+      return parse(input, true, true, mathjaxDir, defaultOptions);
+    } catch (Exception e) {
+      log.error("Got error", e);
+      throw e;
+    }
   }
 
   public String parse(String input, boolean removeFooter, boolean addMathJax, String mathjaxDir, OptionsBuilder options) {
-    String render = asciidoctor.render(input, options);
+    String render = asciidoctor.get().render(input, options);
     String backend = (String) options.asMap().get(Options.BACKEND);
     if (backend.equals(AsciiDocBackend.HTML5.name().toLowerCase(Locale.ENGLISH))) {
       if (removeFooter) {
