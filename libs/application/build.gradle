@@ -23,7 +23,7 @@ dependencies {
 
     compile "org.controlsfx:controlsfx:$controlsFX"
 //    compile "org.fxmisc.richtext:richtextfx:$richtextfx" too buggy
-    compile("org.asciidoctor:asciidoctor-java-integration:$asciidocJavaIntegration") {
+    compile("org.asciidoctor:asciidoctorj:$asciidocJavaIntegration") {
         transitive = false;
     }
     compile "net.sourceforge.plantuml:plantuml:$plantuml"
