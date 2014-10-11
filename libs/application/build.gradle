@@ -22,7 +22,6 @@ dependencies {
     compile project(":libs:eventsystem")
 
     compile "org.controlsfx:controlsfx:$controlsFX"
-//    compile "org.fxmisc.richtext:richtextfx:$richtextfx" too buggy
     compile("org.asciidoctor:asciidoctorj:$asciidocJavaIntegration") {
 //        transitive = false;
     }
