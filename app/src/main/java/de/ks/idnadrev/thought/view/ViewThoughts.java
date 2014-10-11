@@ -68,7 +68,6 @@ public class ViewThoughts extends BaseController<List<Thought>> {
   public void initialize(URL location, ResourceBundle resources) {
     activityInitialization.loadAdditionalControllerWithFuture(AsciiDocViewer.class).thenAcceptAsync(l -> {
       asciiDocViewer = l.getController();
-      asciiDocViewer.addPreProcessor(fileStore::replaceFileStoreDir);
       thoughtTable.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
         if (n == null) {
           asciiDocViewer.reset();
@@ -107,10 +106,10 @@ public class ViewThoughts extends BaseController<List<Thought>> {
     if (selectedItem != null) {
 
       PersistentWork.runAsync((em) -> em.find(Thought.class, selectedItem.getId()).postPone(), controller.getExecutorService())//
-              .thenRun(() -> {
-                log.info("Postponing {}", selectedItem);
-                controller.reload();
-              });
+        .thenRun(() -> {
+          log.info("Postponing {}", selectedItem);
+          controller.reload();
+        });
     }
   }
 

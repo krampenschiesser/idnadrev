@@ -105,7 +105,6 @@ public class ViewTasks extends BaseController<List<Task>> {
 
     activityInitialization.loadAdditionalControllerWithFuture(AsciiDocViewer.class).thenAcceptAsync(l -> {
       asciiDocViewer = l.getController();
-      asciiDocViewer.addPreProcessor(fileStore::replaceFileStoreDir);
       tasksView.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
         if (n == null) {
           asciiDocViewer.reset();

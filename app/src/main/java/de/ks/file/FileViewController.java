@@ -222,6 +222,9 @@ public class FileViewController implements Initializable, DatasourceCallback<Fil
     event.<FileContainer<?>>getModel().getFiles().forEach(f -> {
       File file = fileStore.getFile(f);
       fileReferences.put(file, CompletableFuture.completedFuture(f));
+      if (file != null) {
+        addPossibleImage(file);
+      }
       files.add(file);
     });
   }

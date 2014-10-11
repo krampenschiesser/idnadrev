@@ -20,6 +20,7 @@ import de.ks.activity.initialization.ActivityInitialization;
 import de.ks.application.fxml.DefaultLoader;
 import de.ks.executor.JavaFXExecutorService;
 import de.ks.text.AsciiDocParser;
+import de.ks.text.preprocess.AsciiDocPreProcessor;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -31,6 +32,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import java.net.URL;
@@ -38,7 +40,6 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class AsciiDocViewer implements Initializable {
   public static CompletableFuture<DefaultLoader<Node, AsciiDocViewer>> load(Consumer<StackPane> viewConsumer, Consumer<AsciiDocViewer> controllerConsumer) {
@@ -54,11 +55,13 @@ public class AsciiDocViewer implements Initializable {
   private static final Logger log = LoggerFactory.getLogger(AsciiDocViewer.class);
 
   protected final Map<String, String> preloaded = new ConcurrentHashMap<>();
-  protected final List<Function<String, String>> preProcessors = new ArrayList<>();
+  protected final List<AsciiDocPreProcessor> preProcessors = new ArrayList<>();
   @Inject
   ActivityController controller;
   @Inject
   AsciiDocParser parser;
+  @Inject
+  Instance<AsciiDocPreProcessor> preProcessorProvider;
 
   @FXML
   protected StackPane root;
@@ -74,6 +77,12 @@ public class AsciiDocViewer implements Initializable {
       webView.setPrefSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
       root.getChildren().add(webView);
     });
+
+    Iterator<AsciiDocPreProcessor> iterator = preProcessorProvider.iterator();
+    while (iterator.hasNext()) {
+      AsciiDocPreProcessor next = iterator.next();
+      addPreProcessor(next);
+    }
   }
 
   public void reset() {
@@ -111,13 +120,13 @@ public class AsciiDocViewer implements Initializable {
   }
 
   protected String preProcess(String input) {
-    for (Function<String, String> preProcessor : preProcessors) {
-      input = preProcessor.apply(input);
+    for (AsciiDocPreProcessor preProcessor : preProcessors) {
+      input = preProcessor.preProcess(input);
     }
     return input;
   }
 
-  public void addPreProcessor(Function<String, String> processor) {
+  public void addPreProcessor(AsciiDocPreProcessor processor) {
     this.preProcessors.add(processor);
   }
 
