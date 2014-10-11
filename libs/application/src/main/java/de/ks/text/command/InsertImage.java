@@ -30,7 +30,6 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 public class InsertImage implements AsciiDocEditorCommand {
   @Inject
@@ -45,11 +44,7 @@ public class InsertImage implements AsciiDocEditorCommand {
   public void initialize(AsciiDocEditor edior, Button button) {
     this.button = button;
     images = edior.getImages();
-    try {
-      selectImageController = initialization.loadAdditionalControllerWithFuture(SelectImageController.class).get().getController();
-    } catch (InterruptedException | ExecutionException e) {
-      throw new RuntimeException(e);
-    }
+    selectImageController = initialization.loadAdditionalController(SelectImageController.class).getController();
 
     images.addListener(this::imagesModified);
     selectImageController.selectedImagePathProperty().addListener((p, o, n) -> {
