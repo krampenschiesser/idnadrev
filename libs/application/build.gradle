@@ -24,7 +24,7 @@ dependencies {
     compile "org.controlsfx:controlsfx:$controlsFX"
 //    compile "org.fxmisc.richtext:richtextfx:$richtextfx" too buggy
     compile("org.asciidoctor:asciidoctorj:$asciidocJavaIntegration") {
-        transitive = false;
+//        transitive = false;
     }
     compile "net.sourceforge.plantuml:plantuml:$plantuml"
 
@@ -37,8 +37,8 @@ dependencies {
     runtime "org.jboss:jandex:$jandex"
 
     //asciidoc:
-    runtime "org.jruby:jruby-complete:$jruby"
-    runtime "com.beust:jcommander:$jcommander"
+//    runtime "org.jruby:jruby-complete:$jruby"
+//    runtime "com.beust:jcommander:$jcommander"
 
 //    runtime "org.apache.deltaspike.cdictrl:deltaspike-cdictrl-owb:$deltaspike"
 //    runtime "org.apache.openwebbeans:openwebbeans-impl:$openwebbeans"
