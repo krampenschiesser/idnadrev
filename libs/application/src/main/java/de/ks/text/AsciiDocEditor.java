@@ -71,11 +71,11 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
   public static CompletableFuture<DefaultLoader<Node, AsciiDocEditor>> load(Consumer<StackPane> viewConsumer, Consumer<AsciiDocEditor> controllerConsumer) {
     ActivityInitialization initialization = CDI.current().select(ActivityInitialization.class).get();
     return initialization.loadAdditionalControllerWithFuture(AsciiDocEditor.class)//
-            .thenApply(loader -> {
-              viewConsumer.accept((StackPane) loader.getView());
-              controllerConsumer.accept(loader.getController());
-              return loader;
-            });
+      .thenApply(loader -> {
+        viewConsumer.accept((StackPane) loader.getView());
+        controllerConsumer.accept(loader.getController());
+        return loader;
+      });
   }
 
   private static final Logger log = LoggerFactory.getLogger(AsciiDocEditor.class);
@@ -135,21 +135,21 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
     renderGroup = new LastExecutionGroup<>("adocrender", 500, controller.getExecutorService());
 
     CompletableFuture.supplyAsync(() -> new WebView(), controller.getJavaFXExecutor())//
-            .thenAccept(webView -> {
-              helpView = webView;
-              helpView.getEngine().load("http://powerman.name/doc/asciidoc");
-            });
+      .thenAccept(webView -> {
+        helpView = webView;
+        helpView.getEngine().load("http://powerman.name/doc/asciidoc");
+      });
     CompletableFuture.supplyAsync(() -> new WebView(), controller.getJavaFXExecutor())//
-            .thenAccept(webView -> {
-              preview = webView;
-              StackPane pane = new StackPane(preview);
-              pane.getStyleClass().add("webviewContainer");
-              previewTab.setContent(pane);
-            });
+      .thenAccept(webView -> {
+        preview = webView;
+        StackPane pane = new StackPane(preview);
+        pane.getStyleClass().add("webviewContainer");
+        previewTab.setContent(pane);
+      });
     CompletableFuture.supplyAsync(() -> new WebView(), controller.getJavaFXExecutor())//
-            .thenAccept(webView -> {
-              popupPreview = webView;
-            });
+      .thenAccept(webView -> {
+        popupPreview = webView;
+      });
 
     text.bindBidirectional(editor.textProperty());
 
@@ -212,11 +212,6 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
       }
     });
     searchField.setVisible(false);
-    searchField.setOnKeyTyped(e -> {
-      if (e.getCode() == KeyCode.ENTER) {
-        log.info("Ä'''''''!BDSAVK");
-      }
-    });
     searchField.setOnKeyPressed(e -> {
       if (e.getCode() == KeyCode.ENTER) {
         searchForText();
