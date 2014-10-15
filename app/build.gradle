@@ -16,6 +16,7 @@
 apply plugin: 'application'
 
 mainClassName = "de.ks.idnadrev.Application"
+applicationDefaultJvmArgs = ["-Dcreate.dummydata=true"]
 
 dependencies {
     compile project(":libs:fxcontrols")
