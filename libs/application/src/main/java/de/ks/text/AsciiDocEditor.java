@@ -30,6 +30,7 @@ import de.ks.i18n.Localized;
 import de.ks.javafx.FxCss;
 import de.ks.text.command.AsciiDocEditorCommand;
 import de.ks.text.image.SelectImageController;
+import de.ks.text.view.AsciiDocViewer;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
@@ -114,11 +115,11 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
 
   protected Dialog helpDialog;
   protected WebView helpView;
-  protected WebView preview;
+  //  protected WebView preview;
   protected WebView popupPreview;
   protected final SimpleStringProperty text = new SimpleStringProperty();
   protected LastExecutionGroup<String> renderGroup;
-  protected String previewHtmlString;
+  //  protected String previewHtmlString;
   protected Button insertImage = null;
   protected SelectImageController selectImageController;
   protected boolean focusOnEditor = true;
@@ -128,8 +129,17 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
   protected volatile PersistentStoreBack persistentStoreBack;
   protected volatile LastSearch lastSearch = null;
 
+  protected AsciiDocViewer preview;
+  protected Node previewNode;
+
   @Override
   public void initialize(URL location, ResourceBundle resources) {
+    DefaultLoader<Node, AsciiDocViewer> previewLoader = initialization.loadAdditionalController(AsciiDocViewer.class);
+    previewNode = previewLoader.getView();
+    previewTab.setContent(previewNode);
+    preview = previewLoader.getController();
+
+
     renderGroup = new LastExecutionGroup<>("adocrender", 500, controller.getExecutorService());
 
     CompletableFuture.supplyAsync(() -> new WebView(), controller.getJavaFXExecutor())//
@@ -137,13 +147,13 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
         helpView = webView;
         helpView.getEngine().load("http://powerman.name/doc/asciidoc");
       });
-    CompletableFuture.supplyAsync(() -> new WebView(), controller.getJavaFXExecutor())//
-      .thenAccept(webView -> {
-        preview = webView;
-        StackPane pane = new StackPane(preview);
-        pane.getStyleClass().add("webviewContainer");
-        previewTab.setContent(pane);
-      });
+//    CompletableFuture.supplyAsync(() -> new WebView(), controller.getJavaFXExecutor())//
+//      .thenAccept(webView -> {
+//        preview = webView;
+//        StackPane pane = new StackPane(preview);
+//        pane.getStyleClass().add("webviewContainer");
+//        previewTab.setContent(pane);
+//      });
     CompletableFuture.supplyAsync(() -> new WebView(), controller.getJavaFXExecutor())//
       .thenAccept(webView -> {
         popupPreview = webView;
@@ -155,12 +165,12 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
       if (n != null) {
         CompletableFuture<String> future = renderGroup.schedule(() -> n);
         future.thenAcceptAsync(this::storeBack, controller.getExecutorService());
-        future = future.thenApplyAsync(s -> parser.parse(s));
-        future.thenAcceptAsync(this::applyRenderedHtml, controller.getJavaFXExecutor());
-        future.exceptionally(t -> {
-          log.error("Could not parse asciidoc {}", n, t);
-          return null;
-        });
+        future.thenAccept(s -> preview.show(s));
+//        future.thenAcceptAsync(this::applyRenderedHtml, controller.getJavaFXExecutor());
+//        future.exceptionally(t -> {
+//          log.error("Could not parse asciidoc {}", n, t);
+//          return null;
+//        });
       }
     });
 
@@ -179,7 +189,9 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
 
     tabPane.getSelectionModel().selectedIndexProperty().addListener((p, o, n) -> {
       if (n != null && n.intValue() == 1) {
-        preview.getEngine().loadContent(previewHtmlString);
+//        preview.clear();
+//        preview.show();
+//        preview.getEngine().loadContent(previewHtmlString);
         Platform.runLater(() -> preview.requestFocus());
       }
       if (o == null || n == null) {
@@ -274,15 +286,15 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
     }
   }
 
-  protected void applyRenderedHtml(String html) {
-    previewHtmlString = html;
-    plainHtml.setText(html);
-    if (tabPane.getSelectionModel().getSelectedIndex() == 1) {
-      preview.getEngine().loadContent(html);
-    } else if (previewPopupDialog != null && previewPopupDialog.getWindow().isShowing()) {
-      popupPreview.getEngine().loadContent(html);
-    }
-  }
+//  protected void applyRenderedHtml(String html) {
+//    previewHtmlString = html;
+//    plainHtml.setText(html);
+//    if (tabPane.getSelectionModel().getSelectedIndex() == 1) {
+//      preview.getEngine().loadContent(html);
+//    } else if (previewPopupDialog != null && previewPopupDialog.getWindow().isShowing()) {
+//      popupPreview.getEngine().loadContent(html);
+//    }
+//  }
 
   private void addCommands() {
     CDI.current().select(AsciiDocEditorCommand.class).forEach(c -> {
@@ -366,12 +378,12 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
   void showPreviewPopup() {
     String title = Localized.get("adoc.preview");
     previewPopupDialog = new Dialog(this.help, title);
-    previewPopupDialog.setContent(popupPreview);
+    previewPopupDialog.setContent(previewNode);
 
     Stage stage = (Stage) previewPopupDialog.getWindow();
     stage.initModality(Modality.NONE);
     stage.setOnShowing(e -> {
-      popupPreview.getEngine().load(previewHtmlString);
+//      popupPreview.getEngine().load(previewHtmlString);
     });
 
     previewPopupDialog.show();
@@ -414,7 +426,7 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
   }
 
   public WebView getPreview() {
-    return preview;
+    return preview.getWebView();
   }
 
   public AsciiDocEditor setPersistentStoreBack(String id, File dir) {

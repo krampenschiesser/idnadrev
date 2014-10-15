@@ -34,6 +34,7 @@ import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
+import javafx.scene.web.WebEngine;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.hamcrest.Matchers;
@@ -98,14 +99,15 @@ public class AsciiDocEditorTest {
   public void testAdocParsing() throws Exception {
     FXPlatform.invokeLater(() -> adocEditor.editor.setText("= Title\n== more"));
 
-    withRetry(() -> adocEditor.previewHtmlString != null);
-    assertNotNull("preview string is null", adocEditor.previewHtmlString);
+    withRetry(() -> adocEditor.preview.getCurrentHtml() != null);
+    assertNotNull("preview string is null", adocEditor.preview.getCurrentHtml());
 
-    assertNull("document is not null", adocEditor.preview.getEngine().getDocument());
+    WebEngine engine = adocEditor.preview.getWebView().getEngine();
+    assertNull("document is not null", engine.getDocument());
 
     FXPlatform.invokeLater(() -> adocEditor.tabPane.getSelectionModel().select(1));
-    withRetry(() -> adocEditor.preview.getEngine().getDocument() != null);
-    assertNotNull("document did not load, is still null", adocEditor.preview.getEngine().getDocument());
+    withRetry(() -> engine.getDocument() != null);
+    assertNotNull("document did not load, is still null", engine.getDocument());
 
     FXPlatform.invokeLater(() -> adocEditor.tabPane.getSelectionModel().select(0));
     FXPlatform.waitForFX();

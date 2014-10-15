@@ -42,6 +42,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 public class AsciiDocViewer implements Initializable {
+
   public static CompletableFuture<DefaultLoader<Node, AsciiDocViewer>> load(Consumer<StackPane> viewConsumer, Consumer<AsciiDocViewer> controllerConsumer) {
     ActivityInitialization initialization = CDI.current().select(ActivityInitialization.class).get();
     return initialization.loadAdditionalControllerWithFuture(AsciiDocViewer.class)//
@@ -66,6 +67,7 @@ public class AsciiDocViewer implements Initializable {
   @FXML
   protected StackPane root;
   protected WebView webView;
+  protected String currentHtml;
 
   protected final SimpleStringProperty currentIdentifier = new SimpleStringProperty();
 
@@ -90,13 +92,19 @@ public class AsciiDocViewer implements Initializable {
     currentIdentifier.set("");
   }
 
+  public void show(String content) {
+    show(new AsciiDocContent("default", content));
+  }
+
   public void show(AsciiDocContent content) {
     String identifier = content.getIdentifier();
     currentIdentifier.set(identifier);
     if (preloaded.containsKey(identifier)) {
       String html = preloaded.get(identifier);
+      currentHtml = html;
       webView.getEngine().loadContent(html == null ? "" : html);
     } else {
+      preload(Collections.singletonList(content));
       webView.getEngine().loadContent(content.getAdoc() == null ? "" : content.getAdoc());
     }
   }
@@ -113,7 +121,9 @@ public class AsciiDocViewer implements Initializable {
         return pair;
       }).thenAcceptAsync(pair -> {
         if (currentIdentifier.getValueSafe().equals(pair.getKey())) {
-          webView.getEngine().loadContent(pair.getValue());
+          String html = pair.getValue();
+          currentHtml = html;
+          webView.getEngine().loadContent(html);
         }
       }, javaFXExecutor);
     });
@@ -132,5 +142,17 @@ public class AsciiDocViewer implements Initializable {
 
   public void clear() {
     preloaded.clear();
+  }
+
+  public void requestFocus() {
+    webView.requestFocus();
+  }
+
+  public WebView getWebView() {
+    return webView;
+  }
+
+  public String getCurrentHtml() {
+    return currentHtml;
   }
 }
