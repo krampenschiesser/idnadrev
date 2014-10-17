@@ -19,6 +19,7 @@ import de.ks.activity.ActivityHint;
 import de.ks.file.FileStore;
 import de.ks.idnadrev.entity.Thought;
 import de.ks.idnadrev.task.create.CreateTaskActivity;
+import de.ks.idnadrev.thought.add.AddThoughtActivity;
 import de.ks.persistence.PersistentWork;
 import de.ks.text.view.AsciiDocContent;
 import de.ks.text.view.AsciiDocViewer;
@@ -61,6 +62,8 @@ public class ViewThoughts extends BaseController<List<Thought>> {
   protected Button later;
   @FXML
   protected Button deleteBtn;
+  @FXML
+  protected Button editBtn;
 
   protected AsciiDocViewer asciiDocViewer;
 
@@ -161,6 +164,20 @@ public class ViewThoughts extends BaseController<List<Thought>> {
       em.remove(PersistentWork.reload(thought));
     });
     controller.reload();
+  }
+
+  @FXML
+  void onTransformToInfo() {
+
+  }
+
+  @FXML
+  void onEdit() {
+    ActivityHint activityHint = new ActivityHint(AddThoughtActivity.class);
+    activityHint.setReturnToActivity(controller.getCurrentActivityId());
+    activityHint.setDataSourceHint(this::getSelectedThought);
+
+    controller.startOrResume(activityHint);
   }
 
   @Override

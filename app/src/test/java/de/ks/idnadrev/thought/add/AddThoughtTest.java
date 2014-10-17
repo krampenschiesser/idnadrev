@@ -17,6 +17,7 @@ package de.ks.idnadrev.thought.add;
 import de.ks.LauncherRunner;
 import de.ks.TempFileRule;
 import de.ks.activity.ActivityCfg;
+import de.ks.datasource.DataSource;
 import de.ks.idnadrev.ActivityTest;
 import de.ks.idnadrev.entity.FileReference;
 import de.ks.idnadrev.entity.Thought;
@@ -153,12 +154,27 @@ public class AddThoughtTest extends ActivityTest {
   }
 
   @Test
+  public void testEditThought() throws Exception {
+    copy2Clipboard("hello world");
+    Thought thought = new Thought("testThought");
+    PersistentWork.persist(thought.setDescription("hello Sauerland!"));
+
+
+    DataSource datasource = store.getDatasource();
+    datasource.setLoadingHint(thought);
+    activityController.reload();
+    activityController.waitForDataSource();
+
+    assertEquals("hello Sauerland!", addThought.description.getText());
+  }
+
+  @Test
   public void testFilesInClipBoard() throws Exception {
     HashMap<DataFormat, Object> content = new HashMap<>();
     content.put(DataFormat.FILES, testFiles.getFiles());
     StringBuilder plainText = testFiles.getFiles().stream().collect(StringBuilder::new, //
-            (s, file) -> s.append(file.getAbsolutePath()).append("\n"),//
-            (s, s2) -> s.append(s2));
+      (s, file) -> s.append(file.getAbsolutePath()).append("\n"),//
+      (s, s2) -> s.append(s2));
     content.put(DataFormat.PLAIN_TEXT, plainText.toString());
 
     FXPlatform.invokeLater(() -> {
@@ -193,8 +209,8 @@ public class AddThoughtTest extends ActivityTest {
     HashMap<DataFormat, Object> content = new HashMap<>();
     content.put(DataFormat.FILES, testFiles.getFiles());
     StringBuilder plainText = testFiles.getFiles().stream().collect(StringBuilder::new, //
-            (s, file) -> s.append(file.getAbsolutePath()).append("\n"),//
-            (s, s2) -> s.append(s2));
+      (s, file) -> s.append(file.getAbsolutePath()).append("\n"),//
+      (s, s2) -> s.append(s2));
     content.put(DataFormat.PLAIN_TEXT, plainText.toString());
 
     FXPlatform.invokeLater(() -> {

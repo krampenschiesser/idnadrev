@@ -53,9 +53,11 @@
                     <children>
                         <Button fx:id="toTask" defaultButton="true" mnemonicParsing="false" onAction="#convertToTask"
                                 text="%thought.transform.task"/>
-                        <Button fx:id="toInfo" mnemonicParsing="false" text="%thought.transform.info"/>
+                        <Button fx:id="toInfo" mnemonicParsing="false" onAction="#onTransformToInfo"
+                                text="%thought.transform.info"/>
                         <Button fx:id="later" mnemonicParsing="false" onAction="#postPone"
                                 text="%thought.transform.later"/>
+                        <Button fx:id="editBtn" mnemonicParsing="false" onAction="#onEdit" text="%edit"/>
                         <Button fx:id="deleteBtn" mnemonicParsing="false" onAction="#delete" text="%delete"/>
                     </children>
                     <GridPane.margin>
@@ -66,8 +68,7 @@
                     </padding>
                 </HBox>
                 <Label fx:id="nameLabel" styleClass="pageTitle" text="Label" GridPane.columnSpan="2147483647"/>
-                <StackPane fx:id="description" GridPane.columnSpan="2147483647"
-                           GridPane.rowIndex="1"/>
+                <StackPane fx:id="description" GridPane.columnSpan="2147483647" GridPane.rowIndex="1"/>
             </children>
         </GridPane>
     </children>

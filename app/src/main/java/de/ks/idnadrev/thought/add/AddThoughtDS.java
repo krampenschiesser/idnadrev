@@ -14,27 +14,15 @@
  */
 package de.ks.idnadrev.thought.add;
 
-import de.ks.datasource.NewInstanceDataSource;
+import de.ks.datasource.CreateEditDS;
 import de.ks.idnadrev.entity.Thought;
-import de.ks.persistence.PersistentWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.function.Consumer;
-
-public class AddThoughtDS extends NewInstanceDataSource<Thought> {
+public class AddThoughtDS extends CreateEditDS<Thought> {
   private static final Logger log = LoggerFactory.getLogger(AddThoughtDS.class);
 
   public AddThoughtDS() {
     super(Thought.class);
-  }
-
-  @Override
-  public void saveModel(Thought model, Consumer<Thought> beforeSaving) {
-    log.info("Saving model {}", model);
-    PersistentWork.wrap(() -> {
-      beforeSaving.accept(model);
-      PersistentWork.persist(model);
-    });
   }
 }

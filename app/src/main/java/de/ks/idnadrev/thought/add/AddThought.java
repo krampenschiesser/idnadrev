@@ -161,7 +161,6 @@ public class AddThought extends BaseController<Thought> {
   @Override
   protected void onRefresh(Thought model) {
     this.name.requestFocus();
-    this.description.setText("");
   }
 
   public AsciiDocEditor getDescription() {
