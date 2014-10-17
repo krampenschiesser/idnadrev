@@ -31,6 +31,8 @@ public class IdnadrevPreloader extends PreloaderApplication {
     String versionString = Application.versioning.getVersionInfo().getVersionString();
     preloader.getVersion().setText(versionString);
 
+    stage.setTitle("Idnadrev Version " + versionString);
+
     Scene scene = new Scene(pane);
     scene.getStylesheets().add("/de/ks/idnadrev/preloader.css");
 

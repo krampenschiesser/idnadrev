@@ -32,21 +32,21 @@
             </image>
         </ImageView>
         <Rectangle arcHeight="5.0" arcWidth="5.0" height="37.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0"
-                   styleClass="preloaderBoxTop" width="1900.0" StackPane.alignment="TOP_LEFT"/>
+                   styleClass="preloaderBoxTop" visible="false" width="1900.0" StackPane.alignment="TOP_LEFT"/>
 
         <Text fx:id="title" fill="WHITE" fontSmoothingType="LCD" stroke="BLACK" strokeType="OUTSIDE" strokeWidth="0.0"
-              styleClass="preloaderTitle" text="Idnadrev" StackPane.alignment="TOP_LEFT">
+              styleClass="preloaderTitle" text="Idnadrev" visible="false" StackPane.alignment="TOP_LEFT">
             <font>
                 <Font size="12.0"/>
             </font>
         </Text>
         <Text fx:id="version" fill="WHITE" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0"
-              styleClass="preloaderTitle" text="Version" StackPane.alignment="TOP_RIGHT">
+              styleClass="preloaderTitle" text="Version" visible="false" StackPane.alignment="TOP_RIGHT">
             <font>
                 <Font size="12.0"/>
             </font>
         </Text>
-        <Rectangle arcHeight="5.0" arcWidth="5.0" height="37.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0"
+        <Rectangle arcHeight="5.0" arcWidth="5.0" height="22.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0"
                    styleClass="preloaderBoxBottom" width="1900.0" StackPane.alignment="BOTTOM_LEFT"/>
         <Text fx:id="loadingInfo" fill="WHITE" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0"
               styleClass="preloaderLoadingInfo" text="loadingInformation" StackPane.alignment="BOTTOM_CENTER">
