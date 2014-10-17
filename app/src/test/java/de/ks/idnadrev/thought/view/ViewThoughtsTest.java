@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.EntityManager;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
 public class ViewThoughtsTest extends ActivityTest {
@@ -50,6 +50,7 @@ public class ViewThoughtsTest extends ActivityTest {
   @Override
   protected void createTestData(EntityManager em) {
     PersistentWork.persist(new Thought("test"));
+    PersistentWork.persist(new Thought("testWithLink").setDescription("goto www.krampenschiesser.de"));
   }
 
   @Before
@@ -59,12 +60,32 @@ public class ViewThoughtsTest extends ActivityTest {
 
   @Test
   public void testDeleteThought() throws Exception {
-    assertEquals(1, viewThoughts.thoughtTable.getItems().size());
+    assertEquals(2, viewThoughts.thoughtTable.getItems().size());
     FXPlatform.invokeLater(() -> viewThoughts.thoughtTable.getSelectionModel().select(0));
 
     viewThoughts.delete();
 
     List<Thought> from = PersistentWork.from(Thought.class);
-    assertEquals(0, from.size());
+    assertEquals(1, from.size());
+  }
+
+  @Test
+  public void testConversionButtonEnablement() throws Exception {
+    ThoughtToInfoController toInfoController = activityController.getControllerInstance(ThoughtToInfoController.class);
+
+    FXPlatform.invokeLater(() -> viewThoughts.thoughtTable.getSelectionModel().select(0));
+    activityController.waitForTasks();
+
+    assertFalse(toInfoController.toTextBtn.isDisabled());
+    assertTrue(toInfoController.toLinkBtn.isDisabled());
+    assertTrue(toInfoController.toFileBtn.isDisabled());
+
+
+    FXPlatform.invokeLater(() -> viewThoughts.thoughtTable.getSelectionModel().select(1));
+    activityController.waitForTasks();
+
+    assertFalse(toInfoController.toTextBtn.isDisabled());
+    assertFalse(toInfoController.toLinkBtn.isDisabled());
+    assertTrue(toInfoController.toFileBtn.isDisabled());
   }
 }

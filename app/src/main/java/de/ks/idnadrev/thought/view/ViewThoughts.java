@@ -72,6 +72,7 @@ public class ViewThoughts extends BaseController<List<Thought>> {
     activityInitialization.loadAdditionalControllerWithFuture(AsciiDocViewer.class).thenAcceptAsync(l -> {
       asciiDocViewer = l.getController();
       thoughtTable.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
+        controller.getControllerInstance(ThoughtToInfoController.class).setSelectedThought(n);
         if (n == null) {
           asciiDocViewer.reset();
         } else {
@@ -189,11 +190,8 @@ public class ViewThoughts extends BaseController<List<Thought>> {
     controller.getJavaFXExecutor().submit(() -> thoughtTable.getSelectionModel().select(0));
   }
 
-  public TableView<Thought> getTable() {
-    return thoughtTable;
-  }
-
-  public Button getToTask() {
-    return toTask;
+  @Override
+  public void duringLoad(List<Thought> model) {
+    model.forEach(m -> m.getFiles().forEach(f -> f.getName()));
   }
 }
