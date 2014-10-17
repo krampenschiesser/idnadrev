@@ -4,7 +4,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.FlowPane?>
 <FlowPane hgap="10.0" vgap="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="de.ks.idnadrev.thought.view.ThoughtToInfoController">
+          fx:controller="de.ks.idnadrev.thought.view.ThoughtToInfoController" fx:id="root">
     <children>
         <Button fx:id="toTextBtn" mnemonicParsing="false" onAction="#toText" text="%thought.transform.text"/>
         <Button fx:id="toLinkBtn" mnemonicParsing="false" onAction="#toLink" text="%thought.transform.hyperlink"/>

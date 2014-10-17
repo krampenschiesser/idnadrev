@@ -169,7 +169,8 @@ public class ViewThoughts extends BaseController<List<Thought>> {
 
   @FXML
   void onTransformToInfo() {
-
+    ThoughtToInfoController toInfoController = controller.getControllerInstance(ThoughtToInfoController.class);
+    toInfoController.show(toInfo);
   }
 
   @FXML

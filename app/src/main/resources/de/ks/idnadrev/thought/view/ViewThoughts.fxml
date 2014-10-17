@@ -51,14 +51,12 @@
                       GridPane.columnSpan="2147483647" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2"
                       GridPane.valignment="BOTTOM">
                     <children>
-                        <Button fx:id="toTask" defaultButton="true" mnemonicParsing="false" onAction="#convertToTask"
+                        <Button fx:id="toTask" defaultButton="true" onAction="#convertToTask"
                                 text="%thought.transform.task"/>
-                        <Button fx:id="toInfo" mnemonicParsing="false" onAction="#onTransformToInfo"
-                                text="%thought.transform.info"/>
-                        <Button fx:id="later" mnemonicParsing="false" onAction="#postPone"
-                                text="%thought.transform.later"/>
-                        <Button fx:id="editBtn" mnemonicParsing="false" onAction="#onEdit" text="%edit"/>
-                        <Button fx:id="deleteBtn" mnemonicParsing="false" onAction="#delete" text="%delete"/>
+                        <Button fx:id="toInfo" onAction="#onTransformToInfo" text="%thought.transform.info"/>
+                        <Button fx:id="later" onAction="#postPone" text="%thought.transform.later"/>
+                        <Button fx:id="editBtn" onAction="#onEdit" text="%thought.edit"/>
+                        <Button fx:id="deleteBtn" onAction="#delete" text="%thought.delete"/>
                     </children>
                     <GridPane.margin>
                         <Insets/>
