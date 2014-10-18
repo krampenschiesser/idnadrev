@@ -29,12 +29,12 @@
     <rowConstraints>
         <RowConstraints minHeight="10.0" vgrow="NEVER"/>
         <RowConstraints minHeight="10.0" valignment="TOP" vgrow="NEVER"/>
-        <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="NEVER"/>
-        <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="NEVER"/>
         <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER"/>
         <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER"/>
-        <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="NEVER"/>
-        <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="NEVER"/>
+        <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER"/>
+        <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER"/>
+        <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER"/>
+        <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER"/>
         <RowConstraints minHeight="10.0" valignment="TOP" vgrow="ALWAYS"/>
         <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER"/>
         <RowConstraints minHeight="30.0" valignment="TOP" vgrow="SOMETIMES"/>

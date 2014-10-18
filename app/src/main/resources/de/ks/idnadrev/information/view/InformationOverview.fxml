@@ -8,7 +8,7 @@
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+        <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
     </rowConstraints>
     <children>
         <StackPane minHeight="100.0" minWidth="200.0">

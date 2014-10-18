@@ -47,10 +47,10 @@
                 <Insets/>
             </padding>
             <rowConstraints>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
+                <RowConstraints minHeight="10.0" vgrow="NEVER"/>
+                <RowConstraints minHeight="10.0" vgrow="NEVER"/>
+                <RowConstraints minHeight="10.0" vgrow="NEVER"/>
+                <RowConstraints minHeight="10.0" vgrow="NEVER"/>
             </rowConstraints>
         </GridPane>
     </children>

@@ -27,10 +27,10 @@
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS"/>
+        <RowConstraints minHeight="10.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="10.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="10.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="10.0" vgrow="ALWAYS"/>
         <RowConstraints minHeight="10.0" vgrow="NEVER"/>
     </rowConstraints>
     <children>

@@ -27,7 +27,7 @@
             </columnConstraints>
             <rowConstraints>
                 <RowConstraints minHeight="10.0" vgrow="ALWAYS"/>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
+                <RowConstraints minHeight="10.0" vgrow="NEVER"/>
             </rowConstraints>
             <children>
                 <TabPane fx:id="tabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
@@ -42,7 +42,7 @@
                                             </columnConstraints>
                                             <rowConstraints>
                                                 <RowConstraints minHeight="30.0" vgrow="SOMETIMES"/>
-                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS"/>
+                                                <RowConstraints minHeight="10.0" vgrow="ALWAYS"/>
                                             </rowConstraints>
                                             <children>
                                                 <HBox fx:id="editorCommandPane" spacing="5.0"
