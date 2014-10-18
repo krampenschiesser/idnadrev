@@ -70,6 +70,7 @@ public class TextInfoController extends BaseController<TextInfo> {
     validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(TextInfo.class, t -> t.getId() == store.<TextInfo>getModel().getId()));
 
     save.disableProperty().bind(validationRegistry.invalidProperty());
+    categorySelectionController.setClearOnRefresh(true);
   }
 
   @FXML

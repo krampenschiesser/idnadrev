@@ -18,6 +18,7 @@ package de.ks.idnadrev.information.text;
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityCfg;
 import de.ks.idnadrev.ActivityTest;
+import de.ks.idnadrev.entity.Category;
 import de.ks.idnadrev.entity.Tag;
 import de.ks.idnadrev.entity.information.TextInfo;
 import de.ks.persistence.PersistentWork;
@@ -26,6 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Set;
 
@@ -45,6 +47,11 @@ public class TextInfoActivityTest extends ActivityTest {
     FXPlatform.invokeLater(() -> controller.content.getPersistentStoreBack().delete());
   }
 
+  @Override
+  protected void createTestData(EntityManager em) {
+    em.persist(new Category("cat1"));
+  }
+
   @Test
   public void testCreateNew() throws Exception {
     TextInfoController controller = activityController.getControllerInstance(TextInfoController.class);
@@ -52,6 +59,7 @@ public class TextInfoActivityTest extends ActivityTest {
       controller.name.setText("test");
       controller.content.setText("= title\n\nbla");
       controller.tagContainerController.addTag("tag1");
+      controller.categorySelectionController.setSelectedValue(PersistentWork.forName(Category.class, "cat1"));
     });
     activityController.save();
     activityController.waitForDataSource();
@@ -59,6 +67,10 @@ public class TextInfoActivityTest extends ActivityTest {
     PersistentWork.wrap(() -> {
       TextInfo textInfo = PersistentWork.forName(TextInfo.class, "test");
       assertNotNull(textInfo);
+
+      assertNotNull(textInfo.getCategory());
+      assertEquals("cat1", textInfo.getCategory().getName());
+
       Set<Tag> tags = textInfo.getTags();
       assertEquals(1, tags.size());
       Tag tag = tags.iterator().next();

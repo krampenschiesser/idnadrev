@@ -15,10 +15,7 @@
 
 package de.ks.idnadrev.entity.information;
 
-import de.ks.idnadrev.entity.Category;
-import de.ks.idnadrev.entity.Tag;
-import de.ks.idnadrev.entity.Tagged;
-import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.entity.*;
 import de.ks.persistence.entity.NamedPersistentObject;
 
 import javax.persistence.*;
@@ -27,7 +24,7 @@ import java.util.Set;
 
 @MappedSuperclass
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public abstract class Information<E extends Information<E>> extends NamedPersistentObject<E> implements Tagged {
+public abstract class Information<E extends Information<E>> extends NamedPersistentObject<E> implements Tagged, Categorized {
   public static final String INFORMATION_TAG_JOINTABLE = "information_tag";
 
   private static final long serialVersionUID = 1L;

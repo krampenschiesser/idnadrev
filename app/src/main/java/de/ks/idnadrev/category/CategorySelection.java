@@ -14,10 +14,17 @@
  */
 package de.ks.idnadrev.category;
 
+import com.google.common.eventbus.Subscribe;
+import de.ks.activity.ActivityLoadFinishedEvent;
 import de.ks.activity.initialization.ActivityInitialization;
+import de.ks.activity.initialization.DatasourceCallback;
 import de.ks.application.fxml.DefaultLoader;
+import de.ks.eventsystem.bus.HandlingThread;
+import de.ks.eventsystem.bus.Threading;
+import de.ks.idnadrev.entity.Categorized;
 import de.ks.idnadrev.entity.Category;
 import de.ks.idnadrev.selection.BaseNamedPersistentObjectSelection;
+import de.ks.persistence.PersistentWork;
 import javafx.scene.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +33,7 @@ import javax.inject.Inject;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class CategorySelection extends BaseNamedPersistentObjectSelection<Category> {
+public class CategorySelection extends BaseNamedPersistentObjectSelection<Category> implements DatasourceCallback<Categorized> {
   private static final Logger log = LoggerFactory.getLogger(CategorySelection.class);
 
   @Inject
@@ -34,6 +41,8 @@ public class CategorySelection extends BaseNamedPersistentObjectSelection<Catego
 
   protected CategoryBrowser categoryBrowser;
   protected Node categoryView;
+  private boolean clearOnRefresh = false;
+  private boolean readOnly = false;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -53,5 +62,45 @@ public class CategorySelection extends BaseNamedPersistentObjectSelection<Catego
   @Override
   protected Node getBrowseNode() {
     return categoryView;
+  }
+
+  @Override
+  public void duringLoad(Categorized model) {
+    //
+  }
+
+  @Override
+  public void duringSave(Categorized model) {
+    if (!readOnly) {
+      if (getSelectedValue() != null) {
+        model.setCategory(PersistentWork.reload(getSelectedValue()));
+      } else {
+        model.setCategory(null);
+      }
+    }
+  }
+
+  @Subscribe
+  @Threading(HandlingThread.JavaFX)
+  private void afterRefresh(ActivityLoadFinishedEvent e) {
+    if (clearOnRefresh) {
+      getInput().setText("");
+    }
+  }
+
+  public void setClearOnRefresh(boolean clearOnRefresh) {
+    this.clearOnRefresh = clearOnRefresh;
+  }
+
+  public boolean isClearOnRefresh() {
+    return clearOnRefresh;
+  }
+
+  public void setReadOnly(boolean readOnly) {
+    this.readOnly = readOnly;
+  }
+
+  public boolean isReadOnly() {
+    return readOnly;
   }
 }
