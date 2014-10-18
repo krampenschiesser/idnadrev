@@ -102,7 +102,7 @@ public class TagContainer extends BaseController<Tagged> {
   @Override
   public void duringSave(Tagged model) {
     if (!readOnly) {
-      tagPane.getChildren().stream().map(c -> new Tag(c.getId())).forEach(tag -> {
+      tagPane.getChildren().stream().filter(c -> c.getId() != null).map(c -> new Tag(c.getId())).forEach(tag -> {
         Tag readTag = PersistentWork.forName(Tag.class, tag.getName());
         readTag = readTag == null ? tag : readTag;
         model.addTag(readTag);
