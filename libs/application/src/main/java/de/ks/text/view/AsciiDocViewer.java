@@ -67,8 +67,8 @@ public class AsciiDocViewer implements Initializable {
   @FXML
   protected StackPane root;
   protected WebView webView;
-  protected String currentHtml;
 
+  protected final SimpleStringProperty currentHtml = new SimpleStringProperty();
   protected final SimpleStringProperty currentIdentifier = new SimpleStringProperty();
 
   @Override
@@ -92,8 +92,12 @@ public class AsciiDocViewer implements Initializable {
     currentIdentifier.set("");
   }
 
-  public void show(String content) {
-    show(new AsciiDocContent("default", content));
+  public void showDirect(String content) {
+    String identifier = "default";
+    preloaded.remove(identifier);
+    currentIdentifier.set(identifier);
+
+    preload(Collections.singletonList(new AsciiDocContent(identifier, content)));
   }
 
   public void show(AsciiDocContent content) {
@@ -101,7 +105,7 @@ public class AsciiDocViewer implements Initializable {
     currentIdentifier.set(identifier);
     if (preloaded.containsKey(identifier)) {
       String html = preloaded.get(identifier);
-      currentHtml = html;
+      currentHtml.set(html);
       webView.getEngine().loadContent(html == null ? "" : html);
     } else {
       preload(Collections.singletonList(content));
@@ -122,10 +126,14 @@ public class AsciiDocViewer implements Initializable {
       }).thenAcceptAsync(pair -> {
         if (currentIdentifier.getValueSafe().equals(pair.getKey())) {
           String html = pair.getValue();
-          currentHtml = html;
+          currentHtml.set(html);
           webView.getEngine().loadContent(html);
         }
-      }, javaFXExecutor);
+      }, javaFXExecutor)//
+        .exceptionally(e -> {
+          log.error("Could not parse adoc", e);
+          return null;
+        });
     });
   }
 
@@ -153,6 +161,14 @@ public class AsciiDocViewer implements Initializable {
   }
 
   public String getCurrentHtml() {
+    return currentHtml.get();
+  }
+
+  public SimpleStringProperty currentHtmlProperty() {
     return currentHtml;
+  }
+
+  public void setCurrentHtml(String currentHtml) {
+    this.currentHtml.set(currentHtml);
   }
 }
