@@ -17,6 +17,7 @@ package de.ks.idnadrev.information.text;
 import de.ks.BaseController;
 import de.ks.file.FileOptions;
 import de.ks.file.FileViewController;
+import de.ks.idnadrev.category.CategorySelection;
 import de.ks.idnadrev.entity.information.TextInfo;
 import de.ks.idnadrev.tag.TagContainer;
 import de.ks.option.Options;
@@ -44,6 +45,8 @@ public class TextInfoController extends BaseController<TextInfo> {
   protected FileViewController filesController;
   @FXML
   protected TagContainer tagContainerController;
+  @FXML
+  protected CategorySelection categorySelectionController;
 
   protected AsciiDocEditor content;
 
