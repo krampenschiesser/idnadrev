@@ -14,6 +14,7 @@
  */
 package de.ks.launch;
 
+import de.ks.activity.context.ActivityContext;
 import de.ks.application.App;
 import de.ks.application.ApplicationStartup;
 import javafx.application.Application;
@@ -75,6 +76,7 @@ public class ApplicationService extends Service {
 
   @Override
   protected void doStop() {
+    ActivityContext.stopAll();
     int timeout = 10;
     Platform.exit();
     try {
