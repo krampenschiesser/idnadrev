@@ -139,7 +139,7 @@ public class IdnadrevWindow extends MainWindow {
       if (!defaultButtons.isEmpty()) {
         Button defaultButton = (Button) defaultButtons.iterator().next();
         if (!defaultButton.isDisabled()) {
-          log.debug("Executing default button {} on ctrl+s", defaultButton);
+          log.debug("Executing default button {} on ctrl+enter", defaultButton);
           defaultButton.getOnAction().handle(null);
         }
         event.consume();
