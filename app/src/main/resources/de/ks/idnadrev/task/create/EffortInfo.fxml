@@ -17,31 +17,22 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.*?>
 <GridPane hgap="5.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity"
           minWidth="-Infinity" vgap="5.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
           fx:controller="de.ks.idnadrev.task.create.EffortInfo">
     <children>
-        <Label styleClass="pageTitle" stylesheets="@../../idnadrev.css" text="%task.create.effort"
-               GridPane.columnSpan="2147483647" GridPane.halignment="LEFT"/>
-        <Separator prefWidth="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="1">
-            <effect>
-                <DropShadow/>
-            </effect>
-        </Separator>
-        <Label text="%task.physicalEffort" GridPane.rowIndex="2"/>
+        <Label text="%task.physicalEffort:"/>
         <Slider fx:id="physicalEffort" blockIncrement="1.0" majorTickUnit="1.0" max="5.0" min="-5.0" minorTickCount="0"
-                showTickLabels="true" showTickMarks="true" snapToTicks="true" GridPane.columnIndex="1"
-                GridPane.rowIndex="2"/>
-        <Label text="%task.mentalEffort" GridPane.rowIndex="3"/>
+                showTickLabels="true" showTickMarks="true" snapToTicks="true" GridPane.columnIndex="1"/>
+        <Label text="%task.mentalEffort:" GridPane.rowIndex="1"/>
         <Slider fx:id="mentalEffort" blockIncrement="1.0" majorTickUnit="1.0" max="5.0" min="-5.0" minorTickCount="0"
                 showTickLabels="true" showTickMarks="true" snapToTicks="true" GridPane.columnIndex="1"
-                GridPane.rowIndex="3"/>
-        <Label text="%task.funFactor" GridPane.rowIndex="4"/>
+                GridPane.rowIndex="1"/>
+        <Label text="%task.funFactor:" GridPane.rowIndex="2"/>
         <Slider fx:id="funFactor" blockIncrement="1.0" majorTickUnit="1.0" max="5.0" min="-5.0" minorTickCount="0"
                 showTickLabels="true" showTickMarks="true" snapToTicks="true" GridPane.columnIndex="1"
-                GridPane.rowIndex="4"/>
+                GridPane.rowIndex="2"/>
     </children>
     <columnConstraints>
         <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="10.0"/>
@@ -51,8 +42,6 @@
         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
     </padding>
     <rowConstraints>
-        <RowConstraints minHeight="10.0" vgrow="NEVER"/>
-        <RowConstraints minHeight="10.0" valignment="TOP" vgrow="NEVER"/>
         <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER"/>
         <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER"/>
         <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER"/>

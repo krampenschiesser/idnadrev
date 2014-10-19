@@ -17,12 +17,12 @@
         <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
     </rowConstraints>
     <children>
-        <Label text="%name"/>
-        <Label text="%type" GridPane.rowIndex="1"/>
-        <Label text="%tags" GridPane.rowIndex="2"/>
+        <Label text="%name:"/>
+        <Label text="%type:" GridPane.rowIndex="1"/>
+        <Label text="%tags:" GridPane.rowIndex="2"/>
         <TextField fx:id="nameSearch" GridPane.columnIndex="1"/>
         <ComboBox fx:id="typeCombo" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-        <Label text="%category" GridPane.rowIndex="3"/>
+        <Label text="%category:" GridPane.rowIndex="3"/>
         <StackPane GridPane.columnIndex="1" GridPane.rowIndex="2">
             <children>
                 <fx:include fx:id="tagContainer" source="../../tag/TagContainer.fxml"/>

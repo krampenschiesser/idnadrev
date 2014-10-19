@@ -17,7 +17,6 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.*?>
 <GridPane hgap="5.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity"
           minWidth="-Infinity" vgap="5.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
@@ -27,8 +26,6 @@
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints minHeight="10.0" vgrow="NEVER"/>
-        <RowConstraints minHeight="10.0" valignment="TOP" vgrow="NEVER"/>
         <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER"/>
         <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER"/>
         <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="NEVER"/>
@@ -40,45 +37,38 @@
         <RowConstraints minHeight="30.0" valignment="TOP" vgrow="SOMETIMES"/>
     </rowConstraints>
     <children>
-        <Label styleClass="pageTitle" stylesheets="@../../idnadrev.css" text="%task.create.main.title"
-               GridPane.columnSpan="2147483647" GridPane.halignment="LEFT"/>
-        <Separator prefWidth="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="1">
-            <effect>
-                <DropShadow/>
-            </effect>
-        </Separator>
 
-        <Label text="%name" GridPane.rowIndex="2"/>
-        <TextField fx:id="name" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="2"/>
+        <Label text="%name:"/>
+        <TextField fx:id="name" GridPane.columnIndex="1" GridPane.columnSpan="2147483647"/>
 
-        <Label text="%is.project" GridPane.rowIndex="3"/>
-        <CheckBox fx:id="project" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+        <Label text="%is.project:" GridPane.rowIndex="1"/>
+        <CheckBox fx:id="project" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
-        <Label text="%task.parent.project" GridPane.rowIndex="4"/>
-        <StackPane GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.valignment="TOP" GridPane.vgrow="NEVER">
+        <Label text="%task.parent.project:" GridPane.rowIndex="2"/>
+        <StackPane GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="TOP" GridPane.vgrow="NEVER">
             <children>
                 <fx:include fx:id="parentProject" source="../../selection/NamedPersistentObjectSelection.fxml"/>
             </children>
         </StackPane>
 
-        <Label text="%task.context" GridPane.rowIndex="5"/>
-        <StackPane GridPane.columnIndex="1" GridPane.rowIndex="5" GridPane.valignment="TOP" GridPane.vgrow="NEVER">
+        <Label text="%task.context:" GridPane.rowIndex="3"/>
+        <StackPane GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.valignment="TOP" GridPane.vgrow="NEVER">
             <children>
                 <fx:include fx:id="context" source="../../selection/NamedPersistentObjectSelection.fxml"/>
             </children>
         </StackPane>
 
-        <Label text="%task.state" GridPane.rowIndex="6"/>
-        <ComboBox fx:id="state" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+        <Label text="%task.state:" GridPane.rowIndex="4"/>
+        <ComboBox fx:id="state" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
 
-        <Label text="%task.estimatedTime" GridPane.rowIndex="7"/>
-        <TextField fx:id="estimatedTimeDuration" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+        <Label text="%task.estimatedTime:" GridPane.rowIndex="5"/>
+        <TextField fx:id="estimatedTimeDuration" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
 
-        <Label text="%description" GridPane.rowIndex="8"/>
-        <StackPane fx:id="descriptionContainer" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
+        <Label text="%description:" GridPane.rowIndex="6"/>
+        <StackPane fx:id="descriptionContainer" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
 
-        <Label text="%tags" GridPane.rowIndex="9"/>
-        <StackPane GridPane.columnIndex="1" GridPane.rowIndex="9" GridPane.valignment="TOP" GridPane.vgrow="NEVER">
+        <Label text="%tags:" GridPane.rowIndex="7"/>
+        <StackPane GridPane.columnIndex="1" GridPane.rowIndex="7" GridPane.valignment="TOP" GridPane.vgrow="NEVER">
             <children>
                 <fx:include fx:id="tagAdd" source="../../tag/TagContainer.fxml"/>
             </children>

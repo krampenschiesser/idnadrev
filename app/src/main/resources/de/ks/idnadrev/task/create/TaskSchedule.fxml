@@ -15,47 +15,43 @@
   ~ limitations under the License.
   -->
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.*?>
-<GridPane hgap="5" vgap="5" minHeight="400.0" minWidth="600.0" xmlns="http://javafx.com/javafx/8"
-          xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="de.ks.idnadrev.task.create.TaskSchedule">
+<GridPane hgap="5" minHeight="400.0" minWidth="600.0" vgap="5" xmlns="http://javafx.com/javafx/8"
+          xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.idnadrev.task.create.TaskSchedule">
     <columnConstraints>
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+        <ColumnConstraints hgrow="ALWAYS" minWidth="10.0"/>
+        <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+        <ColumnConstraints hgrow="ALWAYS" minWidth="10.0"/>
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints minHeight="10.0" vgrow="NEVER"/>
-        <RowConstraints minHeight="10.0" vgrow="NEVER"/>
         <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
         <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
         <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
-        <RowConstraints minHeight="10.0" vgrow="ALWAYS"/>
+        <RowConstraints minHeight="10.0" prefHeight="100.0" vgrow="SOMETIMES"/>
         <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
         <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
         <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
         <RowConstraints minHeight="10.0" vgrow="ALWAYS"/>
     </rowConstraints>
     <children>
-        <Label styleClass="pageTitle" stylesheets="@../../idnadrev.css" text="%task.create.schedule.info"
-               GridPane.columnSpan="2147483647"/>
-        <Separator prefWidth="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="1">
-            <effect>
-                <DropShadow/>
-            </effect>
-        </Separator>
-        <Label text="%task.schedule.duedate" GridPane.rowIndex="2"/>
+        <Label styleClass="editorViewLabel" text="%task.schedule.duedate:" GridPane.columnIndex="1"/>
         <DatePicker fx:id="dueDate" maxWidth="1.7976931348623157E308" promptText="%datepicker.fixeddate"
-                    showWeekNumbers="true" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-        <Label text="%task.schedule.date" GridPane.rowIndex="3"/>
-        <Label text="%task.schedule.time" GridPane.rowIndex="4"/>
-        <TextField fx:id="dueTime" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
-        <Label text="%task.schedule.proposedweek:" GridPane.rowIndex="6"/>
-        <Label text="%task.schedule.proposedweek" GridPane.rowIndex="7"/>
+                    showWeekNumbers="true" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+        <Label text="%task.schedule.date:" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <Label text="%task.schedule.time:" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        <TextField fx:id="dueTime" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+        <Label styleClass="editorViewLabel" text="%task.schedule.proposedweek:" GridPane.columnIndex="1"
+               GridPane.rowIndex="4"/>
+        <Label text="%task.schedule.proposedweek:" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
         <DatePicker fx:id="proposedWeek" maxWidth="1.7976931348623157E308" promptText="%datepicker.week"
-                    showWeekNumbers="true" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
-        <Label text="%task.schedule.propose.specificWeekday" GridPane.rowIndex="8"/>
-        <CheckBox fx:id="useProposedWeekDay" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
+                    showWeekNumbers="true" GridPane.columnIndex="2" GridPane.rowIndex="5"/>
+        <Label text="%task.schedule.propose.specificWeekday:" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+        <CheckBox fx:id="useProposedWeekDay" mnemonicParsing="false" GridPane.columnIndex="2" GridPane.rowIndex="6"/>
     </children>
+    <padding>
+        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+    </padding>
 </GridPane>
