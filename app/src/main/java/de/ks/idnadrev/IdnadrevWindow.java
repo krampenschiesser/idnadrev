@@ -135,16 +135,16 @@ public class IdnadrevWindow extends MainWindow {
       buttonBar.addThought();
       event.consume();
     } else if (code == KeyCode.F4) {
-      buttonBar.createTextInfo();
+      buttonBar.createTask();
       event.consume();
     } else if (code == KeyCode.F5) {
-      buttonBar.viewThoughts();
+      buttonBar.createTextInfo();
       event.consume();
     } else if (code == KeyCode.F6) {
-      buttonBar.viewTasks();
+      buttonBar.viewThoughts();
       event.consume();
     } else if (code == KeyCode.F7) {
-      buttonBar.chooseNextTask();
+      buttonBar.viewTasks();
       event.consume();
     } else if (code == KeyCode.F8) {
       buttonBar.informationOverview();
@@ -154,6 +154,9 @@ public class IdnadrevWindow extends MainWindow {
       event.consume();
     } else if (code == KeyCode.F10) {
       buttonBar.weeklyDone();
+      event.consume();
+    } else if (code == KeyCode.F11) {
+      buttonBar.chooseNextTask();
       event.consume();
     } else if (code == KeyCode.F12) {
       buttonBar.fastTrack();

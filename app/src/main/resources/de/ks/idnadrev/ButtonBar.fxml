@@ -26,13 +26,13 @@
         <Button mnemonicParsing="false" onAction="#addThought" prefWidth="150.0" text="%main.thought.thoughtactivity"
                 GridPane.columnIndex="1" GridPane.rowIndex="1">
             <tooltip>
-                <Tooltip text="F2"/>
+                <Tooltip text="F3"/>
             </tooltip>
         </Button>
         <Button mnemonicParsing="false" onAction="#viewThoughts" prefWidth="150.0"
                 text="%main.thought.viewthoughtsactivity" GridPane.columnIndex="3" GridPane.rowIndex="1">
             <tooltip>
-                <Tooltip text="F5"/>
+                <Tooltip text="F6"/>
             </tooltip>
         </Button>
         <Label styleClass="editorViewLabel" text="%quicknavigation.view" GridPane.columnIndex="3"/>
@@ -41,7 +41,7 @@
         <Button mnemonicParsing="false" onAction="#createTask" prefWidth="150.0" text="%main.task.createtaskactivity"
                 GridPane.columnIndex="1" GridPane.rowIndex="2">
             <tooltip>
-                <Tooltip text="F3"/>
+                <Tooltip text="F4"/>
             </tooltip>
         </Button>
         <VBox alignment="CENTER" spacing="5.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
@@ -49,7 +49,7 @@
                 <Button mnemonicParsing="false" onAction="#chooseNextTask" prefWidth="150.0"
                         text="%main.task.choosenexttaskactivity" GridPane.columnIndex="2" GridPane.rowIndex="2">
                     <tooltip>
-                        <Tooltip text="F7"/>
+                        <Tooltip text="F11"/>
                     </tooltip>
                 </Button>
                 <Button mnemonicParsing="false" onAction="#fastTrack" prefWidth="150.0"
@@ -63,7 +63,7 @@
         <Button mnemonicParsing="false" onAction="#viewTasks" prefWidth="150.0" text="%main.task.viewtasksactvity"
                 GridPane.columnIndex="3" GridPane.rowIndex="2">
             <tooltip>
-                <Tooltip text="F6"/>
+                <Tooltip text="F7"/>
             </tooltip>
         </Button>
         <VBox alignment="CENTER" spacing="5.0" GridPane.columnIndex="4" GridPane.rowIndex="2">
@@ -88,7 +88,7 @@
                 <Button mnemonicParsing="false" onAction="#createTextInfo" prefWidth="150.0"
                         text="%main.info.textinfoactivity" GridPane.columnIndex="1" GridPane.rowIndex="3">
                     <tooltip>
-                        <Tooltip text="F4"/>
+                        <Tooltip text="F5"/>
                     </tooltip>
                 </Button>
                 <Button mnemonicParsing="false" onAction="#diary" prefWidth="150.0" text="%main.info.diaryactivity"/>
