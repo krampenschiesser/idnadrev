@@ -290,6 +290,10 @@ public class Task extends NamedPersistentObject<Task> implements FileContainer<T
     }
   }
 
+  public Duration getRemainingTime() {
+    return getEstimatedTime().minus(Duration.ofMinutes(getSpentMinutes()));
+  }
+
   public Task setEstimatedTime(Duration estimatedTime) {
     this.estimatedTime = estimatedTime;
     return this;
