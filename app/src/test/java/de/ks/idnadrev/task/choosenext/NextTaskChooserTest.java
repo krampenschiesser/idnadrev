@@ -78,6 +78,7 @@ public class NextTaskChooserTest {
     em.persist(taskOverTime);
 
     em.persist(new Task("otherTask").setContext(other));
+    em.persist(new Task("taskWithoutContext").setEstimatedTime(Duration.ofMinutes(8)));
   }
 
   @Test
@@ -87,6 +88,12 @@ public class NextTaskChooserTest {
     assertEquals("workTask5Min", allPossibleTasks.get(0).getName());
     assertEquals("workTask8Min", allPossibleTasks.get(1).getName());
     assertEquals("workTask9MinRemaining", allPossibleTasks.get(2).getName());
+  }
+
+  @Test
+  public void testTasksWithoutContext() throws Exception {
+    List<Task> allPossibleTasks = chooser.getAllPossibleTasks(10, null);
+    assertEquals(1, allPossibleTasks.size());
   }
 
   @Test

@@ -122,26 +122,31 @@ public class NextTaskChooser {
   protected List<Task> getAllPossibleTasks(int minutes, String selectedContext) {
     List<Task> retval = PersistentWork.wrap(() -> {
       List<Task> tasks = PersistentWork.from(Task.class, (root, query, builder) -> {
-        Join<Task, Context> join = root.join(KEY_CONTEXT);
-        join.on(builder.equal(join.get(KEY_CONTEXT_NAME), selectedContext));
+        ArrayList<Predicate> predicates = new ArrayList<>();
 
+        if (selectedContext != null) {
+          Join<Task, Context> join = root.join(KEY_CONTEXT);
+          join.on(builder.equal(join.get(KEY_CONTEXT_NAME), selectedContext));
+        } else {
+          predicates.add(builder.isNull(root.get(KEY_CONTEXT)));
+        }
 
         Path<Object> state = root.get(KEY_STATE);
-        Predicate notLater = builder.notEqual(state, TaskState.LATER);
-        Predicate notDelegated = builder.notEqual(state, TaskState.DELEGATED);
-        Predicate notFinished = builder.isNull(root.get(KEY_FINISHTIME));
+        predicates.add(builder.notEqual(state, TaskState.LATER));
+        predicates.add(builder.notEqual(state, TaskState.DELEGATED));
+        predicates.add(builder.isNull(root.get(KEY_FINISHTIME)));
 
-        query.where(notFinished, notLater, notDelegated);
+        query.where(predicates.toArray(new Predicate[predicates.size()]));
       }, null);
 
       return tasks.stream()//super ugly, need to evict to save heap
-              .sorted(Comparator.comparing(c -> c.getEstimatedTime().toMinutes() - c.getSpentMinutes()))//
-              .filter(t -> {
-                long timeRemaining = t.getEstimatedTime().toMinutes() - t.getSpentMinutes();
-                log.info("Remaining time: {}", timeRemaining);
-                return timeRemaining < minutes && timeRemaining > 2;
-              })//
-              .collect(Collectors.toList());
+        .sorted(Comparator.comparing(c -> c.getEstimatedTime().toMinutes() - c.getSpentMinutes()))//
+        .filter(t -> {
+          long timeRemaining = t.getRemainingTime().toMinutes();
+          log.info("Remaining time: {}", timeRemaining);
+          return timeRemaining < minutes && timeRemaining > 2;
+        })//
+        .collect(Collectors.toList());
     });
     return retval;
   }
