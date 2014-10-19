@@ -343,8 +343,9 @@ public class Task extends NamedPersistentObject<Task> implements FileContainer<T
     return schedule;
   }
 
-  public void setSchedule(Schedule schedule) {
+  public Task setSchedule(Schedule schedule) {
     this.schedule = schedule;
+    return this;
   }
 
   public List<Information<?>> getInformation() {
