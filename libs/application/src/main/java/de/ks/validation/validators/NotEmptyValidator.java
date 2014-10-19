@@ -22,7 +22,7 @@ import org.controlsfx.validation.Validator;
 public class NotEmptyValidator implements Validator<String> {
   @Override
   public ValidationResult apply(Control control, String s) {
-    if (s == null || s.isEmpty()) {
+    if (s == null || s.trim().isEmpty()) {
       String validationMsg = Localized.get("validation.notEmpty");
       return ValidationResult.fromError(control, validationMsg);
     }
