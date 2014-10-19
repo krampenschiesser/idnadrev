@@ -21,7 +21,8 @@
                    GridPane.rowIndex="2"/>
         <Label text="%name:" GridPane.rowIndex="1"/>
         <TextField fx:id="name" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-        <Button fx:id="save" mnemonicParsing="false" onAction="#onSave" text="%save" GridPane.columnSpan="2147483647"
+        <Button defaultButton="true" fx:id="save" mnemonicParsing="false" onAction="#onSave" text="%save"
+                GridPane.columnSpan="2147483647"
                 GridPane.halignment="CENTER" GridPane.rowIndex="3"/>
         <Label styleClass="editorViewLabel" text="%main.thought.addthoughtworkflow:" GridPane.columnSpan="2147483647"/>
     </children>

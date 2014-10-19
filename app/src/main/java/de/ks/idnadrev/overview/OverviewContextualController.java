@@ -54,8 +54,14 @@ public class OverviewContextualController extends BaseController<OverviewModel> 
 
     context.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
       if (n != null) {
+        context.setDisable(true);
         CompletableFuture.supplyAsync(() -> loadTasksForContext(n), controller.getExecutorService())//
-          .thenAcceptAsync(this::fillWithTasks, controller.getJavaFXExecutor());
+          .thenAcceptAsync(this::fillWithTasks, controller.getJavaFXExecutor())//
+          .exceptionally(e -> {
+            log.error("Could not fetch contextual tasks for context {}", n, e);
+            context.setDisable(false);
+            return null;
+          });
       }
     });
 
@@ -75,6 +81,7 @@ public class OverviewContextualController extends BaseController<OverviewModel> 
   protected void fillWithTasks(List<Task> tasks) {
     contextTasks.getItems().clear();
     contextTasks.getItems().addAll(tasks);
+    context.setDisable(false);
   }
 
   private List<Task> loadTasksForContext(String context) {
