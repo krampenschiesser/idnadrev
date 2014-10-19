@@ -40,7 +40,7 @@ public class DummyData extends Service {
 
   @Override
   public int getPriority() {
-    return 10;
+    return 4;
   }
 
   @Override
