@@ -21,7 +21,7 @@
 <StackPane id="StackPane" fx:id="root" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8"
            xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.text.AsciiDocEditor">
     <children>
-        <GridPane fx:id="mainPane" hgap="5.0" minHeight="300.0" minWidth="600.0" vgap="5.0">
+        <GridPane fx:id="mainPane" hgap="5.0" prefHeight="300.0" prefWidth="350.0" vgap="5.0">
             <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
             </columnConstraints>
@@ -83,7 +83,8 @@
         <HBox maxHeight="-Infinity" maxWidth="-Infinity" spacing="5.0" StackPane.alignment="TOP_RIGHT">
             <children>
                 <Button mnemonicParsing="true" onAction="#showPreviewPopup" text="%preview.popup"/>
-                <Button fx:id="saveToFileButton" focusTraversable="false" onAction="#saveToFile" text="%saveToFile"/>
+                <Button fx:id="saveToFileButton" focusTraversable="false" onAction="#saveToFile"
+                        text="%asciidoceditor.saveToFile"/>
                 <Button fx:id="help" focusTraversable="false" onAction="#showHelp" text="%help"
                         StackPane.alignment="TOP_RIGHT">
                     <StackPane.margin>
