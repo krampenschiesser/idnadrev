@@ -16,8 +16,10 @@
 package de.ks.idnadrev.overview;
 
 import de.ks.BaseController;
+import de.ks.activity.ActivityHint;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.task.choosenext.NextTaskChooser;
+import de.ks.idnadrev.task.work.WorkOnTaskActivity;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -25,6 +27,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.input.KeyCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,6 +70,21 @@ public class OverviewContextualController extends BaseController<OverviewModel> 
 
     name.setCellValueFactory(this::getTaskName);
     estimatedTime.setCellValueFactory(this::convertRemainingMinutes);
+
+    contextTasks.setOnMouseClicked(e -> {
+      Task selectedItem = contextTasks.getSelectionModel().getSelectedItem();
+      if (e.getClickCount() > 1 && selectedItem != null) {
+        startWork(selectedItem);
+      }
+    });
+    contextTasks.setOnKeyReleased(e -> {
+      if (e.getCode() == KeyCode.ENTER) {
+        Task selectedItem = contextTasks.getSelectionModel().getSelectedItem();
+        if (selectedItem != null) {
+          startWork(selectedItem);
+        }
+      }
+    });
   }
 
   private ObservableValue<String> getTaskName(TableColumn.CellDataFeatures<Task, String> param) {
@@ -89,6 +107,12 @@ public class OverviewContextualController extends BaseController<OverviewModel> 
       context = null;
     }
     return new NextTaskChooser().getTasksSorted(60 * 24, context);
+  }
+
+  private void startWork(Task task) {
+    ActivityHint activityHint = new ActivityHint(WorkOnTaskActivity.class, controller.getCurrentActivityId());
+    activityHint.setDataSourceHint(() -> task);
+    controller.startOrResume(activityHint);
   }
 
   @Override
