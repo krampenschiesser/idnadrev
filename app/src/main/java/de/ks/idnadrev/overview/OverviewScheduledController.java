@@ -16,14 +16,19 @@
 package de.ks.idnadrev.overview;
 
 import de.ks.BaseController;
+import de.ks.activity.ActivityHint;
 import de.ks.fxcontrols.cell.ConvertingListCell;
 import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.task.work.WorkOnTaskActivity;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.input.KeyCode;
 
 import java.net.URL;
 import java.time.LocalTime;
@@ -54,6 +59,34 @@ public class OverviewScheduledController extends BaseController<OverviewModel> {
     endTime.setCellValueFactory(this::convertEndTime);
 
     name.prefWidthProperty().bind(proposedTasks.widthProperty().subtract(startTime.widthProperty()).subtract(endTime.widthProperty()));
+
+    registerHandlers(scheduledTasks, scheduledTasks.getSelectionModel());
+    registerHandlers(proposedTasks, proposedTasks.getSelectionModel());
+  }
+
+  private void registerHandlers(Node node, MultipleSelectionModel<Task> selectionModel) {
+    Runnable run = () -> {
+      Task selectedItem = selectionModel.getSelectedItem();
+      if (selectedItem != null) {
+        startWork(selectedItem);
+      }
+    };
+    node.setOnMouseClicked(e -> {
+      if (e.getClickCount() > 1) {
+        run.run();
+      }
+    });
+    node.setOnKeyReleased(e -> {
+      if (e.getCode() == KeyCode.ENTER) {
+        run.run();
+      }
+    });
+  }
+
+  private void startWork(Task task) {
+    ActivityHint activityHint = new ActivityHint(WorkOnTaskActivity.class, controller.getCurrentActivityId());
+    activityHint.setDataSourceHint(() -> task);
+    controller.startOrResume(activityHint);
   }
 
   protected ObservableValue<String> convertStartTime(TableColumn.CellDataFeatures<Task, String> param) {
