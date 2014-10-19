@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<GridPane hgap="5.0" minHeight="-Infinity" minWidth="-Infinity" vgap="5.0" xmlns="http://javafx.com/javafx/8"
+          xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.idnadrev.overview.OverviewScheduledController">
+    <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="10.0" prefHeight="200.0" vgrow="ALWAYS"/>
+        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="10.0" prefHeight="200.0" vgrow="ALWAYS"/>
+    </rowConstraints>
+    <children>
+        <Label styleClass="editorViewLabel" text="%overview.appointments:"/>
+        <Label styleClass="editorViewLabel" text="%overview.proposed:" GridPane.rowIndex="2"/>
+        <TableView fx:id="scheduledTasks" GridPane.rowIndex="1">
+            <columns>
+                <TableColumn fx:id="startTime" prefWidth="85.0" text="%overview.startTime"/>
+                <TableColumn fx:id="endTime" prefWidth="85.0" text="%overview.endTime"/>
+                <TableColumn fx:id="name" prefWidth="300.0" text="%name"/>
+            </columns>
+        </TableView>
+        <ListView fx:id="proposedTasks" GridPane.rowIndex="3"/>
+    </children>
+</GridPane>

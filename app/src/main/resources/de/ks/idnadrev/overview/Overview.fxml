@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.*?>
+<GridPane hgap="5.0" minHeight="-Infinity" minWidth="-Infinity" vgap="5.0" xmlns="http://javafx.com/javafx/8"
+          xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.idnadrev.overview.OverviewController">
+    <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="30.0" prefWidth="230"/>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="30.0" prefWidth="180"/>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="30.0" prefWidth="250"/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints minHeight="30.0" vgrow="SOMETIMES"/>
+    </rowConstraints>
+    <children>
+        <StackPane>
+            <children>
+                <fx:include fx:id="addThought" source="OverviewAddThoughtView.fxml"/>
+            </children>
+        </StackPane>
+        <StackPane GridPane.columnIndex="1">
+            <children>
+                <fx:include fx:id="contextual" source="OverviewContextualView.fxml"/>
+            </children>
+        </StackPane>
+        <StackPane GridPane.columnIndex="2">
+            <children>
+                <fx:include fx:id="scheduled" source="OverviewScheduledView.fxml"/>
+            </children>
+        </StackPane>
+    </children>
+    <padding>
+        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+    </padding>
+</GridPane>

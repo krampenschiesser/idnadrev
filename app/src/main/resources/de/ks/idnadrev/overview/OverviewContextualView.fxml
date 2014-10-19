@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<GridPane hgap="5.0" vgap="5.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="de.ks.idnadrev.overview.OverviewContextualController">
+    <columnConstraints>
+        <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS"/>
+    </rowConstraints>
+    <children>
+        <ComboBox fx:id="context" prefWidth="200.0" GridPane.columnIndex="1" GridPane.halignment="RIGHT"/>
+        <Label styleClass="editorViewLabel" text="%context:"/>
+        <TableView fx:id="contextTasks" GridPane.columnSpan="2147483647" GridPane.rowIndex="1" GridPane.rowSpan="3">
+            <columns>
+                <TableColumn fx:id="estimatedTime" prefWidth="85.0" text="%overview.estimatedTime"/>
+                <TableColumn fx:id="name" prefWidth="250.0" text="%name"/>
+            </columns>
+        </TableView>
+    </children>
+</GridPane>

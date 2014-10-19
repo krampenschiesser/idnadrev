@@ -20,7 +20,7 @@ import de.ks.activity.ActivityController;
 import de.ks.activity.ActivityHint;
 import de.ks.application.MainWindow;
 import de.ks.application.fxml.DefaultLoader;
-import de.ks.idnadrev.thought.add.AddThoughtActivity;
+import de.ks.idnadrev.overview.OverviewActivity;
 import de.ks.javafx.NodeLookup;
 import de.ks.menu.presenter.MenuBarPresenter;
 import de.ks.menu.sink.ContentSink;
@@ -98,7 +98,7 @@ public class IdnadrevWindow extends MainWindow {
   }
 
   protected void startInitialActivity() {
-    String activityClass = System.getProperty(PROPERTY_INITIAL_ACTIVITY, AddThoughtActivity.class.getName());
+    String activityClass = System.getProperty(PROPERTY_INITIAL_ACTIVITY, OverviewActivity.class.getName());
     if (!activityClass.isEmpty()) {
       try {
         @SuppressWarnings("unchecked") Class<? extends ActivityCfg> clazz = (Class<? extends ActivityCfg>) Class.forName(activityClass);
