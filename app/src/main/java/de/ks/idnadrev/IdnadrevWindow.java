@@ -34,6 +34,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
@@ -62,6 +63,8 @@ public class IdnadrevWindow extends MainWindow {
   private BorderPane borderPane;
   private DefaultLoader<BorderPane, Object> loader;
   private ButtonBar buttonBar;
+  private GridPane buttonBarView;
+  private StackPane contentPane;
 
   @PostConstruct
   public void initialize() {
@@ -82,11 +85,12 @@ public class IdnadrevWindow extends MainWindow {
       vBox.getChildren().add(menu);
       borderPane.setTop(menu);
 
-      DefaultLoader<VBox, ButtonBar> loader = new DefaultLoader<>(ButtonBar.class);
+      DefaultLoader<GridPane, ButtonBar> loader = new DefaultLoader<>(ButtonBar.class);
       buttonBar = loader.getController();
+      buttonBarView = loader.getView();
 //      borderPane.setRight(loader.getView());
 
-      StackPane contentPane = new StackPane();
+      contentPane = new StackPane();
       borderPane.setCenter(contentPane);
       contentSink.setPane(contentPane);
 
@@ -118,16 +122,38 @@ public class IdnadrevWindow extends MainWindow {
     KeyCode code = event.getCode();
 
     if (code == KeyCode.F1) {
-      buttonBar.addThought();
+      if (buttonBar.isShowing()) {
+        buttonBar.hide();
+      } else {
+        buttonBar.show(borderPane);
+      }
       event.consume();
     } else if (code == KeyCode.F2) {
-      buttonBar.viewThoughts();
+      buttonBar.overview();
       event.consume();
     } else if (code == KeyCode.F3) {
-      buttonBar.createTask();
+      buttonBar.addThought();
       event.consume();
     } else if (code == KeyCode.F4) {
+      buttonBar.createTextInfo();
+      event.consume();
+    } else if (code == KeyCode.F5) {
+      buttonBar.viewThoughts();
+      event.consume();
+    } else if (code == KeyCode.F6) {
       buttonBar.viewTasks();
+      event.consume();
+    } else if (code == KeyCode.F7) {
+      buttonBar.chooseNextTask();
+      event.consume();
+    } else if (code == KeyCode.F8) {
+      buttonBar.informationOverview();
+      event.consume();
+    } else if (code == KeyCode.F9) {
+      buttonBar.planWeek();
+      event.consume();
+    } else if (code == KeyCode.F10) {
+      buttonBar.weeklyDone();
       event.consume();
     } else if (code == KeyCode.F12) {
       buttonBar.fastTrack();
