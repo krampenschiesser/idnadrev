@@ -16,13 +16,21 @@
 package de.ks.idnadrev.overview;
 
 import de.ks.datasource.DataSource;
+import de.ks.idnadrev.entity.Context;
+import de.ks.persistence.PersistentWork;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 public class OverviewDS implements DataSource<OverviewModel> {
   @Override
   public OverviewModel loadModel(Consumer<OverviewModel> furtherProcessing) {
-    return null;
+    return PersistentWork.read(em -> {
+      OverviewModel model = new OverviewModel();
+      List<Context> contexts = PersistentWork.from(Context.class);
+      model.getContexts().addAll(contexts);
+      return model;
+    });
   }
 
   @Override

@@ -17,7 +17,7 @@
         <Label styleClass="editorViewLabel" text="%context:"/>
         <TableView fx:id="contextTasks" GridPane.columnSpan="2147483647" GridPane.rowIndex="1" GridPane.rowSpan="3">
             <columns>
-                <TableColumn fx:id="estimatedTime" prefWidth="85.0" text="%overview.estimatedTime"/>
+                <TableColumn fx:id="estimatedTime" prefWidth="85.0" text="%overview.remainingTime"/>
                 <TableColumn fx:id="name" prefWidth="250.0" text="%name"/>
             </columns>
         </TableView>

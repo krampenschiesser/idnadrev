@@ -15,5 +15,16 @@
  */
 package de.ks.idnadrev.overview;
 
+import de.ks.idnadrev.entity.Context;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class OverviewModel {
+  protected final List<Context> contexts = new ArrayList<>();
+
+  public List<Context> getContexts() {
+    return contexts;
+  }
+
 }
