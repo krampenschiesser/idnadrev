@@ -16,21 +16,89 @@
 package de.ks.idnadrev.overview;
 
 import de.ks.datasource.DataSource;
+import de.ks.fxcontrols.weekview.WeekHelper;
 import de.ks.idnadrev.entity.Context;
+import de.ks.idnadrev.entity.Task;
 import de.ks.persistence.PersistentWork;
+import de.ks.reflection.PropertyPath;
+import de.ks.scheduler.Schedule;
 
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.*;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class OverviewDS implements DataSource<OverviewModel> {
+  protected static final String KEY_SCHEDULE = PropertyPath.property(Task.class, t -> t.getSchedule());
+  protected static final String KEY_PROPOSEDWEEK = PropertyPath.property(Schedule.class, t -> t.getProposedWeek());
+  protected static final String KEY_PROPOSEDYEAR = PropertyPath.property(Schedule.class, t -> t.getProposedYear());
+  protected static final String KEY_SCHEDULEDDATE = PropertyPath.property(Schedule.class, t -> t.getScheduledDate());
+
   @Override
   public OverviewModel loadModel(Consumer<OverviewModel> furtherProcessing) {
     return PersistentWork.read(em -> {
       OverviewModel model = new OverviewModel();
       List<Context> contexts = PersistentWork.from(Context.class);
       model.getContexts().addAll(contexts);
+
+      List<Task> scheduled = getScheduledTasks(em, LocalDate.now());
+      model.getScheduledTasks().addAll(scheduled);
+
+      List<Task> proposedTasks = getProposedTasks(em, LocalDate.now());
+      model.getProposedTasks().addAll(proposedTasks);
       return model;
     });
+  }
+
+  protected List<Task> getProposedTasks(EntityManager em, LocalDate now) {
+    CriteriaBuilder builder = em.getCriteriaBuilder();
+    CriteriaQuery<Task> query = builder.createQuery(Task.class);
+    Root<Task> root = query.from(Task.class);
+    Path<Schedule> schedule = root.get(KEY_SCHEDULE);
+
+    WeekHelper helper = new WeekHelper();
+    int week = helper.getWeek(now);
+    int year = now.getYear();
+
+    query.select(root);
+    Predicate correctYear = builder.equal(schedule.get(KEY_PROPOSEDYEAR), year);
+    Predicate correctWeek = builder.equal(schedule.get(KEY_PROPOSEDWEEK), week);
+    query.where(correctWeek, correctYear);
+
+    List<Task> results = em.createQuery(query).getResultList();
+    List<Task> retval = results.stream().filter(r -> !r.isFinished()).filter(t -> {
+      DayOfWeek proposedWeekDay = t.getSchedule().getProposedWeekDay();
+      if (proposedWeekDay != null) {
+        return proposedWeekDay.equals(now.getDayOfWeek());
+      }
+      return true;
+    }).collect(Collectors.toList());
+
+    Collections.sort(retval, Comparator.comparing(t -> t.getRemainingTime()));
+    return retval;
+  }
+
+  protected List<Task> getScheduledTasks(EntityManager em, LocalDate now) {
+    CriteriaBuilder builder = em.getCriteriaBuilder();
+    CriteriaQuery<Task> query = builder.createQuery(Task.class);
+    Root<Task> root = query.from(Task.class);
+    Path<Schedule> schedule = root.get(KEY_SCHEDULE);
+
+    WeekHelper helper = new WeekHelper();
+
+    query.select(root);
+    Predicate correctDate = builder.equal(schedule.get(KEY_SCHEDULEDDATE), now);
+    query.where(correctDate);
+
+    List<Task> results = em.createQuery(query).getResultList();
+    List<Task> retval = results.stream().filter(r -> !r.isFinished()).collect(Collectors.toList());
+
+    return retval;
   }
 
   @Override

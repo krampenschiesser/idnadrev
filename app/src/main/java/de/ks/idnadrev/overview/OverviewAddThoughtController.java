@@ -17,6 +17,7 @@ package de.ks.idnadrev.overview;
 
 import de.ks.BaseController;
 import de.ks.idnadrev.entity.Thought;
+import de.ks.persistence.PersistentWork;
 import de.ks.text.AsciiDocEditor;
 import de.ks.validation.validators.NamedEntityMustNotExistValidator;
 import de.ks.validation.validators.NotEmptyValidator;
@@ -29,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
 
 public class OverviewAddThoughtController extends BaseController<OverviewModel> {
   private static final Logger log = LoggerFactory.getLogger(OverviewAddThoughtController.class);
@@ -50,6 +52,7 @@ public class OverviewAddThoughtController extends BaseController<OverviewModel> 
     validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator(Thought.class));
 
     save.disableProperty().bind(validationRegistry.invalidProperty());
+
   }
 
   protected void setDescription(AsciiDocEditor description) {
@@ -58,7 +61,17 @@ public class OverviewAddThoughtController extends BaseController<OverviewModel> 
   }
 
   @FXML
-  void onSave() {
+  protected void onSave() {
+    String nameText = name.getText();
+    String descriptionText = description.getText();
 
+    CompletableFuture.runAsync(() -> {
+      Thought thought = new Thought(nameText);
+      PersistentWork.persist(thought.setDescription(descriptionText));
+    }, controller.getExecutorService())//
+      .thenRunAsync(() -> {
+        name.setText("");
+        description.setText("");
+      }, controller.getJavaFXExecutor());
   }
 }

@@ -35,15 +35,15 @@ public class OverviewScheduledController extends BaseController<OverviewModel> {
   private final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_TIME;
 
   @FXML
-  private TableView<Task> scheduledTasks;
+  protected TableView<Task> scheduledTasks;
   @FXML
-  private TableColumn<Task, String> name;
+  protected TableColumn<Task, String> name;
   @FXML
-  private TableColumn<Task, String> startTime;
+  protected TableColumn<Task, String> startTime;
   @FXML
-  private TableColumn<Task, String> endTime;
+  protected TableColumn<Task, String> endTime;
   @FXML
-  private ListView<Task> proposedTasks;
+  protected ListView<Task> proposedTasks;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -53,19 +53,37 @@ public class OverviewScheduledController extends BaseController<OverviewModel> {
     startTime.setCellValueFactory(this::convertStartTime);
     endTime.setCellValueFactory(this::convertEndTime);
 
-
     name.prefWidthProperty().bind(proposedTasks.widthProperty().subtract(startTime.widthProperty()).subtract(endTime.widthProperty()));
   }
 
   protected ObservableValue<String> convertStartTime(TableColumn.CellDataFeatures<Task, String> param) {
     LocalTime scheduledTime = param.getValue().getSchedule().getScheduledTime();
-    return new SimpleStringProperty(scheduledTime.format(formatter));
+    if (scheduledTime != null) {
+      return new SimpleStringProperty(scheduledTime.format(formatter));
+    } else {
+      return new SimpleStringProperty();
+    }
   }
 
   protected ObservableValue<String> convertEndTime(TableColumn.CellDataFeatures<Task, String> param) {
     Task task = param.getValue();
     LocalTime scheduledTime = task.getSchedule().getScheduledTime();
-    scheduledTime = scheduledTime.plus(task.getEstimatedTime());
-    return new SimpleStringProperty(scheduledTime.format(formatter));
+    if (scheduledTime != null) {
+      scheduledTime = scheduledTime.plus(task.getEstimatedTime());
+      return new SimpleStringProperty(scheduledTime.format(formatter));
+    } else {
+      return new SimpleStringProperty();
+    }
+  }
+
+  @Override
+  protected void onRefresh(OverviewModel model) {
+    super.onRefresh(model);
+
+    proposedTasks.getItems().clear();
+    proposedTasks.getItems().addAll(model.getProposedTasks());
+
+    scheduledTasks.getItems().clear();
+    scheduledTasks.getItems().addAll(model.getScheduledTasks());
   }
 }

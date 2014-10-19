@@ -16,15 +16,25 @@
 package de.ks.idnadrev.overview;
 
 import de.ks.idnadrev.entity.Context;
+import de.ks.idnadrev.entity.Task;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class OverviewModel {
   protected final List<Context> contexts = new ArrayList<>();
+  protected final List<Task> scheduledTasks = new ArrayList<>();
+  protected final List<Task> proposedTasks = new ArrayList<>();
 
   public List<Context> getContexts() {
     return contexts;
   }
 
+  public List<Task> getProposedTasks() {
+    return proposedTasks;
+  }
+
+  public List<Task> getScheduledTasks() {
+    return scheduledTasks;
+  }
 }

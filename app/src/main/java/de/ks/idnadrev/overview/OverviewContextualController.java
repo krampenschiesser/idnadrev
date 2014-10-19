@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
@@ -106,7 +107,9 @@ public class OverviewContextualController extends BaseController<OverviewModel> 
     if (context.trim().isEmpty()) {
       context = null;
     }
-    return new NextTaskChooser().getTasksSorted(60 * 24, context);
+    List<Task> tasks = new NextTaskChooser().getTasksSorted(60 * 24, context);
+    tasks.sort(Comparator.comparing(t -> t.getRemainingTime()));
+    return tasks;
   }
 
   private void startWork(Task task) {
