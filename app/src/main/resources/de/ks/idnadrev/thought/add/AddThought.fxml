@@ -22,8 +22,8 @@
           onDragOver="#onDragOver" onMouseEntered="#onMouseEntered" vgap="5.0" xmlns="http://javafx.com/javafx/8"
           xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.idnadrev.thought.add.AddThought">
     <children>
-        <Label text="%thought.name" GridPane.columnIndex="0"/>
-        <Label text="%thought.description" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <Label text="%thought.name:" GridPane.columnIndex="0"/>
+        <Label text="%thought.description:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
         <TextField fx:id="name" onAction="#saveThought" prefWidth="200.0" GridPane.columnIndex="1"/>
         <StackPane fx:id="descriptionContainer" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="1"
                    GridPane.rowIndex="1"/>
@@ -38,7 +38,7 @@
                 <Insets/>
             </GridPane.margin>
         </Button>
-        <Label text="%files" GridPane.rowIndex="2"/>
+        <Label text="%files:" GridPane.rowIndex="2"/>
 
 
     </children>
