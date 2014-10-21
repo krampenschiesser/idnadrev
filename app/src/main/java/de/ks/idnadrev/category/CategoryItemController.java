@@ -21,7 +21,8 @@ import de.ks.idnadrev.entity.Category;
 import de.ks.imagecache.Images;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -29,8 +30,10 @@ import javafx.scene.layout.StackPane;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-public class CategoryItemController {
+public class CategoryItemController implements Initializable {
   @Inject
   protected ActivityController controller;
   @Inject
@@ -38,17 +41,48 @@ public class CategoryItemController {
 
   @FXML
   protected Pane root;
-
+  @FXML
+  protected StackPane container;
   @FXML
   protected ImageView imageView;
   @FXML
-  protected Label title;
-  @FXML
-  protected StackPane imageContainer;
+  protected Button title;
 
   protected CategoryFilter filter;
   protected Category category;
   protected SimpleObjectProperty<Category> selectionProperty;
+
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    title.getStyleClass().add("categoryBrowseItem");
+    container.getStyleClass().add("categoryBrowseItemContainer");
+  }
+
+
+  private void applyContent() {
+    title.setText(category.getName());
+    if (category.getImage() != null) {
+      File file = fileStore.getFile(category.getImage());
+      Image image = Images.get(file.getAbsolutePath());
+      imageView.setImage(image);
+    }
+
+    container.setStyle("-fx-background-color: -fx-outer-border, -fx-inner-border, linear-gradient(to bottom, derive(" + category.getColor() + ",20%) ,derive(" + category.getColor() + ",-13%));");// + category.getColor() + ";");
+
+    title.setOnAction(e -> {
+      if (selectionProperty != null) {
+        selectionProperty.set(category);
+      }
+    });
+  }
+
+  public void setSelectionProperty(SimpleObjectProperty<Category> selectionProperty) {
+    this.selectionProperty = selectionProperty;
+  }
+
+  public SimpleObjectProperty<Category> getSelectionProperty() {
+    return selectionProperty;
+  }
 
   public Pane getPane() {
     return root;
@@ -69,28 +103,5 @@ public class CategoryItemController {
 
   public Category getCategory() {
     return category;
-  }
-
-  private void applyContent() {
-    title.setText(category.getName());
-    if (category.getImage() != null) {
-      File file = fileStore.getFile(category.getImage());
-      Image image = Images.get(file.getAbsolutePath());
-      imageView.setImage(image);
-    }
-    root.setStyle("-fx-background-color: " + category.getColor() + "; -fx-background-radius: 15;");
-    root.setOnMouseClicked(e -> {
-      if (selectionProperty != null) {
-        selectionProperty.set(category);
-      }
-    });
-  }
-
-  public void setSelectionProperty(SimpleObjectProperty<Category> selectionProperty) {
-    this.selectionProperty = selectionProperty;
-  }
-
-  public SimpleObjectProperty<Category> getSelectionProperty() {
-    return selectionProperty;
   }
 }
