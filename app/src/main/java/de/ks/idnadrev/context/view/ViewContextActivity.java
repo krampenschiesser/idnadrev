@@ -17,7 +17,7 @@ package de.ks.idnadrev.context.view;
 import de.ks.activity.ActivityCfg;
 import de.ks.menu.MenuItem;
 
-@MenuItem(order = 9, value = "/main/context")
+@MenuItem(order = 9, value = "/main/other")
 public class ViewContextActivity extends ActivityCfg {
   public ViewContextActivity() {
     super(ViewContextDS.class, ViewContextController.class);
