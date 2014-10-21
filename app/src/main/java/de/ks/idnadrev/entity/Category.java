@@ -33,7 +33,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 @Entity
 public class Category extends NamedPersistentObject<Category> {
-  private static final List<String> defaultColors = Arrays.asList("#f3622d", "#fba71b", "#57b757", "#41a9c92", "#4258c9", "#9a42c8", "#c84164", "#888888");
+  private static final List<String> defaultColors = Arrays.asList("#f3622d", "#fba71b", "#57b757", "#41a9c9", "#4258c9", "#9a42c8", "#c84164", "#888888");
   @ManyToOne
   protected Category parent;
 
