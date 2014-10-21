@@ -26,6 +26,8 @@ import de.ks.idnadrev.entity.Category;
 import de.ks.idnadrev.selection.BaseNamedPersistentObjectSelection;
 import de.ks.persistence.PersistentWork;
 import javafx.scene.Node;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.FlowPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +42,7 @@ public class CategorySelection extends BaseNamedPersistentObjectSelection<Catego
   protected ActivityInitialization initialization;
 
   protected CategoryBrowser categoryBrowser;
-  protected Node categoryView;
+  protected FlowPane categoryView;
   private boolean clearOnRefresh = false;
   private boolean readOnly = false;
 
@@ -49,7 +51,7 @@ public class CategorySelection extends BaseNamedPersistentObjectSelection<Catego
     super.initialize(location, resources);
     DefaultLoader<Node, CategoryBrowser> loader = initialization.loadAdditionalController(CategoryBrowser.class);
     categoryBrowser = loader.getController();
-    categoryView = loader.getView();
+    categoryView = (FlowPane) loader.getView();
 
     categoryBrowser.selectedCategory.addListener((p, o, n) -> {
       if (n != null) {
@@ -61,7 +63,11 @@ public class CategorySelection extends BaseNamedPersistentObjectSelection<Catego
 
   @Override
   protected Node getBrowseNode() {
-    return categoryView;
+    ScrollPane scrollPane = new ScrollPane(categoryView);
+    categoryView.prefWidthProperty().bind(scrollPane.widthProperty());
+    categoryView.prefHeightProperty().bind(scrollPane.heightProperty());
+    scrollPane.setPrefSize(500, 400);
+    return scrollPane;
   }
 
   @Override

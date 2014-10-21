@@ -48,7 +48,6 @@ public class CategoryItemController implements Initializable {
   @FXML
   protected Button title;
 
-  protected CategoryFilter filter;
   protected Category category;
   protected SimpleObjectProperty<Category> selectionProperty;
 
@@ -57,7 +56,6 @@ public class CategoryItemController implements Initializable {
     title.getStyleClass().add("categoryBrowseItem");
     container.getStyleClass().add("categoryBrowseItemContainer");
   }
-
 
   private void applyContent() {
     title.setText(category.getName());
@@ -86,14 +84,6 @@ public class CategoryItemController implements Initializable {
 
   public Pane getPane() {
     return root;
-  }
-
-  public void setFilter(CategoryFilter filter) {
-    this.filter = filter;
-  }
-
-  public CategoryFilter getFilter() {
-    return filter;
   }
 
   public void setCategory(Category category) {

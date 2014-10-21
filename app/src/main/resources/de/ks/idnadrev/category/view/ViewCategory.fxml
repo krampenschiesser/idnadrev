@@ -1,27 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.ScrollPane?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity"
-          minWidth="-Infinity" fx:controller="de.ks.idnadrev.category.view.ViewCategoryController"
-          xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane hgap="5.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+          minWidth="-Infinity" vgap="5.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="de.ks.idnadrev.category.view.ViewCategoryController">
     <columnConstraints>
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+        <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0"/>
+        <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0"/>
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="30.0" prefHeight="200.0" valignment="CENTER" vgrow="NEVER"/>
         <RowConstraints minHeight="30.0" vgrow="SOMETIMES"/>
         <RowConstraints minHeight="30.0" vgrow="NEVER"/>
     </rowConstraints>
     <children>
-        <ScrollPane hbarPolicy="NEVER" GridPane.rowIndex="1">
+        <ScrollPane fx:id="scrollPane" GridPane.columnSpan="2147483647" GridPane.rowIndex="1">
             <content>
-                <StackPane>
-                    <children>
-                        <fx:include fx:id="categoryBrowser" source="../CategoryBrowser.fxml"/>
-                    </children>
-                </StackPane>
+                <fx:include fx:id="categoryBrowser" source="../CategoryBrowser.fxml"/>
             </content>
         </ScrollPane>
+        <Label fx:id="categoryName" styleClass="editorViewLabel"/>
+        <HBox maxHeight="-Infinity" maxWidth="-Infinity" spacing="5.0" GridPane.columnSpan="2147483647"
+              GridPane.halignment="CENTER" GridPane.rowIndex="2" StackPane.alignment="TOP_CENTER">
+            <children>
+                <Button fx:id="create" mnemonicParsing="false" onAction="#onCreate" text="%create"/>
+                <Button fx:id="edit" mnemonicParsing="false" onAction="#onEdit" text="%edit"/>
+                <Button fx:id="delete" mnemonicParsing="false" onAction="#onDelete" text="%delete"/>
+            </children>
+        </HBox>
+        <StackPane fx:id="selectedItemContainer" GridPane.columnIndex="1"/>
     </children>
+    <padding>
+        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+    </padding>
 </GridPane>

@@ -13,18 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.category;
+package de.ks.idnadrev.category.create;
 
-import de.ks.idnadrev.entity.information.Information;
-import de.ks.persistence.QueryConsumer;
+import de.ks.activity.ActivityCfg;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-
-public class CategoryFilter implements QueryConsumer<Information, Information> {
-  @Override
-  public void accept(Root<Information> root, CriteriaQuery<Information> query, CriteriaBuilder builder) {
-
+public class CreateCategoryActivity extends ActivityCfg {
+  public CreateCategoryActivity() {
+    super(CreateCategoryDS.class, CreateCategoryController.class);
   }
 }

@@ -38,8 +38,6 @@ import java.util.stream.Collectors;
 
 public class CategoryBrowser extends BaseController<Object> {
   private static final Logger log = LoggerFactory.getLogger(CategoryBrowser.class);
-
-  protected final CategoryFilter filter = new CategoryFilter();
   @FXML
   protected FlowPane categoryPane;
 
@@ -48,7 +46,6 @@ public class CategoryBrowser extends BaseController<Object> {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-
   }
 
   @Override
@@ -59,10 +56,10 @@ public class CategoryBrowser extends BaseController<Object> {
   @Override
   public void onResume() {
     CompletableFuture.supplyAsync(this::readCategories, controller.getExecutorService())//
-            .thenApply(this::loadCategoryItemControllers)//
-            .thenAcceptAsync(controllers -> {
-              controllers.forEach(c -> categoryPane.getChildren().add(c.getPane()));
-            }, controller.getJavaFXExecutor());
+      .thenApply(this::loadCategoryItemControllers)//
+      .thenAcceptAsync(controllers -> {
+        controllers.forEach(c -> categoryPane.getChildren().add(c.getPane()));
+      }, controller.getJavaFXExecutor());
   }
 
   protected List<Category> readCategories() {
@@ -71,9 +68,16 @@ public class CategoryBrowser extends BaseController<Object> {
     return from;
   }
 
+  public void reload() {
+    itemControllers.clear();
+    onResume();
+  }
+
   protected List<CategoryItemController> loadCategoryItemControllers(List<Category> allCategories) {
     List<Category> categories = new ArrayList<>(allCategories);
     List<Category> alreadyLoadedCategories = itemControllers.stream().map(ic -> ic.getCategory()).collect(Collectors.toList());
+    log.debug("Found {} already loaded categories", alreadyLoadedCategories.size());
+
     categories.removeAll(alreadyLoadedCategories);
     log.debug("Found {} additional categories", categories.size());
 
@@ -91,7 +95,7 @@ public class CategoryBrowser extends BaseController<Object> {
 
 
     ActivityExecutor executorService = controller.getExecutorService();
-    List<Future<CategoryItemController>> futures = categories.stream().map(category -> executorService.submit(() -> loadSingleItemController(category, filter))).collect(Collectors.toList());
+    List<Future<CategoryItemController>> futures = categories.stream().map(category -> executorService.submit(() -> loadSingleItemController(category))).collect(Collectors.toList());
 
     List<CategoryItemController> categoryItemControllers = futures.stream().map(f -> {
       try {
@@ -108,17 +112,32 @@ public class CategoryBrowser extends BaseController<Object> {
     return categoryItemControllers;
   }
 
-  protected CategoryItemController loadSingleItemController(Category category, CategoryFilter filter) {
+  protected CategoryItemController loadSingleItemController(Category category) {
     try {
       DefaultLoader<Node, CategoryItemController> loader = activityInitialization.loadAdditionalControllerWithFuture(CategoryItemController.class).get();
       CategoryItemController categoryItemController = loader.getController();
       categoryItemController.setCategory(category);
-      categoryItemController.setFilter(filter);
       categoryItemController.setSelectionProperty(selectedCategory);
       return categoryItemController;
     } catch (Exception e) {
       log.error("Could not load {}", CategoryItemController.class.getName(), e);
       return null;
     }
+  }
+
+  public FlowPane getCategoryPane() {
+    return categoryPane;
+  }
+
+  public Category getSelectedCategory() {
+    return selectedCategory.get();
+  }
+
+  public SimpleObjectProperty<Category> selectedCategoryProperty() {
+    return selectedCategory;
+  }
+
+  public void setSelectedCategory(Category selectedCategory) {
+    this.selectedCategory.set(selectedCategory);
   }
 }
