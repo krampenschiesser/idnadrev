@@ -63,7 +63,7 @@ public class CategoryBrowserTest extends ActivityTest {
     assertEquals("world", second.title.getText());
 
     assertNull(controllerInstance.selectedCategory.get());
-    FXPlatform.invokeLater(() -> first.getPane().getOnMouseClicked().handle(null));
+    FXPlatform.invokeLater(() -> first.title.getOnAction().handle(null));
 
     assertNotNull(controllerInstance.selectedCategory.get());
     assertEquals("hello", controllerInstance.selectedCategory.get().getName());
