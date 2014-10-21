@@ -31,12 +31,15 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
-import org.controlsfx.dialog.Dialog;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +61,7 @@ public abstract class BaseNamedPersistentObjectSelection<T extends NamedPersiste
   protected SimpleObjectProperty<T> selectedValue = new SimpleObjectProperty<>();
   protected ActivityController controller = CDI.current().select(ActivityController.class).get();
   protected QueryConsumer<T, T> filter;
-  private Dialog dialog;
+  private Stage dialog;
   private CustomAutoCompletionBinding autoCompletion;
   private EventHandler<ActionEvent> onAction;
   private NamedPersistentObjectAutoCompletion<T> namedPersistentObjectAutoCompletion;
@@ -114,12 +117,18 @@ public abstract class BaseNamedPersistentObjectSelection<T extends NamedPersiste
 
   @FXML
   protected void showBrowser() {
-    dialog = new Dialog(this.browse, Localized.get("select.namedEntity." + entityClass.getSimpleName()));
-    dialog.setContent(getBrowseNode());
+    String title = Localized.get("select.namedEntity." + entityClass.getSimpleName());
+
+    dialog = new Stage();
+    dialog.setTitle(title);
+    Scene scene = new Scene(new StackPane(getBrowseNode()));
+    dialog.setScene(scene);
+    dialog.initModality(Modality.APPLICATION_MODAL);
+
     dialog.show();
     Instance<String> styleSheets = CDI.current().select(String.class, FxCss.LITERAL);
     styleSheets.forEach((sheet) -> {
-      dialog.getStylesheets().add(sheet);
+      scene.getStylesheets().add(sheet);
     });
   }
 
@@ -157,7 +166,7 @@ public abstract class BaseNamedPersistentObjectSelection<T extends NamedPersiste
   }
 
   public boolean isSelectingProject() {
-    return dialog != null && dialog.getWindow() != null && dialog.getWindow().isShowing();
+    return dialog != null && dialog.isShowing();
   }
 
   public void hideBrowserBtn() {
