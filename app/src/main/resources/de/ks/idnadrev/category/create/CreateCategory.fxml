@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<GridPane hgap="5.0" minHeight="-Infinity" minWidth="-Infinity" vgap="5.0" xmlns="http://javafx.com/javafx/8"
+          xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.idnadrev.category.create.CreateCategoryController">
+    <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+        <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
+        <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
+        <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
+        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
+    </rowConstraints>
+    <children>
+        <Label text="%name:" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <Label text="%color:" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        <ColorPicker fx:id="colorSelection" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+        <Label text="%image:" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+        <TextField fx:id="name" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="1"/>
+        <Button fx:id="imageSelection" mnemonicParsing="false" onAction="#onImageSelection" text="%select"
+                GridPane.columnIndex="3" GridPane.rowIndex="3"/>
+        <StackPane GridPane.columnIndex="2" GridPane.rowIndex="3">
+            <children>
+                <ImageView fx:id="imageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true"
+                           GridPane.columnIndex="2" GridPane.rowIndex="3"/>
+                <Label fx:id="noImageLabel" text="%noimage"/>
+            </children>
+        </StackPane>
+        <Button fx:id="save" defaultButton="true" mnemonicParsing="false" onAction="#onSave" text="%save"
+                GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="4"/>
+    </children>
+    <padding>
+        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+    </padding>
+</GridPane>

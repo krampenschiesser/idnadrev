@@ -65,7 +65,7 @@ public class CategoryItemController implements Initializable {
       imageView.setImage(image);
     }
 
-    container.setStyle("-fx-background-color: -fx-outer-border, -fx-inner-border, linear-gradient(to bottom, derive(" + category.getColor() + ",20%) ,derive(" + category.getColor() + ",-13%));");// + category.getColor() + ";");
+    container.setStyle("-fx-background-color: -fx-outer-border, -fx-inner-border, linear-gradient(to bottom, derive(" + category.getColorAsString() + ",20%) ,derive(" + category.getColorAsString() + ",-13%));");// + category.getColor() + ";");
 
     title.setOnAction(e -> {
       if (selectionProperty != null) {
