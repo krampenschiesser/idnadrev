@@ -7,8 +7,8 @@
           minWidth="-Infinity" vgap="5.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
           fx:controller="de.ks.idnadrev.category.view.ViewCategoryController">
     <columnConstraints>
-        <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0"/>
-        <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0"/>
+        <ColumnConstraints halignment="RIGHT" hgrow="ALWAYS" minWidth="10.0" percentWidth="40.0"/>
+        <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" minWidth="10.0" percentWidth="60.0"/>
     </columnConstraints>
     <rowConstraints>
         <RowConstraints minHeight="30.0" prefHeight="200.0" valignment="CENTER" vgrow="NEVER"/>
