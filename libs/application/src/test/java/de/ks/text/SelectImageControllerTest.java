@@ -63,6 +63,7 @@ public class SelectImageControllerTest {
   @Test
   public void testShowImage() throws Exception {
     controller.addImage("keymap", "/de/ks/images/keymap.jpg").get();
+    activityController.waitForTasks();
     FXPlatform.waitForFX();
     assertEquals(1, imagesView.getChildren().size());
     GridPane grid = (GridPane) imagesView.getChildren().get(0);

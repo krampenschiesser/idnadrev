@@ -103,6 +103,7 @@ public class AsciiDocEditorTest {
     assertNotNull("preview string is null", adocEditor.preview.getCurrentHtml());
 
     WebEngine engine = adocEditor.preview.getWebView().getEngine();
+    withRetry(() -> adocEditor.preview.getWebView().getEngine() != null);
     assertNull("document is not null", engine.getDocument());
 
     FXPlatform.invokeLater(() -> adocEditor.tabPane.getSelectionModel().select(1));
@@ -124,6 +125,7 @@ public class AsciiDocEditorTest {
     for (Future<?> future : selectImageController.getLoadingFutures()) {
       future.get();
     }
+    activityController.waitForTasks();
     FXPlatform.waitForFX();
     assertEquals(1, selectImageController.getImagePane().getChildren().size());
 
@@ -167,18 +169,22 @@ public class AsciiDocEditorTest {
       adocEditor.searchForText();
     });
     activityController.waitForTasks();
+    FXPlatform.waitForFX();
     assertEquals(6, adocEditor.editor.getCaretPosition());
 
     FXPlatform.invokeLater(() -> adocEditor.searchForText());
     activityController.waitForTasks();
+    FXPlatform.waitForFX();
     assertEquals(8, adocEditor.editor.getCaretPosition());
 
     FXPlatform.invokeLater(() -> adocEditor.searchForText());
     activityController.waitForTasks();
+    FXPlatform.waitForFX();
     assertEquals(12, adocEditor.editor.getCaretPosition());
 
     FXPlatform.invokeLater(() -> adocEditor.searchForText());
     activityController.waitForTasks();
+    FXPlatform.waitForFX();
     assertEquals(6, adocEditor.editor.getCaretPosition());
   }
 
