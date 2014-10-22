@@ -16,6 +16,7 @@
 package de.ks.idnadrev.entity;
 
 import de.ks.persistence.entity.NamedPersistentObject;
+import javafx.scene.paint.Color;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
@@ -57,7 +58,7 @@ public class Category extends NamedPersistentObject<Category> {
 
   protected void fillDefaultColor() {
     int nextColor = ThreadLocalRandom.current().nextInt(0, defaultColors.size());
-    setColor(defaultColors.get(nextColor));
+    setColorAsString(defaultColors.get(nextColor));
   }
 
   public Set<Category> getChildren() {
@@ -77,12 +78,20 @@ public class Category extends NamedPersistentObject<Category> {
     this.parent = parent;
   }
 
-  public String getColor() {
+  public String getColorAsString() {
     return color;
   }
 
-  public void setColor(String color) {
+  public void setColorAsString(String color) {
     this.color = color;
+  }
+
+  public void setColor(Color clr) {
+    this.color = String.format("#%02X%02X%02X", (int) (clr.getRed() * 255), (int) (clr.getGreen() * 255), (int) (clr.getBlue() * 255));
+  }
+
+  public Color getColor() {
+    return Color.web(color);
   }
 
   public FileReference getImage() {
