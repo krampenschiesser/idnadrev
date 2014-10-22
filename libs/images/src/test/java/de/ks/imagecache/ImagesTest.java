@@ -15,11 +15,13 @@
 
 package de.ks.imagecache;
 
-import org.junit.Assert;
+import javafx.scene.image.Image;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.ForkJoinPool;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -54,6 +56,7 @@ public class ImagesTest {
 
   @Test
   public void testAsyncImage() throws Exception {
-    Images.later(fileImage, Assert::assertNotNull);
+    Image image = Images.later(fileImage, ForkJoinPool.commonPool()).get();
+    assertNotNull(image);
   }
 }

@@ -23,9 +23,9 @@ import javafx.scene.image.Image;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.Future;
+import java.util.concurrent.ExecutorService;
 
 /**
  *
@@ -40,17 +40,17 @@ public class Images {
   private Images() {
     loader = new ImageLoader();
     cache = CacheBuilder.newBuilder()//
-            .initialCapacity(300)//
-            .softValues()//
-            .build(loader);
+      .initialCapacity(300)//
+      .softValues()//
+      .build(loader);
   }
 
   public static Image get(String imagePath) {
     return instance.getImage(imagePath);
   }
 
-  public static Future<?> later(String imagePath, AsyncImage applier) {
-    return instance.loadAsync(imagePath, applier);
+  public static CompletableFuture<Image> later(String imagePath, ExecutorService executorService) {
+    return instance.loadAsync(imagePath, executorService);
   }
 
   protected Image getImage(String imagePath) {
@@ -62,15 +62,7 @@ public class Images {
     }
   }
 
-  public Future<?> loadAsync(String imagePath, AsyncImage applier) {
-    return ForkJoinPool.commonPool().submit(new Runnable() {
-      @Override
-      public void run() {
-        Image image = getImage(imagePath);
-        if (image != null) {
-          applier.applyImage(image);
-        }
-      }
-    });
+  public CompletableFuture<Image> loadAsync(String imagePath, ExecutorService executorService) {
+    return CompletableFuture.supplyAsync(() -> getImage(imagePath), executorService);
   }
 }

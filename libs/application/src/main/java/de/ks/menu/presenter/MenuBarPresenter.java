@@ -15,16 +15,19 @@
 
 package de.ks.menu.presenter;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import de.ks.i18n.Localized;
 import de.ks.imagecache.Images;
 import de.ks.menu.MenuItemDescriptor;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -34,6 +37,12 @@ public class MenuBarPresenter extends AbstractPresenter<MenuBar> {
   Map<String, Menu> menus = new TreeMap<>();
   List<String> menuNames = new ArrayList<>();
   MenuBar menuBar = null;
+  protected final ThreadPoolExecutor executorService = (ThreadPoolExecutor) Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(true).build());
+
+  public MenuBarPresenter() {
+    executorService.setCorePoolSize(0);
+    executorService.setKeepAliveTime(5, TimeUnit.SECONDS);
+  }
 
   @Override
   public MenuBar getMenu(String menuPath) {
@@ -65,7 +74,8 @@ public class MenuBarPresenter extends AbstractPresenter<MenuBar> {
   private MenuItem createMenuItem(MenuItemDescriptor item) {
     MenuItem menuItem = new MenuItem();
     if (item.getImagePath() != null && !item.getImagePath().isEmpty()) {
-      Images.later(item.getImagePath(), (Image img) -> menuItem.setGraphic(new ImageView(img)));
+      Images.later(item.getImagePath(), executorService)//
+        .thenAccept(img -> menuItem.setGraphic(new ImageView(img)));
     }
     menuItem.setId(item.getMenuItemPath());
     menuItem.setText(Localized.get(item.getTranslationPath()));

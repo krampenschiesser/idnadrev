@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 public class SelectImageController implements Initializable {
@@ -51,7 +52,8 @@ public class SelectImageController implements Initializable {
   protected Dimension2D defaultSize = new Dimension2D(200, 200);
 
   public Future<?> addImage(String name, String path) {
-    Future<?> future = Images.later(path, img -> activityController.getJavaFXExecutor().execute(() -> this.addImageToPane(img, name, path)));
+    CompletableFuture<Image> future = Images.later(path, activityController.getExecutorService());
+    future.thenAcceptAsync(img -> this.addImageToPane(img, name, path), activityController.getJavaFXExecutor());
     this.loadingFutures.add(future);
     return future;
   }
