@@ -31,7 +31,6 @@ import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
@@ -57,8 +56,6 @@ public class ViewCategoryController extends BaseController<List<Category>> {
   @FXML
   protected ScrollPane scrollPane;
   @FXML
-  protected Label categoryName;
-  @FXML
   protected StackPane selectedItemContainer;
   @FXML
   protected Button create;
@@ -77,11 +74,9 @@ public class ViewCategoryController extends BaseController<List<Category>> {
 
       selectedItemContainer.getChildren().clear();
       if (n == null) {
-        categoryName.setText("");
       } else {
         CategoryItemController itemController = getItemController();
         itemController.setCategory(n);
-        categoryName.setText(n.getName());
         selectedItemContainer.getChildren().add(itemController.getPane());
         StackPane.setAlignment(itemController.getPane(), Pos.CENTER_LEFT);
       }

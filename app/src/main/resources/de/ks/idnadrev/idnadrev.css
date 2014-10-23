@@ -88,3 +88,13 @@
     -fx-background-radius: 5, 4, 3;
     -fx-opacity: 0.8;
 }
+
+.contentContainer {
+    -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.7), 10, 0, 3, 3);
+    -fx-background-color: -fx-background;
+    -fx-background-radius: 8;
+    /*-fx-border-color: black;
+    -fx-border-radius: 15 10 1 10;
+    -fx-border-width: 1px;
+    -fx-border-style: outset;*/
+}

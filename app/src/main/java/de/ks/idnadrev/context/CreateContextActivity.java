@@ -15,9 +15,7 @@
 package de.ks.idnadrev.context;
 
 import de.ks.activity.ActivityCfg;
-import de.ks.menu.MenuItem;
 
-@MenuItem(order = 9, value = "/main/other")
 public class CreateContextActivity extends ActivityCfg {
   public CreateContextActivity() {
     super(CreateContextDS.class, CreateContext.class);
