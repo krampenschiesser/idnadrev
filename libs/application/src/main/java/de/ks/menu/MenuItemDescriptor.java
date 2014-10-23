@@ -39,7 +39,7 @@ public class MenuItemDescriptor implements Comparable<MenuItemDescriptor> {
 
   public MenuItemDescriptor(String menuPath, int order, String imagePath, Class<?> target) {
     this.menuPath = menuPath;
-    this.menuItemPath = menuPath + "/" + target.getSimpleName().toLowerCase(Locale.ENGLISH);
+    this.menuItemPath = menuPath + "/" + target.getSimpleName().toLowerCase(Locale.ROOT);
     this.imagePath = imagePath;
     this.target = target;
     this.order = order;

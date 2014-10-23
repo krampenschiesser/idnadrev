@@ -237,8 +237,8 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
   }
 
   protected void searchForText() {
-    String searchKey = searchField.textProperty().getValueSafe().toLowerCase(Locale.ENGLISH);
-    String editorContent = editor.textProperty().getValueSafe().toLowerCase(Locale.ENGLISH);
+    String searchKey = searchField.textProperty().getValueSafe().toLowerCase(Locale.ROOT);
+    String editorContent = editor.textProperty().getValueSafe().toLowerCase(Locale.ROOT);
     searchField.setDisable(true);
     CompletableFuture<Integer> search = CompletableFuture.supplyAsync(() -> {
       if (lastSearch != null && lastSearch.matches(searchKey, editorContent)) {

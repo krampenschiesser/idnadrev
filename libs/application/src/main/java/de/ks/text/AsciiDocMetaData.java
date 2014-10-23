@@ -69,7 +69,7 @@ public class AsciiDocMetaData {
           if (needsMathJax) {
             new Unzipper(file).unzip(newDataDir);
           }
-        } else if (!file.getName().toLowerCase(Locale.ENGLISH).endsWith(".zip") && !file.getName().equals(MATHJAX)) {
+        } else if (!file.getName().toLowerCase(Locale.ROOT).endsWith(".zip") && !file.getName().equals(MATHJAX)) {
           Files.copy(file.toPath(), new File(newDataDir, file.getName()).toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
       }

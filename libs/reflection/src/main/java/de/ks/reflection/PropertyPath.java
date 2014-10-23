@@ -59,9 +59,9 @@ public class PropertyPath {
   public static String toFirstLowerCase(String methodName, int start) {
     String substring = methodName.substring(start);
     if (substring.length() == 1) {
-      return substring.toLowerCase(Locale.ENGLISH);
+      return substring.toLowerCase(Locale.ROOT);
     } else {
-      return substring.substring(0, 1).toLowerCase(Locale.ENGLISH) + substring.substring(1);
+      return substring.substring(0, 1).toLowerCase(Locale.ROOT) + substring.substring(1);
     }
   }
 
@@ -223,7 +223,7 @@ public class PropertyPath {
       }
     }
     try {
-      String methodName = lastMethod.getName().toLowerCase(Locale.ENGLISH);
+      String methodName = lastMethod.getName().toLowerCase(Locale.ROOT);
 
       boolean isBooleanGetter = methodName.startsWith("is");
       boolean isSimpleGetter = methodName.startsWith("get");
@@ -232,8 +232,8 @@ public class PropertyPath {
         int index = isBooleanGetter ? 2 : 3;
         Class<?> declaringClass = lastMethod.getDeclaringClass();
         Optional<Method> methodOptional = Arrays.asList(declaringClass.getDeclaredMethods()).stream()//
-                .filter((m) -> m.getName().startsWith("set") && m.getName().toLowerCase(Locale.ENGLISH).endsWith(methodName.substring(index)))//
-                .findFirst();
+          .filter((m) -> m.getName().startsWith("set") && m.getName().toLowerCase(Locale.ROOT).endsWith(methodName.substring(index)))//
+          .findFirst();
         if (methodOptional.isPresent()) {
           Method method = methodOptional.get();
           method.setAccessible(true);
@@ -326,10 +326,10 @@ public class PropertyPath {
     } else if (methodName.startsWith("is")) {
       methodName = methodName.substring(2);
     }
-    methodName = methodName.toLowerCase(Locale.ENGLISH);
+    methodName = methodName.toLowerCase(Locale.ROOT);
     List<Field> fieldsRecursive = ReflectionUtil.getAllFields(method.getDeclaringClass());
     for (Field field : fieldsRecursive) {
-      if (field.getName().toLowerCase(Locale.ENGLISH).equals(methodName)) {
+      if (field.getName().toLowerCase(Locale.ROOT).equals(methodName)) {
         return field;
       }
     }

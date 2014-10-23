@@ -26,5 +26,5 @@ import java.util.Locale;
 @MenuItem(order = 99, value = Keymap.MENUPATH, image = "keymap.jpg")
 public class Keymap {
   public static final String MENUPATH = "/main/options/preferences";
-  public static final String ITEMPATH = MENUPATH + "/" + Keymap.class.getSimpleName().toLowerCase(Locale.ENGLISH);
+  public static final String ITEMPATH = MENUPATH + "/" + Keymap.class.getSimpleName().toLowerCase(Locale.ROOT);
 }

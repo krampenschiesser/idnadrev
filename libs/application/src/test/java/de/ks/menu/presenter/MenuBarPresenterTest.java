@@ -106,7 +106,7 @@ public class MenuBarPresenterTest {
       MenuBar menu = this.presenter.getMenu("/main/file");
       menu.getMenus().get(0).getItems().get(0).getOnAction().handle(new ActionEvent());
       assertNotNull(eventItem);
-      assertEquals(Open.ITEMPATH.toLowerCase(Locale.ENGLISH), eventItem.getMenuItemPath());
+      assertEquals(Open.ITEMPATH.toLowerCase(Locale.ROOT), eventItem.getMenuItemPath());
     } finally {
       bus.unregister(this);
     }

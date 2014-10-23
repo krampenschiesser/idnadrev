@@ -53,7 +53,7 @@ public class NamedPersistentObjectAutoCompletion<T extends NamedPersistentObject
     Path<String> nameSelection = root.get("name");
     criteria.select(nameSelection);
 
-    Predicate like = builder.like(builder.lower(nameSelection), userText.toLowerCase(Locale.ENGLISH) + "%");
+    Predicate like = builder.like(builder.lower(nameSelection), userText.toLowerCase(Locale.ROOT) + "%");
     if (filter != null) {
       filter.accept(root, criteria, builder);
       criteria.where(criteria.getRestriction(), like);

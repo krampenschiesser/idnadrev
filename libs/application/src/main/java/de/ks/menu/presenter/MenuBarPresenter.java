@@ -86,7 +86,7 @@ public class MenuBarPresenter extends AbstractPresenter<MenuBar> {
   private void createMenu(String menuPath) {
     Menu menu = new Menu();
     menu.setId(menuPath);
-    menu.setText(Localized.get(menuPath.toLowerCase(Locale.ENGLISH).substring(1).replace("/", ".")));
+    menu.setText(Localized.get(menuPath.toLowerCase(Locale.ROOT).substring(1).replace("/", ".")));
     menus.put(menuPath, menu);
   }
 

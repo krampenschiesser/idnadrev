@@ -122,11 +122,11 @@ public class ViewTasksMaster extends BaseController<List<Task>> {
     });
 
     CompletableFuture.supplyAsync(() -> PersistentWork.from(Context.class).stream().map(c -> c.getName()).collect(Collectors.toList()), controller.getExecutorService())//
-            .thenAcceptAsync(contextNames -> {
-              ObservableList<String> items = FXCollections.observableArrayList(contextNames);
-              items.add(0, "");
-              contextSelection.setItems(items);
-            }, controller.getJavaFXExecutor());
+      .thenAcceptAsync(contextNames -> {
+        ObservableList<String> items = FXCollections.observableArrayList(contextNames);
+        items.add(0, "");
+        contextSelection.setItems(items);
+      }, controller.getJavaFXExecutor());
 
     searchField.setOnKeyReleased(e -> {
       if (e.getCode() == KeyCode.ESCAPE) {
@@ -194,9 +194,9 @@ public class ViewTasksMaster extends BaseController<List<Task>> {
           return false;
         }
       }
-      String nameSearch = searchField.textProperty().getValueSafe().trim().toLowerCase(Locale.ENGLISH);
+      String nameSearch = searchField.textProperty().getValueSafe().trim().toLowerCase(Locale.ROOT);
       if (!nameSearch.isEmpty()) {
-        if (task.getName().toLowerCase(Locale.ENGLISH).contains(nameSearch)) {
+        if (task.getName().toLowerCase(Locale.ROOT).contains(nameSearch)) {
           return true;
         } else {
           return false;

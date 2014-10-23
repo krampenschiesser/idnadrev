@@ -122,7 +122,7 @@ public class ImportSheetHandler extends DefaultHandler {
           if (currentCell.row == COLUMN_DEF_ROW) {
             String columnName = (String) nextValue.getValue();
             Optional<XlsxColumn> column = columns.stream()//
-                    .filter(c -> c.getIdentifier().toLowerCase(Locale.ENGLISH).equals(columnName.toLowerCase(Locale.ENGLISH)))//
+              .filter(c -> c.getIdentifier().toLowerCase(Locale.ROOT).equals(columnName.toLowerCase(Locale.ROOT)))//
                     .findFirst();
             if (column.isPresent()) {
               columnId2Converter.put(currentCell.col, column.get());

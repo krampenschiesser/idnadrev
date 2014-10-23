@@ -77,7 +77,7 @@ public class AsciiDocParser {
   }
 
   public OptionsBuilder getDefaultOptions(AttributesBuilder attributes) {
-    return OptionsBuilder.options().headerFooter(true).backend(AsciiDocBackend.HTML5.name().toLowerCase(Locale.ENGLISH)).attributes(attributes.get());
+    return OptionsBuilder.options().headerFooter(true).backend(AsciiDocBackend.HTML5.name().toLowerCase(Locale.ROOT)).attributes(attributes.get());
   }
 
   public String parse(String input) {
@@ -93,7 +93,7 @@ public class AsciiDocParser {
   public String parse(String input, boolean removeFooter, boolean addMathJax, String mathjaxDir, OptionsBuilder options) {
     String render = asciidoctor.get().render(input, options);
     String backend = (String) options.asMap().get(Options.BACKEND);
-    if (backend.equals(AsciiDocBackend.HTML5.name().toLowerCase(Locale.ENGLISH))) {
+    if (backend.equals(AsciiDocBackend.HTML5.name().toLowerCase(Locale.ROOT))) {
       if (removeFooter) {
         render = removeFooter(render);
       }
@@ -120,7 +120,7 @@ public class AsciiDocParser {
 //    attributes.imagesDir(dataDir.getName());
 
     OptionsBuilder options = getDefaultOptions(attributes);
-    options.backend(backend.name().toLowerCase(Locale.ENGLISH));
+    options.backend(backend.name().toLowerCase(Locale.ROOT));
 
     String parse = parse(input, false, needsMathJax, mathjaxDir, options);
     try {

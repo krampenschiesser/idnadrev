@@ -25,5 +25,5 @@ import java.util.Locale;
 @MenuItem(Save.MENUPATH)
 public class Save {
   public static final String MENUPATH = "/main/file";
-  public static final String ITEMPATH = MENUPATH + "/" + Save.class.getSimpleName().toLowerCase(Locale.ENGLISH);
+  public static final String ITEMPATH = MENUPATH + "/" + Save.class.getSimpleName().toLowerCase(Locale.ROOT);
 }

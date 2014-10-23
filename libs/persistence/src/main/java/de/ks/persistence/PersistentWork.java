@@ -170,9 +170,9 @@ public class PersistentWork {
     List<T> results = from(clazz, (Root<T> root, CriteriaQuery<T> query, CriteriaBuilder builder) -> {
       Predicate restriction;
       if (like) {
-        restriction = builder.like(builder.lower(root.get("name")), name.toLowerCase(Locale.ENGLISH) + "%");
+        restriction = builder.like(builder.lower(root.get("name")), name.toLowerCase(Locale.ROOT) + "%");
       } else {
-        restriction = builder.equal(builder.lower(root.get("name")), name.toLowerCase(Locale.ENGLISH));
+        restriction = builder.equal(builder.lower(root.get("name")), name.toLowerCase(Locale.ROOT));
       }
       query.where(restriction);
     }, null);
