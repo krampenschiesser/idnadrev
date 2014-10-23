@@ -19,7 +19,7 @@ import de.ks.activity.ActivityCfg;
 import de.ks.idnadrev.information.view.preview.TextInfoPreview;
 import de.ks.menu.MenuItem;
 
-@MenuItem(value = "/main/info", order = 3)
+@MenuItem(value = "/main/info", order = 30)
 public class InformationOverviewActivity extends ActivityCfg {
   public InformationOverviewActivity() {
     super(InformationOverviewDS.class, InformationOverviewController.class);

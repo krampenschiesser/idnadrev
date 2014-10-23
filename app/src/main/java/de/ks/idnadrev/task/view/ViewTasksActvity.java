@@ -17,7 +17,7 @@ package de.ks.idnadrev.task.view;
 import de.ks.activity.ActivityCfg;
 import de.ks.menu.MenuItem;
 
-@MenuItem(order = 2, value = "/main/task")
+@MenuItem(order = 21, value = "/main/task")
 public class ViewTasksActvity extends ActivityCfg {
   public ViewTasksActvity() {
     super(ViewTasksDS.class, ViewTasks.class);

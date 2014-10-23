@@ -17,7 +17,7 @@ package de.ks.idnadrev.task.create;
 import de.ks.activity.ActivityCfg;
 import de.ks.menu.MenuItem;
 
-@MenuItem(order = 2, value = "/main/task")
+@MenuItem(order = 20, value = "/main/task")
 public class CreateTaskActivity extends ActivityCfg {
   public CreateTaskActivity() {
     super(CreateTaskDS.class, CreateTask.class);

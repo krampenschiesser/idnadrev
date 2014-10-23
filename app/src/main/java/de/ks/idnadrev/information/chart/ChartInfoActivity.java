@@ -17,7 +17,7 @@ package de.ks.idnadrev.information.chart;
 import de.ks.activity.ActivityCfg;
 import de.ks.menu.MenuItem;
 
-@MenuItem(value = "/main/info", order = 3)
+@MenuItem(value = "/main/info", order = 32)
 public class ChartInfoActivity extends ActivityCfg {
   public ChartInfoActivity() {
     super(ChartInfoDS.class, ChartInfoController.class);
