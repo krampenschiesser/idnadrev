@@ -153,6 +153,7 @@ public class ViewCategoryController extends BaseController<List<Category>> {
   @Override
   protected void onRefresh(List<Category> model) {
     super.onRefresh(model);
+    categoryBrowserController.reload();
     categoryBrowserController.setSelectedCategory(null);
   }
 }

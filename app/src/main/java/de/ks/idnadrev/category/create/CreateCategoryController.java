@@ -80,26 +80,34 @@ public class CreateCategoryController extends BaseController<Category> {
     File newFile = fileChooser.showOpenDialog(imageSelection.getScene().getWindow());
     if (newFile != null) {
       try {
-        MediaType mediaType = MediaType.parse(Files.probeContentType(newFile.toPath()));
-        if (mediaType.is(MediaType.ANY_IMAGE_TYPE)) {
-          imageSelection.setDisable(true);
-          Images.later(newFile.getPath(), controller.getExecutorService())//
-            .thenAcceptAsync(img -> {
-              imageSelection.setDisable(false);
-              imageView.setImage(img);
-              noImageLabel.setVisible(false);
-            }, controller.getJavaFXExecutor()).exceptionally(e -> {
-            imageSelection.setDisable(false);
-            noImageLabel.setVisible(true);
-            return null;
-          });
-          fileStoreReference = fileStore.getReference(newFile);
-          this.file = newFile;
-        }
+        selectImage(newFile);
       } catch (IOException e) {
         log.error("Could not probe content type of {}", newFile);
       }
     }
+  }
+
+  protected void selectImage(File newFile) throws IOException {
+    MediaType mediaType = MediaType.parse(Files.probeContentType(newFile.toPath()));
+    if (mediaType.is(MediaType.ANY_IMAGE_TYPE)) {
+      loadImage(newFile);
+      fileStoreReference = fileStore.getReference(newFile);
+      this.file = newFile;
+    }
+  }
+
+  private void loadImage(File newFile) {
+    imageSelection.setDisable(true);
+    Images.later(newFile.getPath(), controller.getExecutorService())//
+      .thenAcceptAsync(img -> {
+        imageSelection.setDisable(false);
+        imageView.setImage(img);
+        noImageLabel.setVisible(false);
+      }, controller.getJavaFXExecutor()).exceptionally(e -> {
+      imageSelection.setDisable(false);
+      noImageLabel.setVisible(true);
+      return null;
+    });
   }
 
   @FXML
@@ -109,17 +117,28 @@ public class CreateCategoryController extends BaseController<Category> {
   }
 
   @Override
+  public void duringLoad(Category model) {
+    if (model.getImage() != null) {
+      File imageFile = fileStore.getFile(model.getImage());
+      controller.getJavaFXExecutor().submit(() -> loadImage(imageFile));
+    }
+  }
+
+  @Override
   public void duringSave(Category model) {
     if (fileStoreReference != null) {
       FileReference reference = null;
       try {
         reference = fileStoreReference.get();
+        model.setImage(reference);
       } catch (InterruptedException e) {
         log.error("Got interrupted while resolving file reference", e);
       } catch (ExecutionException e) {
         log.error("Could not resolve file reference", e);
       }
       fileStore.scheduleCopy(reference, file);
+    } else if (imageView.getImage() == null) {
+      model.setImage(null);
     }
   }
 }

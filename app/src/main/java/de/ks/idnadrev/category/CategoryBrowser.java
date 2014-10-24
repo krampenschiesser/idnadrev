@@ -69,6 +69,7 @@ public class CategoryBrowser extends BaseController<Object> {
   }
 
   public void reload() {
+    categoryPane.getChildren().clear();
     itemControllers.clear();
     onResume();
   }

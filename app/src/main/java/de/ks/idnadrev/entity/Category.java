@@ -18,6 +18,7 @@ package de.ks.idnadrev.entity;
 import de.ks.persistence.entity.NamedPersistentObject;
 import javafx.scene.paint.Color;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -41,7 +42,7 @@ public class Category extends NamedPersistentObject<Category> {
   @OneToMany(mappedBy = "parent")
   protected Set<Category> children = new HashSet<>();
 
-  @ManyToOne
+  @ManyToOne(cascade = CascadeType.ALL)
   protected FileReference image;
 
   protected String color;
@@ -82,12 +83,14 @@ public class Category extends NamedPersistentObject<Category> {
     return color;
   }
 
-  public void setColorAsString(String color) {
+  public Category setColorAsString(String color) {
     this.color = color;
+    return this;
   }
 
-  public void setColor(Color clr) {
+  public Category setColor(Color clr) {
     this.color = String.format("#%02X%02X%02X", (int) (clr.getRed() * 255), (int) (clr.getGreen() * 255), (int) (clr.getBlue() * 255));
+    return this;
   }
 
   public Color getColor() {
@@ -96,5 +99,10 @@ public class Category extends NamedPersistentObject<Category> {
 
   public FileReference getImage() {
     return image;
+  }
+
+  public Category setImage(FileReference image) {
+    this.image = image;
+    return this;
   }
 }
