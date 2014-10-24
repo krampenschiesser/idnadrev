@@ -41,7 +41,10 @@ import org.controlsfx.control.textfield.TextFields;
 
 import java.net.URL;
 import java.time.Duration;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
 public class MainTaskInfo extends BaseController<Task> {
@@ -173,9 +176,12 @@ public class MainTaskInfo extends BaseController<Task> {
 
   private <T extends NamedPersistentObject<T>> void setToOne(Task model, Class<T> clazz, String name, Consumer<T> consumer) {
     if (!name.isEmpty()) {
-      Optional<T> first = PersistentWork.forNameLike(clazz, name).stream().findFirst();
-      if (first.isPresent()) {
-        consumer.accept(first.get());
+      T found = PersistentWork.forName(clazz, name);
+      if (found != null) {
+        consumer.accept(found);
+      } else {
+        //keep previous
+
       }
     } else {
       consumer.accept(null);
