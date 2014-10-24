@@ -20,7 +20,10 @@ import de.ks.executor.group.LastTextChange;
 import de.ks.i18n.Localized;
 import de.ks.idnadrev.category.CategorySelection;
 import de.ks.idnadrev.entity.Tag;
-import de.ks.idnadrev.entity.information.*;
+import de.ks.idnadrev.entity.information.ChartInfo;
+import de.ks.idnadrev.entity.information.Information;
+import de.ks.idnadrev.entity.information.TextInfo;
+import de.ks.idnadrev.entity.information.UmlDiagramInfo;
 import de.ks.idnadrev.tag.TagContainer;
 import de.ks.reflection.PropertyPath;
 import de.ks.validation.validators.NamedEntityValidator;
@@ -72,7 +75,7 @@ public class InformationListView extends BaseController<List<InformationPreviewI
     lastTextChange.registerHandler(cf -> triggerReload());
     informationList.setItems(FXCollections.observableArrayList());
 
-    typeCombo.setItems(FXCollections.observableArrayList(NoInfo.class, ChartInfo.class, FileInfo.class, HyperLinkInfo.class, TextInfo.class, UmlDiagramInfo.class));
+    typeCombo.setItems(FXCollections.observableArrayList(NoInfo.class, ChartInfo.class, TextInfo.class, UmlDiagramInfo.class));
 
     typeCombo.setConverter(new StringConverter<Class<? extends Information<?>>>() {
       @Override

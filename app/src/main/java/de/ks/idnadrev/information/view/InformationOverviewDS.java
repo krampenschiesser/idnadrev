@@ -18,7 +18,10 @@ package de.ks.idnadrev.information.view;
 import de.ks.datasource.ListDataSource;
 import de.ks.idnadrev.entity.Category;
 import de.ks.idnadrev.entity.Tag;
-import de.ks.idnadrev.entity.information.*;
+import de.ks.idnadrev.entity.information.ChartInfo;
+import de.ks.idnadrev.entity.information.Information;
+import de.ks.idnadrev.entity.information.TextInfo;
+import de.ks.idnadrev.entity.information.UmlDiagramInfo;
 import de.ks.persistence.PersistentWork;
 import de.ks.persistence.QueryConsumer;
 import de.ks.persistence.entity.AbstractPersistentObject;
@@ -44,7 +47,7 @@ public class InformationOverviewDS implements ListDataSource<InformationPreviewI
 
   @Override
   public List<InformationPreviewItem> loadModel(Consumer<List<InformationPreviewItem>> furtherProcessing) {
-    List<Class<? extends Information<?>>> classes = new ArrayList<>(Arrays.asList(TextInfo.class, ChartInfo.class, FileInfo.class, UmlDiagramInfo.class, HyperLinkInfo.class));
+    List<Class<? extends Information<?>>> classes = new ArrayList<>(Arrays.asList(TextInfo.class, ChartInfo.class, UmlDiagramInfo.class));
     if (loadingHint.getType() != null) {
       classes.clear();
       classes.add(loadingHint.getType());

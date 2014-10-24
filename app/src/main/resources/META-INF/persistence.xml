@@ -38,8 +38,6 @@
 
         <class>de.ks.idnadrev.entity.information.Information</class>
         <class>de.ks.idnadrev.entity.information.ChartInfo</class>
-        <class>de.ks.idnadrev.entity.information.FileInfo</class>
-        <class>de.ks.idnadrev.entity.information.HyperLinkInfo</class>
         <class>de.ks.idnadrev.entity.information.TextInfo</class>
         <class>de.ks.idnadrev.entity.information.DiaryInfo</class>
         <class>de.ks.idnadrev.entity.information.UmlDiagramInfo</class>

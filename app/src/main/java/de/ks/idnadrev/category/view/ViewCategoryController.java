@@ -22,7 +22,10 @@ import de.ks.idnadrev.category.CategoryBrowser;
 import de.ks.idnadrev.category.CategoryItemController;
 import de.ks.idnadrev.category.create.CreateCategoryActivity;
 import de.ks.idnadrev.entity.Category;
-import de.ks.idnadrev.entity.information.*;
+import de.ks.idnadrev.entity.information.ChartInfo;
+import de.ks.idnadrev.entity.information.Information;
+import de.ks.idnadrev.entity.information.TextInfo;
+import de.ks.idnadrev.entity.information.UmlDiagramInfo;
 import de.ks.persistence.PersistentWork;
 import de.ks.reflection.PropertyPath;
 import javafx.beans.binding.BooleanBinding;
@@ -128,9 +131,7 @@ public class ViewCategoryController extends BaseController<List<Category>> {
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
         deleteReferences(em, reload, builder, TextInfo.class);
-        deleteReferences(em, reload, builder, FileInfo.class);
         deleteReferences(em, reload, builder, UmlDiagramInfo.class);
-        deleteReferences(em, reload, builder, HyperLinkInfo.class);
         deleteReferences(em, reload, builder, ChartInfo.class);
         em.flush();
         em.remove(reload);

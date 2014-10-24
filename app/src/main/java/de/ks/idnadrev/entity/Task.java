@@ -15,7 +15,10 @@
 
 package de.ks.idnadrev.entity;
 
-import de.ks.idnadrev.entity.information.*;
+import de.ks.idnadrev.entity.information.ChartInfo;
+import de.ks.idnadrev.entity.information.Information;
+import de.ks.idnadrev.entity.information.TextInfo;
+import de.ks.idnadrev.entity.information.UmlDiagramInfo;
 import de.ks.persistence.converter.DurationConverter;
 import de.ks.persistence.converter.LocalDateConverter;
 import de.ks.persistence.converter.LocalDateTimeConverter;
@@ -104,12 +107,6 @@ public class Task extends NamedPersistentObject<Task> implements FileContainer<T
 
   @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.DETACH}, mappedBy = "task")
   protected Set<ChartInfo> chartInfos = new HashSet<>();
-
-  @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.DETACH}, mappedBy = "task")
-  protected Set<FileInfo> fileInfos = new HashSet<>();
-
-  @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.DETACH}, mappedBy = "task")
-  protected Set<HyperLinkInfo> hyperLinkInfos = new HashSet<>();
 
   @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.DETACH}, mappedBy = "task")
   protected Set<TextInfo> textInfos = new HashSet<>();
@@ -354,8 +351,6 @@ public class Task extends NamedPersistentObject<Task> implements FileContainer<T
     retval.addAll(getUmlInfos());
     retval.addAll(getTextInfos());
     retval.addAll(getChartInfos());
-    retval.addAll(getHyperLinkInfos());
-    retval.addAll(getFileInfos());
 
     return retval;
   }
@@ -366,14 +361,6 @@ public class Task extends NamedPersistentObject<Task> implements FileContainer<T
 
   public Set<TextInfo> getTextInfos() {
     return textInfos;
-  }
-
-  public Set<HyperLinkInfo> getHyperLinkInfos() {
-    return hyperLinkInfos;
-  }
-
-  public Set<FileInfo> getFileInfos() {
-    return fileInfos;
   }
 
   public Set<ChartInfo> getChartInfos() {
