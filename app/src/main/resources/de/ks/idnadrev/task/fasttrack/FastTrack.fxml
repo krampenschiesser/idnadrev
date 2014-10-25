@@ -35,7 +35,7 @@
     <children>
         <StackPane GridPane.valignment="CENTER">
             <children>
-                <fx:include fx:id="name" source="../../selection/NamedPersistentObjectSelection.fxml"/>
+                <fx:include fx:id="name" source="/de/ks/selection/NamedPersistentObjectSelection.fxml"/>
             </children>
         </StackPane>
         <Label text="%task.spentTime:" GridPane.columnIndex="2"/>

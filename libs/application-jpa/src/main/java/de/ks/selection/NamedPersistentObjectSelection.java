@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.selection;
+package de.ks.selection;
 
 import com.google.common.base.Ascii;
 import de.ks.activity.executor.ActivityExecutor;
@@ -82,7 +82,7 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
     ActivityExecutor executorService = controller.getExecutorService();
     JavaFXExecutorService javaFXExecutor = controller.getJavaFXExecutor();
     CompletableFuture.supplyAsync(this::readEntities, executorService)//
-            .thenAcceptAsync(this::setTableItems, javaFXExecutor);
+      .thenAcceptAsync(this::setTableItems, javaFXExecutor);
 
     super.showBrowser();
 
@@ -97,9 +97,9 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
   protected List<T> readEntities() {
     String nameProperty = PropertyPath.property(NamedPersistentObject.class, (o) -> o.getName());
     String name = (input.textProperty().getValueSafe() + "%")//
-            .replaceAll("\\*", "%")//
-            .replaceAll("\\?", "_")//
-            .toLowerCase(Locale.getDefault());
+      .replaceAll("\\*", "%")//
+      .replaceAll("\\?", "_")//
+      .toLowerCase(Locale.getDefault());
 
     return PersistentWork.from(entityClass, (root, query, builder) -> {
       Predicate like = builder.like(builder.lower(root.get(nameProperty)), name);

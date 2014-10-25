@@ -29,7 +29,7 @@
     <children>
         <StackPane fx:id="tagSelectionContainer">
             <children>
-                <fx:include fx:id="tagAdd" source="../selection/NamedPersistentObjectSelection.fxml"/>
+                <fx:include fx:id="tagAdd" source="/de/ks/selection/NamedPersistentObjectSelection.fxml"/>
             </children>
         </StackPane>
         <FlowPane fx:id="tagPane" GridPane.rowIndex="1"/>

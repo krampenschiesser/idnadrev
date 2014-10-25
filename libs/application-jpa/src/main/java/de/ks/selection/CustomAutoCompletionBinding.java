@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.selection;
+package de.ks.selection;
 
 import com.google.common.base.Ascii;
 import impl.org.controlsfx.autocompletion.AutoCompletionTextFieldBinding;

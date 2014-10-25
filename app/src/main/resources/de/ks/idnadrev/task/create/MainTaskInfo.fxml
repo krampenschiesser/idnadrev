@@ -47,14 +47,14 @@
         <Label text="%task.parent.project:" GridPane.rowIndex="2"/>
         <StackPane GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="TOP" GridPane.vgrow="NEVER">
             <children>
-                <fx:include fx:id="parentProject" source="../../selection/NamedPersistentObjectSelection.fxml"/>
+                <fx:include fx:id="parentProject" source="/de/ks/selection/NamedPersistentObjectSelection.fxml"/>
             </children>
         </StackPane>
 
         <Label text="%task.context:" GridPane.rowIndex="3"/>
         <StackPane GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.valignment="TOP" GridPane.vgrow="NEVER">
             <children>
-                <fx:include fx:id="context" source="../../selection/NamedPersistentObjectSelection.fxml"/>
+                <fx:include fx:id="context" source="/de/ks/selection/NamedPersistentObjectSelection.fxml"/>
             </children>
         </StackPane>
 

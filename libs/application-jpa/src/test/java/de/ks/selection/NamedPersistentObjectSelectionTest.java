@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.selection;
+package de.ks.selection;
 
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityController;
@@ -20,8 +20,7 @@ import de.ks.activity.context.ActivityContext;
 import de.ks.activity.executor.ActivityExecutor;
 import de.ks.activity.executor.ActivityJavaFXExecutor;
 import de.ks.application.fxml.DefaultLoader;
-import de.ks.idnadrev.entity.Cleanup;
-import de.ks.idnadrev.entity.Thought;
+import de.ks.option.Option;
 import de.ks.persistence.PersistentWork;
 import de.ks.reflection.PropertyPath;
 import de.ks.util.FXPlatform;
@@ -29,35 +28,33 @@ import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
-import javax.inject.Inject;
 import java.util.List;
 
 import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
 public class NamedPersistentObjectSelectionTest {
-  @Inject
-  Cleanup cleanup;
 
-  private NamedPersistentObjectSelection<Thought> selection;
+  private NamedPersistentObjectSelection<Option> selection;
   private ActivityExecutor executorService;
   private ActivityJavaFXExecutor fxExecutorService;
   private ActivityController mock;
 
   @Before
   public void setUp() throws Exception {
-    cleanup.cleanup();
-    PersistentWork.persist(new Thought("test1"), new Thought("test2").setDescription("bla"), new Thought("other"));
+    PersistentWork.deleteAllOf(Option.class);
+    PersistentWork.persist(new Option("test1"), new Option("test2").setJsonString("bla"), new Option("other"));
 
     executorService = new ActivityExecutor("test", 2, 4);
     fxExecutorService = new ActivityJavaFXExecutor();
 
-    DefaultLoader<Node, NamedPersistentObjectSelection<Thought>> loader = new DefaultLoader<>(NamedPersistentObjectSelection.class);
+    DefaultLoader<Node, NamedPersistentObjectSelection<Option>> loader = new DefaultLoader<>(NamedPersistentObjectSelection.class);
     selection = loader.getController();
 
     mock = Mockito.mock(ActivityController.class);
@@ -65,7 +62,7 @@ public class NamedPersistentObjectSelectionTest {
     Mockito.when(mock.getJavaFXExecutor()).thenReturn(fxExecutorService);
     selection.controller = mock;
 
-    selection.from(Thought.class);
+    selection.from(Option.class);
   }
 
   @After
@@ -79,7 +76,7 @@ public class NamedPersistentObjectSelectionTest {
   @Test
   public void testFilteringForTest() throws Exception {
     FXPlatform.invokeLater(() -> selection.getInput().setText("te"));
-    List<Thought> thoughts = selection.readEntities();
+    List<Option> thoughts = selection.readEntities();
     assertEquals(2, thoughts.size());
     thoughts.forEach((t) -> assertThat(t.getName(), CoreMatchers.startsWith("test")));
   }
@@ -87,7 +84,7 @@ public class NamedPersistentObjectSelectionTest {
   @Test
   public void testFilterWildcards() throws Exception {
     FXPlatform.invokeLater(() -> selection.getInput().setText("e"));
-    List<Thought> thoughts = selection.readEntities();
+    List<Option> thoughts = selection.readEntities();
     assertEquals(0, thoughts.size());
 
     FXPlatform.invokeLater(() -> selection.getInput().setText("*e"));
@@ -101,19 +98,19 @@ public class NamedPersistentObjectSelectionTest {
     FXPlatform.invokeLater(() -> selection.getInput().setText("*s?1"));
     thoughts = selection.readEntities();
     assertEquals(1, thoughts.size());
-    assertEquals("test1", thoughts.get(0).getName());
+    Assert.assertEquals("test1", thoughts.get(0).getName());
 
     FXPlatform.invokeLater(() -> selection.getInput().setText("*s?2"));
     thoughts = selection.readEntities();
     assertEquals(1, thoughts.size());
-    assertEquals("test2", thoughts.get(0).getName());
+    Assert.assertEquals("test2", thoughts.get(0).getName());
 
   }
 
   @Test
   public void testCaseInsensitive() throws Exception {
     FXPlatform.invokeLater(() -> selection.getInput().setText("TE"));
-    List<Thought> thoughts = selection.readEntities();
+    List<Option> thoughts = selection.readEntities();
     assertEquals(2, thoughts.size());
 
   }
@@ -121,27 +118,27 @@ public class NamedPersistentObjectSelectionTest {
   @Test
   public void testFilteringForOther() throws Exception {
     FXPlatform.invokeLater(() -> selection.getInput().setText("other"));
-    List<Thought> thoughts = selection.readEntities();
+    List<Option> thoughts = selection.readEntities();
     assertEquals(1, thoughts.size());
-    thoughts.forEach((t) -> assertEquals("other", t.getName()));
+    thoughts.forEach((t) -> Assert.assertEquals("other", t.getName()));
   }
 
   @Test
   public void testNoInputFilter() throws Exception {
-    List<Thought> thoughts = selection.readEntities();
+    List<Option> thoughts = selection.readEntities();
     assertEquals(3, thoughts.size());
   }
 
   @Test
   public void testAdditionalFilter() throws Exception {
-    String key = PropertyPath.property(Thought.class, (t) -> t.getDescription());
+    String key = PropertyPath.property(Option.class, (t) -> t.getValue());
 
     selection.filter = (root, query, builder) -> {
       query.where(builder.not(builder.isNull(root.get(key))));
     };
-    List<Thought> thoughts = selection.readEntities();
+    List<Option> thoughts = selection.readEntities();
     assertEquals(1, thoughts.size());
-    assertEquals("test2", thoughts.get(0).getName());
+    Assert.assertEquals("test2", thoughts.get(0).getName());
   }
 
   @Test
@@ -159,16 +156,16 @@ public class NamedPersistentObjectSelectionTest {
   public void testOpenTable() throws Exception {
     FXPlatform.invokeLater(() -> selection.showBrowser());
     executorService.waitForAllTasksDone();
-    ObservableList<Thought> items = selection.tableView.getItems();
+    ObservableList<Option> items = selection.tableView.getItems();
     FXPlatform.waitForFX();
     assertEquals(3, items.size());
 
     selection.tableView.getSelectionModel().select(1);
-    Thought selectedItem = selection.tableView.getSelectionModel().getSelectedItem();
+    Option selectedItem = selection.tableView.getSelectionModel().getSelectedItem();
 
     FXPlatform.invokeLater(() -> selection.submit());
     assertSame(selectedItem, selection.selectedValue.get());
-    assertEquals(selectedItem.getName(), selection.input.textProperty().getValueSafe());
+    Assert.assertEquals(selectedItem.getName(), selection.input.textProperty().getValueSafe());
 
   }
 

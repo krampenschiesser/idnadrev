@@ -18,7 +18,7 @@ import de.ks.BaseController;
 import de.ks.activity.executor.ActivityExecutor;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.WorkUnit;
-import de.ks.idnadrev.selection.NamedPersistentObjectSelection;
+import de.ks.selection.NamedPersistentObjectSelection;
 import de.ks.text.AsciiDocEditor;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.StringProperty;

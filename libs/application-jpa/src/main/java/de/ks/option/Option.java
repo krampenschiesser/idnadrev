@@ -71,4 +71,9 @@ public class Option extends NamedPersistentObject<Option> {
     valueClassName = value.getClass().getName();
     return this;
   }
+
+  public Option setJsonString(String value) {
+    this.value = value;
+    return this;
+  }
 }
