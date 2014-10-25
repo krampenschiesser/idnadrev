@@ -15,27 +15,27 @@
 package de.ks.activity.controllerbinding;
 
 import de.ks.datasource.DataSource;
-import de.ks.option.Option;
-import de.ks.persistence.PersistentWork;
 
 import java.util.function.Consumer;
 
 public class TestBindingDS implements DataSource<Option> {
 
+  private Option saved;
+
+  public Option getSaved() {
+    return saved;
+  }
+
   @Override
   public Option loadModel(Consumer<Option> furtherProcessing) {
-    return PersistentWork.wrap(() -> {
-      Option test = PersistentWork.forName(Option.class, "test");
-      furtherProcessing.accept(test);
-      return test;
-    });
+    Option test = new Option("test").setValue(42);
+    furtherProcessing.accept(test);
+    return test;
   }
 
   @Override
   public void saveModel(Option model, Consumer<Option> beforeSaving) {
-    PersistentWork.wrap(() -> {
-      beforeSaving.accept(model);
-      PersistentWork.merge(model);
-    });
+    beforeSaving.accept(model);
+    this.saved = model;
   }
 }

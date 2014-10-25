@@ -12,12 +12,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package de.ks.option.properties;
 
-package de.ks.imagecache;
+public class TestOptions {
+  public int getTheAnswer() {
+    return 42;
+  }
 
-import javafx.scene.image.Image;
+  public String getTheAnswerAsString() {
+    return "42";
+  }
 
-@FunctionalInterface
-public interface AsyncImage {
-  void applyImage(Image image);
+  public TestOptionContainer getContainer() {
+    return new TestOptionContainer();
+  }
 }

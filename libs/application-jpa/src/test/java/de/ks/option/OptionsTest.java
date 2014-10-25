@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.enterprise.inject.spi.CDI;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
@@ -34,13 +35,15 @@ public class OptionsTest {
   @Before
   public void setUp() throws Exception {
     PersistentWork.deleteAllOf(Option.class);
+
+    CDI.current().select(OptionSource.class).forEach(s -> log.info("Found option source {}", s));
   }
 
   @Test
   public void testDBOptionsInt() throws Exception {
-    assertEquals(42, Options.get(TestOptions.class).getTheAnswer());
+    assertEquals(42, Options.get(PersistentTestOptions.class).getTheAnswer());
 
-    Options.store(1, TestOptions.class).getTheAnswer();
+    Options.store(1, PersistentTestOptions.class).getTheAnswer();
 
     Option option = PersistentWork.read((em) -> {
       CriteriaQuery<Option> query = em.getCriteriaBuilder().createQuery(Option.class);
@@ -52,21 +55,21 @@ public class OptionsTest {
     assertEquals(1, value.intValue());
 
 
-    assertEquals(1, Options.get(TestOptions.class).getTheAnswer());
+    assertEquals(1, Options.get(PersistentTestOptions.class).getTheAnswer());
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testDBOptionsWrongType() throws Exception {
-    assertEquals("42", Options.get(TestOptions.class).getTheAnswerAsString());
+    assertEquals("42", Options.get(PersistentTestOptions.class).getTheAnswerAsString());
 
-    Options.store("Hello", TestOptions.class).getTheAnswer();
+    Options.store("Hello", PersistentTestOptions.class).getTheAnswer();
   }
 
   @Test
   public void testDBOptionsString() throws Exception {
-    assertEquals("42", Options.get(TestOptions.class).getTheAnswerAsString());
+    assertEquals("42", Options.get(PersistentTestOptions.class).getTheAnswerAsString());
 
-    Options.store("Hello", TestOptions.class).getTheAnswerAsString();
+    Options.store("Hello", PersistentTestOptions.class).getTheAnswerAsString();
 
     Option option = PersistentWork.read((em) -> {
       CriteriaQuery<Option> query = em.getCriteriaBuilder().createQuery(Option.class);
@@ -78,6 +81,6 @@ public class OptionsTest {
     assertEquals("Hello", value);
 
 
-    assertEquals("Hello", Options.get(TestOptions.class).getTheAnswerAsString());
+    assertEquals("Hello", Options.get(PersistentTestOptions.class).getTheAnswerAsString());
   }
 }

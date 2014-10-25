@@ -21,8 +21,6 @@ import de.ks.activity.context.ActivityStore;
 import de.ks.application.Navigator;
 import de.ks.launch.ApplicationService;
 import de.ks.launch.Launcher;
-import de.ks.option.Option;
-import de.ks.persistence.PersistentWork;
 import de.ks.util.FXPlatform;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
@@ -42,16 +40,16 @@ public class ControllerBindingTest {
   ActivityController controller;
   @Inject
   ActivityStore store;
+  private TestBindingDS datasource;
 
   @Before
   public void setUp() throws Exception {
     ApplicationService service = Launcher.instance.getService(ApplicationService.class);
     Navigator.registerWithBorderPane(service.getStage());
 
-    PersistentWork.deleteAllOf(Option.class);
-    PersistentWork.persist(new Option("test").setValue(42));
     controller.startOrResume(new ActivityHint(BindingActivity.class));
     controller.waitForTasks();
+    datasource = (TestBindingDS) store.getDatasource();
   }
 
   @After
@@ -70,7 +68,8 @@ public class ControllerBindingTest {
     ctrl.save();
     controller.waitForTasks();
 
-    Option hello = PersistentWork.forName(Option.class, "Hello");
+
+    Option hello = datasource.getSaved();
     assertNotNull(hello);
   }
 

@@ -12,21 +12,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.entity.information;
 
-import javax.persistence.AssociationOverride;
-import javax.persistence.AssociationOverrides;
-import javax.persistence.Entity;
-import javax.persistence.JoinTable;
+dependencies {
+    compile project(":libs:application")
+    compile project(":libs:persistence")
+//
+//    compile "com.fasterxml.jackson.core:jackson-databind:$jackson"
+//    compile "org.apache.deltaspike.cdictrl:deltaspike-cdictrl-api:$deltaspike"
+//    compile "javax.enterprise:cdi-api:1.1"
+//
+//    runtime "org.apache.deltaspike.cdictrl:deltaspike-cdictrl-weld:$deltaspike"
+//    runtime "org.jboss.weld.se:weld-se:$weld"
+//    runtime "org.jboss:jandex:$jandex"
 
-@Entity
-@AssociationOverrides(@AssociationOverride(name = "tags", joinTable = @JoinTable(name = "hyperlinkinfo_tag")))
-public class HyperLinkInfo extends Information<HyperLinkInfo> {
+    testCompile project(":libs:testutil")
 
-  protected HyperLinkInfo() {
-  }
-
-  public HyperLinkInfo(String name) {
-    super(name);
-  }
+    testRuntime "org.hibernate:hibernate-validator:$hibernateValidation"
+    testRuntime "com.sun.el:el-ri:1.0"
 }

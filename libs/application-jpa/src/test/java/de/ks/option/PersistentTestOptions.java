@@ -14,7 +14,7 @@
  */
 package de.ks.option;
 
-public class TestOptions {
+public class PersistentTestOptions {
   public int getTheAnswer() {
     return 42;
   }

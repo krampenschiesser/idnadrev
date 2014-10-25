@@ -16,7 +16,6 @@ package de.ks.activity.controllerbinding;
 
 import de.ks.activity.ActivityController;
 import de.ks.activity.context.ActivityStore;
-import de.ks.option.Option;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextField;

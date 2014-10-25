@@ -92,6 +92,7 @@ allprojects {
         file('files').deleteDir();
         file('db').deleteDir();
         file('version.info').delete();
+        file('options.properties').delete();
     }
 
     task cleanlog {

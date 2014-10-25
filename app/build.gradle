@@ -20,7 +20,7 @@ applicationDefaultJvmArgs = ["-Dcreate.dummydata=true"]
 
 dependencies {
     compile project(":libs:fxcontrols")
-    compile project(":libs:application")
+    compile project(":libs:application-jpa")
     compile project(":libs:scheduler")
     compile "commons-codec:commons-codec:$commonscodec"
     compile "$jpa2api"

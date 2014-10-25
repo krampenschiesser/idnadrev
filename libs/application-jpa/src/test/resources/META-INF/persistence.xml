@@ -21,9 +21,8 @@
     <persistence-unit name="persistence" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
-        <class>de.ks.persistence.DummyEntity</class>
         <class>de.ks.option.Option</class>
-        <class>de.ks.workflow.SimpleWorkflowModel</class>
+
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
             <property name="javax.persistence.jdbc.user" value="SA"/>

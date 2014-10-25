@@ -12,17 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-include "doc"
+package de.ks.option.properties;
 
-include "libs:fxcontrols"
-
-include "libs:testutil", "libs:util", "libs:reflection"
-include "libs:launch"
-//PC stuff
-include "libs:validation", "libs:hibernate-pool", "libs:persistence", "libs:eventsystem", "libs:i18n", "libs:scheduler"
-include "libs:executor"
-//javaFX stuff
-include "libs:images", "libs:application"
-include "libs:application-jpa"
-include "libs:googleintegration"
-include "app"
+public class TestOptionContainer {
+  public int number = 42;
+  public String name = "beer";
+}
