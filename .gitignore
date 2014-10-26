@@ -19,3 +19,4 @@ files/**
 version.info
 **/client_secrets.json
 app/files
+**/options.properties
