@@ -118,7 +118,13 @@ public class AsciiDocViewer implements Initializable {
     JavaFXExecutorService javaFXExecutor = controller.getJavaFXExecutor();
     load.forEach(t -> {
       CompletableFuture<Pair<String, String>> completableFuture = CompletableFuture.supplyAsync(() -> preProcess(t.getAdoc()), executorService)//
-        .thenApply(desc -> parser.parse(desc))//
+        .thenApply(desc -> {
+          if (desc == null || desc.trim().isEmpty()) {
+            return "";
+          } else {
+            return parser.parse(desc);
+          }
+        })//
         .thenApply(html -> Pair.of(t.getIdentifier(), html));
       completableFuture.thenApply(pair -> {
         preloaded.put(pair.getKey(), pair.getValue());
