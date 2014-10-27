@@ -18,6 +18,7 @@ import de.ks.BaseController;
 import de.ks.activity.ActivityHint;
 import de.ks.file.FileStore;
 import de.ks.idnadrev.entity.Thought;
+import de.ks.idnadrev.information.text.TextInfoActivity;
 import de.ks.idnadrev.task.create.CreateTaskActivity;
 import de.ks.idnadrev.thought.add.AddThoughtActivity;
 import de.ks.persistence.PersistentWork;
@@ -57,7 +58,7 @@ public class ViewThoughts extends BaseController<List<Thought>> {
   @FXML
   protected Button toTask;
   @FXML
-  protected Button toInfo;
+  protected Button toTextInfo;
   @FXML
   protected Button later;
   @FXML
@@ -72,7 +73,6 @@ public class ViewThoughts extends BaseController<List<Thought>> {
     activityInitialization.loadAdditionalControllerWithFuture(AsciiDocViewer.class).thenAcceptAsync(l -> {
       asciiDocViewer = l.getController();
       thoughtTable.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
-        controller.getControllerInstance(ThoughtToInfoController.class).setSelectedThought(n);
         if (n == null) {
           asciiDocViewer.reset();
         } else {
@@ -100,9 +100,10 @@ public class ViewThoughts extends BaseController<List<Thought>> {
 
     BooleanBinding disable = thoughtTable.getSelectionModel().selectedItemProperty().isNull();
     toTask.disableProperty().bind(disable);
-    toInfo.disableProperty().bind(disable);
+    toTextInfo.disableProperty().bind(disable);
     later.disableProperty().bind(disable);
     deleteBtn.disableProperty().bind(disable);
+    editBtn.disableProperty().bind(disable);
   }
 
   public void postPone() {
@@ -168,9 +169,14 @@ public class ViewThoughts extends BaseController<List<Thought>> {
   }
 
   @FXML
-  void onTransformToInfo() {
-    ThoughtToInfoController toInfoController = controller.getControllerInstance(ThoughtToInfoController.class);
-    toInfoController.show(toInfo);
+  void onTransformToTextInfo() {
+    Thought thought = getSelectedThought();
+
+    ActivityHint activityHint = new ActivityHint(TextInfoActivity.class);
+    activityHint.setReturnToActivity(controller.getCurrentActivityId());
+    activityHint.setDataSourceHint(() -> thought);
+
+    controller.startOrResume(activityHint);
   }
 
   @FXML

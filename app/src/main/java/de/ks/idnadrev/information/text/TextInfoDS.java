@@ -16,10 +16,37 @@
 package de.ks.idnadrev.information.text;
 
 import de.ks.datasource.CreateEditDS;
+import de.ks.idnadrev.entity.Thought;
 import de.ks.idnadrev.entity.information.TextInfo;
+import de.ks.persistence.PersistentWork;
+
+import javax.persistence.EntityManager;
 
 public class TextInfoDS extends CreateEditDS<TextInfo> {
+  protected Thought fromThought = null;
+
   public TextInfoDS() {
     super(TextInfo.class);
+  }
+
+  @Override
+  public void setLoadingHint(Object dataSourceHint) {
+    super.setLoadingHint(dataSourceHint);
+    if (dataSourceHint instanceof Thought) {
+      Thought thought = (Thought) dataSourceHint;
+      fromThought = thought;
+
+      TextInfo textInfo = new TextInfo(thought.getName()).setDescription(thought.getDescription());
+      textInfo.getFiles().addAll(thought.getFiles());
+      hint = textInfo;
+    }
+  }
+
+  @Override
+  protected void furtherSave(EntityManager em, TextInfo reloaded) {
+    if (fromThought != null) {
+      Thought thought = PersistentWork.reload(fromThought);
+      em.remove(thought);
+    }
   }
 }

@@ -22,6 +22,6 @@ public class ViewThoughtsActivity extends ActivityCfg {
 
   public ViewThoughtsActivity() {
     super(ViewThoughtsDS.class, ViewThoughts.class);
-    addAdditionalController(ThoughtToInfoController.class);
+//    addAdditionalController(ThoughtToInfoController.class);
   }
 }

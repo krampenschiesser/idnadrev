@@ -54,7 +54,7 @@
                     <children>
                         <Button fx:id="toTask" defaultButton="true" onAction="#convertToTask"
                                 text="%thought.transform.task"/>
-                        <Button fx:id="toInfo" onAction="#onTransformToInfo" text="%thought.transform.info"/>
+                        <Button fx:id="toTextInfo" onAction="#onTransformToTextInfo" text="%thought.transform.info"/>
                         <Button fx:id="later" onAction="#postPone" text="%thought.transform.later"/>
                         <Button fx:id="editBtn" onAction="#onEdit" text="%thought.edit"/>
                         <Button fx:id="deleteBtn" onAction="#delete" text="%thought.delete"/>

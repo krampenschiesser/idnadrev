@@ -77,4 +77,12 @@ public class TextInfoController extends BaseController<TextInfo> {
     controller.save();
     controller.stopCurrent();
   }
+
+  public TextField getName() {
+    return name;
+  }
+
+  public AsciiDocEditor getContent() {
+    return content;
+  }
 }

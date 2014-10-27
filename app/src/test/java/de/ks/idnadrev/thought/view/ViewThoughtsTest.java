@@ -19,7 +19,11 @@ import de.ks.LauncherRunner;
 import de.ks.TempFileRule;
 import de.ks.activity.ActivityCfg;
 import de.ks.idnadrev.ActivityTest;
+import de.ks.idnadrev.entity.FileReference;
 import de.ks.idnadrev.entity.Thought;
+import de.ks.idnadrev.entity.information.TextInfo;
+import de.ks.idnadrev.information.text.TextInfoActivity;
+import de.ks.idnadrev.information.text.TextInfoController;
 import de.ks.persistence.PersistentWork;
 import de.ks.util.FXPlatform;
 import org.junit.Before;
@@ -32,7 +36,8 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.EntityManager;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static de.ks.JunitMatchers.withRetry;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(LauncherRunner.class)
 public class ViewThoughtsTest extends ActivityTest {
@@ -49,8 +54,13 @@ public class ViewThoughtsTest extends ActivityTest {
 
   @Override
   protected void createTestData(EntityManager em) {
-    PersistentWork.persist(new Thought("test"));
-    PersistentWork.persist(new Thought("testWithLink").setDescription("goto www.krampenschiesser.de"));
+    FileReference fileReference = new FileReference("test", "blubb");
+    em.persist(fileReference);
+    Thought thought = new Thought("test");
+    thought.addFileReference(fileReference);
+    thought.setDescription("desc");
+    em.persist(thought);
+    em.persist(new Thought("testWithLink").setDescription("goto www.krampenschiesser.de"));
   }
 
   @Before
@@ -70,22 +80,33 @@ public class ViewThoughtsTest extends ActivityTest {
   }
 
   @Test
-  public void testConversionButtonEnablement() throws Exception {
-    ThoughtToInfoController toInfoController = activityController.getControllerInstance(ThoughtToInfoController.class);
-
+  public void testToTextInfo() throws Exception {
     FXPlatform.invokeLater(() -> viewThoughts.thoughtTable.getSelectionModel().select(0));
     activityController.waitForTasks();
 
-    assertFalse(toInfoController.toTextBtn.isDisabled());
-    assertTrue(toInfoController.toLinkBtn.isDisabled());
-    assertTrue(toInfoController.toFileBtn.isDisabled());
-
-
-    FXPlatform.invokeLater(() -> viewThoughts.thoughtTable.getSelectionModel().select(1));
+    FXPlatform.invokeLater(() -> viewThoughts.onTransformToTextInfo());
+    withRetry(() -> TextInfoActivity.class.getSimpleName().equals(activityController.getCurrentActivityId()));
     activityController.waitForTasks();
 
-    assertFalse(toInfoController.toTextBtn.isDisabled());
-    assertFalse(toInfoController.toLinkBtn.isDisabled());
-    assertTrue(toInfoController.toFileBtn.isDisabled());
+    TextInfoController textInfoController = activityController.getControllerInstance(TextInfoController.class);
+    assertEquals("test", textInfoController.getName().getText());
+    assertEquals("desc", textInfoController.getContent().getText());
+    FXPlatform.invokeLater(() -> textInfoController.onSave());
+
+    withRetry(() -> ViewThoughtsActivity.class.getSimpleName().equals(activityController.getCurrentActivityId()));
+    activityController.waitForTasks();
+
+    PersistentWork.wrap(() -> {
+      List<TextInfo> textInfos = PersistentWork.from(TextInfo.class);
+      assertEquals(1, textInfos.size());
+      TextInfo textInfo = textInfos.get(0);
+      assertEquals("test", textInfo.getName());
+      assertEquals(1, textInfo.getFiles().size());
+
+
+      List<Thought> thoughts = PersistentWork.from(Thought.class);
+      assertEquals(1, thoughts.size());
+      assertEquals("testWithLink", thoughts.get(0).getName());
+    });
   }
 }
