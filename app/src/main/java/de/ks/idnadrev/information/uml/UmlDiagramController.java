@@ -18,8 +18,9 @@ import de.ks.BaseController;
 import de.ks.executor.group.LastTextChange;
 import de.ks.file.FileOptions;
 import de.ks.i18n.Localized;
-import de.ks.idnadrev.entity.information.TextInfo;
+import de.ks.idnadrev.category.CategorySelection;
 import de.ks.idnadrev.entity.information.UmlDiagramInfo;
+import de.ks.idnadrev.tag.TagContainer;
 import de.ks.option.Options;
 import de.ks.text.PersistentStoreBack;
 import de.ks.validation.validators.NamedEntityMustNotExistValidator;
@@ -35,16 +36,12 @@ import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Popup;
 import javafx.stage.Screen;
-import net.sourceforge.plantuml.FileFormat;
-import net.sourceforge.plantuml.FileFormatOption;
-import net.sourceforge.plantuml.SourceStringReader;
 import net.sourceforge.plantuml.cucadiagram.dot.GraphvizUtils;
 import org.controlsfx.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -73,12 +70,19 @@ public class UmlDiagramController extends BaseController<UmlDiagramInfo> {
   @FXML
   protected Button saveBtn;
 
+  @FXML
+  protected TagContainer tagContainerController;
+  @FXML
+  protected CategorySelection categorySelectionController;
+
   protected WebView webView;
   protected WebView fullScreenWebView;
 
   protected LastTextChange lastTextChange;
   protected boolean showFullScreen = false;
   protected PersistentStoreBack persistentStoreBack;
+
+  protected final UmlDiagramRender render = new UmlDiagramRender();
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -104,19 +108,22 @@ public class UmlDiagramController extends BaseController<UmlDiagramInfo> {
     content.textProperty().bindBidirectional(contentProperty);
 
     validationRegistry.registerValidator(name, new NotEmptyValidator());
-    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(UmlDiagramInfo.class, t -> t.getId() == store.<TextInfo>getModel().getId()));
+    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(UmlDiagramInfo.class, t -> t.getId() == store.<UmlDiagramInfo>getModel().getId()));
 
     saveBtn.disableProperty().bind(validationRegistry.invalidProperty());
 
     lastTextChange = new LastTextChange(content, 750, controller.getExecutorService());
     lastTextChange.registerHandler(f -> {
-      f.thenApplyAsync(s -> genereateSvg(s, getFullScreenWidth(), getFullScreenImagePath()), controller.getExecutorService()).thenAcceptAsync(file -> {
-        if (showFullScreen) {
-          showRenderedFile(file, fullScreenWebView);
-        }
-      }, controller.getJavaFXExecutor());
+      f.thenApplyAsync(s -> render.genereateSvg(s, getFullScreenWidth(), getFullScreenImagePath()), controller.getExecutorService())//
+        .thenAcceptAsync(file -> {
+          file.deleteOnExit();
+          if (showFullScreen) {
+            showRenderedFile(file, fullScreenWebView);
+          }
+        }, controller.getJavaFXExecutor());
       f.thenAcceptAsync(persistentStoreBack::save, controller.getExecutorService());
-      f.thenApply(s -> genereateSvg(s, webView.getWidth(), getImagePath())).thenAcceptAsync(file -> showRenderedFile(file, webView), controller.getJavaFXExecutor());
+      f.thenApply(s -> render.genereateSvg(s, webView.getWidth(), getImagePath()))//
+        .thenAcceptAsync(file -> showRenderedFile(file, webView), controller.getJavaFXExecutor());
     });
 
 
@@ -128,34 +135,11 @@ public class UmlDiagramController extends BaseController<UmlDiagramInfo> {
       return;
     }
     try {
+      file.deleteOnExit();
       URL url = file.toURI().toURL();
       view.getEngine().load(url.toExternalForm());
     } catch (MalformedURLException e) {
       log.error("Could not load {}", file, e);
-    }
-  }
-
-  private File genereateSvg(String uml, double width, Path path) {
-    StringBuilder builder = new StringBuilder();
-    builder.append("@startuml\n");
-    builder.append("scale ");
-    builder.append((int) width);
-    builder.append(" width \n");
-    builder.append(uml);
-    builder.append("\n@enduml");
-
-    try {
-      try (FileOutputStream outStream = new FileOutputStream(path.toFile())) {
-        SourceStringReader reader = new SourceStringReader(builder.toString());
-        FileFormatOption fileFormatOption = new FileFormatOption(FileFormat.PNG);
-        String desc = reader.generateImage(outStream, fileFormatOption);
-
-        log.info(desc);
-      }
-      return path.toFile();
-    } catch (Exception e) {
-      log.error("Could not create uml diagram", e);
-      return null;
     }
   }
 
@@ -267,5 +251,9 @@ public class UmlDiagramController extends BaseController<UmlDiagramInfo> {
     popup.setHeight(visualBounds.getHeight());
     popup.setOnHiding(e -> showFullScreen = false);
     popup.show(fullscreen.getScene().getWindow());
+  }
+
+  public PersistentStoreBack getPersistentStoreBack() {
+    return persistentStoreBack;
   }
 }

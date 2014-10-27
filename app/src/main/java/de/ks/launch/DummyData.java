@@ -18,6 +18,7 @@ import de.ks.fxcontrols.weekview.WeekHelper;
 import de.ks.idnadrev.entity.*;
 import de.ks.idnadrev.entity.information.DiaryInfo;
 import de.ks.idnadrev.entity.information.TextInfo;
+import de.ks.idnadrev.entity.information.UmlDiagramInfo;
 import de.ks.persistence.PersistentWork;
 import de.ks.scheduler.Schedule;
 import org.slf4j.Logger;
@@ -37,6 +38,14 @@ import static de.ks.persistence.PersistentWork.persist;
 public class DummyData extends Service {
   private static final Logger log = LoggerFactory.getLogger(DummyData.class);
   public static final String CREATE_DUMMYDATA = "create.dummydata";
+  public static final String UML_CLASS_DIAGRAM = "class Car\n" +
+    "\n" +
+    "Driver - Car : drives >\n" +
+    "Car *- Wheel : have 4 >\n" +
+    "Car -- Person : < owns";
+  public static final String UML_ACTIVITY_DIAGRAM = "(*) --> \"First Activity\"\n" +
+    "-->[You can put also labels] \"Second Activity\"\n" +
+    "--> (*)";
 
   @Override
   public int getPriority() {
@@ -144,6 +153,18 @@ public class DummyData extends Service {
       info.setCategory(category);
       PersistentWork.persist(tag, category, info);
     }
+    Category diagrams = new Category("Diagrams");
+    PersistentWork.persist(diagrams);
+    UmlDiagramInfo classDiagram = new UmlDiagramInfo("example class diagram");
+    classDiagram.setContent(UML_CLASS_DIAGRAM);
+    classDiagram.setCategory(diagrams);
+    PersistentWork.persist(classDiagram);
+
+    UmlDiagramInfo activityDiagram = new UmlDiagramInfo("example activity diagram");
+    activityDiagram.setContent(UML_ACTIVITY_DIAGRAM);
+    activityDiagram.setCategory(diagrams);
+    PersistentWork.persist(activityDiagram);
+
   }
 
   @Override

@@ -17,8 +17,10 @@ package de.ks.idnadrev.information.view;
 
 import de.ks.BaseController;
 import de.ks.idnadrev.entity.information.TextInfo;
+import de.ks.idnadrev.entity.information.UmlDiagramInfo;
 import de.ks.idnadrev.information.view.preview.InformationPreview;
 import de.ks.idnadrev.information.view.preview.TextInfoPreview;
+import de.ks.idnadrev.information.view.preview.UmlPreview;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
@@ -45,6 +47,11 @@ public class InformationOverviewController extends BaseController<List<Informati
       if (n != null) {
         if (n.getType().equals(TextInfo.class)) {
           TextInfoPreview preview = activityInitialization.getControllerInstance(TextInfoPreview.class);
+          currentPreview = preview;
+          previewContainer.getChildren().add(preview.show(n));
+        }
+        if (n.getType().equals(UmlDiagramInfo.class)) {
+          UmlPreview preview = activityInitialization.getControllerInstance(UmlPreview.class);
           currentPreview = preview;
           previewContainer.getChildren().add(preview.show(n));
         }
