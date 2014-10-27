@@ -31,9 +31,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 public class CategoryBrowser extends BaseController<Object> {
@@ -100,13 +98,15 @@ public class CategoryBrowser extends BaseController<Object> {
 
     List<CategoryItemController> categoryItemControllers = futures.stream().map(f -> {
       try {
-        CategoryItemController itemController = f.get();
+        CategoryItemController itemController = f.get(5, TimeUnit.SECONDS);
         return itemController;
       } catch (InterruptedException e) {
         return null;
       } catch (ExecutionException e) {
         log.error("Could not load {}", CategoryItemController.class.getName(), e);
         return null;
+      } catch (TimeoutException e) {
+        throw new RuntimeException(e);
       }
     }).collect(Collectors.toList());
     itemControllers.addAll(categoryItemControllers);
@@ -115,7 +115,7 @@ public class CategoryBrowser extends BaseController<Object> {
 
   protected CategoryItemController loadSingleItemController(Category category) {
     try {
-      DefaultLoader<Node, CategoryItemController> loader = activityInitialization.loadAdditionalControllerWithFuture(CategoryItemController.class).get();
+      DefaultLoader<Node, CategoryItemController> loader = new DefaultLoader<Node, CategoryItemController>(CategoryItemController.class);
       CategoryItemController categoryItemController = loader.getController();
       categoryItemController.setCategory(category);
       categoryItemController.setSelectionProperty(selectedCategory);
