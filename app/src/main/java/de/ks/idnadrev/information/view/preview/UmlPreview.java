@@ -21,7 +21,6 @@ import de.ks.idnadrev.entity.information.UmlDiagramInfo;
 import de.ks.idnadrev.information.uml.UmlDiagramActivity;
 import de.ks.idnadrev.information.uml.UmlDiagramRender;
 import de.ks.idnadrev.information.view.InformationPreviewItem;
-import de.ks.imagecache.Images;
 import de.ks.persistence.PersistentWork;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -33,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -44,6 +44,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class UmlPreview extends BaseController<List<InformationPreviewItem>> implements InformationPreview<UmlDiagramInfo> {
   private static final Logger log = LoggerFactory.getLogger(UmlPreview.class);
+  public static final int DEFAULT_WIDTH = 650;
+  public static final int DEFAULT_HEIGHT = 700;
   @FXML
   protected ImageView imageView;
   @FXML
@@ -76,11 +78,10 @@ public class UmlPreview extends BaseController<List<InformationPreviewItem>> imp
   private void adjustImageViewSize() {
     double width = imageContainer.getWidth() - 20;
     double height = imageContainer.getHeight() - 20;
-    width = width < 0 ? 650 : width;
-    height = height < 0 ? 700 : height;
+    width = width < 0 ? DEFAULT_WIDTH : width;
+    height = height < 0 ? DEFAULT_HEIGHT : height;
     imageView.setFitWidth(width);
     imageView.setFitHeight(height);
-    log.info("New fit size: w={}, h={}", imageView.getFitWidth(), imageView.getFitHeight());
   }
 
   @Override
@@ -111,20 +112,26 @@ public class UmlPreview extends BaseController<List<InformationPreviewItem>> imp
   private CompletableFuture<Void> load(InformationPreviewItem preview) {
     return CompletableFuture.supplyAsync(() -> PersistentWork.forName(UmlDiagramInfo.class, preview.getName()), controller.getExecutorService())//
       .thenApply(diagram -> {
+        infos.put(diagram.getName(), diagram);
         Path imagePath = getImagePath(diagram.getName());
         if (imagePath.toFile().exists()) {
-          return imagePath.toFile();
-        } else {
-          File file = render.genereateSvg(diagram.getContent(), 800, imagePath);
-          file.deleteOnExit();
-          return file;
+          imagePath.toFile().delete();
         }
+        File file = render.genereateSvg(diagram.getContent(), Math.max(DEFAULT_WIDTH, this.imageContainer.getWidth() - 20), imagePath);
+        file.deleteOnExit();
+        return file;
       })//
       .thenApply(file -> {
         if (file != null) {
-          Image image = Images.get(file.getPath());
-          previews.put(preview.getName(), image);
-          return image;
+
+          try {
+            URL url = file.toURI().toURL();
+            Image image = new Image(url.toExternalForm());
+            previews.put(preview.getName(), image);
+            return image;
+          } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+          }
         } else {
           return null;
         }

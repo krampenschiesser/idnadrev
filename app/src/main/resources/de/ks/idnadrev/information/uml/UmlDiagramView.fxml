@@ -40,7 +40,7 @@
         <TextField fx:id="name" GridPane.columnIndex="1"/>
 
         <Label text="%tags:" GridPane.rowIndex="1" GridPane.valignment="TOP"/>
-        <StackPane GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1">
+        <StackPane GridPane.columnIndex="1" GridPane.columnSpan="1" GridPane.rowIndex="1">
             <children>
                 <fx:include fx:id="tagContainer" source="../../tag/TagContainer.fxml"/>
             </children>
