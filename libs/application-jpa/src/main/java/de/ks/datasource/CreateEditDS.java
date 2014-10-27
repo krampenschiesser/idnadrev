@@ -19,11 +19,12 @@ import de.ks.persistence.PersistentWork;
 import de.ks.persistence.entity.AbstractPersistentObject;
 import de.ks.reflection.ReflectionUtil;
 
+import javax.persistence.EntityManager;
 import java.util.function.Consumer;
 
 public class CreateEditDS<T extends AbstractPersistentObject<T>> implements DataSource<T> {
-  private final Class<T> clazz;
-  private T hint;
+  protected final Class<T> clazz;
+  protected T hint;
 
   public CreateEditDS(Class<T> clazz) {
     this.clazz = clazz;
@@ -58,7 +59,7 @@ public class CreateEditDS<T extends AbstractPersistentObject<T>> implements Data
     PersistentWork.run(em -> {
       T reloaded = PersistentWork.reload(model);
       beforeSaving.accept(reloaded);
-      furtherSave(reloaded);
+      furtherSave(em, reloaded);
       if (reloaded.getId() == 0) {
         em.persist(reloaded);
       }
@@ -66,6 +67,6 @@ public class CreateEditDS<T extends AbstractPersistentObject<T>> implements Data
     hint = null;
   }
 
-  protected void furtherSave(T reloaded) {
+  protected void furtherSave(EntityManager em, T reloaded) {
   }
 }
