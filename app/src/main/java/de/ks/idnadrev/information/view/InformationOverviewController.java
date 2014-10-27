@@ -65,5 +65,12 @@ public class InformationOverviewController extends BaseController<List<Informati
         }
       }
     });
+    informationList.setOnMouseClicked(e -> {
+      if (e.getClickCount() > 1) {
+        if (currentPreview != null) {
+          currentPreview.edit();
+        }
+      }
+    });
   }
 }
