@@ -91,6 +91,13 @@ public class CategorySelection extends BaseNamedPersistentObjectSelection<Catego
   private void afterRefresh(ActivityLoadFinishedEvent e) {
     if (clearOnRefresh) {
       getInput().setText("");
+    } else if (e.getModel() instanceof Categorized) {
+      Category category = ((Categorized) e.getModel()).getCategory();
+      if (category == null) {
+        getInput().setText("");
+      } else {
+        getInput().setText(category.getName());
+      }
     }
   }
 

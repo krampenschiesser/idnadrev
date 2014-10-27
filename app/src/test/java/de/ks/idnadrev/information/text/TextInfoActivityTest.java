@@ -31,8 +31,7 @@ import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
 public class TextInfoActivityTest extends ActivityTest {
@@ -82,9 +81,16 @@ public class TextInfoActivityTest extends ActivityTest {
   @Test
   public void testEdit() throws Exception {
     TextInfoDS datasource = (TextInfoDS) store.getDatasource();
-    TextInfo textInfo = new TextInfo("test").setDescription("desc");
-    PersistentWork.persist(textInfo);
-    datasource.setLoadingHint(textInfo);
+    TextInfo model = PersistentWork.read(em -> {
+      TextInfo textInfo = new TextInfo("test").setDescription("desc");
+      textInfo.addTag("tag");
+      Category testCategory = new Category("testCategory");
+      em.persist(testCategory);
+      textInfo.setCategory(testCategory);
+      em.persist(textInfo);
+      return textInfo;
+    });
+    datasource.setLoadingHint(model);
 
     activityController.reload();
     activityController.waitForDataSource();
@@ -92,6 +98,8 @@ public class TextInfoActivityTest extends ActivityTest {
     TextInfoController controller = activityController.getControllerInstance(TextInfoController.class);
     assertEquals("test", controller.name.getText());
     assertEquals("desc", controller.content.getText());
+    assertEquals("testCategory", controller.categorySelectionController.getInput().getText());
+    assertTrue(controller.tagContainerController.getCurrentTags().contains("tag"));
 
     FXPlatform.invokeLater(() -> controller.content.setText("other"));
     activityController.save();
