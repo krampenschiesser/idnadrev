@@ -275,7 +275,8 @@ public class ChartInfoController extends BaseController<ChartInfo> {
     } else if (xyChart != null) {
       Supplier<XYChart<String, Number>> xyChartSupplier = getXYChartSupplier(chartType.getValue());
       XYChart<String, Number> numberXYChart = xyChartSupplier.get();
-      numberXYChart.setData(xyChart.getData());
+      List<XYChart.Series<String, Number>> pseudoClone = xyChart.getData().stream().sequential().map(series -> new XYChart.Series<>(FXCollections.observableArrayList(series.getData()))).collect(Collectors.toList());
+      numberXYChart.setData(FXCollections.observableList(pseudoClone));
       Axis<Number> numberAxis = numberXYChart.getYAxis();
       numberAxis.setAnimated(false);
       numberAxis.setAutoRanging(true);
