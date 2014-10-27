@@ -223,8 +223,9 @@ public class ActivityController {
         Object returnHint = null;
         String returnToActivity = null;
 
-        if (getCurrentActivity() != null) {
-          ActivityHint activityHint = getCurrentActivity().getActivityHint();
+        ActivityCfg activityCfg = registeredActivities.get(id);
+        if (activityCfg != null) {
+          ActivityHint activityHint = activityCfg.getActivityHint();
           if (activityHint.getReturnToDatasourceHint() != null) {
             returnHint = activityHint.getReturnToDatasourceHint().get();
           }
@@ -242,7 +243,7 @@ public class ActivityController {
         context.stopActivity(id);
         log.debug("Stopped activity {}", id);
 
-        if (returnToActivity != null) {
+        if (returnToActivity != null && registeredActivities.containsKey(returnToActivity)) {
           resume(returnToActivity, true, returnHint, null);
         }
       } catch (Exception e) {
