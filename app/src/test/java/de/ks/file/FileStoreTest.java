@@ -97,6 +97,7 @@ public class FileStoreTest {
     log.info("Creating tempfile {}", tempFile);
     File file = new File(tempFile);
     file.createNewFile();
+    file.deleteOnExit();
     com.google.common.io.Files.write(content, file, Charsets.US_ASCII);
     return file;
   }
@@ -169,10 +170,12 @@ public class FileStoreTest {
   public void testGetFileReferences() throws Exception {
     Path path = Files.createTempFile("img", ".jpg");
 
+
     URL resource = getClass().getResource("/de/ks/idnadrev/entity/img.jpg");
     Path src = Paths.get(resource.toURI());
     Files.copy(src, path, StandardCopyOption.REPLACE_EXISTING);
     File file = path.toFile();
+    file.deleteOnExit();
 
     FileReference fileReference = fileStore.getReference(file).get();
     PersistentWork.run(em -> {

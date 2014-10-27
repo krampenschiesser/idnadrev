@@ -46,6 +46,7 @@ public class TempFileRule extends ExternalResource {
   protected void before() throws Throwable {
     for (int i = 0; i < fileCount; i++) {
       Path tempFile = Files.createTempFile(testClassName + "." + testMethodName, ".testFile");
+      tempFile.toFile().deleteOnExit();
       files.add(tempFile.toFile());
     }
   }

@@ -41,40 +41,42 @@ public class AsciiDocParserRenderToFileTest {
   @Before
   public void setUp() throws Exception {
     asciiDocSimple = "= Simple test document =\n" +
-            ":linkcss:\n" +
-            ":Revision: 42\n" +
-            ":Author:    Hiker trash\n" +
-            "\n" +
-            "\n" +
-            "== About ==\n" +
-            "\n" +
-            "Hiker trash rules.\n" +
-            "Keep on hiking.\n" +
-            "\n" +
-            "== Code ==\n" +
-            "[source,java]\n" +
-            "----\n" +
-            "  public String parse(String input) {\n" +
-            "    Attributes attributes = AttributesBuilder.attributes()" +
-            "       .linkCss(false).unsetStyleSheet().get();\n" +
-            "    Options options = OptionsBuilder.options()" +
-            "       .headerFooter(true).attributes(attributes).get();//.docType(\"HTML\")\n" +
-            "    String render = asciidoctor.render(input, options);\n" +
-            "    return render;\n" +
-            "  }" +
-            "\n" +
-            "----" +
-            "\n";
+      ":linkcss:\n" +
+      ":Revision: 42\n" +
+      ":Author:    Hiker trash\n" +
+      "\n" +
+      "\n" +
+      "== About ==\n" +
+      "\n" +
+      "Hiker trash rules.\n" +
+      "Keep on hiking.\n" +
+      "\n" +
+      "== Code ==\n" +
+      "[source,java]\n" +
+      "----\n" +
+      "  public String parse(String input) {\n" +
+      "    Attributes attributes = AttributesBuilder.attributes()" +
+      "       .linkCss(false).unsetStyleSheet().get();\n" +
+      "    Options options = OptionsBuilder.options()" +
+      "       .headerFooter(true).attributes(attributes).get();//.docType(\"HTML\")\n" +
+      "    String render = asciidoctor.render(input, options);\n" +
+      "    return render;\n" +
+      "  }" +
+      "\n" +
+      "----" +
+      "\n";
     plainText = "Hello\n" + "World.-,'*\n" + "\t==HAAAL";
     asciiDocParser = new AsciiDocParser();
 
     file = new File(System.getProperty("java.io.tmpdir") + File.separator + "adocRender.html");
+    file.deleteOnExit();
     if (!file.exists()) {
       file.createNewFile();
     }
     imageFile = new File(System.getProperty("java.io.tmpdir") + File.separator + "test.png");
     if (!imageFile.exists()) {
       imageFile.createNewFile();
+      imageFile.deleteOnExit();
     }
     dataDir = new File(file.getPath().substring(0, file.getPath().length() - 5) + AsciiDocParser.DATADIR_NAME);
 
