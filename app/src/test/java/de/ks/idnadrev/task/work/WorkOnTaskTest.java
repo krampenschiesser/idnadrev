@@ -18,6 +18,7 @@ package de.ks.idnadrev.task.work;
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityController;
 import de.ks.activity.ActivityHint;
+import de.ks.idnadrev.IdnadrevWindow;
 import de.ks.idnadrev.entity.*;
 import de.ks.idnadrev.task.view.ViewTasksActvity;
 import de.ks.idnadrev.thought.add.AddThought;
@@ -37,8 +38,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static de.ks.JunitMatchers.withRetry;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
 public class WorkOnTaskTest {
@@ -46,6 +46,8 @@ public class WorkOnTaskTest {
   ActivityController activityController;
   @Inject
   Cleanup cleanup;
+  @Inject
+  IdnadrevWindow window;
 
   private WorkOnTask controller;
 
@@ -73,8 +75,7 @@ public class WorkOnTaskTest {
 
   @After
   public void tearDown() throws Exception {
-    activityController.stop(WorkOnTaskActivity.class.getSimpleName(), false);
-    activityController.stop(ViewTasksActvity.class.getSimpleName(), false);
+    activityController.stopAll();
   }
 
   @Test
@@ -92,7 +93,7 @@ public class WorkOnTaskTest {
   }
 
   @Test
-  public void testStopWorkOnSuspend() throws Exception {
+  public void testContinueOnSuspend() throws Exception {
     Thread.sleep(200);
     FXPlatform.invokeLater(() -> controller.createThought());
     FXPlatform.waitForFX();
@@ -101,6 +102,11 @@ public class WorkOnTaskTest {
     withRetry(() -> AddThoughtActivity.class.getSimpleName().equals(activityController.getCurrentActivityId()));
     activityController.waitForTasks();
     assertEquals(AddThoughtActivity.class.getSimpleName(), activityController.getCurrentActivityId());
+
+    assertEquals(1, window.getProgressBox().getChildren().size());
+    assertTrue(window.getProgressBox().getChildren().get(0).isVisible());
+    assertNotNull(window.getWorkingOnTaskLink().getCurrentTask());
+    assertEquals("task", window.getWorkingOnTaskLink().getCurrentTask().getName());
 
     AddThought addThought = activityController.getControllerInstance(AddThought.class);
     FXPlatform.invokeLater(() -> addThought.getName().setText("testThought"));
@@ -118,7 +124,27 @@ public class WorkOnTaskTest {
     List<Task> tasks = PersistentWork.from(Task.class, t -> t.getWorkUnits().forEach(u -> u.getDuration()));
     assertEquals(1, tasks.size());
     Task task = tasks.get(0);
-    assertEquals(3, task.getWorkUnits().size());
+    assertEquals(2, task.getWorkUnits().size());
+  }
+
+  @Test
+  public void testGoBack() throws Exception {
+    FXPlatform.invokeLater(() -> controller.createThought());
+    FXPlatform.waitForFX();
+    activityController.waitForTasks();
+
+    withRetry(() -> AddThoughtActivity.class.getSimpleName().equals(activityController.getCurrentActivityId()));
+    activityController.waitForTasks();
+    assertEquals(AddThoughtActivity.class.getSimpleName(), activityController.getCurrentActivityId());
+
+    assertNotNull(window.getWorkingOnTaskLink().getCurrentTask());
+    assertEquals("task", window.getWorkingOnTaskLink().getCurrentTask().getName());
+
+    FXPlatform.invokeLater(() -> window.getWorkingOnTaskLink().getOnAction().handle(null));
+
+    withRetry(() -> WorkOnTaskActivity.class.getSimpleName().equals(activityController.getCurrentActivityId()));
+    activityController.waitForTasks();
+    assertEquals(WorkOnTaskActivity.class.getSimpleName(), activityController.getCurrentActivityId());
   }
 
   @Test

@@ -21,6 +21,7 @@ import de.ks.activity.ActivityHint;
 import de.ks.application.MainWindow;
 import de.ks.application.fxml.DefaultLoader;
 import de.ks.idnadrev.overview.OverviewActivity;
+import de.ks.idnadrev.task.work.WorkingOnTaskLink;
 import de.ks.javafx.NodeLookup;
 import de.ks.menu.presenter.MenuBarPresenter;
 import de.ks.menu.sink.ContentSink;
@@ -33,20 +34,16 @@ import javafx.scene.control.Control;
 import javafx.scene.control.MenuBar;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.Set;
 
-/**
- *
- */
+@Singleton
 public class IdnadrevWindow extends MainWindow {
   public static final String PROPERTY_INITIAL_ACTIVITY = "initialActivtiy";
   private static final Logger log = LoggerFactory.getLogger(IdnadrevWindow.class);
@@ -60,11 +57,14 @@ public class IdnadrevWindow extends MainWindow {
   @Inject
   ActivityController activityController;
 
+  protected final WorkingOnTaskLink workingOnTaskLink = new WorkingOnTaskLink();
+
   private BorderPane borderPane;
   private DefaultLoader<BorderPane, Object> loader;
   private ButtonBar buttonBar;
   private GridPane buttonBarView;
   private StackPane contentPane;
+  protected HBox progressBox;
 
   @PostConstruct
   public void initialize() {
@@ -83,12 +83,15 @@ public class IdnadrevWindow extends MainWindow {
       MenuBar menu = menuBarPresenter.getMenu("/main");
       menu.setMinSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
       vBox.getChildren().add(menu);
-      borderPane.setTop(menu);
+
+      StackPane topPane = (StackPane) borderPane.getTop();
+      progressBox = (HBox) topPane.getChildren().get(0);
+      progressBox.getChildren().add(workingOnTaskLink);
+      topPane.getChildren().add(0, menu);
 
       DefaultLoader<GridPane, ButtonBar> loader = new DefaultLoader<>(ButtonBar.class);
       buttonBar = loader.getController();
       buttonBarView = loader.getView();
-//      borderPane.setRight(loader.getView());
 
       contentPane = new StackPane();
       borderPane.setCenter(contentPane);
@@ -174,6 +177,14 @@ public class IdnadrevWindow extends MainWindow {
         event.consume();
       }
     }
+  }
+
+  public HBox getProgressBox() {
+    return progressBox;
+  }
+
+  public WorkingOnTaskLink getWorkingOnTaskLink() {
+    return workingOnTaskLink;
   }
 
   @Override

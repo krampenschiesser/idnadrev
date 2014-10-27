@@ -108,6 +108,10 @@ public class WorkUnit extends AbstractPersistentObject<WorkUnit> implements Comp
     this.end = time;
   }
 
+  public boolean isFinished() {
+    return end != null;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {

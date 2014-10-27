@@ -16,6 +16,14 @@
   -->
 
 
-<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.*?>
 <BorderPane id="BorderPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="800.0"
-            prefWidth="1280.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"/>
+            prefWidth="1280.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+    <top>
+        <StackPane BorderPane.alignment="CENTER">
+            <children>
+                <HBox maxWidth="-Infinity" spacing="10.0" StackPane.alignment="TOP_RIGHT"/>
+            </children>
+        </StackPane>
+    </top>
+</BorderPane>

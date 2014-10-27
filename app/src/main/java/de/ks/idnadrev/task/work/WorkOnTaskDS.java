@@ -38,7 +38,7 @@ public class WorkOnTaskDS implements DataSource<Task> {
     PersistentWork.run(em -> {
       Task reloaded = PersistentWork.reload(model);
       beforeSaving.accept(reloaded);
-      reloaded.getWorkUnits().last().stop();
+//      reloaded.getWorkUnits().last().stop();
     });
   }
 

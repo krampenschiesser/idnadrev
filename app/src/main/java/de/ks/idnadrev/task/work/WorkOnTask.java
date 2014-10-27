@@ -18,6 +18,7 @@ import de.ks.BaseController;
 import de.ks.activity.ActivityHint;
 import de.ks.activity.executor.ActivityExecutor;
 import de.ks.i18n.Localized;
+import de.ks.idnadrev.IdnadrevWindow;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.WorkUnit;
 import de.ks.idnadrev.task.finish.FinishTaskActivity;
@@ -34,6 +35,7 @@ import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.net.URL;
 import java.time.Duration;
 import java.util.ResourceBundle;
@@ -53,6 +55,9 @@ public class WorkOnTask extends BaseController<Task> {
   @FXML
   protected StackPane descriptionView;
   protected AsciiDocEditor description;
+
+  @Inject
+  IdnadrevWindow window;
 
   protected final SimpleStringProperty tookString = new SimpleStringProperty("");
 
@@ -78,21 +83,32 @@ public class WorkOnTask extends BaseController<Task> {
     });
     store.getBinding().registerClearOnRefresh(overTime);
 
-    Tooltip tooltip = new Tooltip();
-    tooltip.textProperty().bind(tookString);
-    estimatedTimeBar.setTooltip(tooltip);
+    controller.getJavaFXExecutor().submit(() -> {
+      Tooltip tooltip = new Tooltip();
+      tooltip.textProperty().bind(tookString);
+      estimatedTimeBar.setTooltip(tooltip);
+    });
   }
 
   @Override
   public void onSuspend() {
-    log.info("#Saving on suspend");
     controller.save();
   }
 
   @FXML
   void stopWork() {
+    store.executeCustomRunnable(this::finishWorkUnit);
     controller.save();
     controller.stopCurrent();
+  }
+
+  protected void finishWorkUnit() {
+    PersistentWork.wrap(() -> {
+      Task reload = PersistentWork.reload(store.getModel());
+      WorkUnit last = reload.getWorkUnits().last();
+      last.stop();
+    });
+    controller.getJavaFXExecutor().submit(() -> window.getWorkingOnTaskLink().setCurrentTask(null));
   }
 
   @FXML
@@ -103,6 +119,7 @@ public class WorkOnTask extends BaseController<Task> {
 
   @FXML
   void finishTask() {
+    store.executeCustomRunnable(this::finishWorkUnit);
     controller.save();
     ActivityHint currentHint = controller.getCurrentActivity().getActivityHint();
 
@@ -122,9 +139,12 @@ public class WorkOnTask extends BaseController<Task> {
 
     ActivityExecutor executorService = controller.getExecutorService();
     PersistentWork.runAsync(em -> {
-      Task reloaded = PersistentWork.byId(Task.class, task.getId());
-      WorkUnit workUnit = new WorkUnit(reloaded);
-      em.persist(workUnit);
+      Task reloaded = PersistentWork.reload(task);
+      WorkUnit last = reloaded.getWorkUnits().isEmpty() ? null : reloaded.getWorkUnits().last();
+      if (last == null || last.isFinished()) {
+        WorkUnit workUnit = new WorkUnit(reloaded);
+        em.persist(workUnit);
+      }
     }, executorService);
 
     Duration time = task.getEstimatedTime();
@@ -143,6 +163,17 @@ public class WorkOnTask extends BaseController<Task> {
     if (!description.getText().isEmpty()) {
       description.selectPreview();
     }
+
+    Task lastWorkedOnTask = window.getWorkingOnTaskLink().getCurrentTask();
+    if (lastWorkedOnTask != null && !lastWorkedOnTask.equals(task)) {
+      PersistentWork.runAsync(em -> {
+        Task old = PersistentWork.reload(lastWorkedOnTask);
+        if (old.getWorkUnits().size() > 0 && !old.getWorkUnits().last().isFinished()) {
+          old.getWorkUnits().last().stop();
+        }
+      }, executorService);
+    }
+    window.getWorkingOnTaskLink().setCurrentTask(task);
   }
 
   @Override
@@ -166,9 +197,11 @@ public class WorkOnTask extends BaseController<Task> {
     if (estimatedTime == null || estimatedTime.toMillis() == 0) {
       controller.getJavaFXExecutor().submit(() -> estimatedTimeBar.setProgress(-0.1D));
     } else {
-      Task reloaded = PersistentWork.from(Task.class, (r, q, b) -> {
-        q.where(b.equal(r.get("id"), task.getId()));
-      }, (t) -> t.getWorkUnits().forEach(u -> u.getStart())).get(0);
+      Task reloaded = PersistentWork.wrap(() -> {
+        Task reload = PersistentWork.reload(task);
+        reload.getWorkUnits().forEach(u -> u.getDuration());
+        return reload;
+      });
 
       Duration took = reloaded.getTotalWorkDuration();
       controller.getJavaFXExecutor().submit(() -> tookString.set(getHourMinutesString(took)));
@@ -178,7 +211,7 @@ public class WorkOnTask extends BaseController<Task> {
         controller.getJavaFXExecutor().submit(() -> estimatedTimeBar.setProgress(progress));
       } else {
         Duration over = took.minus(estimatedTime);
-
+        controller.getJavaFXExecutor().submit(() -> estimatedTimeBar.setProgress(1.0));
         controller.getJavaFXExecutor().submit(() -> overTime.setText(getHourMinutesString(over)));
       }
     }
