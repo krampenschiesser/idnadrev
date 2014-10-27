@@ -91,6 +91,8 @@
                         <Tooltip text="F5"/>
                     </tooltip>
                 </Button>
+                <Button mnemonicParsing="false" onAction="#umlDiagram" prefWidth="150.0"
+                        text="%main.info.umldiagramactivity"/>
                 <Button mnemonicParsing="false" onAction="#diary" prefWidth="150.0" text="%main.info.diaryactivity"/>
             </children>
         </VBox>
