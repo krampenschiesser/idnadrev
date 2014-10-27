@@ -52,12 +52,12 @@ public class TagContainer extends BaseController<Tagged> {
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     tagAddController.from(Tag.class);
+    tagAddController.setHideOnSingleClick(true);
     tagAddController.setOnAction(e -> {
       TextField input = tagAddController.getInput();
       addTag(input.getText());
       input.clear();
     });
-
     currentTags.addListener(this::onTagsChanged);
   }
 
