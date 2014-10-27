@@ -2,6 +2,7 @@ package de.ks.idnadrev.category.create;
 
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityCfg;
+import de.ks.executor.group.LastTextChange;
 import de.ks.file.FileStore;
 import de.ks.idnadrev.ActivityTest;
 import de.ks.idnadrev.entity.Category;
@@ -53,6 +54,7 @@ public class CreateCategoryActivityTest extends ActivityTest {
         throw new RuntimeException(e);
       }
     });
+    Thread.sleep(LastTextChange.WAIT_TIME * 2);
     activityController.waitForTasks();
     FXPlatform.waitForFX();
 
