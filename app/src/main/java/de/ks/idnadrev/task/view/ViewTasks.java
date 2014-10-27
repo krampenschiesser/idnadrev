@@ -115,6 +115,12 @@ public class ViewTasks extends BaseController<List<Task>> {
       description.getChildren().add(l.getView());
     }, controller.getJavaFXExecutor());
 
+    viewController.getTasksView().setOnMouseClicked(e -> {
+      if (e.getClickCount() > 1 && !start.isDisabled()) {
+        startWork();
+      }
+    });
+
     ReadOnlyObjectProperty<TreeItem<Task>> selectedItemProperty = tasksView.getSelectionModel().selectedItemProperty();
     selectedItemProperty.addListener((p, o, n) -> applyTask(n));
 
