@@ -32,8 +32,8 @@
                 <fx:include fx:id="fileView" source="../../../file/FileView.fxml"/>
             </children>
         </StackPane>
-        <Button fx:id="save" defaultButton="true" mnemonicParsing="false" onAction="#onSave" text="%default.save"
-                GridPane.columnIndex="1" GridPane.rowIndex="3">
+        <Button fx:id="save" defaultButton="true" mnemonicParsing="true" onAction="#onSave" text="%save.mnemonic"
+                GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.rowIndex="3">
             <GridPane.margin>
                 <Insets/>
             </GridPane.margin>

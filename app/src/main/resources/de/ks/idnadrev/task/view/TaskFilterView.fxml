@@ -25,13 +25,13 @@
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
-        <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
-        <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
-        <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
-        <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
-        <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
-        <RowConstraints/>
+        <RowConstraints minHeight="30.0" vgrow="SOMETIMES"/>
+        <RowConstraints minHeight="30.0" vgrow="SOMETIMES"/>
+        <RowConstraints minHeight="30.0" vgrow="SOMETIMES"/>
+        <RowConstraints minHeight="30.0" vgrow="SOMETIMES"/>
+        <RowConstraints minHeight="30.0" vgrow="SOMETIMES"/>
+        <RowConstraints minHeight="30.0" vgrow="SOMETIMES"/>
+        <RowConstraints minHeight="30.0"/>
     </rowConstraints>
     <children>
         <CheckBox fx:id="showFinished" mnemonicParsing="false" text="%task.filter.showFinished"

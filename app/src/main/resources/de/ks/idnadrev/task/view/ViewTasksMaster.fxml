@@ -15,7 +15,6 @@
   ~ limitations under the License.
   -->
 
-
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <GridPane hgap="5.0" minWidth="470.0" vgap="5.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
@@ -32,8 +31,7 @@
     <children>
         <TextField fx:id="searchField"/>
         <ComboBox fx:id="contextSelection" prefWidth="150.0" GridPane.columnIndex="1"/>
-        <Button fx:id="moreBtn" mnemonicParsing="false" onAction="#showMoreFilters" text="%more"
-                GridPane.columnIndex="2"/>
+        <Button fx:id="moreBtn" onAction="#showMoreFilters" text="%more" GridPane.columnIndex="2"/>
         <TreeTableView fx:id="tasksView" onKeyReleased="#onTableKeyReleased" GridPane.columnSpan="2147483647"
                        GridPane.rowIndex="1">
             <columns>

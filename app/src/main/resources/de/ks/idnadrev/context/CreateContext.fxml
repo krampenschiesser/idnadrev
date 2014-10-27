@@ -52,7 +52,8 @@
                        GridPane.halignment="CENTER"/>
                 <Label text="%name" GridPane.rowIndex="2"/>
                 <TextField fx:id="name" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                <Button fx:id="saveButton" defaultButton="true" mnemonicParsing="false" onAction="#save" text="%save"
+                <Button fx:id="saveButton" defaultButton="true" mnemonicParsing="true" onAction="#save"
+                        text="%save.mnemonic"
                         GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.rowIndex="3"/>
             </children>
             <padding>

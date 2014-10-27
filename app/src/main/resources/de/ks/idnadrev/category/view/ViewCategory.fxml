@@ -25,9 +25,9 @@
         <HBox maxHeight="-Infinity" maxWidth="-Infinity" spacing="5.0" GridPane.columnSpan="2147483647"
               GridPane.halignment="CENTER" GridPane.rowIndex="2" StackPane.alignment="TOP_CENTER">
             <children>
-                <Button fx:id="create" mnemonicParsing="false" onAction="#onCreate" text="%create"/>
-                <Button fx:id="edit" mnemonicParsing="false" onAction="#onEdit" text="%edit"/>
-                <Button fx:id="delete" mnemonicParsing="false" onAction="#onDelete" text="%delete"/>
+                <Button fx:id="create" mnemonicParsing="true" onAction="#onCreate" text="%create.mnemonic"/>
+                <Button fx:id="edit" mnemonicParsing="true" onAction="#onEdit" text="%edit.mnemonic"/>
+                <Button fx:id="delete" mnemonicParsing="true" onAction="#onDelete" text="%delete.mnemonic"/>
             </children>
         </HBox>
         <StackPane fx:id="selectedItemContainer" maxHeight="-Infinity" maxWidth="-Infinity" GridPane.columnIndex="1"

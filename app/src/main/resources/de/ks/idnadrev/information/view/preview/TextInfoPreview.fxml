@@ -14,7 +14,8 @@
     </rowConstraints>
     <children>
         <StackPane fx:id="adocContainer" minHeight="150.0" minWidth="200.0"/>
-        <Button fx:id="edit" mnemonicParsing="false" onAction="#onEdit" text="%edit" GridPane.halignment="CENTER"
+        <Button fx:id="edit" mnemonicParsing="true" onAction="#onEdit" text="%edit.mnemonic"
+                GridPane.halignment="CENTER"
                 GridPane.rowIndex="1"/>
     </children>
     <padding>

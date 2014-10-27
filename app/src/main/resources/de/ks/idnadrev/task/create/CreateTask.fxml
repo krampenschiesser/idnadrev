@@ -77,7 +77,7 @@
                 </Tab>
             </tabs>
         </TabPane>
-        <Button fx:id="saveBtn" defaultButton="true" mnemonicParsing="false" onAction="#save" text="%save"
+        <Button fx:id="saveBtn" defaultButton="true" mnemonicParsing="true" onAction="#save" text="%save.mnemonic"
                 GridPane.rowIndex="1"/>
     </children>
 </GridPane>

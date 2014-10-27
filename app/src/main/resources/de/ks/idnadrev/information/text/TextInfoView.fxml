@@ -57,8 +57,8 @@
 
         <Accordion GridPane.columnSpan="2147483647" GridPane.rowIndex="3">
             <panes>
-                <TitledPane animated="false" style="-fx-font-size: 13px;" text="%files">
-                    <content>
+                <TitledPane mnemonicParsing="true" animated="false" style="-fx-font-size: 13px;" text="%files.mnemonic">
+                <content>
                         <StackPane>
                             <children>
                                 <fx:include fx:id="files" source="../../../file/FileView.fxml"/>
@@ -68,7 +68,7 @@
                 </TitledPane>
             </panes>
         </Accordion>
-        <Button fx:id="save" defaultButton="true" mnemonicParsing="false" onAction="#onSave" text="%save"
+        <Button fx:id="save" defaultButton="true" mnemonicParsing="true" onAction="#onSave" text="%save.mnemonic"
                 GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.rowIndex="4"/>
     </children>
     <padding>

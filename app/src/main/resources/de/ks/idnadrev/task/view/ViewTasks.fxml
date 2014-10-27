@@ -63,7 +63,7 @@
                         <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
                     </rowConstraints>
                     <children>
-                        <Button fx:id="show" disable="true" mnemonicParsing="false" onAction="#showTimeUnits"
+                        <Button fx:id="show" disable="true" onAction="#showTimeUnits"
                                 text="%task.overview.showTimeUnits" GridPane.columnIndex="1"/>
                         <Label fx:id="spentTime" styleClass="editorViewLabel" text="Label"/>
                     </children>
@@ -74,15 +74,14 @@
                            GridPane.rowIndex="5"/>
                 <HBox spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="9">
                     <children>
-                        <Button fx:id="start" defaultButton="true" mnemonicParsing="false" onAction="#startWork"
-                                text="%task.startwork" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
-                        <Button fx:id="finish" mnemonicParsing="false" onAction="#finishTask" text="%task.finish"/>
-                        <Button fx:id="edit" mnemonicParsing="false" onAction="#editTask" text="%edit"/>
-                        <Button fx:id="createSubtaskBtn" mnemonicParsing="false" onAction="#createSubtask"
-                                text="%task.create.subtask"/>
-                        <Button fx:id="delete" mnemonicParsing="false" onAction="#deleteTask" text="%delete"/>
-                        <Button fx:id="later" mnemonicParsing="false" onAction="#scheduleLater" text="%later"/>
-                        <Button fx:id="asap" mnemonicParsing="false" onAction="#scheduleAsap" text="%asap"/>
+                        <Button fx:id="start" defaultButton="true" onAction="#startWork" text="%task.startwork"
+                                GridPane.columnIndex="1" GridPane.rowIndex="9"/>
+                        <Button fx:id="finish" onAction="#finishTask" text="%task.finish"/>
+                        <Button fx:id="edit" onAction="#editTask" text="%edit.mnemonic"/>
+                        <Button fx:id="createSubtaskBtn" onAction="#createSubtask" text="%task.create.subtask"/>
+                        <Button fx:id="delete" onAction="#deleteTask" text="%delete.mnemonic"/>
+                        <Button fx:id="later" onAction="#scheduleLater" text="%later.mnemonic"/>
+                        <Button fx:id="asap" onAction="#scheduleAsap" text="%asap.mnemonic"/>
                     </children>
                 </HBox>
                 <Label text="%task.state" GridPane.rowIndex="6"/>

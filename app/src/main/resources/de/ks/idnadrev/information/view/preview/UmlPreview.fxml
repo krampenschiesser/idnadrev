@@ -20,7 +20,8 @@
                            styleClass="contentContainer"/>
             </children>
         </StackPane>
-        <Button fx:id="edit" mnemonicParsing="false" onAction="#onEdit" text="%edit" GridPane.halignment="CENTER"
+        <Button fx:id="edit" mnemonicParsing="true" onAction="#onEdit" text="%edit.mnemonic"
+                GridPane.halignment="CENTER"
                 GridPane.rowIndex="1"/>
     </children>
     <padding>

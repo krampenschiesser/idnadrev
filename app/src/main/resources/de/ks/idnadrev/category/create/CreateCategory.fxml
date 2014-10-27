@@ -38,12 +38,17 @@
                 <RowConstraints minHeight="30.0" vgrow="NEVER"/>
             </rowConstraints>
             <children>
+                <Label styleClass="pageTitle" text="%create.category" GridPane.columnSpan="2147483647"
+                       GridPane.halignment="CENTER"/>
+
                 <Label text="%name:" GridPane.rowIndex="2"/>
+                <TextField fx:id="name" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2"/>
+
                 <Label text="%color:" GridPane.rowIndex="3"/>
                 <ColorPicker fx:id="colorSelection" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
                 <Label text="%image:" GridPane.rowIndex="4"/>
-                <TextField fx:id="name" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2"/>
-                <Button fx:id="imageSelection" mnemonicParsing="false" onAction="#onImageSelection" text="%select"
+                <Button fx:id="imageSelection" mnemonicParsing="true" onAction="#onImageSelection"
+                        text="%select.mnemonic"
                         GridPane.columnIndex="2" GridPane.rowIndex="4"/>
                 <StackPane GridPane.columnIndex="1" GridPane.rowIndex="4">
                     <children>
@@ -52,10 +57,9 @@
                         <Label fx:id="noImageLabel" text="%noimage"/>
                     </children>
                 </StackPane>
-                <Button fx:id="save" defaultButton="true" mnemonicParsing="false" onAction="#onSave" text="%save"
+                <Button fx:id="save" defaultButton="true" mnemonicParsing="true" onAction="#onSave"
+                        text="%save.mnemonic"
                         GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="5"/>
-                <Label styleClass="pageTitle" text="%create.category" GridPane.columnSpan="2147483647"
-                       GridPane.halignment="CENTER"/>
             </children>
             <padding>
                 <Insets bottom="30.0" left="30.0" right="30.0" top="30.0"/>

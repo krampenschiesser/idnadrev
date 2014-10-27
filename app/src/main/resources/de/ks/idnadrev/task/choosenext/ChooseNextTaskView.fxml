@@ -39,9 +39,6 @@
         <Button fx:id="chooseTask" mnemonicParsing="false" onAction="#onChooseTask" text="%task.choose.next"
                 GridPane.columnIndex="5"/>
         <Label text="%context:" GridPane.columnIndex="1"/>
-        <Button fx:id="startWork" defaultButton="true" mnemonicParsing="false" onAction="#onStartWork"
-                text="%task.startwork" GridPane.columnSpan="2147483647" GridPane.halignment="CENTER"
-                GridPane.rowIndex="2"/>
         <ListView fx:id="taskList" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2147483647"
                   GridPane.rowIndex="1"/>
         <Label text="%availableTime.minutes:" GridPane.columnIndex="3">
@@ -50,6 +47,9 @@
             </padding>
         </Label>
         <TextField fx:id="availableTime" onAction="#onChooseTask" GridPane.columnIndex="4"/>
+        <Button fx:id="startWork" defaultButton="true" mnemonicParsing="true" onAction="#onStartWork"
+                text="%task.startwork" GridPane.columnSpan="2147483647" GridPane.halignment="CENTER"
+                GridPane.rowIndex="2"/>
 
     </children>
     <padding>
