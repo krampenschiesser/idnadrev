@@ -42,6 +42,7 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
   private static final Logger log = LoggerFactory.getLogger(NamedPersistentObjectSelection.class);
 
   protected TableView<T> tableView;
+  protected boolean hideOnSingleClick = false;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -57,8 +58,8 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
     tableView.setItems(FXCollections.observableArrayList());
 
     tableView.setOnMouseClicked((event) -> {
-      if (event.getClickCount() > 1) {
-        submit();
+      if (hideOnSingleClick || event.getClickCount() > 1) {
+        hidePopup();
       }
     });
     tableView.setOnKeyTyped((event) -> {
@@ -66,7 +67,7 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
       KeyCode code = event.getCode();
       String esc = String.valueOf((char) Ascii.ESC);
       if (code == KeyCode.ENTER || code == KeyCode.ESCAPE || character.equals("\n") || character.equals("\r") || character.equals(esc)) {
-        submit();
+        hidePopup();
       }
     });
 
@@ -115,5 +116,13 @@ public class NamedPersistentObjectSelection<T extends NamedPersistentObject<T>> 
   @Override
   protected Node getBrowseNode() {
     return tableView;
+  }
+
+  public boolean isHideOnSingleClick() {
+    return hideOnSingleClick;
+  }
+
+  public void setHideOnSingleClick(boolean hideOnSingleClick) {
+    this.hideOnSingleClick = hideOnSingleClick;
   }
 }
