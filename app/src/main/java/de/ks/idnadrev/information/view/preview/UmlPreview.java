@@ -117,7 +117,7 @@ public class UmlPreview extends BaseController<List<InformationPreviewItem>> imp
         if (imagePath.toFile().exists()) {
           imagePath.toFile().delete();
         }
-        File file = render.genereateSvg(diagram.getContent(), Math.max(DEFAULT_WIDTH, this.imageContainer.getWidth() - 20), imagePath);
+        File file = render.generatePng(diagram.getContent(), Math.max(DEFAULT_WIDTH, this.imageContainer.getWidth() - 20), imagePath);
         file.deleteOnExit();
         return file;
       })//

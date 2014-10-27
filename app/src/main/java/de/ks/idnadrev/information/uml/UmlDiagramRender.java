@@ -28,7 +28,7 @@ import java.nio.file.Path;
 public class UmlDiagramRender {
   private static final Logger log = LoggerFactory.getLogger(UmlDiagramRender.class);
 
-  public File genereateSvg(String uml, double width, Path path) {
+  public File generatePng(String uml, double width, Path path) {
     StringBuilder builder = new StringBuilder();
     builder.append("@startuml\n");
     builder.append("scale ");

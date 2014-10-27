@@ -114,7 +114,7 @@ public class UmlDiagramController extends BaseController<UmlDiagramInfo> {
 
     lastTextChange = new LastTextChange(content, 750, controller.getExecutorService());
     lastTextChange.registerHandler(f -> {
-      f.thenApplyAsync(s -> render.genereateSvg(s, getFullScreenWidth(), getFullScreenImagePath()), controller.getExecutorService())//
+      f.thenApplyAsync(s -> render.generatePng(s, getFullScreenWidth(), getFullScreenImagePath()), controller.getExecutorService())//
         .thenAcceptAsync(file -> {
           file.deleteOnExit();
           if (showFullScreen) {
@@ -122,7 +122,7 @@ public class UmlDiagramController extends BaseController<UmlDiagramInfo> {
           }
         }, controller.getJavaFXExecutor());
       f.thenAcceptAsync(persistentStoreBack::save, controller.getExecutorService());
-      f.thenApply(s -> render.genereateSvg(s, webView.getWidth(), getImagePath()))//
+      f.thenApply(s -> render.generatePng(s, webView.getWidth(), getImagePath()))//
         .thenAcceptAsync(file -> showRenderedFile(file, webView), controller.getJavaFXExecutor());
     });
 
