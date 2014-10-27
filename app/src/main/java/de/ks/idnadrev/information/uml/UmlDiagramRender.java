@@ -34,6 +34,7 @@ public class UmlDiagramRender {
     builder.append("scale ");
     builder.append((int) width);
     builder.append(" width \n");
+    builder.append("skinparam shadowing false\n");
     builder.append(uml);
     builder.append("\n@enduml");
 
