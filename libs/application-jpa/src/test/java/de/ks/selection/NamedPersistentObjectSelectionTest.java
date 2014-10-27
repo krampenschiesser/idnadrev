@@ -163,7 +163,7 @@ public class NamedPersistentObjectSelectionTest {
     selection.tableView.getSelectionModel().select(1);
     Option selectedItem = selection.tableView.getSelectionModel().getSelectedItem();
 
-    FXPlatform.invokeLater(() -> selection.submit());
+    FXPlatform.invokeLater(() -> selection.hidePopup());
     assertSame(selectedItem, selection.selectedValue.get());
     Assert.assertEquals(selectedItem.getName(), selection.input.textProperty().getValueSafe());
 

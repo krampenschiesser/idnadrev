@@ -61,7 +61,7 @@ public abstract class BaseNamedPersistentObjectSelection<T extends NamedPersiste
   protected SimpleObjectProperty<T> selectedValue = new SimpleObjectProperty<>();
   protected ActivityController controller = CDI.current().select(ActivityController.class).get();
   protected QueryConsumer<T, T> filter;
-  private Stage dialog;
+  protected Stage dialog;
   private CustomAutoCompletionBinding autoCompletion;
   private EventHandler<ActionEvent> onAction;
   private NamedPersistentObjectAutoCompletion<T> namedPersistentObjectAutoCompletion;
@@ -140,9 +140,13 @@ public abstract class BaseNamedPersistentObjectSelection<T extends NamedPersiste
     return input;
   }
 
-  protected void submit() {
-    dialog.hide();
-    autoCompletion.hidePopup();
+  public void hidePopup() {
+    if (dialog != null) {
+      dialog.hide();
+    }
+    if (autoCompletion != null) {
+      autoCompletion.hidePopup();
+    }
   }
 
   @FXML
