@@ -42,6 +42,7 @@ public class OverviewActivityTest extends ActivityTest {
     OverviewContextualController contextController = activityController.getControllerInstance(OverviewContextualController.class);
     FXPlatform.invokeLater(() -> contextController.context.getSelectionModel().select("context"));
     activityController.waitForTasks();
+    FXPlatform.waitForFX();
 
     ObservableList<Task> items = contextController.contextTasks.getItems();
     assertEquals(2, items.size());
