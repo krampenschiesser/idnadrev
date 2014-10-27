@@ -56,6 +56,7 @@ public class CategorySelection extends BaseNamedPersistentObjectSelection<Catego
     categoryBrowser.selectedCategory.addListener((p, o, n) -> {
       if (n != null) {
         selectedValue.set(n);
+        controller.getJavaFXExecutor().submit(() -> hidePopup());
       }
     });
     this.from(Category.class);
