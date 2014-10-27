@@ -124,6 +124,7 @@ public abstract class BaseNamedPersistentObjectSelection<T extends NamedPersiste
     Scene scene = new Scene(new StackPane(getBrowseNode()));
     dialog.setScene(scene);
     dialog.initModality(Modality.APPLICATION_MODAL);
+    dialog.setAlwaysOnTop(true);
 
     dialog.show();
     Instance<String> styleSheets = CDI.current().select(String.class, FxCss.LITERAL);
