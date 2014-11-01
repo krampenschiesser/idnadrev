@@ -39,7 +39,9 @@ public class TextInfoDS extends CreateEditDS<TextInfo> {
       TextInfo textInfo = new TextInfo(thought.getName()).setDescription(thought.getDescription());
       textInfo.getFiles().addAll(thought.getFiles());
       hint = textInfo;
+      return;
     }
+    fromThought = null;
   }
 
   @Override

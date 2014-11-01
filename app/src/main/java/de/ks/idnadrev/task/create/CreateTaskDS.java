@@ -79,10 +79,14 @@ public class CreateTaskDS extends NewInstanceDataSource<Task> {
   public void setLoadingHint(Object dataSourceHint) {
     if (dataSourceHint instanceof Thought) {
       this.fromThought = (Thought) dataSourceHint;
+      return;
     }
     if (dataSourceHint instanceof Task) {
       this.fromTask = (Task) dataSourceHint;
+      return;
     }
+    fromTask = null;
+    fromThought = null;
   }
 
   public void resetFrom() {
