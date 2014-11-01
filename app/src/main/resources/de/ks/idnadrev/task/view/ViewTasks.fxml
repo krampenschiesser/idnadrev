@@ -44,14 +44,14 @@
                 <RowConstraints minHeight="25.0" vgrow="SOMETIMES"/>
             </rowConstraints>
             <children>
-                <Label text="%task.context" GridPane.rowIndex="2"/>
+                <Label text="%task.context:" GridPane.rowIndex="2"/>
                 <Label fx:id="name" styleClass="editorViewLabel" text="Label" GridPane.columnSpan="2147483647"/>
                 <Label fx:id="context" styleClass="editorViewLabel" text="Label" GridPane.columnIndex="1"
                        GridPane.rowIndex="2"/>
                 <StackPane fx:id="description" prefHeight="-1.0" prefWidth="-1.0" GridPane.columnSpan="2147483647"
                            GridPane.rowIndex="1"/>
-                <Label text="%task.estimatedTime" GridPane.rowIndex="3"/>
-                <Label text="%task.spendTime" GridPane.rowIndex="4"/>
+                <Label text="%task.estimatedTime:" GridPane.rowIndex="3"/>
+                <Label text="%task.spendTime:" GridPane.rowIndex="4"/>
                 <Label fx:id="estimatedTime" styleClass="editorViewLabel" text="Label" GridPane.columnIndex="1"
                        GridPane.rowIndex="3"/>
                 <GridPane GridPane.columnIndex="1" GridPane.rowIndex="4">
@@ -68,7 +68,7 @@
                         <Label fx:id="spentTime" styleClass="editorViewLabel" text="Label"/>
                     </children>
                 </GridPane>
-                <Label text="%task.parent" GridPane.rowIndex="5"/>
+                <Label text="%task.parent:" GridPane.rowIndex="5"/>
                 <Hyperlink fx:id="parentProject" graphicTextGap="0.0" onAction="#selectParentProject"
                            styleClass="editorViewLabel" text="Hyperlink" GridPane.columnIndex="1"
                            GridPane.rowIndex="5"/>
@@ -84,7 +84,7 @@
                         <Button fx:id="asap" onAction="#scheduleAsap" text="%asap.mnemonic"/>
                     </children>
                 </HBox>
-                <Label text="%task.state" GridPane.rowIndex="6"/>
+                <Label text="%task.state:" GridPane.rowIndex="6"/>
                 <Label fx:id="state" styleClass="editorViewLabel" text="Label" GridPane.columnIndex="1"
                        GridPane.rowIndex="6"/>
                 <Accordion GridPane.columnSpan="2147483647" GridPane.rowIndex="8">
