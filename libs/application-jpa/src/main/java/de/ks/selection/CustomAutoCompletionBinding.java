@@ -41,7 +41,9 @@ public class CustomAutoCompletionBinding extends AutoCompletionTextFieldBinding<
 
   @Override
   public void showPopup() {
-    super.showPopup();
+    if (getCompletionTarget() != null && getCompletionTarget().getScene() != null) {
+      super.showPopup();
+    }
   }
 
   @Override
