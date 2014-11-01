@@ -125,7 +125,9 @@ public class ViewTasksMaster extends BaseController<List<Task>> {
       .thenAcceptAsync(contextNames -> {
         ObservableList<String> items = FXCollections.observableArrayList(contextNames);
         items.add(0, "");
+        items.add(1, Localized.get("all"));
         contextSelection.setItems(items);
+        contextSelection.getSelectionModel().select(1);
       }, controller.getJavaFXExecutor());
 
     searchField.setOnKeyReleased(e -> {
@@ -170,10 +172,21 @@ public class ViewTasksMaster extends BaseController<List<Task>> {
 
   protected Predicate<Task> createFilter() {
     return task -> {
-      boolean hasContextFilter = contextSelection.getValue() != null && !contextSelection.getValue().trim().isEmpty();
-      if (hasContextFilter) {
+      boolean forceNullFilter = contextSelection.getValue() != null && contextSelection.getValue().trim().isEmpty();
+      Predicate<Context> filter;
+      if (contextSelection.getValue() == null || contextSelection.getValue().trim().equals(Localized.get("all"))) {
+        filter = null;
+      } else {
+        filter = ctx -> {
+          if (forceNullFilter) {
+            return ctx == null;
+          } else {
+            return ctx.getName().equals(contextSelection.getValue().trim());
+          }
+        };
+      }
+      if (filter != null) {
         Context taskContext = task.getContext();
-        Predicate<Context> filter = ctx -> ctx.getName().equals(contextSelection.getValue().trim());
         if (taskContext == null) {
           boolean foundMatchingContext = false;
           for (Task current = task; current.getParent() != null; current = current.getParent()) {
@@ -190,7 +203,7 @@ public class ViewTasksMaster extends BaseController<List<Task>> {
           if (!foundMatchingContext) {
             return false;
           }
-        } else if (!taskContext.getName().equals(contextSelection.getValue().trim())) {
+        } else if (!forceNullFilter && !taskContext.getName().equals(contextSelection.getValue().trim())) {
           return false;
         }
       }
