@@ -24,7 +24,6 @@ import de.ks.idnadrev.entity.TaskState;
 import de.ks.persistence.PersistentWork;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
@@ -68,7 +67,6 @@ public class ViewTasksMaster extends BaseController<List<Task>> {
 
   protected final ObservableList<Task> tasks = FXCollections.observableArrayList();
   private Map<Task, TreeItem<Task>> task2TreeItem = new HashMap<>();
-  private final SimpleBooleanProperty disable = new SimpleBooleanProperty(false);
   private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern(Localized.get("fullDate"));
 
   private Predicate<Task> filter = t -> true;
@@ -329,10 +327,6 @@ public class ViewTasksMaster extends BaseController<List<Task>> {
 
   public TreeTableView<Task> getTasksView() {
     return tasksView;
-  }
-
-  public SimpleBooleanProperty getDisable() {
-    return disable;
   }
 
   public TreeItem<Task> getTreeItem(Task parent) {

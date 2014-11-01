@@ -102,6 +102,7 @@ public class ViewTasks extends BaseController<List<Task>> {
   FileStore fileStore;
 
   private AsciiDocViewer asciiDocViewer;
+  private final SimpleBooleanProperty disable = new SimpleBooleanProperty(false);
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -128,7 +129,6 @@ public class ViewTasks extends BaseController<List<Task>> {
     ReadOnlyObjectProperty<TreeItem<Task>> selectedItemProperty = tasksView.getSelectionModel().selectedItemProperty();
     selectedItemProperty.addListener((p, o, n) -> applyTask(n));
 
-    SimpleBooleanProperty disable = viewController.getDisable();
     start.disableProperty().bind(disable);
     finish.disableProperty().bind(disable);
     edit.disableProperty().bind(disable);
@@ -140,13 +140,13 @@ public class ViewTasks extends BaseController<List<Task>> {
   }
 
   protected void applyTask(TreeItem<Task> taskTreeItem) {
-    viewController.getDisable().set(true);
+    disable.set(true);
     clear();
     if (taskTreeItem != null) {
       Task task = taskTreeItem.getValue();
       log.info("Applying task {}", task);
       if (task.getId() >= 0) {
-        viewController.getDisable().set(false);
+        disable.set(false);
       }
       name.setText(task.getName());
       context.setText(task.getContext() != null ? task.getContext().getName() : "");
