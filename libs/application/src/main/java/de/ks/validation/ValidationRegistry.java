@@ -105,6 +105,10 @@ public class ValidationRegistry {
     return invalid.get();
   }
 
+  public boolean isValid() {
+    return !invalid.get();
+  }
+
   public ReadOnlyBooleanProperty invalidProperty() {
     return invalid;
   }
