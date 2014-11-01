@@ -53,6 +53,7 @@ public class AsciiDocParser {
   private static final Pattern footerPattern = Pattern.compile("<div id=\"footer\">\n<div id=\"footer-text\">\n" +
     ".*\n" +
     "</div>\n</div>");
+  protected static final String fontlink = "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic|Noto+Serif:400,400italic,700,700italic|Droid+Sans+Mono:400\">";
   public static final String DATADIR_NAME = "_data";
   private final ThreadLocal<Asciidoctor> asciidoctor = ThreadLocal.withInitial(() -> {
     synchronized (AsciiDocParser.class) {
@@ -100,6 +101,7 @@ public class AsciiDocParser {
       if (addMathJax) {
         render = addMathJax(render, mathjaxDir);
       }
+      render = removeFontLink(render);
     }
     return render;
   }
@@ -203,6 +205,10 @@ public class AsciiDocParser {
 
   private String removeFooter(String render) {
     return footerPattern.matcher(render).replaceFirst("");
+  }
+
+  private String removeFontLink(String render) {
+    return StringUtils.remove(render, fontlink);
   }
 
   protected String inlineCss(String input) {

@@ -40,30 +40,30 @@ public class AsciiDocParserText {
   @Before
   public void setUp() throws Exception {
     asciiDocSimple = "= Simple test document =\n" +
-            ":linkcss:\n" +
-            ":Revision: 42\n" +
-            ":Author:    Hiker trash\n" +
-            "\n" +
-            "\n" +
-            "== About ==\n" +
-            "\n" +
-            "Hiker trash rules.\n" +
-            "Keep on hiking.\n" +
-            "\n" +
-            "== Code ==\n" +
-            "[source,java]\n" +
-            "----\n" +
-            "  public String parse(String input) {\n" +
-            "    Attributes attributes = AttributesBuilder.attributes()" +
-            "       .linkCss(false).unsetStyleSheet().get();\n" +
-            "    Options options = OptionsBuilder.options()" +
-            "       .headerFooter(true).attributes(attributes).get();//.docType(\"HTML\")\n" +
-            "    String render = asciidoctor.render(input, options);\n" +
-            "    return render;\n" +
-            "  }" +
-            "\n" +
-            "----" +
-            "\n";
+      ":linkcss:\n" +
+      ":Revision: 42\n" +
+      ":Author:    Hiker trash\n" +
+      "\n" +
+      "\n" +
+      "== About ==\n" +
+      "\n" +
+      "Hiker trash rules.\n" +
+      "Keep on hiking.\n" +
+      "\n" +
+      "== Code ==\n" +
+      "[source,java]\n" +
+      "----\n" +
+      "  public String parse(String input) {\n" +
+      "    Attributes attributes = AttributesBuilder.attributes()" +
+      "       .linkCss(false).unsetStyleSheet().get();\n" +
+      "    Options options = OptionsBuilder.options()" +
+      "       .headerFooter(true).attributes(attributes).get();//.docType(\"HTML\")\n" +
+      "    String render = asciidoctor.render(input, options);\n" +
+      "    return render;\n" +
+      "  }" +
+      "\n" +
+      "----" +
+      "\n";
     plainText = "Hello\n" + "World.-,'*\n" + "\t==HAAAL";
     asciiDocParser = new AsciiDocParser();
   }
@@ -76,6 +76,7 @@ public class AsciiDocParserText {
     assertThat(html, containsString("<html"));
     assertThat(html, not(containsString("<link rel=\"stylesheet\" href=\"./asciidoctor.css\">")));
     assertThat(html, not(containsString("<div id=\"footer-text\">")));
+    assertThat(html, not(containsString("fonts.googleapis.com")));
     assertThat(html, containsString(AsciiDocParser.mathJaxStart));
   }
 
@@ -124,7 +125,7 @@ public class AsciiDocParserText {
     try {
       for (int i = 0; i < Runtime.getRuntime().availableProcessors() * 100; i++) {
         CompletableFuture<Void> result = CompletableFuture.supplyAsync(() -> asciiDocParser.parse(asciiDocSimple), service)//
-                .thenAccept((input) -> assertEquals(expectedResult, input));
+          .thenAccept((input) -> assertEquals(expectedResult, input));
 
         if (all == null) {
           all = result;
