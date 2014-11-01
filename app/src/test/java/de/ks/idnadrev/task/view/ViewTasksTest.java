@@ -17,6 +17,7 @@ package de.ks.idnadrev.task.view;
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityCfg;
 import de.ks.activity.ActivityController;
+import de.ks.i18n.Localized;
 import de.ks.idnadrev.ActivityTest;
 import de.ks.idnadrev.entity.*;
 import de.ks.idnadrev.task.create.CreateTaskActivity;
@@ -71,8 +72,9 @@ public class ViewTasksTest extends ActivityTest {
     project1.addChild(finished);
 
     Task other = new Task("other").setContext(context);
+    Task noContext = new Task("noContext");
 
-    PersistentWork.persist(context, project1, other);
+    PersistentWork.persist(context, project1, other, noContext);
   }
 
   @Before
@@ -86,25 +88,26 @@ public class ViewTasksTest extends ActivityTest {
   public void testBinding() throws Exception {
     TreeItem<Task> root = tasksView.getRoot();
     assertNotNull(root);
-    assertEquals(2, root.getChildren().size());
-    assertEquals("other", root.getChildren().get(0).getValue().getName());
-    assertEquals("project1", root.getChildren().get(1).getValue().getName());
+    assertEquals(3, root.getChildren().size());
+    assertEquals("noContext", root.getChildren().get(0).getValue().getName());
+    assertEquals("other", root.getChildren().get(1).getValue().getName());
+    assertEquals("project1", root.getChildren().get(2).getValue().getName());
 
-    assertEquals(5, root.getChildren().get(1).getChildren().size());
+    assertEquals(5, root.getChildren().get(2).getChildren().size());
   }
 
   @Test
   public void testDeleteProject() throws Exception {
     List<Task> from = PersistentWork.from(Task.class);
-    assertEquals(8, from.size());
+    assertEquals(9, from.size());
 
-    TreeItem<Task> project = tasksView.getRoot().getChildren().get(1);
+    TreeItem<Task> project = tasksView.getRoot().getChildren().get(2);
     FXPlatform.invokeLater(() -> tasksView.getSelectionModel().select(project));
 
     controller.deleteTask();
 
     from = PersistentWork.from(Task.class);
-    assertEquals(1, from.size());
+    assertEquals(2, from.size());
   }
 
   @Test
@@ -123,8 +126,30 @@ public class ViewTasksTest extends ActivityTest {
   }
 
   @Test
+  public void testContextFiltering() throws Exception {
+    FXPlatform.invokeLater(() -> master.contextSelection.setValue(Localized.get("all")));
+
+    TreeItem<Task> root = tasksView.getRoot();
+
+    ObservableList<TreeItem<Task>> children = root.getChildren();
+    assertEquals(3, children.size());
+
+    log.info("Filtering with context");
+    FXPlatform.invokeLater(() -> master.contextSelection.setValue("context"));
+    root = tasksView.getRoot();
+    children = root.getChildren();
+    assertEquals(children.toString(), 2, children.size());
+
+    log.info("Filtering with NO context");
+    FXPlatform.invokeLater(() -> master.contextSelection.setValue(""));
+    root = tasksView.getRoot();
+    children = root.getChildren();
+    assertEquals(children.toString(), 2, children.size());
+  }
+
+  @Test
   public void testCreateSubtaskFromProject() throws Exception {
-    TreeItem<Task> project = tasksView.getRoot().getChildren().get(1);//they are sorted
+    TreeItem<Task> project = tasksView.getRoot().getChildren().get(2);//they are sorted
     Task value = project.getValue();
     assertEquals("project1", value.getName());
 
@@ -152,7 +177,7 @@ public class ViewTasksTest extends ActivityTest {
   public void testCreateSubtaskFromTask() throws Exception {
     TreeItem<Task> other = tasksView.getRoot().getChildren().get(0);//they are sorted
     Task value = other.getValue();
-    assertEquals("other", value.getName());
+    assertEquals("noContext", value.getName());
 
     FXPlatform.invokeLater(() -> tasksView.getSelectionModel().select(other));
     FXPlatform.invokeLater(() -> controller.createSubtask());
@@ -171,7 +196,7 @@ public class ViewTasksTest extends ActivityTest {
       Task child = PersistentWork.forName(Task.class, "steak");
       Task parent = child.getParent();
       assertNotNull(parent);
-      assertEquals("other", parent.getName());
+      assertEquals("noContext", parent.getName());
       assertTrue(parent.isProject());
     });
   }
