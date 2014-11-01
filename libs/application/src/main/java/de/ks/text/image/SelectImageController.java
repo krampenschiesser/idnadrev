@@ -65,7 +65,10 @@ public class SelectImageController implements Initializable {
     view.setFitWidth(defaultSize.getWidth());
     view.setCursor(Cursor.HAND);
     Button btn = new Button("", view);
-    btn.setOnAction(e -> selectedImagePath.set(path));
+    btn.setOnAction(e -> {
+      selectedImagePath.set(null);
+      selectedImagePath.set(path);
+    });
     btn.setPrefSize(defaultSize.getWidth(), defaultSize.getHeight());
 
     GridPane grid = new GridPane();
