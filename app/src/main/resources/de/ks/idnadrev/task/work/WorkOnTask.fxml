@@ -38,7 +38,7 @@
                GridPane.rowSpan="3"/>
         <Button defaultButton="true" mnemonicParsing="false" onAction="#stopWork" text="%task.stop"
                 GridPane.rowIndex="4"/>
-        <Button mnemonicParsing="false" onAction="#finishTask" text="%task.finish" GridPane.columnIndex="3"
+        <Button mnemonicParsing="true" onAction="#finishTask" text="%task.finish" GridPane.columnIndex="3"
                 GridPane.halignment="RIGHT" GridPane.rowIndex="4"/>
         <ProgressBar fx:id="estimatedTimeBar" maxWidth="1.7976931348623157E308" progress="0.0" GridPane.columnIndex="2"
                      GridPane.columnSpan="2147483647"/>
