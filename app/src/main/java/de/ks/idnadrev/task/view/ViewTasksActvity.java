@@ -22,6 +22,6 @@ public class ViewTasksActvity extends ActivityCfg {
   public ViewTasksActvity() {
     super(ViewTasksDS.class, ViewTasks.class);
     addAdditionalController(TaskFilterView.class);
-    addAdditionalController(TimeunitView.class);
+    addAdditionalController(WorkUnitController.class);
   }
 }

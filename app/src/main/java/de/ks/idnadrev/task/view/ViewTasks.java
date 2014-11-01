@@ -31,11 +31,15 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.NodeOrientation;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -216,6 +220,21 @@ public class ViewTasks extends BaseController<List<Task>> {
   @FXML
   void showTimeUnits() {
 
+    Stage stage = new Stage();
+    stage.initModality(Modality.APPLICATION_MODAL);
+    stage.setTitle(Localized.get("workunits"));
+
+    WorkUnitController workUnitController = controller.getControllerInstance(WorkUnitController.class);
+    Task value = viewController.getTasksView().getSelectionModel().getSelectedItem().getValue();
+    workUnitController.setTask(value);
+
+    GridPane root = workUnitController.getRoot();
+
+    stage.setScene(new Scene(root));
+    stage.show();
+    stage.setOnHidden(e -> {
+      stage.getScene().setRoot(new StackPane());
+    });
   }
 
   @FXML
@@ -244,7 +263,7 @@ public class ViewTasks extends BaseController<List<Task>> {
       child.setContext(parent.getContext());
       return child;
     };
-    hint.setReturnToDatasourceHint(supplier);
+    hint.setReturnToDatasourceHint(() -> tasksView.getSelectionModel().getSelectedItem().getValue());
     hint.setDataSourceHint(supplier);
 
     controller.startOrResume(hint);
