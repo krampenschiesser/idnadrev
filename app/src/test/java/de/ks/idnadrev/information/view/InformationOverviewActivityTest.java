@@ -60,6 +60,7 @@ public class InformationOverviewActivityTest extends ActivityTest {
     FXPlatform.invokeLater(() -> listView.categorySelectionController.getInput().setText("category3"));
     Thread.sleep(LastTextChange.WAIT_TIME + 100);
     activityController.waitForDataSource();
+    FXPlatform.waitForFX();
     expectItemCount(1);
     expectItem(0, "info3");
 
@@ -67,6 +68,7 @@ public class InformationOverviewActivityTest extends ActivityTest {
     FXPlatform.invokeLater(() -> listView.nameSearch.setText("4"));
     Thread.sleep(LastTextChange.WAIT_TIME + 100);
     activityController.waitForDataSource();
+    FXPlatform.waitForFX();
     expectItemCount(1);
     expectItem(0, "info4");
   }
