@@ -24,9 +24,13 @@ import de.ks.text.image.SelectImageController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
-import org.controlsfx.dialog.Dialog;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.CDI;
@@ -42,8 +46,8 @@ public class InsertImage implements AsciiDocEditorCommand {
 
   protected final ObservableSet<ImageData> images = FXCollections.observableSet(new TreeSet<ImageData>(Comparator.comparing(id -> id.getName())));
   protected SelectImageController selectImageController;
-  private Dialog dialog;
-  private Button button;
+  protected Stage dialog;
+  protected Button button;
 
   @Override
   public void initialize(AsciiDocEditor editor, Button button) {
@@ -54,11 +58,13 @@ public class InsertImage implements AsciiDocEditorCommand {
 
     images.addListener(this::imagesModified);
     selectImageController.selectedImagePathProperty().addListener((p, o, n) -> {
-      if (dialog != null) {
-        dialog.hide();
-      }
+      if (n != null) {
+        if (dialog != null) {
+          dialog.hide();
+        }
 
-      insert(editor.getEditor(), n);
+        insert(editor.getEditor(), n);
+      }
     });
   }
 
@@ -74,11 +80,25 @@ public class InsertImage implements AsciiDocEditorCommand {
   @Override
   public void execute(TextArea editor) {
     collectImages();
-    dialog = new Dialog(button, Localized.get("select.image"));
-    dialog.setContent(selectImageController.getImagePane());
+    if (dialog == null) {
+      dialog = new Stage();
+      dialog.initModality(Modality.APPLICATION_MODAL);
+      dialog.initOwner(button.getScene().getWindow());
+      dialog.setTitle(Localized.get("select.image"));
+    }
+
+    StackPane container = new StackPane();
+    container.setPadding(new Insets(5));
+    container.getChildren().add(selectImageController.getImagePane());
+    Scene scene = new Scene(container);
+    dialog.setOnHiding(e -> {
+      scene.setRoot(new StackPane());
+    });
+    dialog.setScene(scene);
+
     Instance<String> styleSheets = CDI.current().select(String.class, FxCss.LITERAL);
     styleSheets.forEach((sheet) -> {
-      dialog.getStylesheets().add(sheet);
+      scene.getStylesheets().add(sheet);
     });
     dialog.show();
   }
