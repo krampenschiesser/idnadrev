@@ -15,17 +15,23 @@
 package de.ks.idnadrev.review.planweek;
 
 import de.ks.BaseController;
+import de.ks.activity.ActivityHint;
 import de.ks.fxcontrols.weekview.AppointmentResolver;
 import de.ks.fxcontrols.weekview.WeekHelper;
 import de.ks.fxcontrols.weekview.WeekView;
 import de.ks.fxcontrols.weekview.WeekViewAppointment;
 import de.ks.i18n.Localized;
 import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.task.create.CreateTaskActivity;
+import de.ks.idnadrev.task.finish.FinishTaskActivity;
 import de.ks.idnadrev.task.view.ViewTasksMaster;
 import de.ks.persistence.PersistentWork;
 import de.ks.scheduler.Schedule;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeTableView;
 import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +44,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class PlanWeek extends BaseController<List<Task>> implements AppointmentResolver<Task> {
@@ -47,8 +54,16 @@ public class PlanWeek extends BaseController<List<Task>> implements AppointmentR
   @FXML
   protected StackPane weekViewContainer;
 
+  @FXML
+  protected Button edit;
+  @FXML
+  protected Button finish;
+  @FXML
+  protected Button delete;
+
   protected WeekView<Task> weekView;
-  protected List<Task> tasks = new LinkedList<>();
+  protected final List<Task> tasks = new LinkedList<>();
+  protected final SimpleBooleanProperty disable = new SimpleBooleanProperty(true);
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -80,6 +95,17 @@ public class PlanWeek extends BaseController<List<Task>> implements AppointmentR
       log.debug("Detected drag gesture, selected item={}", task.getName());
       e.consume();
     });
+
+    viewController.getTasksView().getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
+      if (n != null && n.getValue() != null && n.getValue().getId() >= 0) {
+        disable.set(false);
+      } else {
+        disable.set(true);
+      }
+    });
+    finish.disableProperty().bind(disable);
+    edit.disableProperty().bind(disable);
+    delete.disableProperty().bind(disable);
   }
 
   protected WeekViewAppointment<Task> createAppointment(Task task) {
@@ -136,17 +162,17 @@ public class PlanWeek extends BaseController<List<Task>> implements AppointmentR
     List<Task> reloaded = PersistentWork.read(em -> tasks.stream().map(t -> PersistentWork.reload(t)).collect(Collectors.toList()));
 
     List<Task> tasksWithScheduledDate = reloaded.stream().filter(t -> t.getSchedule() != null)//
-            .filter(t -> t.getSchedule().getScheduledDate() != null)//
-            .filter(t -> t.getSchedule().getScheduledDate().isAfter(begin.minusDays(1)))//
-            .filter(t -> t.getSchedule().getScheduledDate().isBefore(end.plusDays(1)))//
-            .collect(Collectors.toList());
+      .filter(t -> t.getSchedule().getScheduledDate() != null)//
+      .filter(t -> t.getSchedule().getScheduledDate().isAfter(begin.minusDays(1)))//
+      .filter(t -> t.getSchedule().getScheduledDate().isBefore(end.plusDays(1)))//
+      .collect(Collectors.toList());
     log.info("found {} tasks with scheduled date in range {} - {}", tasksWithScheduledDate.size(), begin, end);
 
     List<Task> tasksWithProposedDate = reloaded.stream().filter(t -> t.getSchedule() != null)//
-            .filter(t -> t.getSchedule().getProposedWeek() != 0)//
-            .filter(t -> weekHelper.getFirstDayOfWeek(t.getSchedule().getProposedYear(), t.getSchedule().getProposedWeek()).isAfter(begin.minusDays(1)))//
-            .filter(t -> weekHelper.getLastDayOfWeek(t.getSchedule().getProposedYear(), t.getSchedule().getProposedWeek()).isBefore(end.plusDays(1)))//
-            .collect(Collectors.toList());
+      .filter(t -> t.getSchedule().getProposedWeek() != 0)//
+      .filter(t -> weekHelper.getFirstDayOfWeek(t.getSchedule().getProposedYear(), t.getSchedule().getProposedWeek()).isAfter(begin.minusDays(1)))//
+      .filter(t -> weekHelper.getLastDayOfWeek(t.getSchedule().getProposedYear(), t.getSchedule().getProposedWeek()).isBefore(end.plusDays(1)))//
+      .collect(Collectors.toList());
     log.info("found {} tasks with prosoded date in range {} - {}", tasksWithProposedDate.size(), begin, end);
 
     HashSet<Task> all = new HashSet<>();
@@ -161,5 +187,37 @@ public class PlanWeek extends BaseController<List<Task>> implements AppointmentR
     this.tasks.clear();
     this.tasks.addAll(model);
     weekView.recreateEntries();
+  }
+
+  @FXML
+  protected void onEdit() {
+    TreeTableView<Task> tasksView = viewController.getTasksView();
+    ActivityHint hint = new ActivityHint(CreateTaskActivity.class);
+    hint.setReturnToActivity(controller.getCurrentActivityId());
+
+    Supplier supplier = () -> tasksView.getSelectionModel().getSelectedItem().getValue();
+    hint.setReturnToDatasourceHint(supplier);
+    hint.setDataSourceHint(supplier);
+
+    controller.startOrResume(hint);
+  }
+
+  @FXML
+  protected void onFinish() {
+    TreeTableView<Task> tasksView = viewController.getTasksView();
+    ActivityHint activityHint = new ActivityHint(FinishTaskActivity.class, controller.getCurrentActivityId());
+    activityHint.setDataSourceHint(() -> tasksView.getSelectionModel().getSelectedItem().getValue());
+
+    controller.startOrResume(activityHint);
+  }
+
+  @FXML
+  protected void onDelete() {
+    TreeTableView<Task> tasksView = viewController.getTasksView();
+    PersistentWork.run(em -> {
+      Task task = tasksView.getSelectionModel().getSelectedItem().getValue();
+      em.remove(PersistentWork.reload(task));
+    });
+    controller.reload();
   }
 }

@@ -16,6 +16,7 @@
   -->
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.*?>
 <GridPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
           fx:controller="de.ks.idnadrev.review.planweek.PlanWeek">
@@ -32,14 +33,35 @@
                 <fx:include fx:id="view" source="../../task/view/ViewTasksMaster.fxml"/>
             </children>
         </StackPane>
-        <StackPane fx:id="weekViewContainer" minHeight="100.0" minWidth="100.0" GridPane.columnIndex="1">
-            <opaqueInsets>
-                <Insets/>
-            </opaqueInsets>
-            <padding>
-                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
-            </padding>
-        </StackPane>
+        <GridPane GridPane.columnIndex="1">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+            </rowConstraints>
+            <children>
+                <StackPane fx:id="weekViewContainer" minHeight="100.0" minWidth="100.0">
+                    <opaqueInsets>
+                        <Insets/>
+                    </opaqueInsets>
+                    <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                    </padding>
+                </StackPane>
+                <HBox spacing="5.0" GridPane.rowIndex="1">
+                    <children>
+                        <Button fx:id="edit" onAction="#onEdit" text="%edit.mnemonic"/>
+                        <Button fx:id="finish" onAction="#onFinish" text="%finish.mnemonic"/>
+                        <Button fx:id="delete" onAction="#onDelete" text="%delete.mnemonic"/>
+                    </children>
+                    <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                    </padding>
+                </HBox>
+            </children>
+        </GridPane>
     </children>
     <padding>
         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
