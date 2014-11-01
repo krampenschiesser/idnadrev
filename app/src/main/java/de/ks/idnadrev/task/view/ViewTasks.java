@@ -219,9 +219,9 @@ public class ViewTasks extends BaseController<List<Task>> {
 
   @FXML
   void showTimeUnits() {
-
     Stage stage = new Stage();
     stage.initModality(Modality.APPLICATION_MODAL);
+    stage.initOwner(this.show.getScene().getWindow());
     stage.setTitle(Localized.get("workunits"));
 
     WorkUnitController workUnitController = controller.getControllerInstance(WorkUnitController.class);

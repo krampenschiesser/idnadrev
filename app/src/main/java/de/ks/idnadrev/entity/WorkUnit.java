@@ -54,11 +54,14 @@ public class WorkUnit extends AbstractPersistentObject<WorkUnit> implements Comp
   public WorkUnit(Task task) {
     this.task = task;
     start = LocalDateTime.now();
-    task.getWorkUnits().add(this);
+    if (task != null) {
+      task.getWorkUnits().add(this);
+    }
   }
 
-  public void setStart(LocalDateTime start) {
+  public WorkUnit setStart(LocalDateTime start) {
     this.start = start;
+    return this;
   }
 
   public void stop() {
@@ -104,8 +107,9 @@ public class WorkUnit extends AbstractPersistentObject<WorkUnit> implements Comp
     this.task = task;
   }
 
-  public void setEnd(LocalDateTime time) {
+  public WorkUnit setEnd(LocalDateTime time) {
     this.end = time;
+    return this;
   }
 
   public boolean isFinished() {

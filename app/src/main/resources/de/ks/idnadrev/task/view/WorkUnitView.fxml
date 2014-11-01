@@ -22,31 +22,41 @@
           xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.idnadrev.task.view.WorkUnitController">
     <columnConstraints>
         <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
-        <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
+        <ColumnConstraints hgrow="NEVER" minWidth="50.0"/>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+        <ColumnConstraints hgrow="NEVER" minWidth="50.0"/>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
         <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
         <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
+        <ColumnConstraints hgrow="NEVER" minWidth="10.0" prefWidth="100.0"/>
     </columnConstraints>
     <rowConstraints>
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
     </rowConstraints>
     <children>
-        <TextField fx:id="start" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
-        <TextField fx:id="end" GridPane.columnIndex="4" GridPane.rowIndex="1"/>
-        <Label text="%start" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-        <Label text="%end" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
-        <DatePicker fx:id="date" GridPane.rowIndex="1"/>
-        <Button fx:id="save" defaultButton="true" mnemonicParsing="true" text="%save.mnemonic" GridPane.columnIndex="5"
-                GridPane.rowIndex="1"/>
-        <TableView fx:id="WorkUnitTable" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2147483647">
+        <TableView fx:id="workUnitTable" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2147483647">
             <columns>
                 <TableColumn fx:id="startColumn" prefWidth="150.0" text="%start"/>
                 <TableColumn fx:id="endColumn" prefWidth="150.0" text="%end"/>
                 <TableColumn fx:id="duration" prefWidth="200.0" text="%duration"/>
             </columns>
         </TableView>
+
+        <DatePicker fx:id="date" GridPane.rowIndex="1"/>
+
+        <Label text="%start:" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <TextField fx:id="start" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+
+        <Label text="%end:" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+        <TextField fx:id="end" GridPane.columnIndex="4" GridPane.rowIndex="1"/>
+
+        <Button fx:id="edit" defaultButton="true" mnemonicParsing="true" onAction="#onEdit" text="%edit.mnemonic"
+                GridPane.columnIndex="5" GridPane.rowIndex="1"/>
+        <Button fx:id="createNew" mnemonicParsing="true" onAction="#onCreateNew" text="%new.mnemonic"
+                GridPane.columnIndex="6" GridPane.rowIndex="1"/>
+        <Button fx:id="delete" onAction="#onDelete" text="%delete.mnemonic" GridPane.columnIndex="7"
+                GridPane.rowIndex="1"/>
     </children>
     <padding>
         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
