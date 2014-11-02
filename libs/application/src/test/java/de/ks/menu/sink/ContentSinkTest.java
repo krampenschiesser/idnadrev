@@ -18,7 +18,7 @@ package de.ks.menu.sink;
 import de.ks.LauncherRunner;
 import de.ks.application.Navigator;
 import de.ks.eventsystem.bus.EventBus;
-import de.ks.executor.ExecutorService;
+import de.ks.executor.JavaFXExecutorService;
 import de.ks.launch.ApplicationService;
 import de.ks.launch.Launcher;
 import de.ks.menu.MenuItemDescriptor;
@@ -50,18 +50,19 @@ public class ContentSinkTest {
   private ContentSink sink;
   @Inject
   EventBus bus;
-  @Inject
-  ExecutorService service;
+  JavaFXExecutorService service;
 
   @Before
   public void setUp() throws Exception {
     sink = CDI.current().select(ContentSink.class).get();
     sink.setMenuPath(About.MENUPATH);
+    service = new JavaFXExecutorService();
   }
 
   @After
   public void tearDown() throws Exception {
     bus.unregister(sink);
+    service.shutdown();
   }
 
   @Test
@@ -70,9 +71,13 @@ public class ContentSinkTest {
     service.invokeInJavaFXThread(() -> {
       Scene scene = new Scene(pane);
       Launcher.instance.getService(ApplicationService.class).getStage().setScene(scene);
+      return null;
     });
     Navigator.register(Launcher.instance.getService(ApplicationService.class).getStage(), pane);
-    service.invokeInJavaFXThread(() -> assertNotNull(Navigator.getNavigator(pane)));
+    service.invokeInJavaFXThread(() -> {
+      assertNotNull(Navigator.getNavigator(pane));
+      return null;
+    });
     service.invokeInJavaFXThread(() -> pane.getScene().getWindow());
     assertNotNull(Navigator.getNavigator(pane));
     assertNotNull(pane.getScene().getWindow());
@@ -80,8 +85,8 @@ public class ContentSinkTest {
     sink.setPane(pane);
 
     bus.postAndWait(//
-            new MenuItemClickedEvent(//
-                    new MenuItemDescriptor(About.MENUPATH, 1, About.class)));
+      new MenuItemClickedEvent(//
+        new MenuItemDescriptor(About.MENUPATH, 1, About.class)));
 
     assertNotNull(pane.getChildren());
 

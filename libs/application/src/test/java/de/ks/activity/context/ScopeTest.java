@@ -16,16 +16,16 @@
 package de.ks.activity.context;
 
 import de.ks.LauncherRunner;
-import de.ks.executor.ExecutorService;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
+import java.util.Collections;
+import java.util.concurrent.*;
 
 import static org.junit.Assert.*;
 
@@ -37,12 +37,17 @@ public class ScopeTest {
   ActivityScopedBean1 bean2;
   @Inject
   ActivityContext context;
-  @Inject
   ExecutorService service;
+
+  @Before
+  public void setUp() throws Exception {
+    service = Executors.newCachedThreadPool();
+  }
 
   @After
   public void tearDown() throws Exception {
     ActivityContext.stopAll();
+    service.shutdown();
   }
 
   @Test
@@ -74,11 +79,13 @@ public class ScopeTest {
 
     bean1.setValue("Hello Sauerland!");
 
-    service.invokeAndWait(() -> {
+    Callable<Object> callable = () -> {
       ActivityScopedBean1 bean = CDI.current().select(ActivityScopedBean1.class).get();
       assertNotNull(bean.getValue());
       assertEquals("Hello Sauerland!", bean.getValue());
-    });
+      return null;
+    };
+    service.invokeAny(Collections.singletonList(callable));
     assertEquals("Hello Sauerland!", bean1.getValue());
   }
 

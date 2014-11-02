@@ -21,7 +21,6 @@ package de.ks.scheduler;
  */
 
 import de.ks.eventsystem.bus.EventBus;
-import de.ks.executor.ExecutorService;
 import de.ks.scheduler.event.ScheduleTriggeredEvent;
 
 import javax.annotation.PreDestroy;
@@ -30,6 +29,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -42,8 +42,7 @@ public class Daemon {
 
   private LocalDateTime fixedTime;
 
-  public Daemon() {
-    ExecutorService executorService = CDI.current().select(ExecutorService.class).get();
+  public Daemon(ScheduledExecutorService executorService) {
     future = executorService.schedule(this::trigger, 15, TimeUnit.SECONDS);
   }
 

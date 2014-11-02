@@ -16,7 +16,7 @@
 package de.ks.application;
 
 import com.google.common.collect.MapMaker;
-import de.ks.executor.ExecutorService;
+import de.ks.executor.JavaFXExecutorService;
 import de.ks.util.FXPlatform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
@@ -29,9 +29,6 @@ import javafx.stage.Window;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.inject.spi.CDI;
-import java.util.Deque;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
@@ -115,8 +112,8 @@ public class Navigator {
   public static final String BOTTOM_AREA = "bottom";
 
   protected final ObservableMap<String, PresentationArea> presentationAreas = FXCollections.observableHashMap();
-  protected final Map<String, Deque<Class<?>>> histories = new HashMap<>();
-  protected final ExecutorService executorService = CDI.current().select(ExecutorService.class).get();
+  //  protected final Map<String, Deque<Class<?>>> histories = new HashMap<>();
+  protected final JavaFXExecutorService fxExecutorService = new JavaFXExecutorService();
 
   private Navigator(Pane mainArea) {
     addPresentationArea(MAIN_AREA, mainArea);
@@ -137,7 +134,7 @@ public class Navigator {
   }
 
   public void present(String area, Node node) {
-    executorService.executeInJavaFXThread(() -> {
+    fxExecutorService.submit(() -> {
       presentationAreas.get(area).setCurrentNode(node);
     });
   }

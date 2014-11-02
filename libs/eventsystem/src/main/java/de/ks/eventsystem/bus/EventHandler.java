@@ -15,19 +15,17 @@
 
 package de.ks.eventsystem.bus;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import de.ks.executor.JavaFXExecutorService;
+import de.ks.executor.LoggingUncaughtExceptionHandler;
 import de.ks.reflection.ReflectionUtil;
 import javafx.application.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.inject.spi.CDI;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
+import java.util.concurrent.*;
 
 /**
  *
@@ -56,7 +54,12 @@ class EventHandler {
       handlingThread = HandlingThread.Sync;
     }
     if (service == null) {
-      this.service = CDI.current().select(de.ks.executor.ExecutorService.class).get();
+      ThreadFactory threadFactory = new ThreadFactoryBuilder()//
+        .setDaemon(true)//
+        .setNameFormat("Eventsystem-%d")//
+        .setUncaughtExceptionHandler(new LoggingUncaughtExceptionHandler())//
+        .build();
+      this.service = Executors.newCachedThreadPool(threadFactory);
     } else {
       this.service = service;
     }

@@ -27,6 +27,8 @@ import org.junit.runner.RunWith;
 import javax.enterprise.inject.spi.CDI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 import static org.junit.Assert.assertEquals;
 
@@ -35,10 +37,12 @@ public class DaemonTest {
   private Daemon daemon;
   private Object userData;
   private EventBus bus;
+  private ScheduledExecutorService scheduledExecutorService;
 
   @Before
   public void setUp() throws Exception {
-    daemon = new Daemon();
+    scheduledExecutorService = Executors.newScheduledThreadPool(2);
+    daemon = new Daemon(scheduledExecutorService);
     bus = CDI.current().select(EventBus.class).get();
     bus.register(this);
   }
@@ -46,6 +50,7 @@ public class DaemonTest {
   @After
   public void tearDown() throws Exception {
     bus.unregister(this);
+    scheduledExecutorService.shutdown();
   }
 
   @Test
