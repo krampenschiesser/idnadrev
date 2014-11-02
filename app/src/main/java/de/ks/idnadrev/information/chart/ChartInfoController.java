@@ -28,7 +28,7 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
-import javafx.scene.chart.*;
+import javafx.scene.chart.Chart;
 import javafx.scene.control.*;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.StackPane;
@@ -44,9 +44,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
+import java.util.Optional;
+import java.util.ResourceBundle;
 
 @LoadInFXThread
 public class ChartInfoController extends BaseController<ChartInfo> {
@@ -75,8 +74,8 @@ public class ChartInfoController extends BaseController<ChartInfo> {
   @FXML
   protected ComboBox<ChartType> chartType;
 
-  protected XYChart<String, Number> xyChart;
-  protected PieChart pieChart;
+  protected final ChartPreview previewHelper = new ChartPreview(this);
+  protected final ChartPreview fullScreenPreviewHelper = new ChartPreview(null);
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -86,126 +85,30 @@ public class ChartInfoController extends BaseController<ChartInfo> {
     chartType.setItems(FXCollections.observableArrayList(ChartType.values()));
     chartType.getItems().remove(ChartType.BUBBLE);
     chartType.valueProperty().addListener((p, o, n) -> {
-      initializePreviewChart(n);
+      ChartInfo model = store.getModel();
+      if (model != null) {
+        ChartData data = editorController.getData();
+        model.setChartType(n);
+        model.setChartData(data);
+        initializePreviewChart(model);
+      }
     });
-    chartType.setValue(ChartType.LINE);
 
     validationRegistry.registerValidator(name, new NotEmptyValidator());
     validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(UmlDiagramInfo.class, t -> t.getId() == store.<TextInfo>getModel().getId()));
 
     saveBtn.disableProperty().bind(validationRegistry.invalidProperty());
-    editorController.setCallback(this::recompute);
+    editorController.setCallback(previewHelper::recompute);
 
     previewContainer.getStyleClass().add("fullScreenBg");
   }
 
-  protected void initializePreviewChart(ChartType chartType) {
+  protected void initializePreviewChart(ChartInfo chartInfo) {
     previewContainer.getChildren().clear();
-    pieChart = null;
-    xyChart = null;
-
-    if (chartType == ChartType.PIE) {
-      this.pieChart = new PieChart();
-      previewContainer.getChildren().add(pieChart);
-      recompute(editorController.getData());
-    } else {
-      Supplier<XYChart<String, Number>> supplier = getXYChartSupplier(chartType);
-      xyChart = supplier.get();
-      previewContainer.getChildren().add(xyChart);
-      recompute(editorController.getData());
+    if (chartInfo != null) {
+      Chart chart = previewHelper.createNewChart(chartInfo);
+      previewContainer.getChildren().add(chart);
     }
-  }
-
-  protected Supplier<XYChart<String, Number>> getXYChartSupplier(ChartType chartType) {
-    final Supplier<XYChart<String, Number>> supplier;
-    final CategoryAxis categoryAxis = new CategoryAxis();
-    final NumberAxis numberAxis = new NumberAxis();
-    numberAxis.setAnimated(true);
-    numberAxis.setAutoRanging(true);
-    categoryAxis.setGapStartAndEnd(false);
-
-
-    numberAxis.labelProperty().bind(yaxisTitle.textProperty());
-
-
-    if (chartType == ChartType.LINE) {
-      supplier = () -> new LineChart<String, Number>(categoryAxis, numberAxis);
-    } else if (chartType == ChartType.AREA) {
-      supplier = () -> new AreaChart<String, Number>(categoryAxis, numberAxis);
-    } else if (chartType == ChartType.BAR) {
-      supplier = () -> new BarChart<String, Number>(categoryAxis, numberAxis);
-    } else if (chartType == ChartType.BUBBLE) {
-      supplier = () -> new BubbleChart<String, Number>(categoryAxis, numberAxis);
-    } else if (chartType == ChartType.SCATTER) {
-      supplier = () -> new ScatterChart<String, Number>(categoryAxis, numberAxis);
-    } else if (chartType == ChartType.STACKEDBAR) {
-      supplier = () -> new StackedBarChart<String, Number>(categoryAxis, numberAxis);
-    } else if (chartType == ChartType.STACKEDAREA) {
-      supplier = () -> new StackedAreaChart<String, Number>(categoryAxis, numberAxis);
-    } else {
-      supplier = null;
-    }
-    return () -> {
-      XYChart<String, Number> chart = supplier.get();
-      chart.titleProperty().bind(name.textProperty());
-      return chart;
-    };
-  }
-
-  protected void recompute(ChartData data) {
-    ChartType selectedItem = this.chartType.getSelectionModel().getSelectedItem();
-    if (selectedItem != null) {
-      ChartType newChartType = data.getChartType();
-      if (newChartType != null) {
-        if (selectedItem == null || !newChartType.equals(selectedItem)) {
-          chartType.getSelectionModel().select(newChartType);
-        }
-      }
-    }
-    if ((xyChart == null && pieChart == null) || data.getSeries().isEmpty()) {
-      return;
-    }
-    if (pieChart != null) {
-      fillPieChart(data);
-    } else if (xyChart != null) {
-      fillXYChart(data);
-    }
-  }
-
-  protected void fillPieChart(ChartData data) {
-    ChartData.DataSeries series = data.getSeries().get(0);
-
-    List<PieChart.Data> pieChartSeries = new LinkedList<PieChart.Data>();
-    for (int i = 0; i < series.getValues().size(); i++) {
-      Double value = series.getValues().get(i);
-      String category = data.getCategories().get(i);
-      if (category != null) {
-        pieChartSeries.add(new PieChart.Data(category, value));
-      }
-    }
-    pieChart.setData(FXCollections.observableList(pieChartSeries));
-    pieChart.titleProperty().bind(name.textProperty());
-  }
-
-  protected void fillXYChart(ChartData data) {
-    List<XYChart.Series<String, Number>> allSeries = new ArrayList<>(data.getSeries().size());
-
-    for (ChartData.DataSeries dataSeries : data.getSeries()) {
-      XYChart.Series<String, Number> series = new XYChart.Series<>();
-      series.setName(dataSeries.getTitle());
-
-      List<XYChart.Data<String, Number>> datas = new LinkedList<XYChart.Data<String, Number>>();
-      for (int i = 0; i < dataSeries.getValues().size(); i++) {
-        Double value = dataSeries.getValues().get(i);
-        String category = data.getCategories().get(i);
-
-        datas.add(new XYChart.Data<String, Number>(category, value));
-      }
-      series.setData(FXCollections.observableList(datas));
-      allSeries.add(series);
-    }
-    xyChart.setData(FXCollections.observableList(allSeries));
-    xyChart.getXAxis().setLabel(data.getXAxisTitle());
   }
 
   @FXML
@@ -240,9 +143,6 @@ public class ChartInfoController extends BaseController<ChartInfo> {
 
   @FXML
   public void onShowFullScreen() {
-    if (pieChart == null && xyChart == null) {
-      return;
-    }
     ObservableList<Screen> screens = Screen.getScreens();
     Screen screen;
     if (screens.size() == 1) {
@@ -270,25 +170,10 @@ public class ChartInfoController extends BaseController<ChartInfo> {
 
   protected StackPane getFullScreenPane(Screen screen) {
     Rectangle2D visualBounds = screen.getVisualBounds();
-    Chart fullScreenChart = null;
-    if (pieChart != null) {
-      //need to copy data because it contains the rendered node ..
-      List<PieChart.Data> pseudoClone = pieChart.getData().stream().sequential().map(d -> new PieChart.Data(d.getName(), d.getPieValue())).collect(Collectors.toList());
-      PieChart pie = new PieChart(FXCollections.observableList(pseudoClone));
-      pie.titleProperty().bind(name.textProperty());
-
-      fullScreenChart = pie;
-    } else if (xyChart != null) {
-      Supplier<XYChart<String, Number>> xyChartSupplier = getXYChartSupplier(chartType.getValue());
-      XYChart<String, Number> numberXYChart = xyChartSupplier.get();
-      List<XYChart.Series<String, Number>> pseudoClone = xyChart.getData().stream().sequential().map(series -> new XYChart.Series<>(FXCollections.observableArrayList(series.getData()))).collect(Collectors.toList());
-      numberXYChart.setData(FXCollections.observableList(pseudoClone));
-      Axis<Number> numberAxis = numberXYChart.getYAxis();
-      numberAxis.setAnimated(false);
-      numberAxis.setAutoRanging(true);
-
-      fullScreenChart = numberXYChart;
-    }
+    ChartInfo model = store.getModel();
+    model.setChartData(editorController.getData());
+    model.setChartType(chartType.getValue());
+    Chart fullScreenChart = fullScreenPreviewHelper.createNewChart(model);
 
     StackPane pane = new StackPane();
     pane.getStyleClass().add("fullScreenBg");
@@ -304,6 +189,23 @@ public class ChartInfoController extends BaseController<ChartInfo> {
     if (input.isPresent()) {
       editorController.addColumnHeader(input.get());
     }
+  }
+
+  @Override
+  protected void onRefresh(ChartInfo model) {
+    ChartData chartData = model.getChartData();
+    if (chartData != null) {
+      yaxisTitle.setText(chartData.getYAxisTitle());
+    } else {
+      yaxisTitle.setText("");
+    }
+
+    if (model.getChartData() == null) {
+      model.setChartData(editorController.getData());
+    } else {
+      editorController.setData(model.getChartData());
+    }
+    controller.getJavaFXExecutor().submit(() -> chartType.getSelectionModel().select(model.getChartType()));
   }
 
 }
