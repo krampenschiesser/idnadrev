@@ -201,6 +201,7 @@ public class ChartInfoController extends BaseController<ChartInfo> {
     }
 
     if (model.getChartData() == null) {
+      editorController.reset();
       model.setChartData(editorController.getData());
     } else {
       editorController.setData(model.getChartData());

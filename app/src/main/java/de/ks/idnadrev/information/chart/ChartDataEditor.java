@@ -78,15 +78,12 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    dataContainer.getChildren().remove(xaxisTitle);//FXML loader doesn't set row and column in gridpane :(
-    dataContainer.add(xaxisTitle, 0, 0);
+
 
     columnHeaders.addListener((ListChangeListener<SimpleStringProperty>) c -> onColumnsChanged(c));
     rows.addListener((ListChangeListener<ChartRow>) c -> onRowsChanged(c));
-    rows.add(new ChartRow());
-    columnHeaders.add(new SimpleStringProperty(Localized.get("col", 1)));
-    columnHeaders.add(new SimpleStringProperty(Localized.get("col", 2)));
 
+    reset();
     validationRegistry.registerValidator(xaxisTitle, new NotEmptyValidator());
   }
 
@@ -194,15 +191,18 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
         }
       }
       for (SimpleStringProperty column : removed) {
-        int columnIndex = dataContainer.getChildren().stream().filter(n -> GridPane.getRowIndex(n) == 0).map(n -> (TextField) n).filter(t -> t.getText().equals(column.getValue())).map(t -> GridPane.getColumnIndex(t)).findFirst().get();
-        rows.forEach(r -> {
-          SimpleStringProperty value = r.getValue(columnIndex);
-          value.set("");
-          value.unbind();
-        });
-        List<Node> childrenToRemove = dataContainer.getChildren().stream().filter(n -> GridPane.getColumnIndex(n) == columnIndex).collect(Collectors.toList());
-        dataContainer.getChildren().removeAll(childrenToRemove);
-        dataContainer.getColumnConstraints().remove(dataContainer.getColumnConstraints().size() - 1);
+        Optional<Integer> first = dataContainer.getChildren().stream().filter(n -> GridPane.getRowIndex(n) == 0).map(n -> (TextField) n).filter(t -> t.getText().equals(column.getValue())).map(t -> GridPane.getColumnIndex(t)).findFirst();
+        if (first.isPresent()) {
+          int columnIndex = first.get();
+          rows.forEach(r -> {
+            SimpleStringProperty value = r.getValue(columnIndex);
+            value.set("");
+            value.unbind();
+          });
+          List<Node> childrenToRemove = dataContainer.getChildren().stream().filter(n -> GridPane.getColumnIndex(n) == columnIndex).collect(Collectors.toList());
+          dataContainer.getChildren().removeAll(childrenToRemove);
+          dataContainer.getColumnConstraints().remove(dataContainer.getColumnConstraints().size() - 1);
+        }
       }
 
       sortGridPane();
@@ -271,7 +271,7 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
         e.consume();
       }
       boolean selectNext = false;
-      if (e.getCode() == KeyCode.ENTER) {
+      if (e.getCode() == KeyCode.ENTER && !e.isControlDown()) {
         selectNext = true;
       }
       if (selectNext) {
@@ -400,4 +400,22 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
     model.getChartData();//deserialize async
   }
 
+  public void reset() {
+    dataContainer.getChildren().clear();
+    dataContainer.getChildren().remove(xaxisTitle);//FXML loader doesn't set row and column in gridpane :(
+    dataContainer.add(xaxisTitle, 0, 0);
+
+    rows.clear();
+    columnHeaders.clear();
+    categoryEditors.clear();
+    valueEditors.clear();
+    headers.clear();
+
+    rows.add(new ChartRow());
+    columnHeaders.add(new SimpleStringProperty(Localized.get("col", 1)));
+    columnHeaders.add(new SimpleStringProperty(Localized.get("col", 2)));
+    if (callback != null) {
+      callback.accept(getData());
+    }
+  }
 }

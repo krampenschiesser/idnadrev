@@ -2,6 +2,7 @@ package de.ks.idnadrev.information.chart;
 
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityCfg;
+import de.ks.i18n.Localized;
 import de.ks.idnadrev.ActivityTest;
 import de.ks.idnadrev.entity.information.ChartData;
 import de.ks.idnadrev.entity.information.ChartInfo;
@@ -105,8 +106,8 @@ public class ChartInfoActivityTest extends ActivityTest {
     LineChart<String, Double> chart = (LineChart<String, Double>) controller.previewContainer.getChildren().get(0);
 
     assertEquals(2, chart.getData().size());
-    assertEquals("Column 1", chart.getData().get(0).getName());
-    assertEquals("Column 2", chart.getData().get(1).getName());
+    assertEquals(Localized.get("col", 1), chart.getData().get(0).getName());
+    assertEquals(Localized.get("col", 2), chart.getData().get(1).getName());
 
     FXPlatform.invokeLater(() -> {
       controller.name.setText("test");
