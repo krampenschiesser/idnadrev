@@ -17,6 +17,7 @@ package de.ks.text;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
+import de.ks.JunitMatchers;
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityCfg;
 import de.ks.activity.ActivityController;
@@ -48,7 +49,6 @@ import java.io.File;
 import java.util.List;
 import java.util.concurrent.Future;
 
-import static de.ks.JunitMatchers.withRetry;
 import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
@@ -99,15 +99,15 @@ public class AsciiDocEditorTest {
   public void testAdocParsing() throws Exception {
     FXPlatform.invokeLater(() -> adocEditor.editor.setText("= Title\n== more"));
 
-    withRetry(() -> adocEditor.preview.getCurrentHtml() != null);
+    JunitMatchers.withRetry(() -> adocEditor.preview.getCurrentHtml() != null);
     assertNotNull("preview string is null", adocEditor.preview.getCurrentHtml());
 
     WebEngine engine = adocEditor.preview.getWebView().getEngine();
-    withRetry(() -> adocEditor.preview.getWebView().getEngine() != null);
+    JunitMatchers.withRetry(() -> adocEditor.preview.getWebView().getEngine() != null);
     assertNull("document is not null", engine.getDocument());
 
     FXPlatform.invokeLater(() -> adocEditor.tabPane.getSelectionModel().select(1));
-    withRetry(() -> engine.getDocument() != null);
+    JunitMatchers.withRetry(() -> engine.getDocument() != null);
     assertNotNull("document did not load, is still null", engine.getDocument());
 
     FXPlatform.invokeLater(() -> adocEditor.tabPane.getSelectionModel().select(0));

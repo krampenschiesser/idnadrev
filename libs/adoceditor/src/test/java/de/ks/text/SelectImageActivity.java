@@ -12,18 +12,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-include "doc"
 
-include "libs:fxcontrols"
+package de.ks.text;
 
-include "libs:testutil", "libs:util", "libs:reflection"
-include "libs:launch"
-//PC stuff
-include "libs:validation", "libs:hibernate-pool", "libs:persistence", "libs:eventsystem", "libs:i18n", "libs:scheduler"
-include "libs:executor"
-//javaFX stuff
-include "libs:images", "libs:application"
-include "libs:application-jpa"
-include "libs:adoceditor"
-include "libs:googleintegration"
-include "app"
+import de.ks.activity.ActivityCfg;
+import de.ks.text.image.SelectImageController;
+
+public class SelectImageActivity extends ActivityCfg {
+  public SelectImageActivity() {
+    super(DummyTestDataSource.class, SelectImageController.class);
+  }
+}

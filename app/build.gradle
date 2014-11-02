@@ -21,6 +21,7 @@ mainClassName = "de.ks.idnadrev.Application"
 dependencies {
     compile project(":libs:fxcontrols")
     compile project(":libs:application-jpa")
+    compile project(":libs:adoceditor")
     compile project(":libs:scheduler")
     compile "commons-codec:commons-codec:$commonscodec"
     compile "$jpa2api"

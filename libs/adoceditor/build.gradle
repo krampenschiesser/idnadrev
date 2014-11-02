@@ -13,14 +13,19 @@
  * limitations under the License.
  */
 
-package de.ks.text;
+dependencies {
+    compile project(":libs:application")
 
-import de.ks.activity.ActivityCfg;
-import de.ks.activity.DummyTestDataSource;
-import de.ks.text.image.SelectImageController;
 
-public class SelectImageActivity extends ActivityCfg {
-  public SelectImageActivity() {
-    super(DummyTestDataSource.class, SelectImageController.class);
-  }
+    compile("org.asciidoctor:asciidoctorj:$asciidocJavaIntegration") {
+        transitive = false;
+    }
+
+    //asciidoc:
+    runtime "org.jruby:jruby-complete:$jruby"
+    runtime "com.beust:jcommander:$jcommander"
+
+    testCompile project(":libs:testutil")
+
+//    testRuntime "com.sun.el:el-ri:1.0"
 }

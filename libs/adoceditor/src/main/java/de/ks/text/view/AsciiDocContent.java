@@ -57,8 +57,8 @@ public class AsciiDocContent {
   @Override
   public String toString() {
     return "AsciiDocContent{" +
-            "identifier='" + identifier + '\'' +
-            ", adoc='" + adoc + '\'' +
-            '}';
+      "identifier='" + identifier + '\'' +
+      ", adoc='" + adoc + '\'' +
+      '}';
   }
 }

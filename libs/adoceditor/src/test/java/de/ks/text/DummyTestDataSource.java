@@ -14,11 +14,21 @@
  */
 package de.ks.text;
 
-import de.ks.activity.ActivityCfg;
-import de.ks.activity.DummyTestDataSource;
+import de.ks.datasource.NewInstanceDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class AscidoctTestActivity extends ActivityCfg {
-  public AscidoctTestActivity() {
-    super(DummyTestDataSource.class, AsciiDocEditor.class);
+import java.util.function.Consumer;
+
+public class DummyTestDataSource extends NewInstanceDataSource<Object> {
+  private static final Logger log = LoggerFactory.getLogger(DummyTestDataSource.class);
+
+  public DummyTestDataSource() {
+    super(Object.class);
+  }
+
+  @Override
+  public void saveModel(Object model, Consumer<Object> beforeSaving) {
+    log.info("Writing back {}", model);
   }
 }

@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!--
   ~ Copyright [2014] [Christian Loehnert, krampenschiesser@gmail.com]
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +14,12 @@
   ~ limitations under the License.
   -->
 
-<?import javafx.scene.layout.StackPane?>
-<StackPane id="StackPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-           prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"/>
+<beans bean-discovery-mode="all"
+       xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/beans_1_1.xsd">
+
+    <scan>
+        <exclude name="com.google.**"/>
+    </scan>
+</beans>
