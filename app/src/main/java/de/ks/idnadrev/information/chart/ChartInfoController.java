@@ -209,4 +209,8 @@ public class ChartInfoController extends BaseController<ChartInfo> {
     controller.getJavaFXExecutor().submit(() -> chartType.getSelectionModel().select(model.getChartType()));
   }
 
+  @Override
+  public void duringSave(ChartInfo model) {
+    model.setChartType(chartType.getValue());
+  }
 }
