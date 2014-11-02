@@ -115,6 +115,7 @@ public class ChartInfoActivityTest extends ActivityTest {
       row.setValue(0, 4D);
       row.setValue(1, 2D);
       row.setCategory("cat1");
+      controller.chartType.getSelectionModel().select(ChartType.PIE);
     });
     activityController.save();
     activityController.waitForDataSource();
@@ -124,6 +125,7 @@ public class ChartInfoActivityTest extends ActivityTest {
     assertEquals(1, charts.size());
     ChartInfo chartInfo = charts.get(0);
     assertEquals("test", chartInfo.getName());
+    assertEquals(ChartType.PIE, chartInfo.getChartType());
 
     ChartData data = chartInfo.getChartData();
     assertNotNull(data);
