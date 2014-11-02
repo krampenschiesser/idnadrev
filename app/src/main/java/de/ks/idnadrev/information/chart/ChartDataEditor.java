@@ -153,7 +153,7 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
           .filter(v -> !v.isEmpty())//
           .collect(Collectors.toSet());
         if (values.contains(value)) {
-          ValidationMessage message = new ValidationMessage(Localized.get("validation.noDuplicates", value), control, value);
+          ValidationMessage message = new ValidationMessage("validation.noDuplicates", control, value);
           return ValidationResult.fromMessages(message);
         }
       }
@@ -363,12 +363,11 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
 
   public void setData(ChartData data) {
     int row = 0;
-
     for (String category : data.getCategories()) {
-      if (rows.size() < row + 2) {
+      if (rows.size() < row + 1) {
         rows.add(new ChartRow());
       }
-      rows.get(row + 1).setCategory(category);
+      rows.get(row).setCategory(category);
       row++;
     }
     int column = 0;
@@ -380,24 +379,15 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
 
       for (int valueIndex = 0; valueIndex < dataSeries.getValues().size(); valueIndex++) {
         Double value = dataSeries.getValues().get(valueIndex);
-        rows.get(valueIndex + 1).setValue(column, value);
-        log.info("{}: Row={}, column={}, value={}", dataSeries.getTitle(), valueIndex + 1, column, value);
+        rows.get(valueIndex).setValue(column, value);
       }
       column++;
     }
+    xaxisTitle.setText(data.getXAxisTitle());
   }
 
   public void setCallback(Consumer<ChartData> callback) {
     this.callback = callback;
-  }
-
-  @Override
-  protected void onRefresh(ChartInfo model) {
-    ChartData chartData = model.getChartData();
-    if (chartData != null) {
-      setData(chartData);
-      callback.accept(chartData);
-    }
   }
 
   @Override
@@ -409,4 +399,5 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
   public void duringLoad(ChartInfo model) {
     model.getChartData();//deserialize async
   }
+
 }

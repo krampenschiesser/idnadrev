@@ -36,6 +36,7 @@ public class ChartInfo extends Information<ChartInfo> {
   protected transient ChartData data;
 
   protected ChartInfo() {
+    chartType = ChartType.LINE;
   }
 
   public ChartInfo(String name, ChartType chartType) {
