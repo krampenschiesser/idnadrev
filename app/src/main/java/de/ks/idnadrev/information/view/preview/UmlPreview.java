@@ -65,6 +65,7 @@ public class UmlPreview extends BaseController<List<InformationPreviewItem>> imp
 
   }
 
+  @Override
   public GridPane show(InformationPreviewItem item) {
     this.selectedItem = item;
     Image image = previews.get(item.getName());

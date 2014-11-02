@@ -15,5 +15,91 @@
  */
 package de.ks.idnadrev.information.view.preview;
 
-public class ChartPreview {
+import de.ks.BaseController;
+import de.ks.activity.ActivityHint;
+import de.ks.idnadrev.entity.information.ChartInfo;
+import de.ks.idnadrev.information.chart.ChartInfoActivity;
+import de.ks.idnadrev.information.chart.ChartPreviewHelper;
+import de.ks.idnadrev.information.view.InformationPreviewItem;
+import de.ks.persistence.PersistentWork;
+import javafx.fxml.FXML;
+import javafx.scene.chart.Chart;
+import javafx.scene.control.Button;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+
+import java.net.URL;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+
+public class ChartPreview extends BaseController<List<InformationPreviewItem>> implements InformationPreview<ChartInfo> {
+  protected volatile InformationPreviewItem selectedItem;
+  @FXML
+  protected StackPane chartContainer;
+  @FXML
+  protected GridPane root;
+  @FXML
+  protected Button edit;
+
+  protected final Map<String, ChartInfo> infos = new ConcurrentHashMap<>();
+  protected final ChartPreviewHelper previewHelper = new ChartPreviewHelper();
+
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+  }
+
+  @Override
+  public Pane show(InformationPreviewItem item) {
+    selectedItem = item;
+    if (infos.containsKey(item.getName())) {
+      Chart chart = previewHelper.createNewChart(infos.get(item.getName()));
+      chart.getStyleClass().add("fullScreenBg");
+      chartContainer.getChildren().clear();
+      chartContainer.getChildren().add(chart);
+    }
+    return root;
+  }
+
+  @Override
+  public void edit() {
+    onEdit();
+  }
+
+  @FXML
+  void onEdit() {
+    ActivityHint activityHint = new ActivityHint(ChartInfoActivity.class, controller.getCurrentActivityId());
+    String name = selectedItem.getName();
+    ChartInfo diagramInfo = infos.get(name);
+
+    activityHint.setDataSourceHint(() -> diagramInfo);
+    controller.startOrResume(activityHint);
+  }
+
+  @Override
+  protected void onRefresh(List<InformationPreviewItem> model) {
+    infos.clear();
+    model.stream()//
+      .filter(preview -> preview.getType().equals(ChartInfo.class))//
+      .forEach(this::load);
+  }
+
+  private void load(InformationPreviewItem informationPreviewItem) {
+    CompletableFuture.supplyAsync(() -> {
+      ChartInfo chartInfo = (ChartInfo) PersistentWork.forName(informationPreviewItem.getType(), informationPreviewItem.getName());
+      chartInfo.getChartData();//deserialize
+      infos.put(chartInfo.getName(), chartInfo);
+      return chartInfo;
+    }, controller.getExecutorService())//
+      .thenAcceptAsync(info -> {
+        if (informationPreviewItem.equals(selectedItem)) {
+          Chart chart = previewHelper.createNewChart(info);
+          chartContainer.getChildren().clear();
+          chartContainer.getChildren().add(chart);
+        }
+      }, controller.getJavaFXExecutor());
+  }
 }

@@ -26,18 +26,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class ChartPreview {
+public class ChartPreviewHelper {
   protected XYChart<String, Number> xyChart;
   protected PieChart pieChart;
 
   protected final ChartInfoController controller;
   protected ChartInfo chartInfo;
 
-  public ChartPreview() {
+  public ChartPreviewHelper() {
     controller = null;
   }
 
-  public ChartPreview(ChartInfoController controller) {
+  public ChartPreviewHelper(ChartInfoController controller) {
     this.controller = controller;
   }
 

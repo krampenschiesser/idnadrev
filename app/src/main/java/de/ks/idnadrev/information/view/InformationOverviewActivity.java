@@ -16,6 +16,7 @@
 package de.ks.idnadrev.information.view;
 
 import de.ks.activity.ActivityCfg;
+import de.ks.idnadrev.information.view.preview.ChartPreview;
 import de.ks.idnadrev.information.view.preview.TextInfoPreview;
 import de.ks.idnadrev.information.view.preview.UmlPreview;
 import de.ks.menu.MenuItem;
@@ -26,5 +27,6 @@ public class InformationOverviewActivity extends ActivityCfg {
     super(InformationOverviewDS.class, InformationOverviewController.class);
     addAdditionalController(TextInfoPreview.class);
     addAdditionalController(UmlPreview.class);
+    addAdditionalController(ChartPreview.class);
   }
 }

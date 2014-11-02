@@ -74,8 +74,8 @@ public class ChartInfoController extends BaseController<ChartInfo> {
   @FXML
   protected ComboBox<ChartType> chartType;
 
-  protected final ChartPreview previewHelper = new ChartPreview(this);
-  protected final ChartPreview fullScreenPreviewHelper = new ChartPreview(null);
+  protected final ChartPreviewHelper previewHelper = new ChartPreviewHelper(this);
+  protected final ChartPreviewHelper fullScreenPreviewHelper = new ChartPreviewHelper(null);
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {

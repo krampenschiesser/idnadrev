@@ -165,7 +165,7 @@ public class DummyData extends Service {
     PersistentWork.persist(activityDiagram);
 
     ChartData chartData = new ChartData();
-    chartData.setYAxisTitle("xtitle");
+    chartData.setXAxisTitle("xtitle");
     chartData.setYAxisTitle("ytitle");
     chartData.getCategories().add("cat1");
     chartData.getCategories().add("cat2");
@@ -174,7 +174,7 @@ public class DummyData extends Service {
     chartData.addSeries("series2", Arrays.asList(4D, 2D, 7D));
     chartData.addSeries("series3", Arrays.asList(8D, 5D, 1D));
 
-    ChartInfo chart = new ChartInfo("chart", ChartType.BAR);
+    ChartInfo chart = new ChartInfo("chart", ChartType.LINE);
     chart.setChartData(chartData);
     PersistentWork.persist(chart);
 

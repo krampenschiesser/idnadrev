@@ -16,8 +16,10 @@
 package de.ks.idnadrev.information.view;
 
 import de.ks.BaseController;
+import de.ks.idnadrev.entity.information.ChartInfo;
 import de.ks.idnadrev.entity.information.TextInfo;
 import de.ks.idnadrev.entity.information.UmlDiagramInfo;
+import de.ks.idnadrev.information.view.preview.ChartPreview;
 import de.ks.idnadrev.information.view.preview.InformationPreview;
 import de.ks.idnadrev.information.view.preview.TextInfoPreview;
 import de.ks.idnadrev.information.view.preview.UmlPreview;
@@ -52,6 +54,11 @@ public class InformationOverviewController extends BaseController<List<Informati
         }
         if (n.getType().equals(UmlDiagramInfo.class)) {
           UmlPreview preview = activityInitialization.getControllerInstance(UmlPreview.class);
+          currentPreview = preview;
+          previewContainer.getChildren().add(preview.show(n));
+        }
+        if (n.getType().equals(ChartInfo.class)) {
+          ChartPreview preview = activityInitialization.getControllerInstance(ChartPreview.class);
           currentPreview = preview;
           previewContainer.getChildren().add(preview.show(n));
         }
