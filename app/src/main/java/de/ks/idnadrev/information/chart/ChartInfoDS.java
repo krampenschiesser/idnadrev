@@ -17,9 +17,20 @@ package de.ks.idnadrev.information.chart;
 
 import de.ks.datasource.CreateEditDS;
 import de.ks.idnadrev.entity.information.ChartInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.persistence.EntityManager;
 
 public class ChartInfoDS extends CreateEditDS<ChartInfo> {
+  private static final Logger log = LoggerFactory.getLogger(ChartInfoDS.class);
+
   public ChartInfoDS() {
     super(ChartInfo.class);
+  }
+
+  @Override
+  protected void furtherSave(EntityManager em, ChartInfo reloaded) {
+    log.info("data: {}", reloaded.getChartData());
   }
 }

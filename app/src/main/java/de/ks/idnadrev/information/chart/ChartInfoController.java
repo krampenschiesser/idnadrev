@@ -18,10 +18,7 @@ package de.ks.idnadrev.information.chart;
 import de.ks.BaseController;
 import de.ks.activity.initialization.LoadInFXThread;
 import de.ks.i18n.Localized;
-import de.ks.idnadrev.entity.information.ChartInfo;
-import de.ks.idnadrev.entity.information.ChartType;
-import de.ks.idnadrev.entity.information.TextInfo;
-import de.ks.idnadrev.entity.information.UmlDiagramInfo;
+import de.ks.idnadrev.entity.information.*;
 import de.ks.validation.validators.NamedEntityMustNotExistValidator;
 import de.ks.validation.validators.NotEmptyValidator;
 import javafx.beans.property.StringProperty;
@@ -78,8 +75,8 @@ public class ChartInfoController extends BaseController<ChartInfo> {
   @FXML
   protected ComboBox<ChartType> chartType;
 
-  private XYChart<String, Number> xyChart;
-  private PieChart pieChart;
+  protected XYChart<String, Number> xyChart;
+  protected PieChart pieChart;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -119,7 +116,7 @@ public class ChartInfoController extends BaseController<ChartInfo> {
     }
   }
 
-  private Supplier<XYChart<String, Number>> getXYChartSupplier(ChartType chartType) {
+  protected Supplier<XYChart<String, Number>> getXYChartSupplier(ChartType chartType) {
     final Supplier<XYChart<String, Number>> supplier;
     final CategoryAxis categoryAxis = new CategoryAxis();
     final NumberAxis numberAxis = new NumberAxis();
@@ -155,7 +152,16 @@ public class ChartInfoController extends BaseController<ChartInfo> {
     };
   }
 
-  private void recompute(ChartPreviewData data) {
+  protected void recompute(ChartData data) {
+    ChartType selectedItem = this.chartType.getSelectionModel().getSelectedItem();
+    if (selectedItem != null) {
+      ChartType newChartType = data.getChartType();
+      if (newChartType != null) {
+        if (selectedItem == null || !newChartType.equals(selectedItem)) {
+          chartType.getSelectionModel().select(newChartType);
+        }
+      }
+    }
     if ((xyChart == null && pieChart == null) || data.getSeries().isEmpty()) {
       return;
     }
@@ -166,8 +172,8 @@ public class ChartInfoController extends BaseController<ChartInfo> {
     }
   }
 
-  private void fillPieChart(ChartPreviewData data) {
-    ChartPreviewData.DataSeries series = data.getSeries().get(0);
+  protected void fillPieChart(ChartData data) {
+    ChartData.DataSeries series = data.getSeries().get(0);
 
     List<PieChart.Data> pieChartSeries = new LinkedList<PieChart.Data>();
     for (int i = 0; i < series.getValues().size(); i++) {
@@ -181,10 +187,10 @@ public class ChartInfoController extends BaseController<ChartInfo> {
     pieChart.titleProperty().bind(name.textProperty());
   }
 
-  private void fillXYChart(ChartPreviewData data) {
+  protected void fillXYChart(ChartData data) {
     List<XYChart.Series<String, Number>> allSeries = new ArrayList<>(data.getSeries().size());
 
-    for (ChartPreviewData.DataSeries dataSeries : data.getSeries()) {
+    for (ChartData.DataSeries dataSeries : data.getSeries()) {
       XYChart.Series<String, Number> series = new XYChart.Series<>();
       series.setName(dataSeries.getTitle());
 
@@ -199,7 +205,7 @@ public class ChartInfoController extends BaseController<ChartInfo> {
       allSeries.add(series);
     }
     xyChart.setData(FXCollections.observableList(allSeries));
-    xyChart.getXAxis().setLabel(data.getxAxisTitle());
+    xyChart.getXAxis().setLabel(data.getXAxisTitle());
   }
 
   @FXML
@@ -249,7 +255,7 @@ public class ChartInfoController extends BaseController<ChartInfo> {
     popup.show(fullscreen.getScene().getWindow());
   }
 
-  private Popup createFullScreenPopup(Screen screen) {
+  protected Popup createFullScreenPopup(Screen screen) {
     StackPane pane = getFullScreenPane(screen);
 
     Rectangle2D visualBounds = screen.getVisualBounds();

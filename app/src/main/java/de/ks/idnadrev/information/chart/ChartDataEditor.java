@@ -18,6 +18,7 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import de.ks.BaseController;
 import de.ks.i18n.Localized;
+import de.ks.idnadrev.entity.information.ChartData;
 import de.ks.idnadrev.entity.information.ChartInfo;
 import de.ks.validation.ValidationMessage;
 import de.ks.validation.validators.DoubleValidator;
@@ -72,7 +73,8 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
   protected final List<TextField> headers = new ArrayList<>();
   protected final List<TextField> categoryEditors = new ArrayList<>();
   protected final Table<Integer, Integer, TextField> valueEditors = HashBasedTable.create();
-  protected Consumer<ChartPreviewData> callback;
+
+  protected Consumer<ChartData> callback;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -146,10 +148,10 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
     validationRegistry.registerValidator(categoryEditor, (control, value) -> {
       if (value != null) {
         Set<String> values = categoryEditors.stream()//
-                .filter(e -> e != categoryEditor)//
-                .map(e -> e.textProperty().getValueSafe())//
-                .filter(v -> !v.isEmpty())//
-                .collect(Collectors.toSet());
+          .filter(e -> e != categoryEditor)//
+          .map(e -> e.textProperty().getValueSafe())//
+          .filter(v -> !v.isEmpty())//
+          .collect(Collectors.toSet());
         if (values.contains(value)) {
           ValidationMessage message = new ValidationMessage(Localized.get("validation.noDuplicates", value), control, value);
           return ValidationResult.fromMessages(message);
@@ -236,7 +238,6 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
     editor.focusedProperty().addListener(getEditorFocusListener(rowNum, editor));
 
     editor.textProperty().addListener((p, o, n) -> {
-//      chartRow.setValue(column, n);
       editor.setUserData(true);
     });
 
@@ -332,8 +333,8 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
     return categoryEditors;
   }
 
-  public ChartPreviewData getData() {
-    ChartPreviewData data = new ChartPreviewData();
+  public ChartData getData() {
+    ChartData data = new ChartData();
     this.rows.forEach(r -> {
       data.getCategories().add(r.getCategory().getValueSafe());
     });
@@ -356,11 +357,56 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
       }
       data.addSeries(header.getValueSafe(), values);
     }
-    data.setxAxisTitle(xaxisTitle.getText());
+    data.setXAxisTitle(xaxisTitle.getText());
     return data;
   }
 
-  public void setCallback(Consumer<ChartPreviewData> callback) {
+  public void setData(ChartData data) {
+    int row = 0;
+
+    for (String category : data.getCategories()) {
+      if (rows.size() < row + 2) {
+        rows.add(new ChartRow());
+      }
+      rows.get(row + 1).setCategory(category);
+      row++;
+    }
+    int column = 0;
+    for (ChartData.DataSeries dataSeries : data.getSeries()) {
+      if (columnHeaders.size() < column + 1) {
+        columnHeaders.add(new SimpleStringProperty());
+      }
+      columnHeaders.get(column).set(dataSeries.getTitle());
+
+      for (int valueIndex = 0; valueIndex < dataSeries.getValues().size(); valueIndex++) {
+        Double value = dataSeries.getValues().get(valueIndex);
+        rows.get(valueIndex + 1).setValue(column, value);
+        log.info("{}: Row={}, column={}, value={}", dataSeries.getTitle(), valueIndex + 1, column, value);
+      }
+      column++;
+    }
+  }
+
+  public void setCallback(Consumer<ChartData> callback) {
     this.callback = callback;
+  }
+
+  @Override
+  protected void onRefresh(ChartInfo model) {
+    ChartData chartData = model.getChartData();
+    if (chartData != null) {
+      setData(chartData);
+      callback.accept(chartData);
+    }
+  }
+
+  @Override
+  public void duringSave(ChartInfo model) {
+    model.setChartData(getData());
+  }
+
+  @Override
+  public void duringLoad(ChartInfo model) {
+    model.getChartData();//deserialize async
   }
 }

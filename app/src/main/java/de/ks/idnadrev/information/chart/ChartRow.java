@@ -37,6 +37,10 @@ public class ChartRow {
     }
   }
 
+  public void setValue(int column, Double value) {
+    setValue(column, String.valueOf(value));
+  }
+
   public SimpleStringProperty getCategory() {
     return category;
   }
@@ -54,4 +58,5 @@ public class ChartRow {
       return empty;
     }
   }
+
 }

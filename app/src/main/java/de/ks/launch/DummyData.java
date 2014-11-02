@@ -16,9 +16,7 @@ package de.ks.launch;
 
 import de.ks.fxcontrols.weekview.WeekHelper;
 import de.ks.idnadrev.entity.*;
-import de.ks.idnadrev.entity.information.DiaryInfo;
-import de.ks.idnadrev.entity.information.TextInfo;
-import de.ks.idnadrev.entity.information.UmlDiagramInfo;
+import de.ks.idnadrev.entity.information.*;
 import de.ks.persistence.PersistentWork;
 import de.ks.scheduler.Schedule;
 import org.slf4j.Logger;
@@ -31,6 +29,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static de.ks.persistence.PersistentWork.persist;
@@ -164,6 +163,20 @@ public class DummyData extends Service {
     activityDiagram.setContent(UML_ACTIVITY_DIAGRAM);
     activityDiagram.setCategory(diagrams);
     PersistentWork.persist(activityDiagram);
+
+    ChartData chartData = new ChartData();
+    chartData.setYAxisTitle("xtitle");
+    chartData.setYAxisTitle("ytitle");
+    chartData.getCategories().add("cat1");
+    chartData.getCategories().add("cat2");
+    chartData.getCategories().add("cat3");
+    chartData.addSeries("series1", Arrays.asList(1D, 3D, 5D));
+    chartData.addSeries("series2", Arrays.asList(4D, 2D, 7D));
+    chartData.addSeries("series3", Arrays.asList(8D, 5D, 1D));
+
+    ChartInfo chart = new ChartInfo("chart", ChartType.BAR);
+    chart.setChartData(chartData);
+    PersistentWork.persist(chart);
 
   }
 
