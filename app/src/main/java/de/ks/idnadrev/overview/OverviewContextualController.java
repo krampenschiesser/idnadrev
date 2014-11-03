@@ -58,14 +58,7 @@ public class OverviewContextualController extends BaseController<OverviewModel> 
 
     context.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
       if (n != null) {
-        context.setDisable(true);
-        CompletableFuture.supplyAsync(() -> loadTasksForContext(n), controller.getExecutorService())//
-          .thenAcceptAsync(this::fillWithTasks, controller.getJavaFXExecutor())//
-          .exceptionally(e -> {
-            log.error("Could not fetch contextual tasks for context {}", n, e);
-            context.setDisable(false);
-            return null;
-          });
+        reload(n);
       }
     });
 
@@ -88,6 +81,17 @@ public class OverviewContextualController extends BaseController<OverviewModel> 
     });
   }
 
+  protected void reload(String n) {
+    context.setDisable(true);
+    CompletableFuture.supplyAsync(() -> loadTasksForContext(n), controller.getExecutorService())//
+      .thenAcceptAsync(this::fillWithTasks, controller.getJavaFXExecutor())//
+      .exceptionally(e -> {
+        log.error("Could not fetch contextual tasks for context {}", n, e);
+        context.setDisable(false);
+        return null;
+      });
+  }
+
   private ObservableValue<String> getTaskName(TableColumn.CellDataFeatures<Task, String> param) {
     return new SimpleStringProperty(param.getValue().getName());
   }
@@ -104,7 +108,7 @@ public class OverviewContextualController extends BaseController<OverviewModel> 
   }
 
   private List<Task> loadTasksForContext(String context) {
-    if (context.trim().isEmpty()) {
+    if (context != null && context.trim().isEmpty()) {
       context = null;
     }
     List<Task> tasks = new NextTaskChooser().getTasksSorted(60 * 24, context);
@@ -131,5 +135,6 @@ public class OverviewContextualController extends BaseController<OverviewModel> 
     if (!items.isEmpty() && context.getSelectionModel().getSelectedIndex() < 0) {
       context.getSelectionModel().select(0);
     }
+    reload(context.getSelectionModel().getSelectedItem());
   }
 }
