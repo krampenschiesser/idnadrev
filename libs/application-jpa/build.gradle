@@ -87,8 +87,7 @@ publishing {
                 def appNode = dependenciesNode.appendNode('dependency')
                 appNode.appendNode('groupId', group)
                 appNode.appendNode('artifactId', "$applicationLibTitle")
-                appNode.appendNode('version', "applicationLibVersion")
-                appNode.appendNode('scope', "compile")
+                appNode.appendNode('version', "$applicationLibVersion")
 
                 def added = new HashSet()
 
