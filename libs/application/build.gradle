@@ -16,7 +16,6 @@
 apply plugin: "maven-publish"
 
 version = "$applicationLibVersion"
-def applicationLibTitle = 'krampenschiesser-app-api'
 
 dependencies {
     compile project(":libs:i18n")
@@ -49,7 +48,7 @@ alldependencyprojects.addAll(projects)
 alldependencyprojects.add(project(":libs:application"))
 
 task sourceJar(type: Jar) {
-    from projects.sourceSets.main.allJava
+    from alldependencyprojects.sourceSets.main.allJava
 }
 
 task fullJar(type: Jar) {
