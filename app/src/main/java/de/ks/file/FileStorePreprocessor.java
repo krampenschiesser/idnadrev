@@ -15,7 +15,7 @@
  */
 package de.ks.file;
 
-import de.ks.text.preprocess.AsciiDocPreProcessor;
+import de.ks.text.process.AsciiDocPreProcessor;
 
 import javax.inject.Inject;
 

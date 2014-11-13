@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.text.preprocess;
+package de.ks.text.process;
 
 public interface AsciiDocPreProcessor {
   String preProcess(String adoc);

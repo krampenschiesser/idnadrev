@@ -20,7 +20,7 @@ import de.ks.activity.initialization.ActivityInitialization;
 import de.ks.application.fxml.DefaultLoader;
 import de.ks.executor.JavaFXExecutorService;
 import de.ks.text.AsciiDocParser;
-import de.ks.text.preprocess.AsciiDocPreProcessor;
+import de.ks.text.process.AsciiDocPreProcessor;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
