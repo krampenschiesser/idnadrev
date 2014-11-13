@@ -15,15 +15,16 @@
  */
 package de.ks.idnadrev.information.chart.adoc;
 
-import de.ks.activity.executor.ActivityExecutor;
-import de.ks.text.preprocess.AsciiDocPreProcessor;
+import de.ks.text.process.AsciiDocPreProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.io.IOException;
-import java.nio.file.Files;
+import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,11 +33,13 @@ public class ChartPreProcessor implements AsciiDocPreProcessor {
   public static final String KEY_CHART = "chart::";
 
   @Inject
-  ActivityExecutor executor;
+  ChartFileRendering fileRendering;
+
   protected final Pattern compile = Pattern.compile(KEY_CHART + "\\d*");
 
   @Override
   public String preProcess(String adoc) {
+    Map<Long, Path> tasks = new HashMap<>();
     StringBuilder retval = new StringBuilder();
 
     Matcher matcher = compile.matcher(adoc);
@@ -46,19 +49,36 @@ public class ChartPreProcessor implements AsciiDocPreProcessor {
       int end = matcher.end();
 
       retval.append(adoc.substring(last, start));
-      String chartPath = "chart" + adoc.substring(start + KEY_CHART.length(), end) + "_";
-      try {
-        Path tempFilePath = Files.createTempFile(chartPath, ".png");
-        tempFilePath.toFile().deleteOnExit();
-        retval.append("\n");
-        retval.append("image::file://");
-        retval.append(tempFilePath.toFile().getAbsolutePath());
-        retval.append("\n");
-      } catch (IOException e) {
-        log.error("Could not create tempfile for '{}'", chartPath, e);
+      String chartId = adoc.substring(start + KEY_CHART.length(), end);
+      String chartPath = "chart" + chartId;
+      String tmpDir = System.getProperty("java.io.tmpdir");
+
+      Path tempFilePath = Paths.get(tmpDir, chartPath + ".jpg");
+      File file = tempFilePath.toFile();
+      file.deleteOnExit();
+      if (file.exists()) {
+        file.delete();
       }
+
+      try {
+        Long id = Long.valueOf(chartId);
+        tasks.put(id, tempFilePath);
+      } catch (NumberFormatException e) {
+        log.warn("Could not parse chartId {}", chartId);
+      }
+
+      retval.append("\n");
+      retval.append("image::file:///");
+      retval.append(file.getAbsolutePath());
+      retval.append("[]");
+      retval.append("\n");
       last = end;
     }
+    if (last < adoc.length()) {
+      retval.append(adoc.substring(last, adoc.length()));
+    }
+
+    tasks.forEach((id, path) -> fileRendering.renderToFile(id, path));
     return retval.toString();
   }
 }
