@@ -370,7 +370,13 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
 
       previewPopupStage = new Stage();
       previewPopupStage.setTitle(title);
-      previewPopupStage.setScene(new Scene(new StackPane(popupPreviewNode)));
+      Scene scene = new Scene(new StackPane(popupPreviewNode));
+      scene.setOnKeyReleased(e -> {
+        if (e.getCode() == KeyCode.ESCAPE) {
+          previewPopupStage.close();
+        }
+      });
+      previewPopupStage.setScene(scene);
 
       Rectangle2D bounds = new ScreenResolver().getScreenToShow().getBounds();
       previewPopupStage.setX(bounds.getMinX());
