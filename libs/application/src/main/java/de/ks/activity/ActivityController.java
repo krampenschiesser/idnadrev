@@ -231,6 +231,7 @@ public class ActivityController {
         Object returnHint = null;
         String returnToActivity = null;
         Runnable returnToRunnable = null;
+        boolean refresh = true;
 
         ActivityCfg activityCfg = registeredActivities.get(id);
         if (activityCfg != null) {
@@ -240,6 +241,7 @@ public class ActivityController {
           }
           returnToActivity = activityHint.getReturnToActivity();
           returnToRunnable = activityHint.getReturnToRunnable();
+          refresh = activityHint.isRefreshOnReturn();
         }
 
         context.startActivity(id);
@@ -254,7 +256,7 @@ public class ActivityController {
         log.debug("Stopped activity {}", id);
 
         if (returnToActivity != null && registeredActivities.containsKey(returnToActivity)) {
-          resume(returnToActivity, true, returnHint, returnToRunnable, null);
+          resume(returnToActivity, refresh, returnHint, returnToRunnable, null);
         }
       } catch (Exception e) {
         log.error("Could not stop activity {}", id, e);
