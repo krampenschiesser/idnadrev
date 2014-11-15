@@ -21,6 +21,7 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
@@ -39,7 +40,7 @@ public class Preloader implements Initializable, LaunchListener {
   @FXML
   private Text version;
   @FXML
-  private Text loadingInfo;
+  private ProgressBar loadingProgress;
   @FXML
   private StackPane root;
   private int totalWaves;
@@ -48,7 +49,7 @@ public class Preloader implements Initializable, LaunchListener {
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     image.fitHeightProperty().bind(root.heightProperty());
-    loadingInfo.setText("");
+    loadingProgress.setProgress(0.0);
 
     image.setOpacity(0);
     Timeline timeline = new Timeline();
@@ -72,7 +73,8 @@ public class Preloader implements Initializable, LaunchListener {
   public void waveStarted(int prio) {
     int count = waveCounter.incrementAndGet();
     Platform.runLater(() -> {
-      loadingInfo.setText(" Loading: " + count + "/" + totalWaves);
+      double progress = (double) count / (double) totalWaves;
+      loadingProgress.setProgress(progress);
     });
   }
 
@@ -82,7 +84,6 @@ public class Preloader implements Initializable, LaunchListener {
 
   @Override
   public void failure(String msg) {
-    loadingInfo.setText(msg);
   }
 
   @Override

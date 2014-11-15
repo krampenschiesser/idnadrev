@@ -15,11 +15,13 @@
   ~ limitations under the License.
   -->
 
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Rectangle?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 <StackPane id="StackPane" fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
            minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" styleClass="preloaderBg"
            xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
@@ -46,13 +48,7 @@
                 <Font size="12.0"/>
             </font>
         </Text>
-        <Rectangle arcHeight="5.0" arcWidth="5.0" height="22.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0"
-                   styleClass="preloaderBoxBottom" width="1900.0" StackPane.alignment="BOTTOM_LEFT"/>
-        <Text fx:id="loadingInfo" fill="WHITE" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0"
-              styleClass="preloaderLoadingInfo" text="loadingInformation" StackPane.alignment="BOTTOM_CENTER">
-            <font>
-                <Font size="12.0"/>
-            </font>
-        </Text>
+        <ProgressBar fx:id="loadingProgress" progress="0.0" styleClass="preloaderProgress"
+                     StackPane.alignment="BOTTOM_RIGHT"/>
     </children>
 </StackPane>
