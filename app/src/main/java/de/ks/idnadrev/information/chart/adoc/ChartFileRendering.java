@@ -38,6 +38,7 @@ import java.util.concurrent.Future;
 public class ChartFileRendering {
   private static final Logger log = LoggerFactory.getLogger(ChartFileRendering.class);
   public static final int RENDERED_WIDTH = 900;
+  public static final String IMAGE_FORMAT = "png";
   @Inject
   JavaFXExecutorService fxExecutorService;
 
@@ -63,7 +64,7 @@ public class ChartFileRendering {
 
         BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
         try {
-          ImageIO.write(bufferedImage, "png", tempFilePath.toFile());
+          ImageIO.write(bufferedImage, IMAGE_FORMAT, tempFilePath.toFile());
         } catch (IOException e) {
           log.error("Could not write image {}", tempFilePath, e);
         }
