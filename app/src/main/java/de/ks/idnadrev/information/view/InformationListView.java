@@ -155,4 +155,8 @@ public class InformationListView extends BaseController<List<InformationPreviewI
       root.getRowConstraints().get(1).setMinHeight(0.0F);
     });
   }
+
+  public TableView<InformationPreviewItem> getInformationList() {
+    return informationList;
+  }
 }
