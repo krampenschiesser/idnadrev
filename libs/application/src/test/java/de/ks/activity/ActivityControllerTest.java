@@ -31,6 +31,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.*;
 
@@ -138,6 +139,25 @@ public class ActivityControllerTest {
     assertFalse(controller.getControllerInstance(Dummy.class).isResumed());
     controller.startOrResume(activityHint);
     assertFalse(controller.getControllerInstance(Dummy.class).isResumed());
+  }
 
+  protected final AtomicInteger returnCount = new AtomicInteger();
+
+  @Test
+  public void testReturnToRunnable() throws Exception {
+    ActivityHint activityHint = new ActivityHint(DummyActivity.class);
+    activityHint.setReturnToRunnable(() -> returnCount.incrementAndGet());
+    controller.startOrResume(activityHint);
+    controller.startOrResume(activityHint);
+
+    assertEquals(0, returnCount.get());
+    activityHint = new ActivityHint(DummyActivity.class);
+    activityHint.setReturnToRunnable(() -> returnCount.incrementAndGet());
+    activityHint.setReturnToActivity(controller.getCurrentActivityId());
+    activityHint.setNextActivityId("bla");
+    controller.startOrResume(activityHint);
+    assertEquals(0, returnCount.get());
+    controller.stopCurrent();
+    assertEquals(1, returnCount.get());
   }
 }

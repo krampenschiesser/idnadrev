@@ -100,13 +100,14 @@ public class ActivityController {
         if (hasCurrentActivity() && context.hasCurrentActivity()) {
           if (activityHint.getDataSourceHint() != null) {
             dataSourceHint = activityHint.getDataSourceHint().get();
+
           }
           suspendCurrent();
         }
 
         String id = activityHint.getNextActivityId();
         if (registeredActivities.containsKey(id)) {
-          resume(id, activityHint.isRefreshOnReturn(), dataSourceHint, activityHint);
+          resume(id, activityHint.isRefreshOnReturn(), dataSourceHint, null, activityHint);
         } else {
           context.startActivity(id);
           ActivityCfg activityCfg = CDI.current().select(activityHint.getNextActivity()).get();
@@ -155,7 +156,7 @@ public class ActivityController {
     }
   }
 
-  protected void resume(String id, boolean reload, Object returnHint, ActivityHint activityHint) {
+  protected void resume(String id, boolean reload, Object returnHint, Runnable returnToRunnable, ActivityHint activityHint) {
     context.startActivity(id);
     log.info("Resuming activity {}", id);
 
@@ -175,6 +176,13 @@ public class ActivityController {
     if (reload) {
       reload();
       store.waitForDataSource();
+    }
+    if (returnToRunnable != null) {
+      try {
+        returnToRunnable.run();
+      } catch (Exception e) {
+        log.error("Could not execute return to runnable", e);
+      }
     }
     log.info("Resumed activity {}", id);
   }
@@ -222,6 +230,7 @@ public class ActivityController {
         log.debug("Stopping activity {}", id);
         Object returnHint = null;
         String returnToActivity = null;
+        Runnable returnToRunnable = null;
 
         ActivityCfg activityCfg = registeredActivities.get(id);
         if (activityCfg != null) {
@@ -230,6 +239,7 @@ public class ActivityController {
             returnHint = activityHint.getReturnToDatasourceHint().get();
           }
           returnToActivity = activityHint.getReturnToActivity();
+          returnToRunnable = activityHint.getReturnToRunnable();
         }
 
         context.startActivity(id);
@@ -244,7 +254,7 @@ public class ActivityController {
         log.debug("Stopped activity {}", id);
 
         if (returnToActivity != null && registeredActivities.containsKey(returnToActivity)) {
-          resume(returnToActivity, true, returnHint, null);
+          resume(returnToActivity, true, returnHint, returnToRunnable, null);
         }
       } catch (Exception e) {
         log.error("Could not stop activity {}", id, e);

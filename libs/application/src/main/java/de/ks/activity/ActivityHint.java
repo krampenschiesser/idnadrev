@@ -25,7 +25,9 @@ public class ActivityHint {
   private String nextActivityId;
   protected String returnToActivity;
   protected Supplier returnToDatasourceHint;
+  protected Runnable returnToRunnable;
   protected Supplier dataSourceHint;
+
   protected boolean refreshOnReturn = true;
 
   public ActivityHint(Class<? extends ActivityCfg> activity) {
@@ -98,13 +100,13 @@ public class ActivityHint {
   @Override
   public String toString() {
     return "ActivityHint{" +
-            "nextActivity=" + nextActivity +
-            ", nextActivityId='" + nextActivityId + '\'' +
-            ", returnToActivity=" + returnToActivity +
-            ", returnToDatasourceHint=" + returnToDatasourceHint +
-            ", dataSourceHint=" + dataSourceHint +
+      "nextActivity=" + nextActivity +
+      ", nextActivityId='" + nextActivityId + '\'' +
+      ", returnToActivity=" + returnToActivity +
+      ", returnToDatasourceHint=" + returnToDatasourceHint +
+      ", dataSourceHint=" + dataSourceHint +
       ", refreshOnReturn=" + refreshOnReturn +
-            '}';
+      '}';
   }
 
   public boolean isRefreshOnReturn() {
@@ -118,5 +120,14 @@ public class ActivityHint {
 
   public String getDescription() {
     return nextActivity.getSimpleName() + "-" + nextActivityId;
+  }
+
+  public Runnable getReturnToRunnable() {
+    return returnToRunnable;
+  }
+
+  public ActivityHint setReturnToRunnable(Runnable returnToRunnable) {
+    this.returnToRunnable = returnToRunnable;
+    return this;
   }
 }
