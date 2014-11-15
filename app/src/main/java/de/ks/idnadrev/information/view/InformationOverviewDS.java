@@ -43,7 +43,7 @@ public class InformationOverviewDS implements ListDataSource<InformationPreviewI
   private static final String KEY_CATEGORY = PropertyPath.property(Information.class, Information::getCategory);
 
   protected QueryConsumer<Information, Information> filter;
-  protected volatile InformationLoadingHint loadingHint = new InformationLoadingHint(0, 30, null, "", null);
+  protected volatile InformationLoadingHint loadingHint = new InformationLoadingHint(null, "", null);
 
   @Override
   public List<InformationPreviewItem> loadModel(Consumer<List<InformationPreviewItem>> furtherProcessing) {

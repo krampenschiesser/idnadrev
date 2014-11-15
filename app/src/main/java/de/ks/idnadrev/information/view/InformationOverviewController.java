@@ -25,6 +25,7 @@ import de.ks.idnadrev.information.view.preview.TextInfoPreview;
 import de.ks.idnadrev.information.view.preview.UmlPreview;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
@@ -39,6 +40,8 @@ public class InformationOverviewController extends BaseController<List<Informati
   @FXML
   protected StackPane previewContainer;
   protected InformationPreview<?> currentPreview;
+  @FXML
+  protected Button edit;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -79,5 +82,11 @@ public class InformationOverviewController extends BaseController<List<Informati
         }
       }
     });
+    edit.disableProperty().bind(informationList.getSelectionModel().selectedItemProperty().isNull());
+  }
+
+  @FXML
+  public void onEdit() {
+    currentPreview.edit();
   }
 }

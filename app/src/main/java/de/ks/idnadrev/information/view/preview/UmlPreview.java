@@ -23,10 +23,9 @@ import de.ks.idnadrev.information.uml.UmlDiagramRender;
 import de.ks.idnadrev.information.view.InformationPreviewItem;
 import de.ks.persistence.PersistentWork;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,10 +49,6 @@ public class UmlPreview extends BaseController<List<InformationPreviewItem>> imp
   protected ImageView imageView;
   @FXML
   protected StackPane imageContainer;
-  @FXML
-  protected GridPane root;
-  @FXML
-  protected Button edit;
 
   protected volatile InformationPreviewItem selectedItem;
   protected final Map<String, UmlDiagramInfo> infos = new ConcurrentHashMap<>();
@@ -66,14 +61,14 @@ public class UmlPreview extends BaseController<List<InformationPreviewItem>> imp
   }
 
   @Override
-  public GridPane show(InformationPreviewItem item) {
+  public Pane show(InformationPreviewItem item) {
     this.selectedItem = item;
     Image image = previews.get(item.getName());
     if (image != null) {
       imageView.setImage(image);
       adjustImageViewSize();
     }
-    return root;
+    return imageContainer;
   }
 
   private void adjustImageViewSize() {
@@ -87,11 +82,6 @@ public class UmlPreview extends BaseController<List<InformationPreviewItem>> imp
 
   @Override
   public void edit() {
-    onEdit();
-  }
-
-  @FXML
-  void onEdit() {
     ActivityHint activityHint = new ActivityHint(UmlDiagramActivity.class, controller.getCurrentActivityId());
     String name = selectedItem.getName();
     UmlDiagramInfo diagramInfo = infos.get(name);

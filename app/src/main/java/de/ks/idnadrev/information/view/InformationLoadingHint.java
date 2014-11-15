@@ -23,27 +23,15 @@ import java.util.List;
 import java.util.Set;
 
 public class InformationLoadingHint {
-  protected final int firstResult;
-  protected final int maxResults;
   protected final List<String> tags = new ArrayList<>();
   protected final Class<? extends Information<?>> type;
   protected final String name;
   protected final Category category;
 
-  public InformationLoadingHint(int firstResult, int maxResults, Class<? extends Information<?>> type, String name, Category category) {
-    this.firstResult = firstResult;
-    this.maxResults = maxResults;
+  public InformationLoadingHint(Class<? extends Information<?>> type, String name, Category category) {
     this.type = type;
     this.name = name;
     this.category = category;
-  }
-
-  public int getFirstResult() {
-    return firstResult;
-  }
-
-  public int getMaxResults() {
-    return maxResults;
   }
 
   public List<String> getTags() {

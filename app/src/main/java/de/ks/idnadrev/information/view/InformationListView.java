@@ -32,28 +32,32 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.SetChangeListener;
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.GridPane;
 import javafx.util.StringConverter;
 
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.*;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.Set;
 
 public class InformationListView extends BaseController<List<InformationPreviewItem>> {
   public static final int CELL_SIZE = 30;
-
+  @FXML
+  protected GridPane root;
   @FXML
   protected TextField nameSearch;
   @FXML
   protected TagContainer tagContainerController;
   @FXML
   protected CategorySelection categorySelectionController;
+  @FXML
+  protected Label typeLabel;
   @FXML
   protected ComboBox<Class<? extends Information<?>>> typeCombo;
   @FXML
@@ -65,8 +69,6 @@ public class InformationListView extends BaseController<List<InformationPreviewI
   @FXML
   protected TableColumn<InformationPreviewItem, String> creationDateColumn;
 
-  //  protected final SimpleIntegerProperty visibleItemCount = new SimpleIntegerProperty();
-  protected final Map<String, Class<?>> comboValues = new HashMap<>();
   protected LastTextChange lastTextChange;
 
   @Override
@@ -130,15 +132,11 @@ public class InformationListView extends BaseController<List<InformationPreviewI
   }
 
   private InformationLoadingHint createLoadingHint() {
-//    int itemsPerPage = visibleItemCount.get();
-//    int firstResult = pager.getCurrentPageIndex() * itemsPerPage;
-    int itemsPerPage = -1;
-    int firstResult = -1;
     Class<? extends Information<?>> infoClass = typeCombo.getSelectionModel().getSelectedItem();
     infoClass = infoClass.equals(NoInfo.class) ? null : infoClass;
     String name = nameSearch.textProperty().getValueSafe().toLowerCase(Locale.ROOT).trim();
 
-    InformationLoadingHint loadingHint = new InformationLoadingHint(firstResult, itemsPerPage, infoClass, name, categorySelectionController.getSelectedValue());
+    InformationLoadingHint loadingHint = new InformationLoadingHint(infoClass, name, categorySelectionController.getSelectedValue());
     Set<String> tags = tagContainerController.getCurrentTags();
     loadingHint.setTags(tags);
     return loadingHint;
@@ -146,5 +144,15 @@ public class InformationListView extends BaseController<List<InformationPreviewI
 
   protected static class NoInfo extends Information<NoInfo> {
     //dummy because javafx can't handle null values in observable list
+  }
+
+  public void setFixedTypeFilter(Class<? extends Information<?>> type) {
+    controller.getJavaFXExecutor().submit(() -> {
+      typeCombo.getSelectionModel().select(type);
+      typeCombo.setVisible(false);
+      typeLabel.setVisible(false);
+      root.getRowConstraints().get(1).setPrefHeight(0.0F);
+      root.getRowConstraints().get(1).setMinHeight(0.0F);
+    });
   }
 }

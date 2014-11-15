@@ -24,8 +24,6 @@ import de.ks.idnadrev.information.view.InformationPreviewItem;
 import de.ks.persistence.PersistentWork;
 import javafx.fxml.FXML;
 import javafx.scene.chart.Chart;
-import javafx.scene.control.Button;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 
@@ -40,10 +38,6 @@ public class ChartPreview extends BaseController<List<InformationPreviewItem>> i
   protected volatile InformationPreviewItem selectedItem;
   @FXML
   protected StackPane chartContainer;
-  @FXML
-  protected GridPane root;
-  @FXML
-  protected Button edit;
 
   protected final Map<String, ChartInfo> infos = new ConcurrentHashMap<>();
   protected final ChartPreviewHelper previewHelper = new ChartPreviewHelper();
@@ -61,16 +55,11 @@ public class ChartPreview extends BaseController<List<InformationPreviewItem>> i
       chartContainer.getChildren().clear();
       chartContainer.getChildren().add(chart);
     }
-    return root;
+    return chartContainer;
   }
 
   @Override
   public void edit() {
-    onEdit();
-  }
-
-  @FXML
-  void onEdit() {
     ActivityHint activityHint = new ActivityHint(ChartInfoActivity.class, controller.getCurrentActivityId());
     String name = selectedItem.getName();
     ChartInfo diagramInfo = infos.get(name);

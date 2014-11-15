@@ -24,8 +24,7 @@ import de.ks.persistence.PersistentWork;
 import de.ks.text.view.AsciiDocContent;
 import de.ks.text.view.AsciiDocViewer;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 
 import java.net.URL;
@@ -38,10 +37,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class TextInfoPreview extends BaseController<List<InformationPreviewItem>> implements InformationPreview<TextInfo> {
 
-  @FXML
-  protected GridPane root;
-  @FXML
-  protected Button edit;
   @FXML
   protected StackPane adocContainer;
 
@@ -80,8 +75,18 @@ public class TextInfoPreview extends BaseController<List<InformationPreviewItem>
     return CompletableFuture.supplyAsync(() -> PersistentWork.forName(TextInfo.class, preview.getName()), controller.getExecutorService());
   }
 
-  @FXML
-  void onEdit() {
+  public Pane show(InformationPreviewItem item) {
+    this.selectedItem = item;
+    TextInfo textInfo = infos.get(item.getName());
+    if (textInfo != null) {
+      AsciiDocContent content = new AsciiDocContent(textInfo.getName(), textInfo.getDescription());
+      asciiDocViewer.show(content);
+    }
+    return adocContainer;
+  }
+
+  @Override
+  public void edit() {
     ActivityHint activityHint = new ActivityHint(TextInfoActivity.class, controller.getCurrentActivityId());
     String name = selectedItem.getName();
     TextInfo textInfo = infos.get(name);
@@ -89,20 +94,5 @@ public class TextInfoPreview extends BaseController<List<InformationPreviewItem>
 
     activityHint.setDataSourceHint(() -> textInfo);
     controller.startOrResume(activityHint);
-  }
-
-  public GridPane show(InformationPreviewItem item) {
-    this.selectedItem = item;
-    TextInfo textInfo = infos.get(item.getName());
-    if (textInfo != null) {
-      AsciiDocContent content = new AsciiDocContent(textInfo.getName(), textInfo.getDescription());
-      asciiDocViewer.show(content);
-    }
-    return root;
-  }
-
-  @Override
-  public void edit() {
-    onEdit();
   }
 }

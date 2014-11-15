@@ -3,7 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<GridPane hgap="5.0" minHeight="300.0" minWidth="400.0" vgap="5.0" xmlns="http://javafx.com/javafx/8"
+<GridPane fx:id="root" hgap="5.0" minHeight="300.0" minWidth="400.0" vgap="5.0" xmlns="http://javafx.com/javafx/8"
           xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.idnadrev.information.view.InformationListView">
     <columnConstraints>
         <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
@@ -18,7 +18,7 @@
     </rowConstraints>
     <children>
         <Label text="%name:"/>
-        <Label text="%type:" GridPane.rowIndex="1"/>
+        <Label fx:id="typeLabel" text="%type:" GridPane.rowIndex="1"/>
         <Label text="%tags:" GridPane.rowIndex="2"/>
         <TextField fx:id="nameSearch" GridPane.columnIndex="1"/>
         <ComboBox fx:id="typeCombo" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
