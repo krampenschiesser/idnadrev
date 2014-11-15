@@ -38,7 +38,10 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.*;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -49,15 +52,16 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
-import org.controlsfx.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -114,8 +118,6 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
   protected TextArea plainHtml;
   protected File lastFile;
 
-  protected Dialog helpDialog;
-  protected WebView helpView;
   protected final SimpleStringProperty text = new SimpleStringProperty();
   protected LastExecutionGroup<String> renderGroup;
   protected Button insertImage = null;
@@ -138,11 +140,6 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
 
     renderGroup = new LastExecutionGroup<>("adocrender", 500, controller.getExecutorService());
 
-    CompletableFuture.supplyAsync(() -> new WebView(), controller.getJavaFXExecutor())//
-      .thenAccept(webView -> {
-        helpView = webView;
-        helpView.getEngine().load("http://powerman.name/doc/asciidoc");
-      });
     text.bindBidirectional(editor.textProperty());
 
     editor.textProperty().addListener((p, o, n) -> {
@@ -354,18 +351,16 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
   void showHelp() {
     String title = Localized.get("help");
     title = StringUtils.remove(title, "_");
-    helpDialog = new Dialog(this.help, title);
 
-    helpDialog.setContent(helpView);
-
-    cssSheets.forEach((sheet) -> {
-      helpDialog.getStylesheets().add(sheet);
-    });
-
-    Stage stage = (Stage) helpDialog.getWindow();
-    stage.initModality(Modality.NONE);
-
-    helpDialog.show();
+    new Thread(() -> {
+      Desktop desktop = Desktop.getDesktop();
+      URI uri = URI.create("http://powerman.name/doc/asciidoc");
+      try {
+        desktop.browse(uri);
+      } catch (IOException e) {
+        log.error("Could not browse {}", uri, e);
+      }
+    }).start();
   }
 
   @FXML

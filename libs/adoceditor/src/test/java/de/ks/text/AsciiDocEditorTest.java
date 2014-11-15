@@ -31,13 +31,9 @@ import de.ks.text.image.GlobalImageProvider;
 import de.ks.text.image.ImageData;
 import de.ks.text.image.SelectImageController;
 import de.ks.util.FXPlatform;
-import javafx.application.Platform;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import javafx.scene.web.WebEngine;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
@@ -74,25 +70,6 @@ public class AsciiDocEditorTest {
   @After
   public void tearDown() throws Exception {
     activityController.stopAll();
-  }
-
-  @Test
-  public void testShowHelp() throws Exception {
-    FXPlatform.waitForFX();
-    Node current = activityController.getCurrentNode();
-    assertNotNull(current);
-    assertNotNull("needs scene", current.getScene());
-
-    Platform.runLater(() -> adocEditor.showHelp());
-    FXPlatform.waitForFX();
-    assertTrue(adocEditor.helpDialog.getWindow().isShowing());
-
-    Stage stage = (Stage) adocEditor.helpDialog.getWindow();
-    assertEquals(Modality.NONE, stage.getModality());
-
-    Platform.runLater(() -> adocEditor.helpDialog.hide());
-    FXPlatform.waitForFX();
-    assertFalse(adocEditor.helpDialog.getWindow().isShowing());
   }
 
   @Test
