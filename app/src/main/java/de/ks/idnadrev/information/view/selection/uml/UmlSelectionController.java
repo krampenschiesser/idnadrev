@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.information.view.selection.chart;
+package de.ks.idnadrev.information.view.selection.uml;
 
-import de.ks.idnadrev.entity.information.ChartInfo;
+import de.ks.idnadrev.entity.information.UmlDiagramInfo;
 import de.ks.idnadrev.information.view.selection.BaseInfoSelectionController;
 
-public class ChartSelectionController extends BaseInfoSelectionController<ChartInfo> {
-  public ChartSelectionController() {
-    super(ChartInfo.class);
+public class UmlSelectionController extends BaseInfoSelectionController<UmlDiagramInfo> {
+
+  public UmlSelectionController() {
+    super(UmlDiagramInfo.class);
   }
 }
