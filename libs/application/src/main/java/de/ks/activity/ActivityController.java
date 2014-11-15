@@ -106,7 +106,7 @@ public class ActivityController {
 
         String id = activityHint.getNextActivityId();
         if (registeredActivities.containsKey(id)) {
-          resume(id, activityHint.needsReload(), dataSourceHint, activityHint);
+          resume(id, activityHint.isRefreshOnReturn(), dataSourceHint, activityHint);
         } else {
           context.startActivity(id);
           ActivityCfg activityCfg = CDI.current().select(activityHint.getNextActivity()).get();
@@ -127,7 +127,7 @@ public class ActivityController {
 
           initialization.getActivityCallbacks().forEach(ActivityCallback::onStart);
 
-          if (activityHint.needsReload()) {
+          if (activityHint.isRefreshOnReturn()) {
             reload();
             store.waitForDataSource();
           }

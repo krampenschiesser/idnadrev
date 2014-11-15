@@ -26,6 +26,7 @@ public class ActivityHint {
   protected String returnToActivity;
   protected Supplier returnToDatasourceHint;
   protected Supplier dataSourceHint;
+  protected boolean refreshOnReturn = true;
 
   public ActivityHint(Class<? extends ActivityCfg> activity) {
     this(activity, activity.getSimpleName(), null);
@@ -102,11 +103,17 @@ public class ActivityHint {
             ", returnToActivity=" + returnToActivity +
             ", returnToDatasourceHint=" + returnToDatasourceHint +
             ", dataSourceHint=" + dataSourceHint +
+      ", refreshOnReturn=" + refreshOnReturn +
             '}';
   }
 
-  public boolean needsReload() {
-    return true;
+  public boolean isRefreshOnReturn() {
+    return refreshOnReturn;
+  }
+
+  public ActivityHint setRefreshOnReturn(boolean refreshOnReturn) {
+    this.refreshOnReturn = refreshOnReturn;
+    return this;
   }
 
   public String getDescription() {
