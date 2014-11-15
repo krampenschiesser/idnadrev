@@ -13,28 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.information.chart.adoc;
+package de.ks.idnadrev.information.uml.adoc;
 
+import de.ks.idnadrev.entity.information.UmlDiagramInfo;
 import de.ks.idnadrev.information.BaseInformationPreProcessor;
+import de.ks.idnadrev.information.uml.UmlDiagramRender;
+import de.ks.persistence.PersistentWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
 import java.nio.file.Path;
 import java.util.Map;
 
-public class ChartPreProcessor extends BaseInformationPreProcessor {
-  private static final Logger log = LoggerFactory.getLogger(ChartPreProcessor.class);
+public class DiagramPreProcessor extends BaseInformationPreProcessor {
+  public static final int RENDERED_WIDTH = 900;
+  private static final Logger log = LoggerFactory.getLogger(DiagramPreProcessor.class);
 
-  @Inject
-  ChartFileRendering fileRendering;
+  protected final UmlDiagramRender render = new UmlDiagramRender();
 
-  public ChartPreProcessor() {
-    super("chart");
+  public DiagramPreProcessor() {
+    super("umldiagram");
   }
 
   @Override
   protected void handleIds(Map<Long, Path> tasks) {
-    tasks.forEach((id, path) -> fileRendering.renderToFile(id, path));
+
+    tasks.forEach((id, path) -> {
+      UmlDiagramInfo diagramInfo = PersistentWork.byId(UmlDiagramInfo.class, id);
+      if (diagramInfo != null) {
+        render.generatePng(diagramInfo.getContent(), RENDERED_WIDTH, path);
+      }
+    });
   }
 }

@@ -30,7 +30,6 @@ public class ChartPreProcessorTest {
 
   @Test
   public void testReplacing() throws Exception {
-
     String text = "chart::103\n\n== Title\nbla blubb\nchart::1 ende\nchart::1";
 
     String result = preProcessor.preProcess(text, null);
