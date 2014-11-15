@@ -46,6 +46,9 @@ public abstract class BaseInformationPreProcessor implements AsciiDocPreProcesso
 
   @Override
   public String preProcess(String adoc, AsciiDocViewer viewer) {
+    if (adoc == null) {
+      return null;
+    }
     Map<Long, Path> tasks = new HashMap<>();
     StringBuilder retval = new StringBuilder();
 
