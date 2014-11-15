@@ -26,7 +26,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -47,6 +46,8 @@ public class ActivityInitialization {
 
   @Inject
   ActivityController controller;
+  @Inject
+  EventBus eventBus;
 
   public void loadActivity(ActivityCfg activityCfg) {
     currentlyLoadedControllers.get().clear();
@@ -97,7 +98,6 @@ public class ActivityInitialization {
     if (!preloads.containsKey(controllerClass)) {
       CompletableFuture<DefaultLoader<Node, Object>> loaderFuture = CompletableFuture.supplyAsync(getDefaultLoaderSupplier(controllerClass), executorService).exceptionally((t) -> {
         if (t.getCause() instanceof RuntimeException && t.getCause().getCause() instanceof LoadException) {
-          EventBus eventBus = CDI.current().select(EventBus.class).get();
           currentlyLoadedControllers.get().forEach(eventBus::unregister);
           currentlyLoadedControllers.get().clear();
           log.info("Last load of {} failed, will try again in JavaFX Thread", new DefaultLoader<>(controllerClass).getFxmlFile());

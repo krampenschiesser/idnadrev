@@ -35,10 +35,22 @@ import java.util.List;
  */
 public class ControllerFactory implements Callback<Class<?>, Object> {
   private static final Logger log = LoggerFactory.getLogger(ControllerFactory.class);
+  private static CDI cdi;
+
+  static <T> CDI<T> getCdi() {
+    if (cdi == null) {
+      synchronized (ControllerFactory.class) {
+        if (cdi == null) {
+          cdi = CDI.current();
+        }
+      }
+    }
+    return cdi;
+  }
 
   @Override
   public Object call(Class<?> clazz) {
-    BeanManager beanManager = CDI.current().getBeanManager();
+    BeanManager beanManager = getCdi().getBeanManager();
     for (Annotation annotation : clazz.getAnnotations()) {
       if (beanManager.isScope(annotation.annotationType())) {
         throw new IllegalStateException("Class " + clazz.getName() + " is not allowed to be in scope " + annotation + " because JavaFX can't inject fields in proxy types");
@@ -46,7 +58,7 @@ public class ControllerFactory implements Callback<Class<?>, Object> {
     }
 
     Object object;
-    Instance<?> instance = CDI.current().select(clazz);
+    Instance<?> instance = getCdi().select(clazz);
     if (instance.isUnsatisfied()) {
       List<Field> injectedFields = ReflectionUtil.getAllFields(clazz, (f) -> f.isAnnotationPresent(Inject.class));
       if (!injectedFields.isEmpty()) {
@@ -65,11 +77,9 @@ public class ControllerFactory implements Callback<Class<?>, Object> {
   }
 
   protected void registerLoadedController(Object object) {
-    CDI<Object> cdi = CDI.current();
-
-    ActivityContext context = cdi.select(ActivityContext.class).get();
+    ActivityContext context = getCdi().select(ActivityContext.class).get();
     if (context.hasCurrentActivity()) {
-      Instance<ActivityInitialization> initializationInstance = cdi.select(ActivityInitialization.class);
+      Instance<ActivityInitialization> initializationInstance = getCdi().select(ActivityInitialization.class);
       initializationInstance.get().addControllerToInitialize(object);
     }
   }

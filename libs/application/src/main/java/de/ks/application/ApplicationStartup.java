@@ -37,10 +37,11 @@ public class ApplicationStartup {
   private MainWindow mainWindow;
 
   public void start(Stage stage) {
-    Thread.currentThread().setUncaughtExceptionHandler(CDI.current().select(FXApplicationExceptionHandler.class).get());
+    CDI<Object> cdi = CDI.current();
+    Thread.currentThread().setUncaughtExceptionHandler(cdi.select(FXApplicationExceptionHandler.class).get());
     try {
       log.info("Starting application " + getClass().getName());
-      Instance<MainWindow> select = CDI.current().select(MainWindow.class);
+      Instance<MainWindow> select = cdi.select(MainWindow.class);
       if (select.isUnsatisfied()) {
         stage.setTitle(Localized.get("warning.general"));
         stage.setScene(new Scene(new Label(Localized.get("warning.unsatisfiedApplication")), 640, 480));

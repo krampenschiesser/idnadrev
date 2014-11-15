@@ -43,6 +43,18 @@ import java.util.function.Supplier;
  * Usually used as an anonymous class.
  */
 public class PersistentWork {
+  private static CDI cdi;
+
+  static <T> CDI<T> getCdi() {
+    if (cdi == null) {
+      synchronized (PersistentWork.class) {
+        if (cdi == null) {
+          cdi = CDI.current();
+        }
+      }
+    }
+    return cdi;
+  }
   private static final Logger log = LoggerFactory.getLogger(PersistentWork.class);
 
   public static <R> R wrap(Supplier<R> supplier) {
@@ -276,7 +288,7 @@ public class PersistentWork {
       Object retval = execute();
       return (T) retval;
     } else {
-      localEM.set(CDI.current().select(EntityManager.class).get());
+      localEM.set(getCdi().select(EntityManager.class).get());
       Object run = Transactional.withNewTransaction(() -> {
         EntityManager em = localEM.get();
         TransactionProvider.instance.registerEntityManager(em);

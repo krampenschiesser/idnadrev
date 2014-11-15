@@ -85,6 +85,11 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
   ActivityController controller;
   @Inject
   ActivityInitialization initialization;
+  @Inject
+  Instance<AsciiDocEditorCommand> editorCommands;
+  @Inject
+  @FxCss
+  Instance<String> cssSheets;
   @FXML
   protected TextArea editor;
   @FXML
@@ -287,7 +292,7 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
   }
 
   private void addCommands() {
-    CDI.current().select(AsciiDocEditorCommand.class).forEach(c -> {
+    editorCommands.forEach(c -> {
       Button button = new Button();
       button.setMnemonicParsing(true);
       button.focusedProperty().addListener((p, o, n) -> {
@@ -353,8 +358,7 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
 
     helpDialog.setContent(helpView);
 
-    Instance<String> styleSheets = CDI.current().select(String.class, FxCss.LITERAL);
-    styleSheets.forEach((sheet) -> {
+    cssSheets.forEach((sheet) -> {
       helpDialog.getStylesheets().add(sheet);
     });
 

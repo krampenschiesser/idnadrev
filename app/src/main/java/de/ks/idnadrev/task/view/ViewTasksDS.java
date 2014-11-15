@@ -22,7 +22,7 @@ import de.ks.persistence.PersistentWork;
 import de.ks.persistence.QueryConsumer;
 import de.ks.persistence.entity.NamedPersistentObject;
 
-import javax.enterprise.inject.spi.CDI;
+import javax.inject.Inject;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -34,9 +34,12 @@ public class ViewTasksDS implements ListDataSource<Task> {
   private Task taskToSelect;
   private QueryConsumer<Task, Task> filter;
 
+  @Inject
+  ActivityInitialization initialization;
+
   @Override
   public List<Task> loadModel(Consumer<List<Task>> furtherProcessing) {
-    TaskFilterView taskFilterView = CDI.current().select(ActivityInitialization.class).get().getControllerInstance(TaskFilterView.class);
+    TaskFilterView taskFilterView = initialization.getControllerInstance(TaskFilterView.class);
     taskFilterView.applyFilterOnDS(this);
 
     return PersistentWork.wrap(() -> {

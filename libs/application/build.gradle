@@ -28,9 +28,11 @@ dependencies {
 
     compile "com.fasterxml.jackson.core:jackson-databind:$jackson"
     compile "org.apache.deltaspike.cdictrl:deltaspike-cdictrl-api:$deltaspike"
+    compile "org.apache.deltaspike.core:deltaspike-core-api:$deltaspike"
     compile "javax.enterprise:cdi-api:$cdiapi"
 
     runtime "org.apache.deltaspike.cdictrl:deltaspike-cdictrl-weld:$deltaspike"
+    compile "org.apache.deltaspike.core:deltaspike-core-impl:$deltaspike"
     runtime "org.jboss.weld.se:weld-se:$weld"
     runtime "org.jboss:jandex:$jandex"
 

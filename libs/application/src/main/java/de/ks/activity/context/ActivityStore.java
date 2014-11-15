@@ -31,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import java.lang.management.ManagementFactory;
 import java.util.concurrent.*;
@@ -62,7 +61,9 @@ public class ActivityStore {
   @Inject
   protected ActivityInitialization initialization;
   @Inject
-  ValidationRegistry registry;
+  protected ValidationRegistry registry;
+  @Inject
+  protected EventBus eventBus;
 
   protected final SimpleObjectProperty<Object> model = new SimpleObjectProperty<>();
   protected final SimpleBooleanProperty loading = new SimpleBooleanProperty(false);
@@ -171,7 +172,6 @@ public class ActivityStore {
         return value;
       }, javaFXExecutor).thenAcceptAsync((value) -> {
         try {
-          EventBus eventBus = CDI.current().select(EventBus.class).get();
           eventBus.post(new ActivityLoadFinishedEvent(value));
         } finally {
           finishExecution();

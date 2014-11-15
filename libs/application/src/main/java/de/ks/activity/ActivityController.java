@@ -38,7 +38,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.PreDestroy;
 import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.HashMap;
@@ -72,6 +71,9 @@ public class ActivityController {
   protected ActivityExecutor executor;
   @Inject
   protected ActivityJavaFXExecutor javaFXExecutor;
+
+  @Inject
+  protected Instance<Object> factory;
 
   protected final Map<String, ActivityCfg> registeredActivities = new HashMap<>();
   protected final ReentrantLock lock = new ReentrantLock(true);
@@ -110,14 +112,14 @@ public class ActivityController {
           resume(id, activityHint.isRefreshOnReturn(), dataSourceHint, null, activityHint);
         } else {
           context.startActivity(id);
-          ActivityCfg activityCfg = CDI.current().select(activityHint.getNextActivity()).get();
+          ActivityCfg activityCfg = factory.select(activityHint.getNextActivity()).get();
 
           registeredActivities.put(id, activityCfg);
 
           activityCfg.setActivityHint(activityHint);
 
           log.info("Starting activity {}", id);
-          DataSource dataSource = CDI.current().select(activityCfg.getDataSource()).get();
+          DataSource dataSource = factory.select(activityCfg.getDataSource()).get();
           dataSource.setLoadingHint(dataSourceHint);
           store.setDatasource(dataSource);
 

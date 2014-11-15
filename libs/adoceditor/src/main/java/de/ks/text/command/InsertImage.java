@@ -33,7 +33,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import java.util.Comparator;
 import java.util.TreeSet;
@@ -43,6 +42,9 @@ public class InsertImage implements AsciiDocEditorCommand {
   ActivityInitialization initialization;
   @Inject
   Instance<ImageProvider> imageProviders;
+  @Inject
+  @FxCss
+  Instance<String> cssSheets;
 
   protected final ObservableSet<ImageData> images = FXCollections.observableSet(new TreeSet<ImageData>(Comparator.comparing(id -> id.getName())));
   protected SelectImageController selectImageController;
@@ -96,8 +98,7 @@ public class InsertImage implements AsciiDocEditorCommand {
     });
     dialog.setScene(scene);
 
-    Instance<String> styleSheets = CDI.current().select(String.class, FxCss.LITERAL);
-    styleSheets.forEach((sheet) -> {
+    cssSheets.forEach((sheet) -> {
       scene.getStylesheets().add(sheet);
     });
     dialog.show();
