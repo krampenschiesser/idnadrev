@@ -16,6 +16,7 @@ package de.ks.text.view;
 
 import de.ks.activity.ActivityController;
 import de.ks.activity.executor.ActivityExecutor;
+import de.ks.activity.initialization.ActivityCallback;
 import de.ks.activity.initialization.ActivityInitialization;
 import de.ks.application.fxml.DefaultLoader;
 import de.ks.executor.JavaFXExecutorService;
@@ -41,7 +42,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
-public class AsciiDocViewer implements Initializable {
+public class AsciiDocViewer implements Initializable, ActivityCallback {
+
+  public static final String DEFAULT = "default";
 
   public static CompletableFuture<DefaultLoader<Node, AsciiDocViewer>> load(Consumer<StackPane> viewConsumer, Consumer<AsciiDocViewer> controllerConsumer) {
     ActivityInitialization initialization = CDI.current().select(ActivityInitialization.class).get();
@@ -71,6 +74,8 @@ public class AsciiDocViewer implements Initializable {
   protected final SimpleStringProperty currentHtml = new SimpleStringProperty();
   protected final SimpleStringProperty currentIdentifier = new SimpleStringProperty();
 
+  protected Set<Runnable> supensionRunnables = new HashSet<>();
+
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     CompletableFuture.supplyAsync(() -> new WebView(), controller.getJavaFXExecutor()).thenAccept(view -> {
@@ -93,11 +98,9 @@ public class AsciiDocViewer implements Initializable {
   }
 
   public void showDirect(String content) {
-    String identifier = "default";
-    preloaded.remove(identifier);
-    currentIdentifier.set(identifier);
-
-    preload(Collections.singletonList(new AsciiDocContent(identifier, content)));
+    currentIdentifier.set(DEFAULT);
+    preloaded.remove(DEFAULT);
+    preload(Collections.singletonList(new AsciiDocContent(DEFAULT, content)));
   }
 
   public void show(AsciiDocContent content) {
@@ -145,7 +148,7 @@ public class AsciiDocViewer implements Initializable {
 
   protected String preProcess(String input) {
     for (AsciiDocPreProcessor preProcessor : preProcessors) {
-      input = preProcessor.preProcess(input);
+      input = preProcessor.preProcess(input, this);
     }
     return input;
   }
@@ -176,5 +179,19 @@ public class AsciiDocViewer implements Initializable {
 
   public void setCurrentHtml(String currentHtml) {
     this.currentHtml.set(currentHtml);
+  }
+
+  public void addSuspensionRunnable(Runnable r) {
+    supensionRunnables.add(r);
+  }
+
+  @Override
+  public void onSuspend() {
+    supensionRunnables.forEach(r -> r.run());
+  }
+
+  @Override
+  public void onStop() {
+    onSuspend();
   }
 }
