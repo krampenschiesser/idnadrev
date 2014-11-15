@@ -14,6 +14,7 @@
  */
 package de.ks.launch;
 
+import de.ks.application.FXApplicationExceptionHandler;
 import de.ks.fxcontrols.weekview.WeekHelper;
 import de.ks.idnadrev.entity.*;
 import de.ks.idnadrev.entity.information.*;
@@ -54,6 +55,7 @@ public class DummyData extends Service {
   @Override
   protected void doStart() {
     if (Boolean.getBoolean(CREATE_DUMMYDATA)) {
+      FXApplicationExceptionHandler.showExceptions = true;
       createData();
     }
   }
