@@ -33,7 +33,7 @@ public class ChartPreProcessorTest {
 
     String text = "chart::103\n\n== Title\nbla blubb\nchart::1 ende\nchart::1";
 
-    String result = preProcessor.preProcess(text);
+    String result = preProcessor.preProcess(text, null);
     log.info(result);
     assertThat(result, containsString("image::"));
 
@@ -45,7 +45,7 @@ public class ChartPreProcessorTest {
   public void testEnding() throws Exception {
     String text = "chart::103\n\n== Title\nbla blubb\nchart::1 ende\nchart::1 Sauerland";
 
-    String result = preProcessor.preProcess(text);
+    String result = preProcessor.preProcess(text, null);
     assertThat(result, Matchers.endsWith("Sauerland"));
   }
 }
