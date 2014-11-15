@@ -15,7 +15,9 @@
  */
 package de.ks.idnadrev.information.chart.adoc;
 
+import de.ks.file.FileDeletionRunnable;
 import de.ks.text.process.AsciiDocPreProcessor;
+import de.ks.text.view.AsciiDocViewer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +40,7 @@ public class ChartPreProcessor implements AsciiDocPreProcessor {
   protected final Pattern compile = Pattern.compile(KEY_CHART + "\\d*");
 
   @Override
-  public String preProcess(String adoc) {
+  public String preProcess(String adoc, AsciiDocViewer viewer) {
     Map<Long, Path> tasks = new HashMap<>();
     StringBuilder retval = new StringBuilder();
 
@@ -53,19 +55,20 @@ public class ChartPreProcessor implements AsciiDocPreProcessor {
       String chartPath = "chart" + chartId;
       String tmpDir = System.getProperty("java.io.tmpdir");
 
-      Path tempFilePath = Paths.get(tmpDir, chartPath + ".jpg");
+      Path tempFilePath = Paths.get(tmpDir, chartPath + "." + ChartFileRendering.IMAGE_FORMAT);
       File file = tempFilePath.toFile();
-      file.deleteOnExit();
-      if (file.exists()) {
-        file.delete();
+      if (!file.exists()) {
+        try {
+          Long id = Long.valueOf(chartId);
+          tasks.put(id, tempFilePath);
+        } catch (NumberFormatException e) {
+          log.warn("Could not parse chartId {}", chartId);
+        }
+        if (viewer != null) {
+          viewer.addSuspensionRunnable(new FileDeletionRunnable(file));
+        }
       }
 
-      try {
-        Long id = Long.valueOf(chartId);
-        tasks.put(id, tempFilePath);
-      } catch (NumberFormatException e) {
-        log.warn("Could not parse chartId {}", chartId);
-      }
 
       retval.append("\n");
       retval.append("image::file:///");

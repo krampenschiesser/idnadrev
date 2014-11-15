@@ -15,6 +15,8 @@
  */
 package de.ks.text.process;
 
+import de.ks.text.view.AsciiDocViewer;
+
 public interface AsciiDocPreProcessor {
-  String preProcess(String adoc);
+  String preProcess(String adoc, AsciiDocViewer viewer);
 }

@@ -16,6 +16,7 @@
 package de.ks.file;
 
 import de.ks.text.process.AsciiDocPreProcessor;
+import de.ks.text.view.AsciiDocViewer;
 
 import javax.inject.Inject;
 
@@ -24,7 +25,7 @@ public class FileStorePreprocessor implements AsciiDocPreProcessor {
   FileStore fileStore;
 
   @Override
-  public String preProcess(String adoc) {
+  public String preProcess(String adoc, AsciiDocViewer viewer) {
     return fileStore.replaceFileStoreDir(adoc);
   }
 }
