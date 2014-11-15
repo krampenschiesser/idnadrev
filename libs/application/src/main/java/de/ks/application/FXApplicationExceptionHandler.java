@@ -24,6 +24,7 @@ import java.util.List;
 
 @Singleton
 public class FXApplicationExceptionHandler implements Thread.UncaughtExceptionHandler {
+  public static boolean showExceptions = false;
   private static final Logger log = LoggerFactory.getLogger(FXApplicationExceptionHandler.class);
   private final List<Throwable> throwables = new ArrayList<>();
 
@@ -31,7 +32,10 @@ public class FXApplicationExceptionHandler implements Thread.UncaughtExceptionHa
   public void uncaughtException(Thread t, Throwable e) {
     log.error("got uncaught exception ", e);
     throwables.add(e);
-    Dialogs.create().showException(e);
+
+    if (showExceptions) {
+      Dialogs.create().showException(e);
+    }
   }
 
   public List<Throwable> getThrowables() {
