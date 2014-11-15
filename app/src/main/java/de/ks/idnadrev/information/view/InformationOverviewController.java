@@ -15,59 +15,23 @@
  */
 package de.ks.idnadrev.information.view;
 
-import de.ks.BaseController;
-import de.ks.idnadrev.entity.information.ChartInfo;
-import de.ks.idnadrev.entity.information.TextInfo;
-import de.ks.idnadrev.entity.information.UmlDiagramInfo;
-import de.ks.idnadrev.information.view.preview.ChartPreview;
-import de.ks.idnadrev.information.view.preview.InformationPreview;
-import de.ks.idnadrev.information.view.preview.TextInfoPreview;
-import de.ks.idnadrev.information.view.preview.UmlPreview;
-import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.StackPane;
 
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 
-public class InformationOverviewController extends BaseController<List<InformationPreviewItem>> {
-  @FXML
-  protected InformationListView listController;
-  @FXML
-  protected StackPane previewContainer;
-  protected InformationPreview<?> currentPreview;
+public class InformationOverviewController extends BaseInformationOverviewController {
   @FXML
   protected Button edit;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    TableView<InformationPreviewItem> informationList = listController.informationList;
-    ReadOnlyObjectProperty<InformationPreviewItem> selectedItemProperty = informationList.getSelectionModel().selectedItemProperty();
-    selectedItemProperty.addListener((p, o, n) -> {
-      previewContainer.getChildren().clear();
-      if (n != null) {
-        if (n.getType().equals(TextInfo.class)) {
-          TextInfoPreview preview = activityInitialization.getControllerInstance(TextInfoPreview.class);
-          currentPreview = preview;
-          previewContainer.getChildren().add(preview.show(n));
-        }
-        if (n.getType().equals(UmlDiagramInfo.class)) {
-          UmlPreview preview = activityInitialization.getControllerInstance(UmlPreview.class);
-          currentPreview = preview;
-          previewContainer.getChildren().add(preview.show(n));
-        }
-        if (n.getType().equals(ChartInfo.class)) {
-          ChartPreview preview = activityInitialization.getControllerInstance(ChartPreview.class);
-          currentPreview = preview;
-          previewContainer.getChildren().add(preview.show(n));
-        }
-      }
-    });
+    super.initialize(location, resources);
 
+    TableView<InformationPreviewItem> informationList = listController.getInformationList();
     informationList.setOnKeyReleased(e -> {
       if (e.getCode() == KeyCode.ENTER) {
         if (currentPreview != null) {
