@@ -11,7 +11,7 @@ install:
   - TERM=dumb ./gradlew assemble
 
 script:
-  - TERM=dumb ./gradlew --info check
+  - TERM=dumb ./gradlew check
 
 before_install:
   - "export DISPLAY=:99.0"
