@@ -95,4 +95,10 @@ public class TextInfoPreview extends BaseController<List<InformationPreviewItem>
     activityHint.setDataSourceHint(() -> textInfo);
     controller.startOrResume(activityHint);
   }
+
+  @Override
+  public TextInfo getCurrentItem() {
+    String name = selectedItem.getName();
+    return infos.get(name);
+  }
 }

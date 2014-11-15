@@ -23,4 +23,6 @@ public interface InformationPreview<T extends Information<T>> {
   Pane show(InformationPreviewItem item);
 
   void edit();
+
+  T getCurrentItem();
 }

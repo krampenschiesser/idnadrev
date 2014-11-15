@@ -92,6 +92,12 @@ public class UmlPreview extends BaseController<List<InformationPreviewItem>> imp
   }
 
   @Override
+  public UmlDiagramInfo getCurrentItem() {
+    String name = selectedItem.getName();
+    return infos.get(name);
+  }
+
+  @Override
   protected void onRefresh(List<InformationPreviewItem> model) {
     adjustImageViewSize();
     infos.clear();

@@ -68,6 +68,7 @@ public class ChartPreview extends BaseController<List<InformationPreviewItem>> i
     controller.startOrResume(activityHint);
   }
 
+
   @Override
   protected void onRefresh(List<InformationPreviewItem> model) {
     infos.clear();
@@ -90,5 +91,11 @@ public class ChartPreview extends BaseController<List<InformationPreviewItem>> i
           chartContainer.getChildren().add(chart);
         }
       }, controller.getJavaFXExecutor());
+  }
+
+  @Override
+  public ChartInfo getCurrentItem() {
+    String name = selectedItem.getName();
+    return infos.get(name);
   }
 }
