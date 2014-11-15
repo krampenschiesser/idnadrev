@@ -30,8 +30,8 @@ import de.ks.i18n.Localized;
 import de.ks.javafx.FxCss;
 import de.ks.javafx.ScreenResolver;
 import de.ks.text.command.AsciiDocEditorCommand;
+import de.ks.text.view.AsciiDocContent;
 import de.ks.text.view.AsciiDocViewer;
-import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -59,10 +59,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
@@ -151,8 +148,12 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
             return s;
           }, controller.getExecutorService())//
           .thenAcceptAsync(s -> {
-            preview.clear();
-            preview.showDirect(s);
+            if (previewTab.isSelected()) {
+              preview.clear();
+              preview.showDirect(s);
+            } else {
+              preview.preload(Collections.singletonList(new AsciiDocContent(AsciiDocViewer.DEFAULT, s)));
+            }
             if (previewPopupStage != null) {
               popupPreview.clear();
               popupPreview.showDirect(s);
@@ -160,6 +161,7 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
           }, controller.getJavaFXExecutor());
       }
     });
+
 
     tabPane.focusedProperty().addListener((p, o, n) -> {
       if (n) {
@@ -175,15 +177,14 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
 
     tabPane.getSelectionModel().selectedIndexProperty().addListener((p, o, n) -> {
       if (n != null && n.intValue() == 1) {
-//        preview.clear();
-//        preview.showDirect(getText());
-        Platform.runLater(() -> preview.requestFocus());
+        controller.getJavaFXExecutor().submit(() -> preview.requestFocus());
+        preview.show(new AsciiDocContent(AsciiDocViewer.DEFAULT, editor.getText()));
       }
       if (o == null || n == null) {
         return;
       }
       if (o.intValue() != 0 && n.intValue() == 0) {
-        Platform.runLater(() -> editor.requestFocus());
+        controller.getJavaFXExecutor().submit(() -> editor.requestFocus());
       }
     });
     addCommands();

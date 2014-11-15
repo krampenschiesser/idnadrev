@@ -98,7 +98,7 @@ public class AsciiDocEditorTest {
   @Test
   public void testAdocParsing() throws Exception {
     FXPlatform.invokeLater(() -> adocEditor.editor.setText("= Title\n== more"));
-
+    FXPlatform.invokeLater(() -> adocEditor.tabPane.getSelectionModel().select(1));
     JunitMatchers.withRetry(() -> adocEditor.preview.getCurrentHtml() != null);
     assertNotNull("preview string is null", adocEditor.preview.getCurrentHtml());
 
