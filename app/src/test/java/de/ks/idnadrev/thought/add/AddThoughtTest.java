@@ -272,6 +272,7 @@ public class AddThoughtTest extends ActivityTest {
       Button node = (Button) grid.getChildren().get(0);
       node.getOnAction().handle(null);
     });
+    Thread.sleep(200);
 
     FXPlatform.waitForFX();
     assertThat(addThought.description.getText(), containsString("test.jpg"));
