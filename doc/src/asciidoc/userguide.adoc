@@ -38,7 +38,7 @@ Additionally it is almost self contained (one directory). So you can use an usb 
 
 == Getting started
 
-Idnadrev consists of <<_activities>>.
+Idnadrev consists of <<Activities>>.
 Each activity represents a specific workflow/activity, eg. creating a new task, viewing tasks etc.
 You can select all activities via the menu provided in the top or via <<_function_keys>>.
 
@@ -238,11 +238,11 @@ image::img/activity/addtask_files.png[]
 Allows you to schedule a task.
 There are 2 kinds of scheduling: Due and proposal.
 
-Due date:
+===== Due date
 
 Allows you to configure a due date and time which is fixed for the task
 
-Proposed week:
+===== Proposed week
 
 Allows you to select a week day/week. This task should be done in that week and will be displayed on the overview.
 If you mark the checkbox "use proposed weekday" the selected day will be the suggestion.
