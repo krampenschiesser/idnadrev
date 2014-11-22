@@ -40,7 +40,7 @@ Additionally it is almost self contained (one directory). So you can use an usb 
 
 Idnadrev consists of <<activities>>.
 Each activity represents a specific workflow/activity, eg. creating a new task, viewing tasks etc.
-You can select all activities via the menu provided in the top or via <<_function_keys>>.
+You can select all activities via the menu provided in the top or via <<function keys>>.
 
 === Basic workflow
 
