@@ -296,7 +296,7 @@ In the name field you can select an existing task, including finished, or just e
 If no previous task was found it will create a new task once you press finished.
 An existing task is kept in its current mode, so a finished task will stay finished and a non finished task will stay non finished.
 
-image::img/activity/fastracking.png[]
+image::img/activity/fasttracking.png[]
 
 === Next task proposal
 
