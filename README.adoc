@@ -2,9 +2,11 @@
 :Author:    Christian Löhnert
 :Email:     krampenschiesser@gmail.com
 
-== About
+== Download
 
-Download link:https://github.com/krampenschiesser/idnadrev/releases/download/050_RC1/idnadrev-0.5.0-RC1.zip[Idnadrev Version 0.5.0 RC1] +
+link:https://github.com/krampenschiesser/idnadrev/releases/download/050_RC1/idnadrev-0.5.0-RC1.zip[Idnadrev Version 0.5.0 RC1] +
+
+== About
 
 Idnadrev is a task management and knowledge application
 that helps to organize your ideas, projects and any kind of information.
