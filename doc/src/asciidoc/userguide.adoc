@@ -72,7 +72,7 @@ For the general asciidoc syntax please visit the following pages:
 
 The asciidoc editor in Idnadrev consists of 3 tabs. + 
 The first tab is the *editor tab*. It provides a simple text editor with some action buttons on the top.
-These buttons provide some shortcut functions or additional functionality. They are accessible via <<_mnemonics>>. + 
+These buttons provide some shortcut functions or additional functionality. They are accessible via <<mnemonics>>. +
 The second tab is the *preview tab*. It provides a rendered html preview of the document. +
 The third tab just shows the html code of the preview tab.
 
@@ -136,7 +136,7 @@ There are some shortcuts that apply everywhere:
 * ctrl+enter to execute the default "blue" button
 * ctrl+s to export an asciidoc document
 * esc to hide a popup window or clear a text filter(when searching)
-* <<_function_keys>>
+* <<function-keys>>
 
 ==== Mnemonics
 
@@ -152,17 +152,17 @@ So then you can just press that character and the button will be selected.
 The function keys F1 - F12 are used to directly go to specific activities.
 
 * *F1:* opens a popup menu giving you an overview of all possible activities
-* *F2:* opens the <<_overview>>
-* *F3:* opens the <<_add_thought>>
-* *F4:* opens the <<_add_task>>
-* *F5:* opens the <<_add_document>>
-* *F6:* opens the <<_view_thoughts>>
-* *F7:* opens the <<_view_tasks>>
-* *F8:* opens the <<_view_information>>
-* *F9:* opens the <<_plan_week>>
-* *F10:* opens the <<_work_over_week>>
-* *F11:* opens the <<_next_task_proposal>>
-* *F12:* opens the <<_fast_task_tracking>>
+* *F2:* opens the <<overview>>
+* *F3:* opens the <<add-thought>>
+* *F4:* opens the <<add-task>>
+* *F5:* opens the <<add-document>>
+* *F6:* opens the <<view-thoughts>>
+* *F7:* opens the <<view-tasks>>
+* *F8:* opens the <<view-information>>
+* *F9:* opens the <<plan-week>>
+* *F10:* opens the <<work-over-week>>
+* *F11:* opens the <<next-task-proposal>>
+* *F12:* opens the <<fast-task-tracking>>
 
 == Activities
 
