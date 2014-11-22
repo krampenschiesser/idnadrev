@@ -14,14 +14,14 @@
  */
 package de.ks.idnadrev.entity;
 
-import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.Lob;
 
 @Embeddable
 public class Outcome {
-  @Column(length = 4048)
+  @Lob
   protected String expectedOutcome = "";
-  @Column(length = 4048)
+  @Lob
   protected String finalOutcome;
 
   public String getExpectedOutcome() {
