@@ -40,26 +40,26 @@ Additionally it is almost self contained (one directory). So you can use an usb 
 
 Idnadrev consists of <<activities>>.
 Each activity represents a specific workflow/activity, eg. creating a new task, viewing tasks etc.
-You can select all activities via the menu provided in the top or via <<function keys>>.
+You can select all activities via the menu provided in the top or via <<function-keys>>.
 
 === Basic workflow
 
 If you already are into personal task management you can skip this section.
 It all starts with ideas and information you receive from some place.
-All this stuff is collected as *thoughts* (<<_add_thought>>).
-Once you have time to think about all the collected stuff you can review your thoughts (<<_view_thoughts>>) 
-and transfer them into tasks (<<_add_task>>), projects (<<_add_task>>) or documents (<<_add_document>>).
+All this stuff is collected as *thoughts* (<<add-thought>>).
+Once you have time to think about all the collected stuff you can review your thoughts (<<view-_thoughts>>)
+and transfer them into tasks (<<add-task>>), projects (<<add-task>>) or documents (<<add-document>>).
 A task should at least be defined by a name, an estimated time and a context.
 If you don't know a concrete estimated time you should make the task a project and spend some thinking on the next task you can add to this project that actually has an estimated time.
 A context is used to define where you can do a specific task.
 Eg. at home, at the computer, in the supermarket. Or mapped to your work it can be more specifc: Viewing emails, customer relations, programming, phone calls.
 A task can have a state making it urgent (ASAP) or postpone it to do it later.
-You can select the task you want to work on via the <<_view_tasks>>.
-While working on a task your spent time is tracked which you can later review via <<_work_over_week>>.
-When you have a lot of tasks you might need some planning and choose what tasks are important and need to be done on the next week via <<_plan_week>>.
-If you don't know where to start the <<_next_task_proposal>> gives you some proposals depending on you current context.
-Any information you gather can be stored as a document (<<_add_document>>).
-All information can be tagged and categorized which helps a lot when finding information in the <<_view_information>>.
+You can select the task you want to work on via the <<view-tasks>>.
+While working on a task your spent time is tracked which you can later review via <<work-over-week>>.
+When you have a lot of tasks you might need some planning and choose what tasks are important and need to be done on the next week via <<plan-week>>.
+If you don't know where to start the <<next-task-proposal>> gives you some proposals depending on you current context.
+Any information you gather can be stored as a document (<<add-document>>).
+All information can be tagged and categorized which helps a lot when finding information in the <<view-information>>.
 
 === Asciidoc editor
 
