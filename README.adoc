@@ -13,7 +13,7 @@ that helps to organize your ideas, projects and any kind of information.
 
 This is the current user guide for version 0.5.
 
-link:doc/src/asciidoc/userguide.adoc[*user guide V0.5*]
+link:doc/src/asciidoc/userguide.adoc[User guide V0.5]
 
 == Building
 
