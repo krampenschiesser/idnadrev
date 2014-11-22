@@ -2,15 +2,18 @@
 :Author:    Christian Löhnert
 :Email:     krampenschiesser@gmail.com
 
-
 == About
+
+Download Idnadrev Version 0.5.0 RC1 +
 
 Idnadrev is a task management and knowledge application
 that helps to organize your ideas, projects and any kind of information.
-It is also a test project for an activity based JavaFX dialog framework. +
-I'm getting close to the first release which will be the version 0.5. +
-I recently created a little tour to give you a more detailed impression on idnadrev. +
-link:doc/src/asciidoc/tour.adoc[*Take a look at the tour*]
+
+== User guide
+
+This is the current user guide for version 0.5.
+
+link:doc/src/asciidoc/userguide.adoc[*user guide V0.5*]
 
 == Building
 
@@ -21,26 +24,8 @@ Use the provided gradle wrapper *gradlew*
 ----
 $ ./gradlew help
 $ ./gradlew build
+$ ./gradlew run
 ----
-
-=== Check-in build
-
-Currently disabled because travis doesn't have the JDK8_u20 yet (and controlsfx depends on it).
-
-image:https://travis-ci.org/krampenschiesser/idnadrev.svg?branch=master["Build Status", link="https://travis-ci.org/krampenschiesser/idnadrev"]
-
-== Parameters useful for testing
-
-In order to not see the javaFX dialogs while running your test from the IDE you should use:
-[source]
--Dglass.platform=Monocle -Dmonocle.platform=Headless -Dprism.order=sw
-
-=== Xvfb
-Sadly monocle was removed again from the JDK ea build 1.8.20 and I know need an xvfb:
-
-[source,shell]
-$ mkdir /tmp/xvfb_test
-$ Xvfb :99 -fbdir /tmp/xvfb_test -ac -extension GLX
 
 == License
 
