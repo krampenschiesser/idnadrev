@@ -65,6 +65,11 @@ public class Launcher {
     return services;
   }
 
+  public <S extends Service> void removeService(Class<S> clazz) {
+    S service = getService(clazz);
+    services.remove(service);
+  }
+
   @SuppressWarnings("unchecked")
   public <S extends Service> S getService(Class<S> clazz) {
     List<Service> collect = getServices().stream().filter((s) -> s.getClass().equals(clazz)).collect(Collectors.toList());
