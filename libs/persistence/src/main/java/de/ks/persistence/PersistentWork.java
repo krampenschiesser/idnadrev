@@ -55,6 +55,7 @@ public class PersistentWork {
     }
     return cdi;
   }
+
   private static final Logger log = LoggerFactory.getLogger(PersistentWork.class);
 
   public static <R> R wrap(Supplier<R> supplier) {
@@ -308,4 +309,15 @@ public class PersistentWork {
     return null;
   }
 
+  public static <T> long count(Class<T> clazz, QueryConsumer<T, Long> consumer) {
+    return read(em -> {
+      CriteriaQuery<Long> criteriaQuery = em.getCriteriaBuilder().createQuery(Long.class);
+      Root<T> root = criteriaQuery.from(clazz);
+      criteriaQuery.select(em.getCriteriaBuilder().count(root));
+      if (consumer != null) {
+        consumer.accept(root, criteriaQuery, em.getCriteriaBuilder());
+      }
+      return em.createQuery(criteriaQuery).getSingleResult();
+    });
+  }
 }
