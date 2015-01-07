@@ -32,7 +32,7 @@ public class Application {
   public static final Versioning versioning = new Versioning(getVersionFile(), Application.class);
 
   public static void main(String[] args) throws ExecutionException, InterruptedException {
-    log.info("Starting {}, currentVersion={}, lastVersion = ", versioning.getVersionInfo().getDescription(), versioning.getCurrentVersion(), versioning.getLastVersion());
+    log.info("Starting {}, currentVersion={}, lastVersion = {}", versioning.getVersionInfo().getDescription(), versioning.getCurrentVersion(), versioning.getLastVersion());
     versioning.upgradeToCurrentVersion();
 
     Launcher launcher = Launcher.instance;
