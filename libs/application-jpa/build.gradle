@@ -39,13 +39,13 @@ task sourceJar(type: Jar) {
 }
 
 task fullJar(type: Jar) {
-    dependsOn projects.build
-    projects.each { subproject ->
+    dependsOn projects.build, jar
+    baseName "$applicationJpaLibTitle"
+    alldependencyprojects.each { subproject ->
         from subproject.configurations.archives.allArtifacts.files.collect {
             zipTree(it)
         }
     }
-    from sourceSets.main.output.classesDir
 }
 
 
@@ -77,9 +77,9 @@ publishing {
 
             }
 
-            artifact(javadocJar) {
-                classifier = 'javadoc'
-            }
+//            artifact(javadocJar) {
+//                classifier = 'javadoc'
+//            }
 
             pom.withXml {
                 def dependenciesNode = asNode().appendNode('dependencies')

@@ -33,11 +33,11 @@ dependencies {
     runtime "org.apache.deltaspike.cdictrl:deltaspike-cdictrl-weld:$deltaspike"
     runtime "org.jboss.weld.se:weld-se:$weld"
     runtime "org.jboss:jandex:$jandex"
+    runtime "org.hibernate:hibernate-validator:$hibernateValidation"
+    runtime "com.sun.el:el-ri:1.0"
 
     testCompile project(":libs:testutil")
 
-    testRuntime "org.hibernate:hibernate-validator:$hibernateValidation"
-    testRuntime "com.sun.el:el-ri:1.0"
 }
 
 def projects = [project(":libs:i18n"), project(":libs:images"), project(":libs:launch"), project(":libs:validation"), project(":libs:eventsystem"),
@@ -52,13 +52,17 @@ task sourceJar(type: Jar) {
 }
 
 task fullJar(type: Jar) {
-    dependsOn projects.build
-    projects.each { subproject ->
+    dependsOn projects.build, jar
+    baseName "$applicationLibTitle"
+    alldependencyprojects.each { subproject ->
         from subproject.configurations.archives.allArtifacts.files.collect {
             zipTree(it)
         }
     }
-    from sourceSets.main.output.classesDir
+//    from configurations.archives.allArtifacts.files.collect {
+//        println it
+//        zipTree(it)
+//    }
 }
 
 
@@ -90,9 +94,9 @@ publishing {
 
             }
 
-            artifact(javadocJar) {
-                classifier = 'javadoc'
-            }
+//            artifact(javadocJar) {
+//                classifier = 'javadoc'
+//            }
 
             pom.withXml {
                 def dependenciesNode = asNode().appendNode('dependencies')
