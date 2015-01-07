@@ -58,14 +58,17 @@ public class DefaultLoader<V extends Node, C> {
     String controllerName = modelController.getSimpleName();
     URL resource = modelController.getResource(controllerName + ".fxml");
     if (resource == null) {
+      log.trace("Trying {}", controllerName + "View.fxml");
       resource = modelController.getResource(controllerName + "View.fxml");
     }
     if (resource == null) {
       if (controllerName.toLowerCase(Locale.ROOT).endsWith("controller")) {
         String substring = controllerName.substring(0, controllerName.length() - "controller".length());
 
+        log.trace("Trying {}", substring + ".fxml");
         resource = modelController.getResource(substring + ".fxml");
         if (resource == null) {
+          log.trace("Trying {}", substring + "View.fxml");
           resource = modelController.getResource(substring + "View.fxml");
         }
       }
@@ -185,7 +188,7 @@ public class DefaultLoader<V extends Node, C> {
   @Override
   public String toString() {
     return "DefaultLoader{" +
-      "fxmlFile=" + fxmlFile +
-      '}';
+            "fxmlFile=" + fxmlFile +
+            '}';
   }
 }
