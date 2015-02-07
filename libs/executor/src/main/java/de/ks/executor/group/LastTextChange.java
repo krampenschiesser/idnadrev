@@ -53,7 +53,8 @@ public class LastTextChange extends LastExecutionGroup<String> {
     }
   }
 
-  public void registerHandler(Consumer<CompletableFuture<String>> consumer) {
+  public LastTextChange registerHandler(Consumer<CompletableFuture<String>> consumer) {
     handler = consumer;
+    return this;
   }
 }
