@@ -16,13 +16,11 @@ package de.ks.option;
 
 import de.ks.persistence.PersistentWork;
 
-import javax.enterprise.inject.Alternative;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
 
-@Alternative
 public class JPAOptionSource implements OptionSource {
   @Override
   @SuppressWarnings("unchecked")
