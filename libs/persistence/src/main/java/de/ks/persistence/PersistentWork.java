@@ -27,10 +27,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.spi.CDI;
 import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.*;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -235,16 +233,33 @@ public class PersistentWork {
     return idsFrom(clazz, null);
   }
 
-  public static <T, V> List<V> projection(Class<T> clazz, Function<T, V> resolver) {
+  public static <T, V> List<V> projection(Class<T> clazz, boolean distinct, Function<T, V> resolver) {
+    return projection(clazz, distinct, null, resolver, null);
+  }
+
+  @SuppressWarnings("unchecked")
+  public static <T, V> List<V> projection(Class<T> clazz, boolean distinct, Function<T, V> resolver, QueryConsumer<T, V> queryConsumer) {
+    return projection(clazz, distinct, null, resolver, queryConsumer);
+  }
+
+  public static <T, V> List<V> projection(Class<T> clazz, boolean distinct, Integer maxResults, Function<T, V> resolver, QueryConsumer<T, V> queryConsumer) {
     final String property = PropertyPath.property(clazz, t -> resolver.apply(t));
 
     return read((em) -> {
-      CriteriaQuery<Object> query = em.getCriteriaBuilder().createQuery();
+      CriteriaBuilder builder = em.getCriteriaBuilder();
+      CriteriaQuery<Object> query = builder.createQuery();
 
       Root<T> root = query.from(clazz);
-      query.select(root.get(property));
+      Path<V> selection = root.get(property);
+      query.distinct(distinct);
+      query.select(selection);
+      if (queryConsumer != null) {
+        queryConsumer.accept(root, (CriteriaQuery<V>) query, builder);
+      }
 
-      @SuppressWarnings("unchecked") List<V> resultList = (List<V>) em.createQuery(query).getResultList();
+      TypedQuery<Object> emQuery = em.createQuery(query);
+      emQuery.setMaxResults(maxResults);
+      @SuppressWarnings("unchecked") List<V> resultList = (List<V>) emQuery.getResultList();
       return resultList;
     });
   }
