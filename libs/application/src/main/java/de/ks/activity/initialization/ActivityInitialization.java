@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 public class ActivityInitialization {
   private static final Logger log = LoggerFactory.getLogger(ActivityInitialization.class);
 
-  protected final ConcurrentHashMap<Class<?>, Pair<Object, Node>> controllers = new ConcurrentHashMap<>();
+  protected final ConcurrentHashMap<Class<?>, LinkedList<Pair<Object, Node>>> controllers = new ConcurrentHashMap<>();
   protected final Map<Class<?>, CompletableFuture<DefaultLoader<Node, Object>>> preloads = new HashMap<>();
   protected final ThreadLocal<List<Object>> currentlyLoadedControllers = ThreadLocal.withInitial(ArrayList::new);
   protected final List<DatasourceCallback> dataStoreCallbacks = new ArrayList<>();
@@ -119,7 +119,8 @@ public class ActivityInitialization {
       currentlyLoadedControllers.get().forEach((c) -> {
         assert c != null;
         log.debug("Registering controller {} with node {}", c, view);
-        controllers.put(c.getClass(), Pair.of(c, view));
+        controllers.putIfAbsent(c.getClass(), new LinkedList<>());
+        controllers.get(c.getClass()).add(Pair.of(c, view));
       });
       currentlyLoadedControllers.get().clear();
       return loader;
@@ -132,9 +133,17 @@ public class ActivityInitialization {
 
   public void initalizeControllers() {
     dataStoreCallbacks.clear();
-    dataStoreCallbacks.addAll(controllers.values().stream().map(Pair::getLeft).filter(o -> o instanceof DatasourceCallback).map(o -> (DatasourceCallback) o).collect(Collectors.toList()));
+    List<DatasourceCallback> dsCallbacks = controllers.values().stream().map(l -> l.stream().map(Pair::getLeft).filter(o -> o instanceof DatasourceCallback).map(o -> (DatasourceCallback) o).collect(Collectors.toList())).reduce(new LinkedList<>(), (l, o) -> {
+      l.addAll(o);
+      return l;
+    });
+    dataStoreCallbacks.addAll(dsCallbacks);
     activityCallbacks.clear();
-    activityCallbacks.addAll(controllers.values().stream().map(Pair::getLeft).filter(o -> o instanceof ActivityCallback).map(o -> (ActivityCallback) o).collect(Collectors.toList()));
+    List<ActivityCallback> acCallbacks = controllers.values().stream().map(l -> l.stream().map(Pair::getLeft).filter(o -> o instanceof ActivityCallback).map(o -> (ActivityCallback) o).collect(Collectors.toList())).reduce(new LinkedList<>(), (l, o) -> {
+      l.addAll(o);
+      return l;
+    });
+    activityCallbacks.addAll(acCallbacks);
     Collections.sort(dataStoreCallbacks);
   }
 
@@ -142,7 +151,14 @@ public class ActivityInitialization {
     if (!controllers.containsKey(targetController)) {
       throw new IllegalArgumentException("Controller " + targetController.getName() + " is not registered. Registered are " + controllers.keySet());
     }
-    return controllers.get(targetController).getRight();
+    LinkedList<Pair<Object, Node>> ctrls = controllers.get(targetController);
+    if (ctrls.isEmpty()) {
+      return null;
+    } else if (ctrls.size() == 1) {
+      return ctrls.get(0).getRight();
+    } else {
+      throw new IllegalArgumentException("There are " + ctrls.size() + " instances registered for the given controller");
+    }
   }
 
   @SuppressWarnings("unchecked")
@@ -150,11 +166,28 @@ public class ActivityInitialization {
     if (!controllers.containsKey(targetController)) {
       throw new IllegalArgumentException("Controller " + targetController + " is not registered. Registered are " + controllers.keySet());
     }
-    return (T) controllers.get(targetController).getLeft();
+    LinkedList<Pair<Object, Node>> ctrls = controllers.get(targetController);
+    if (ctrls.isEmpty()) {
+      return null;
+    } else if (ctrls.size() == 1) {
+      return (T) ctrls.get(0).getLeft();
+    } else {
+      throw new IllegalArgumentException("There are " + ctrls.size() + " instances registered for the given controller");
+    }
+  }
+
+  public <T> List<T> getControllerInstances(Class<T> targetController) {
+    if (!controllers.containsKey(targetController)) {
+      throw new IllegalArgumentException("Controller " + targetController + " is not registered. Registered are " + controllers.keySet());
+    }
+    return controllers.get(targetController).stream().map(Pair::getLeft).map(c -> (T) c).collect(Collectors.toList());
   }
 
   public Collection<Object> getControllers() {
-    return controllers.values().stream().map(Pair::getKey).collect(Collectors.toList());
+    return controllers.values().stream().map(l -> l.stream().map(Pair::getLeft).collect(Collectors.toList())).reduce(new LinkedList<>(), (l, o) -> {
+      l.addAll(o);
+      return l;
+    });
   }
 
   public List<DatasourceCallback> getDataStoreCallbacks() {
