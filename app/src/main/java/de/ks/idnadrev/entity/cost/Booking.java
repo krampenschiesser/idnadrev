@@ -38,16 +38,22 @@ public class Booking extends AbstractPersistentObject<Booking> {
   protected LocalDateTime bookingTime;
 
   @Transient
-  protected double total;
+  protected boolean total;
 
   protected Booking() {
     internalIdentifier = UUID.randomUUID().toString();
   }
 
   public Booking(Account account, double amount) {
+    this(account, amount, true);
+  }
+
+  public Booking(Account account, double amount, boolean book) {
     this.account = account;
     this.amount = amount;
-    account.addBooking(this);
+    if (book) {
+      account.addBooking(this);
+    }
     internalIdentifier = UUID.randomUUID().toString();
   }
 
@@ -100,13 +106,12 @@ public class Booking extends AbstractPersistentObject<Booking> {
     return this;
   }
 
-  public double getTotal() {
+  public boolean isTotal() {
     return total;
   }
 
-  public Booking setTotal(double total) {
-    this.total = total;
-    return this;
+  public void setTotal(boolean isTotal) {
+    this.total = isTotal;
   }
 
   @Override

@@ -47,7 +47,6 @@
                 <TableColumn fx:id="descriptionColumn" prefWidth="400.0" text="%description"/>
                 <TableColumn fx:id="categoryColumn" prefWidth="150.0" text="%category"/>
                 <TableColumn fx:id="amountColumn" prefWidth="100.0" text="%added"/>
-                <TableColumn fx:id="totalColumn" prefWidth="200.0" text="%total"/>
             </columns>
         </TableView>
 

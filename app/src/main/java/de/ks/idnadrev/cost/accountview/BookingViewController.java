@@ -33,6 +33,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.converter.DoubleStringConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -43,7 +45,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class BookingViewController extends BaseController<BookingViewModel> {
-
+  private static final Logger log = LoggerFactory.getLogger(BookingViewController.class);
   @FXML
   protected DatePicker startTime;
   @FXML
@@ -67,8 +69,6 @@ public class BookingViewController extends BaseController<BookingViewModel> {
   protected TableColumn<Booking, String> categoryColumn;
   @FXML
   protected TableColumn<Booking, Double> amountColumn;
-  @FXML
-  protected TableColumn<Booking, Double> totalColumn;
 
   @FXML
   protected AddBookingController addBookingController;
@@ -114,8 +114,6 @@ public class BookingViewController extends BaseController<BookingViewModel> {
       });
     });
 
-    totalColumn.setCellValueFactory(c -> (ObservableValue) new SimpleDoubleProperty(c.getValue().getTotal()));
-
 
     validationRegistry.registerValidator(startTime, new NotNullValidator());
     validationRegistry.registerValidator(endTime, new NotNullValidator());
@@ -152,7 +150,11 @@ public class BookingViewController extends BaseController<BookingViewModel> {
     }
     String amt = amount.textProperty().getValueSafe().trim();
     if (!amt.isEmpty()) {
-      hint.setAmount(Double.valueOf(amt));
+      try {
+        hint.setAmount(Double.valueOf(amt));
+      } catch (NumberFormatException e) {
+        log.trace("Could not set new value", amt);
+      }
     }
     String cat = category.textProperty().getValueSafe().trim();
     if (!cat.isEmpty()) {

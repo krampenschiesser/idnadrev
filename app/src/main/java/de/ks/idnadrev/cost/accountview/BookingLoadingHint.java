@@ -109,8 +109,6 @@ public class BookingLoadingHint {
       predicates.add(builder.and(//
               builder.greaterThanOrEqualTo(root.get(KEY_TIME), startDate),//
               builder.lessThan(root.get(KEY_TIME), endDate)));
-    } else {
-      predicates.add(builder.lessThan(root.get(KEY_TIME), startDate));
     }
 
     if (category != null) {
@@ -127,7 +125,9 @@ public class BookingLoadingHint {
     }
 
     query.where(predicates.toArray(new Predicate[predicates.size()]));
-    Order asc = builder.asc(root.get(KEY_TIME));
-    query.orderBy(asc);
+    if (filterDateRange) {
+      Order asc = builder.asc(root.get(KEY_TIME));
+      query.orderBy(asc);
+    }
   }
 }

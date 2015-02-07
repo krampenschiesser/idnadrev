@@ -16,16 +16,25 @@
 package de.ks.idnadrev.cost.accountview;
 
 import de.ks.datasource.DataSource;
+import de.ks.i18n.Localized;
+import de.ks.idnadrev.entity.cost.Account;
 import de.ks.idnadrev.entity.cost.Booking;
 import de.ks.persistence.PersistentWork;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
 public class BookingViewDS implements DataSource<BookingViewModel> {
+  private static final Logger log = LoggerFactory.getLogger(BookingViewDS.class);
   private BookingLoadingHint loadingHint;
 
   @Override
@@ -33,20 +42,52 @@ public class BookingViewDS implements DataSource<BookingViewModel> {
     if (loadingHint == null) {
       return new BookingViewModel();
     } else {
-      PersistentWork.read(em -> {
-        CriteriaBuilder builder = em.getCriteriaBuilder();
-
-        CriteriaQuery<Double> query = builder.createQuery(Double.class);
-        Root<Booking> from = query.from(Booking.class);
-        loadingHint.applyFilter(query, builder, from, true);
-        return 0D;
-      });
 
       List<Booking> bookings = PersistentWork.from(Booking.class, (root, query, builder) -> {
         loadingHint.applyFilter(query, builder, root, true);
       }, null);
+      if (!bookings.isEmpty()) {
+        Booking totalBefore = getTotalBefore(bookings.get(0).getBookingTime());
+        bookings = new ArrayList<>(bookings);
+        bookings.add(0, totalBefore);
+
+        Booking totalAfter = getTotalBeforeIncluding(bookings.get(bookings.size() - 1).getBookingTime());
+        bookings.add(totalAfter);
+      }
       return new BookingViewModel(0D, bookings);
     }
+  }
+
+  private Booking getTotalBeforeIncluding(LocalDateTime date) {
+    return getTotal(date, true);
+  }
+
+  private Booking getTotalBefore(LocalDateTime date) {
+    return getTotal(date, false);
+  }
+
+  private Booking getTotal(LocalDateTime date, boolean includeDate) {
+    return PersistentWork.read(em -> {
+      CriteriaBuilder builder = em.getCriteriaBuilder();
+
+      CriteriaQuery<Double> query = builder.createQuery(Double.class);
+      Root<Booking> from = query.from(Booking.class);
+      loadingHint.applyFilter(query, builder, from, false);
+      query.select(builder.sum(from.get(BookingLoadingHint.KEY_AMOUNT)));
+      List<Predicate> restriction = new LinkedList<>();
+      restriction.add(query.getRestriction());
+      if (includeDate) {
+        restriction.add(builder.lessThanOrEqualTo(from.get(BookingLoadingHint.KEY_TIME), date));
+      } else {
+        restriction.add(builder.lessThan(from.get(BookingLoadingHint.KEY_TIME), date));
+      }
+      query.where(restriction.toArray(new Predicate[2]));
+
+      Double result = em.createQuery(query).getSingleResult();
+      log.debug("Sum of bookins before {}: {}", date, result);
+      Account account = PersistentWork.forName(Account.class, loadingHint.getAccountName());
+      return new Booking(account, result == null ? 0D : result, false).setBookingTime(date).setDescription(Localized.get("total"));
+    });
   }
 
   @Override
