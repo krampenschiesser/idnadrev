@@ -30,7 +30,7 @@ public class ActivityExecutorProducer {
   public ActivityExecutor createExecutorService(ActivityContext context) {
     //use 2 as core pool size as sometimes the scheduled thread pool doesn't start another thread
     //when 1 blocks and a second runnable is in the queue
-    return new ActivityExecutor(context.getCurrentActivity(), 2, Runtime.getRuntime().availableProcessors());
+    return new ActivityExecutor(context.getCurrentActivity(), 8, Integer.MAX_VALUE);
   }
 
   public void shutdownActivityExecutor(@Disposes ActivityExecutor executor) {

@@ -34,7 +34,7 @@ public class ActivityExecutor implements ScheduledExecutorService {
   private final ScheduledThreadPoolExecutor delegate;
 
   protected ActivityExecutor() {
-    this("NeverCalled", 2, 4);//but needed for cdi proxy
+    this("NeverCalled", 2, Integer.MAX_VALUE);//but needed for cdi proxy
   }
 
   public ActivityExecutor(String name, int corePoolSize, int maximumPoolSize) {
@@ -124,6 +124,14 @@ public class ActivityExecutor implements ScheduledExecutorService {
     return delegate.invokeAll(tasks);
   }
 
+  public void setCorePoolSize(int coreSize) {
+    delegate.setCorePoolSize(coreSize);
+  }
+
+  public void setMaxPoolSize(int maxSize) {
+    delegate.setMaximumPoolSize(maxSize);
+  }
+
   @Override
   public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException {
     return delegate.invokeAll(tasks, timeout, unit);
@@ -146,5 +154,9 @@ public class ActivityExecutor implements ScheduledExecutorService {
   @Override
   public boolean isTerminated() {
     return delegate.isTerminated();
+  }
+
+  public ScheduledThreadPoolExecutor getDelegate() {
+    return delegate;
   }
 }
