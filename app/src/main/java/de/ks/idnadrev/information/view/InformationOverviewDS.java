@@ -23,7 +23,6 @@ import de.ks.idnadrev.entity.information.Information;
 import de.ks.idnadrev.entity.information.TextInfo;
 import de.ks.idnadrev.entity.information.UmlDiagramInfo;
 import de.ks.persistence.PersistentWork;
-import de.ks.persistence.QueryConsumer;
 import de.ks.persistence.entity.AbstractPersistentObject;
 import de.ks.persistence.entity.NamedPersistentObject;
 import de.ks.reflection.PropertyPath;
@@ -42,7 +41,6 @@ public class InformationOverviewDS implements ListDataSource<InformationPreviewI
   private static final String KEY_TAGS = PropertyPath.property(Information.class, Information::getTags);
   private static final String KEY_CATEGORY = PropertyPath.property(Information.class, Information::getCategory);
 
-  protected QueryConsumer<Information, Information> filter;
   protected volatile InformationLoadingHint loadingHint = new InformationLoadingHint(null, "", null);
 
   @Override
