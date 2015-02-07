@@ -16,6 +16,7 @@ package de.ks.idnadrev;
 
 import de.ks.activity.ActivityController;
 import de.ks.activity.ActivityHint;
+import de.ks.idnadrev.cost.accountview.BookingViewActivity;
 import de.ks.idnadrev.information.diary.DiaryActivity;
 import de.ks.idnadrev.information.text.TextInfoActivity;
 import de.ks.idnadrev.information.uml.UmlDiagramActivity;
@@ -132,6 +133,12 @@ public class ButtonBar implements Initializable {
   @FXML
   public void umlDiagram() {
     controller.startOrResume(new ActivityHint(UmlDiagramActivity.class));
+    hide();
+  }
+
+  @FXML
+  public void bookingView() {
+    controller.startOrResume(new ActivityHint(BookingViewActivity.class));
     hide();
   }
 
