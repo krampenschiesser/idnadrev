@@ -89,7 +89,7 @@ public class ChooseNextTaskController extends BaseController<List<Task>> {
 
   @Override
   public void onResume() {
-    List<String> names = PersistentWork.projection(Context.class, c -> c.getName());
+    List<String> names = PersistentWork.projection(Context.class, false, c -> c.getName());
     contextSelection.setItems(FXCollections.observableArrayList(names));
 
     onChooseTask();
