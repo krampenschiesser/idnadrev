@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<GridPane hgap="5.0" vgap="5.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="de.ks.idnadrev.cost.accountview.AddBookingController">
+    <columnConstraints>
+        <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+        <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+        <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+    </rowConstraints>
+    <children>
+        <Label text="%amount:"/>
+        <TextField fx:id="amount" GridPane.columnIndex="1"/>
+        <Label text="%description:" GridPane.columnIndex="2"/>
+        <TextField fx:id="description" GridPane.columnIndex="3" GridPane.columnSpan="2147483647"/>
+        <Label text="%date:" GridPane.rowIndex="1"/>
+        <DatePicker fx:id="date" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <Label text="%time:" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+        <TextField fx:id="time" promptText="%emptyForCurrentTime" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+        <Label text="%category:" GridPane.columnIndex="4" GridPane.rowIndex="1"/>
+        <TextField fx:id="category" GridPane.columnIndex="5" GridPane.rowIndex="1"/>
+        <Button fx:id="book" defaultButton="true" mnemonicParsing="false" text="%book" GridPane.columnSpan="2147483647"
+                GridPane.halignment="CENTER" GridPane.rowIndex="2"/>
+    </children>
+</GridPane>

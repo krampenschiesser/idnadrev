@@ -17,6 +17,7 @@
         <RowConstraints minHeight="30.0" vgrow="SOMETIMES"/>
         <RowConstraints minHeight="30.0" vgrow="SOMETIMES"/>
         <RowConstraints minHeight="30.0" vgrow="SOMETIMES"/>
+        <RowConstraints minHeight="30.0" vgrow="SOMETIMES"/>
         <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES"/>
     </rowConstraints>
     <children>
@@ -103,8 +104,12 @@
             </tooltip>
         </Button>
 
+        <Label styleClass="editorViewLabel" text="%quicknavigation.costs" GridPane.rowIndex="4"/>
+        <Button mnemonicParsing="false" onAction="#bookingView" prefWidth="150.0" text="%main.cost.bookingviewactivity"
+                GridPane.columnIndex="3" GridPane.rowIndex="4"/>
+
         <Button mnemonicParsing="false" onAction="#overview" prefWidth="150.0" text="%main.overview.overviewactivity"
-                GridPane.columnIndex="3" GridPane.rowIndex="4">
+                GridPane.columnIndex="3" GridPane.rowIndex="5">
             <tooltip>
                 <Tooltip text="F2"/>
             </tooltip>

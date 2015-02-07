@@ -42,6 +42,10 @@
         <class>de.ks.idnadrev.entity.information.DiaryInfo</class>
         <class>de.ks.idnadrev.entity.information.UmlDiagramInfo</class>
 
+        <class>de.ks.idnadrev.entity.cost.Booking</class>
+        <class>de.ks.idnadrev.entity.cost.ScheduledBooking</class>
+        <class>de.ks.idnadrev.entity.cost.Account</class>
+
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
             <property name="javax.persistence.jdbc.user" value="SA"/>
@@ -55,7 +59,7 @@
             <property name="hibernate.connection.provider_class"
                       value="de.ks.persistence.connection.ConnectionProvider"/>
 
-            <!--<property name="hibernate.show_sql" value="true"/>-->
+            <property name="hibernate.show_sql" value="true"/>
         </properties>
     </persistence-unit>
 </persistence>
