@@ -25,6 +25,13 @@ import java.util.stream.Collectors;
 public class ValidatorChain<T> implements Validator<T> {
   protected final List<Validator<T>> delegates = new LinkedList<>();
 
+  public ValidatorChain() {
+  }
+
+  public ValidatorChain(List<Validator<T>> validators) {
+    this.delegates.addAll(validators);
+  }
+
   @Override
   public synchronized ValidationResult apply(Control control, T t) {
     List<ValidationResult> results = delegates.stream().map(d -> d.apply(control, t)).collect(Collectors.toList());
