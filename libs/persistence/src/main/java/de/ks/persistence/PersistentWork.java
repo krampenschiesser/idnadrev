@@ -87,7 +87,6 @@ public class PersistentWork {
   }
 
   public static <T> T reload(T instance, Consumer<T> resultWalker) {
-
     return read(em -> {
       if (instance instanceof AbstractPersistentObject) {
         AbstractPersistentObject apo = (AbstractPersistentObject) instance;
