@@ -83,4 +83,12 @@ public class OptionsTest {
 
     assertEquals("Hello", Options.get(PersistentTestOptions.class).getTheAnswerAsString());
   }
+
+  @Test
+  public void testDuplicateStore() throws Exception {
+    Options.store("Hello", PersistentTestOptions.class).getTheAnswerAsString();
+    Options.store("Hello1", PersistentTestOptions.class).getTheAnswerAsString();
+
+    assertEquals("Hello1", Options.get(PersistentTestOptions.class).getTheAnswerAsString());
+  }
 }

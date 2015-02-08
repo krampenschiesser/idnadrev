@@ -43,8 +43,15 @@ public class JPAOptionSource implements OptionSource {
 
   @Override
   public void saveOption(String path, Object value) {
-    Option option = new Option(path);
-    option.setValue(value);
-    PersistentWork.persist(option);
+    PersistentWork.wrap(() -> {
+      Option option = PersistentWork.forName(Option.class, path);
+      if (option != null) {
+        option.setValue(value);
+      } else {
+        option = new Option(path);
+        option.setValue(value);
+        PersistentWork.persist(option);
+      }
+    });
   }
 }
