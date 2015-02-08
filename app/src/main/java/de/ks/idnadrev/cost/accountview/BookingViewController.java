@@ -70,9 +70,6 @@ public class BookingViewController extends BaseController<BookingViewModel> {
   @FXML
   protected TableColumn<Booking, Double> amountColumn;
 
-  @FXML
-  protected AddBookingController addBookingController;
-
   protected DateTimeFormatter dateTimeFormatter;
 
   @Override
@@ -118,8 +115,6 @@ public class BookingViewController extends BaseController<BookingViewModel> {
     validationRegistry.registerValidator(startTime, new NotNullValidator());
     validationRegistry.registerValidator(endTime, new NotNullValidator());
     validationRegistry.registerValidator(amount, new DoubleValidator());
-
-    addBookingController.accountProperty().bind(account.valueProperty());
 
     account.valueProperty().addListener((p, o, n) -> applyLoadingHintAndReload());
     startTime.valueProperty().addListener((p, o, n) -> applyLoadingHintAndReload());

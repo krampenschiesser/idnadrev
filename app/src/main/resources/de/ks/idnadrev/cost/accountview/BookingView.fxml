@@ -49,12 +49,5 @@
                 <TableColumn fx:id="amountColumn" prefWidth="100.0" text="%added"/>
             </columns>
         </TableView>
-
-        <Label styleClass="editorViewLabel" text="%addBooking:" GridPane.rowIndex="4"/>
-        <StackPane GridPane.columnSpan="2147483647" GridPane.rowIndex="5">
-            <children>
-                <fx:include fx:id="addBooking" source="AddBooking.fxml"/>
-            </children>
-        </StackPane>
     </children>
 </GridPane>

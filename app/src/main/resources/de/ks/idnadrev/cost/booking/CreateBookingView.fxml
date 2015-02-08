@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<StackPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="de.ks.idnadrev.cost.booking.CreateBookingController">
+    <children>
+        <StackPane maxHeight="-Infinity" maxWidth="-Infinity" styleClass="contentContainer">
+            <children>
+                <GridPane hgap="5.0" vgap="5.0">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+                        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+                        <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
+                        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+                        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+                        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+                        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+                        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+                        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+                    </rowConstraints>
+                    <children>
+                        <Label styleClass="pageTitle" text="%main.cost.createbookingactivity"
+                               GridPane.columnSpan="2147483647" GridPane.halignment="CENTER"/>
+                        <Label text="%account:" GridPane.rowIndex="2"/>
+                        <ComboBox fx:id="account" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1"
+                                  GridPane.hgrow="ALWAYS" GridPane.rowIndex="2"/>
+                        <Label text="%amount:" GridPane.rowIndex="3"/>
+                        <TextField fx:id="amount" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                        <Label text="%date:" GridPane.rowIndex="4"/>
+                        <DatePicker fx:id="date" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                        <Label text="%time:" GridPane.rowIndex="5"/>
+                        <TextField fx:id="time" promptText="%emptyForCurrentTime" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="5"/>
+                        <Label text="%category:" GridPane.rowIndex="6"/>
+                        <TextField fx:id="category" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                        <Label text="%description:" GridPane.rowIndex="7"/>
+                        <TextField fx:id="description" GridPane.columnIndex="1" GridPane.columnSpan="2147483647"
+                                   GridPane.rowIndex="7"/>
+                        <Button fx:id="book" onAction="#onBooking" defaultButton="true" mnemonicParsing="false"
+                                text="%book"
+                                GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.rowIndex="8"/>
+                    </children>
+                    <padding>
+                        <Insets bottom="35.0" left="35.0" right="35.0" top="35.0"/>
+                    </padding>
+                </GridPane>
+            </children>
+        </StackPane>
+    </children>
+</StackPane>

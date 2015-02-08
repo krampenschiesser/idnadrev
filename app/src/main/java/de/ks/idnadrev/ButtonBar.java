@@ -16,7 +16,9 @@ package de.ks.idnadrev;
 
 import de.ks.activity.ActivityController;
 import de.ks.activity.ActivityHint;
+import de.ks.idnadrev.cost.account.CreateAccountActivity;
 import de.ks.idnadrev.cost.accountview.BookingViewActivity;
+import de.ks.idnadrev.cost.booking.CreateBookingActivity;
 import de.ks.idnadrev.information.diary.DiaryActivity;
 import de.ks.idnadrev.information.text.TextInfoActivity;
 import de.ks.idnadrev.information.uml.UmlDiagramActivity;
@@ -139,6 +141,18 @@ public class ButtonBar implements Initializable {
   @FXML
   public void bookingView() {
     controller.startOrResume(new ActivityHint(BookingViewActivity.class));
+    hide();
+  }
+
+  @FXML
+  public void createAccount() {
+    controller.startOrResume(new ActivityHint(CreateAccountActivity.class));
+    hide();
+  }
+
+  @FXML
+  public void createBooking() {
+    controller.startOrResume(new ActivityHint(CreateBookingActivity.class));
     hide();
   }
 

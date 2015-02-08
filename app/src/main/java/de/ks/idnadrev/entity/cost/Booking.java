@@ -24,7 +24,7 @@ import java.util.UUID;
 
 @Entity
 public class Booking extends AbstractPersistentObject<Booking> {
-  protected Double amount;
+  protected double amount;
   protected String internalIdentifier;
   protected String description;
 
@@ -112,6 +112,10 @@ public class Booking extends AbstractPersistentObject<Booking> {
 
   public void setTotal(boolean isTotal) {
     this.total = isTotal;
+  }
+
+  public void setAccount(Account account) {
+    this.account = account;
   }
 
   @Override
