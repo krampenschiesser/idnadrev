@@ -19,6 +19,7 @@ import de.ks.persistence.converter.LocalDateTimeConverter;
 import de.ks.persistence.entity.AbstractPersistentObject;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -33,8 +34,9 @@ public class Booking extends AbstractPersistentObject<Booking> {
 
   protected String category;
 
-  @Column(columnDefinition = "TIMESTAMP")
+  @Column(columnDefinition = "TIMESTAMP", nullable = false)
   @Convert(converter = LocalDateTimeConverter.class)
+  @NotNull
   protected LocalDateTime bookingTime;
 
   @Transient
