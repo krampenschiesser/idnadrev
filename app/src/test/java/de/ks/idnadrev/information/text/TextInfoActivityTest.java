@@ -60,6 +60,8 @@ public class TextInfoActivityTest extends ActivityTest {
       controller.tagContainerController.addTag("tag1");
       controller.categorySelectionController.setSelectedValue(PersistentWork.forName(Category.class, "cat1"));
     });
+    FXPlatform.waitForFX();
+    activityController.waitForTasks();
     activityController.save();
     activityController.waitForDataSource();
 
