@@ -120,7 +120,12 @@ public class ActivityInitialization {
         assert c != null;
         log.debug("Registering controller {} with node {}", c, view);
         controllers.putIfAbsent(c.getClass(), new LinkedList<>());
-        controllers.get(c.getClass()).add(Pair.of(c, view));
+
+        LinkedList<Pair<Object, Node>> registered = controllers.get(c.getClass());
+        boolean contained = registered.stream().filter(p -> p.getLeft().equals(c)).findAny().isPresent();
+        if (!contained) {
+          registered.add(Pair.of(c, view));
+        }
       });
       currentlyLoadedControllers.get().clear();
       return loader;
@@ -172,7 +177,7 @@ public class ActivityInitialization {
     } else if (ctrls.size() == 1) {
       return (T) ctrls.get(0).getLeft();
     } else {
-      throw new IllegalArgumentException("There are " + ctrls.size() + " instances registered for the given controller");
+      throw new IllegalArgumentException("There are " + ctrls.size() + " instances registered for the given controller " + targetController.getName());
     }
   }
 
