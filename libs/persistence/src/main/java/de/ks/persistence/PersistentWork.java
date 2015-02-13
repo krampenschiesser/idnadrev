@@ -257,7 +257,9 @@ public class PersistentWork {
       }
 
       TypedQuery<Object> emQuery = em.createQuery(query);
-      emQuery.setMaxResults(maxResults);
+      if (maxResults != null) {
+        emQuery.setMaxResults(maxResults);
+      }
       @SuppressWarnings("unchecked") List<V> resultList = (List<V>) emQuery.getResultList();
       return resultList;
     });
