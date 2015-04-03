@@ -18,6 +18,7 @@ import de.ks.reflection.ReflectionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Field;
 import java.util.concurrent.*;
 
 public class CancelRejection implements RejectedExecutionHandler {
@@ -32,7 +33,11 @@ public class CancelRejection implements RejectedExecutionHandler {
     }
 
     if (r instanceof ForkJoinTask && r.toString().contains("CompletableFuture$Async")) {
-      Object dst = ReflectionUtil.getFieldValue(r, "dst");
+      Field field = ReflectionUtil.getField(r, "dst");//jdk8u20
+      if (field == null) {
+        field = ReflectionUtil.getField(r, "dep");//jdk8u40
+      }
+      Object dst = ReflectionUtil.getFieldValue(r, field);
       if (dst instanceof CompletableFuture) {
         ((CompletableFuture) dst).cancel(false);
         log.debug("Canceled completable future {}", r);

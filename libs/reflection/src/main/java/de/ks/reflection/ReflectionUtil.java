@@ -195,6 +195,9 @@ public class ReflectionUtil {
   }
 
   public static Object getFieldValue(Object object, Field field) {
+    if (field == null) {
+      return null;
+    }
     field.setAccessible(true);
     try {
       return field.get(object);
