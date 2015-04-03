@@ -15,18 +15,17 @@
 
 buildscript {
     repositories {
-        maven {
-            name 'Bintray Asciidoctor repo'
-            url 'http://dl.bintray.com/content/aalmiray/asciidoctor'
-        }
         jcenter()
+//        maven {
+//            url = "https://repository.sonatype.org/content/repositories/central/"
+//        }
     }
     dependencies {
         classpath "org.asciidoctor:asciidoctor-gradle-plugin:$asciidoc"
     }
 }
 
-apply plugin: 'asciidoctor'
+apply plugin: 'org.asciidoctor.convert'
 
 asciidoctor {
     options = [
