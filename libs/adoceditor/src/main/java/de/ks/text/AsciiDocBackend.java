@@ -15,5 +15,5 @@
 package de.ks.text;
 
 public enum AsciiDocBackend {
-  HTML5, DOCBOOK5
+  HTML5, DOCBOOK5, PDF
 }

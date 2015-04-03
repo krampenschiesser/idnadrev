@@ -309,16 +309,20 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
   void saveToFile() {
     FileChooser fileChooser = new FileChooser();
 
-    FileChooser.ExtensionFilter htmlFilter = new FileChooser.ExtensionFilter("html", "html");
-    FileChooser.ExtensionFilter adocFilter = new FileChooser.ExtensionFilter("adoc", "adoc");
+    FileChooser.ExtensionFilter htmlFilter = new FileChooser.ExtensionFilter("html", ".html");
+    FileChooser.ExtensionFilter adocFilter = new FileChooser.ExtensionFilter("adoc", ".adoc");
+    FileChooser.ExtensionFilter pdfFilter = new FileChooser.ExtensionFilter("pdf", ".pdf");
 
     fileChooser.getExtensionFilters().add(htmlFilter);
     fileChooser.getExtensionFilters().add(adocFilter);
+    fileChooser.getExtensionFilters().add(pdfFilter);
     if (lastFile != null) {
       fileChooser.setInitialDirectory(lastFile.getParentFile());
       fileChooser.setInitialFileName(lastFile.getName());
       if (lastFile.getName().endsWith(".html")) {
         fileChooser.setSelectedExtensionFilter(htmlFilter);
+      } else if (lastFile.getName().endsWith(".pdf")) {
+        fileChooser.setSelectedExtensionFilter(pdfFilter);
       } else {
         fileChooser.setSelectedExtensionFilter(adocFilter);
       }
@@ -342,6 +346,8 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
       } catch (IOException e) {
         log.error("Could not write file {}", file, e);
       }
+    } else if (extension.endsWith("pdf")) {
+      this.parser.renderToFile(editor.getText(), AsciiDocBackend.PDF, file);
     } else {
       this.parser.renderToFile(editor.getText(), AsciiDocBackend.HTML5, file);
     }

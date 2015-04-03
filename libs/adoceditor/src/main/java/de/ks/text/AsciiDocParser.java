@@ -55,7 +55,7 @@ public class AsciiDocParser {
     "</div>\n</div>");
   protected static final String fontlink = "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic|Noto+Serif:400,400italic,700,700italic|Droid+Sans+Mono:400\">";
   public static final String DATADIR_NAME = "_data";
-  private final ThreadLocal<Asciidoctor> asciidoctor = ThreadLocal.withInitial(() -> {
+  protected final ThreadLocal<Asciidoctor> asciidoctor = ThreadLocal.withInitial(() -> {
     synchronized (AsciiDocParser.class) {
       return Asciidoctor.Factory.create();
     }
@@ -111,26 +111,48 @@ public class AsciiDocParser {
       log.info("Removing existing render target {}", file);
       file.delete();
     }
-    File dataDir = createDataDir(file);
-    String mathjaxDir = "./" + dataDir.getName() + "/" + AsciiDocMetaData.MATHJAX + "/";
-    boolean needsMathJax = needsMathJax(input);
-    metaData.copyToDir(dataDir, needsMathJax);
+    boolean isPdf = backend == AsciiDocBackend.PDF;
+    if (isPdf) {
+      AttributesBuilder attributes = getDefaultAttributes();
+      attributes.stylesDir(dataDir.getName());
+      attributes.tableOfContents(true);
 
-    AttributesBuilder attributes = getDefaultAttributes();
-    attributes.stylesDir(dataDir.getName());
-    attributes.tableOfContents(true);
-//    attributes.imagesDir(dataDir.getName());
+      OptionsBuilder options = getDefaultOptions(attributes);
+      options.backend(backend.name().toLowerCase(Locale.ROOT));
 
-    OptionsBuilder options = getDefaultOptions(attributes);
-    options.backend(backend.name().toLowerCase(Locale.ROOT));
+      String adocFileName = StringUtils.replace(file.getName(), ".pdf", ".adoc");
+      File src = new File(file.getParent(), adocFileName);
+      try {
+        Files.write(input, src, Charsets.UTF_8);
+        asciidoctor.get().convertFile(src, options);
+        src.delete();
+      } catch (IOException e) {
+        log.error("Could not write to file {}", src, e);
+        throw new RuntimeException(e);
+      }
 
-    String parse = parse(input, false, needsMathJax, mathjaxDir, options);
-    try {
-      parse = copyFiles(parse, dataDir);
-      Files.write(parse, file, Charsets.UTF_8);
-    } catch (IOException e) {
-      log.error("Could not write to file {}", file, e);
-      throw new RuntimeException(e);
+    } else {
+      File dataDir = createDataDir(file);
+      String mathjaxDir = "./" + dataDir.getName() + "/" + AsciiDocMetaData.MATHJAX + "/";
+      boolean needsMathJax = needsMathJax(input);
+      metaData.copyToDir(dataDir, needsMathJax);
+
+      AttributesBuilder attributes = getDefaultAttributes();
+      attributes.stylesDir(dataDir.getName());
+      attributes.tableOfContents(true);
+
+      OptionsBuilder options = getDefaultOptions(attributes);
+      options.backend(backend.name().toLowerCase(Locale.ROOT));
+
+      String parse = parse(input, false, needsMathJax, mathjaxDir, options);
+
+      try {
+        parse = copyFiles(parse, dataDir);
+        Files.write(parse, file, Charsets.UTF_8);
+      } catch (IOException e) {
+        log.error("Could not write to file {}", file, e);
+        throw new RuntimeException(e);
+      }
     }
   }
 

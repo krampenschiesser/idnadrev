@@ -20,6 +20,9 @@ dependencies {
     compile("org.asciidoctor:asciidoctorj:$asciidocJavaIntegration") {
         transitive = false;
     }
+    compile("org.asciidoctor:asciidoctorj-pdf:$asciidocPdf") {
+        transitive = false;
+    }
 
     //asciidoc:
     runtime "org.jruby:jruby-complete:$jruby"

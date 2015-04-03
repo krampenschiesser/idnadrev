@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -36,6 +37,7 @@ public class AsciiDocParserRenderToFileTest {
   private String plainText;
   private File dataDir;
   private File file;
+  private File pdfFile;
   private File imageFile;
 
   @Before
@@ -55,10 +57,10 @@ public class AsciiDocParserRenderToFileTest {
       "[source,java]\n" +
       "----\n" +
       "  public String parse(String input) {\n" +
-      "    Attributes attributes = AttributesBuilder.attributes()" +
-      "       .linkCss(false).unsetStyleSheet().get();\n" +
-      "    Options options = OptionsBuilder.options()" +
-      "       .headerFooter(true).attributes(attributes).get();//.docType(\"HTML\")\n" +
+      "    Attributes attributes = AttributesBuilder.attributes()\n" +
+      "        .linkCss(false).unsetStyleSheet().get();\n" +
+      "    Options options = OptionsBuilder.options().headerFooter(true)\n" +
+      "        .attributes(attributes).get();//.docType(\"HTML\")\n" +
       "    String render = asciidoctor.render(input, options);\n" +
       "    return render;\n" +
       "  }" +
@@ -69,21 +71,27 @@ public class AsciiDocParserRenderToFileTest {
     asciiDocParser = new AsciiDocParser();
 
     file = new File(System.getProperty("java.io.tmpdir") + File.separator + "adocRender.html");
-    file.deleteOnExit();
-    if (!file.exists()) {
-      file.createNewFile();
-    }
+    prepareFile(file);
+
+    pdfFile = new File(System.getProperty("java.io.tmpdir") + File.separator + "adocRender.pdf");
+    prepareFile(pdfFile);
+
     imageFile = new File(System.getProperty("java.io.tmpdir") + File.separator + "test.png");
-    if (!imageFile.exists()) {
-      imageFile.createNewFile();
-      imageFile.deleteOnExit();
-    }
+    prepareFile(imageFile);
+
     dataDir = new File(file.getPath().substring(0, file.getPath().length() - 5) + AsciiDocParser.DATADIR_NAME);
 
     if (dataDir.exists()) {
       new DeleteDir(dataDir).delete();
     }
 
+  }
+
+  protected void prepareFile(File file) throws IOException {
+    file.deleteOnExit();
+    if (!file.exists()) {
+      file.createNewFile();
+    }
   }
 
   @Test
@@ -94,6 +102,15 @@ public class AsciiDocParserRenderToFileTest {
     assertTrue(new File(dataDir, AsciiDocMetaData.CODERAY_CSS).exists());
     assertTrue(new File(dataDir, AsciiDocMetaData.ASCIIDOCTOR_CSS).exists());
     assertFalse(new File(dataDir, AsciiDocMetaData.MATHJAX).exists());
+  }
+
+  @Test
+  public void testRenderToPdf() throws Exception {
+    asciiDocParser.renderToFile(asciiDocSimple, AsciiDocBackend.PDF, pdfFile);
+
+    assertTrue(pdfFile.getPath() + " does not exist", pdfFile.exists());
+    long fileSize = java.nio.file.Files.size(pdfFile.toPath());
+    assertTrue(fileSize > 0);
   }
 
   @Test
