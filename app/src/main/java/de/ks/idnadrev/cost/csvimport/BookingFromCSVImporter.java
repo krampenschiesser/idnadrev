@@ -15,6 +15,38 @@
  */
 package de.ks.idnadrev.cost.csvimport;
 
-public class BookingFromCSVImporter {
+import de.ks.idnadrev.cost.csvimport.columnmapping.BookingColumnMapping;
+import de.ks.idnadrev.entity.cost.Booking;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+public class BookingFromCSVImporter {
+  protected final String separator;
+  protected final List<BookingColumnMapping> mappings = new ArrayList<>();
+
+  public BookingFromCSVImporter(String separator, BookingColumnMapping... mappings) {
+    this.separator = separator;
+    this.mappings.addAll(Arrays.asList(mappings));
+  }
+
+  public List<Booking> createBookings(List<String> lines) {
+    return lines.stream().map(this::createBooking).collect(Collectors.toList());
+  }
+
+  private Booking createBooking(String line) {
+    String quote = Pattern.quote(separator);
+    String[] split = line.split(quote);
+
+    Booking booking = new Booking();
+
+    for (BookingColumnMapping mapping : mappings) {
+      mapping.apply(booking, split);
+    }
+
+    return booking;
+  }
 }

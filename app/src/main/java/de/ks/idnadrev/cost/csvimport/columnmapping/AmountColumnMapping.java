@@ -13,11 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.cost.csvimport;
+package de.ks.idnadrev.cost.csvimport.columnmapping;
 
+import de.ks.idnadrev.entity.cost.Booking;
 import de.ks.reflection.PropertyPath;
 
-public class ColumnMapping {
-  int column;
-  PropertyPath bookingPath;
+public class AmountColumnMapping extends BookingColumnMapping<Double> {
+  public AmountColumnMapping(int column) {
+    super(column, PropertyPath.ofTypeSafe(Booking.class, b -> b.setAmount(0D)));
+  }
+
+  @Override
+  protected Double transform(String content) {
+    if (content == null || content.isEmpty()) {
+      return null;
+    } else {
+      return Double.valueOf(content);
+    }
+  }
 }
