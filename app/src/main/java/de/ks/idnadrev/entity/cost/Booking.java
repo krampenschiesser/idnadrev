@@ -42,7 +42,7 @@ public class Booking extends AbstractPersistentObject<Booking> {
   @Transient
   protected boolean total;
 
-  protected Booking() {
+  public Booking() {
     internalIdentifier = UUID.randomUUID().toString();
   }
 
