@@ -15,6 +15,8 @@
  */
 package de.ks.idnadrev.cost.csvimport;
 
+import de.ks.idnadrev.cost.csvimport.columnmapping.BookingColumnMapping;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,7 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class BookingCSVDefinition {
-  protected final List<ColumnMapping> columns = new LinkedList<>();
+  protected final List<BookingColumnMapping> columns = new LinkedList<>();
   String separatorChar;
 
   public List<LineCheckResult> check(File file) {

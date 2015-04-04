@@ -1,4 +1,4 @@
-package de.ks.idnadrev.cost.accountview;
+package de.ks.idnadrev.cost.bookingview;
 
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityCfg;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.cost.accountview;
+package de.ks.idnadrev.cost.bookingview;
 
 import de.ks.BaseController;
 import de.ks.executor.group.LastTextChange;
@@ -25,13 +25,18 @@ import de.ks.persistence.PersistentWork;
 import de.ks.validation.cell.ValidatingTableCell;
 import de.ks.validation.validators.DoubleValidator;
 import de.ks.validation.validators.NotNullValidator;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.KeyCode;
+import javafx.stage.Modality;
 import javafx.util.converter.DoubleStringConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +44,9 @@ import org.slf4j.LoggerFactory;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -58,9 +65,13 @@ public class BookingViewController extends BaseController<BookingViewModel> {
   protected TextField description;
   @FXML
   protected TextField category;
+  @FXML
+  protected Button delete;
 
   @FXML
   protected TableView<Booking> bookingTable;
+  @FXML
+  protected TableColumn<Booking, Boolean> deleteColumn;
   @FXML
   protected TableColumn<Booking, String> timeColumn;
   @FXML
@@ -71,6 +82,7 @@ public class BookingViewController extends BaseController<BookingViewModel> {
   protected TableColumn<Booking, Double> amountColumn;
 
   protected DateTimeFormatter dateTimeFormatter;
+  protected final Map<Booking, SimpleBooleanProperty> markedForDelete = new HashMap<>();
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -105,12 +117,52 @@ public class BookingViewController extends BaseController<BookingViewModel> {
     amountColumn.setCellFactory(b -> new ValidatingTableCell<Booking, Double>(new DoubleStringConverter(), new DoubleValidator()));
     amountColumn.setOnEditCommit(e -> {
       Double newValue = e.getNewValue();
+      Double oldValue = e.getOldValue();
       Booking booking = e.getRowValue();
-      PersistentWork.wrap(() -> {
-        PersistentWork.reload(booking).setAmount(newValue);
-      });
+      if (!newValue.equals(oldValue)) {
+        PersistentWork.wrap(() -> {
+          PersistentWork.reload(booking).setAmount(newValue);
+        });
+        controller.reload();
+      }
     });
 
+    deleteColumn.setCellFactory(column -> {
+      if (column == null) {
+        return null;
+      } else {
+        CheckBoxTableCell cell = new CheckBoxTableCell();
+        cell.setSelectedStateCallback(i -> {
+          Booking booking = bookingTable.getItems().get((int) i);
+          SimpleBooleanProperty property = markedForDelete.get(booking);
+          return property;
+        });
+        return cell;
+      }
+    });
+
+    bookingTable.setOnKeyPressed(e -> {
+      TablePosition focusedCell = bookingTable.getFocusModel().getFocusedCell();
+      int beginOfEditableColumns = 2;
+      if (focusedCell.getColumn() < beginOfEditableColumns && !e.isControlDown() && !e.isAltDown()) {
+        Booking item = bookingTable.getSelectionModel().getSelectedItem();
+        if (e.getCode() == KeyCode.SPACE) {
+          if (item != null) {
+            SimpleBooleanProperty property = markedForDelete.get(item);
+            property.set(!property.get());
+            e.consume();
+          }
+        }
+        if (e.getCode() == KeyCode.D) {
+          e.consume();
+          bookingTable.edit(bookingTable.getSelectionModel().getSelectedIndex(), descriptionColumn);
+        }
+        if (e.getCode() == KeyCode.C) {
+          e.consume();
+          bookingTable.edit(bookingTable.getSelectionModel().getSelectedIndex(), categoryColumn);
+        }
+      }
+    });
 
     validationRegistry.registerValidator(startTime, new NotNullValidator());
     validationRegistry.registerValidator(endTime, new NotNullValidator());
@@ -169,19 +221,51 @@ public class BookingViewController extends BaseController<BookingViewModel> {
     startTime.setValue(LocalDate.now().minusMonths(3));
     endTime.setValue(LocalDate.now().plusDays(1));
     CompletableFuture.supplyAsync(() -> PersistentWork.from(Account.class), controller.getExecutorService())//
-            .thenAcceptAsync(accounts -> {
-              List<String> accountNames = accounts.stream().map(a -> a.getName()).collect(Collectors.toList());
-              account.getItems().clear();
-              account.getItems().addAll(accountNames);
-              if (!accountNames.isEmpty()) {
-                account.getSelectionModel().select(0);
-              }
-            }, controller.getJavaFXExecutor());
+      .thenAcceptAsync(accounts -> {
+        List<String> accountNames = accounts.stream().map(a -> a.getName()).collect(Collectors.toList());
+        account.getItems().clear();
+        account.getItems().addAll(accountNames);
+        if (!accountNames.isEmpty()) {
+          account.getSelectionModel().select(0);
+        }
+      }, controller.getJavaFXExecutor());
   }
 
   @Override
   protected void onRefresh(BookingViewModel model) {
-    bookingTable.setItems(FXCollections.observableArrayList(model.getBookings()));
+    ObservableList<Booking> bookings = FXCollections.observableArrayList(model.getBookings());
+    bookingTable.setItems(bookings);
 
+    markedForDelete.clear();
+    for (Booking booking : bookings) {
+      markedForDelete.put(booking, new SimpleBooleanProperty(false));
+    }
+  }
+
+  @FXML
+  public void onDelete() {
+    List<Booking> bookingsToDelete = markedForDelete.entrySet().stream().filter(e -> e.getValue().get()).map(e -> e.getKey()).collect(Collectors.toList());
+
+    Dialog dialog = new Dialog();
+    dialog.initModality(Modality.APPLICATION_MODAL);
+    dialog.setContentText(Localized.get("bookings.delete", bookingsToDelete.size()));
+    dialog.setTitle(Localized.get("delete"));
+    dialog.setOnCloseRequest(r -> dialog.close());
+    ButtonType yes = new ButtonType(Localized.get("yes"), ButtonBar.ButtonData.YES);
+    ButtonType no = new ButtonType(Localized.get("no"), ButtonBar.ButtonData.NO);
+    dialog.getDialogPane().getButtonTypes().addAll(yes, no);
+
+    dialog.showAndWait().filter(response -> {
+      ButtonType type = (ButtonType) response;
+      return type.getButtonData() == ButtonBar.ButtonData.YES;
+    }).ifPresent(o -> {
+      PersistentWork.run(em -> {
+        for (Booking booking : bookingsToDelete) {
+          Booking reload = PersistentWork.reload(booking);
+          em.remove(reload);
+        }
+      });
+      controller.reload();
+    });
   }
 }

@@ -16,7 +16,7 @@
 package de.ks.idnadrev.cost.booking;
 
 import de.ks.BaseController;
-import de.ks.idnadrev.cost.accountview.BookingLoadingHint;
+import de.ks.idnadrev.cost.bookingview.BookingLoadingHint;
 import de.ks.idnadrev.entity.cost.Account;
 import de.ks.idnadrev.entity.cost.Booking;
 import de.ks.option.Options;

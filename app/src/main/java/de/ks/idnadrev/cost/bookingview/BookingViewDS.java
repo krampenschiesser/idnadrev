@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.cost.accountview;
+package de.ks.idnadrev.cost.bookingview;
 
 import de.ks.datasource.DataSource;
 import de.ks.i18n.Localized;

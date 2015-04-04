@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <GridPane hgap="5.0" vgap="5.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="de.ks.idnadrev.cost.accountview.BookingViewController">
+          fx:controller="de.ks.idnadrev.cost.bookingview.BookingViewController">
     <columnConstraints>
         <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
@@ -16,7 +16,6 @@
         <RowConstraints minHeight="30.0" vgrow="NEVER"/>
         <RowConstraints minHeight="30.0" vgrow="NEVER"/>
         <RowConstraints minHeight="30.0" vgrow="SOMETIMES"/>
-        <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
         <RowConstraints minHeight="30.0" vgrow="NEVER"/>
     </rowConstraints>
     <padding>
@@ -43,11 +42,14 @@
 
         <TableView fx:id="bookingTable" tableMenuButtonVisible="true" GridPane.columnSpan="4" GridPane.rowIndex="3">
             <columns>
+                <TableColumn fx:id="deleteColumn" prefWidth="75.0" sortable="false" text="%delete"/>
                 <TableColumn fx:id="timeColumn" prefWidth="150.0" text="%time"/>
                 <TableColumn fx:id="descriptionColumn" prefWidth="400.0" text="%description"/>
                 <TableColumn fx:id="categoryColumn" prefWidth="150.0" text="%category"/>
                 <TableColumn fx:id="amountColumn" prefWidth="100.0" text="%added"/>
             </columns>
         </TableView>
+        <Button text="%delete.mnemonic" onAction="#onDelete" fx:id="delete" GridPane.halignment="LEFT"
+                GridPane.rowIndex="4"/>
     </children>
 </GridPane>
