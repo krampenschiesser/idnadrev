@@ -73,7 +73,7 @@ public class BookingViewActivityTest extends ActivityTest {
     assertEquals(12, items.size());
     Booking addition = items.get(3);
     Booking deletion = items.get(4);
-    TableColumn<Booking, Double> columnAmount = (TableColumn<Booking, Double>) bookingView.bookingTable.getColumns().get(3);
+    TableColumn<Booking, Double> columnAmount = (TableColumn<Booking, Double>) bookingView.bookingTable.getColumns().get(4);
     ObservableValue<Double> call = columnAmount.getCellValueFactory().call(new TableColumn.CellDataFeatures<>(bookingView.bookingTable, columnAmount, addition));
     assertEquals(20D, call.getValue(), 0.1D);
     call = columnAmount.getCellValueFactory().call(new TableColumn.CellDataFeatures<>(bookingView.bookingTable, columnAmount, deletion));
