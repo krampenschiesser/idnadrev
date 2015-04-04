@@ -71,50 +71,50 @@
 }
 
 .week-entry1 {
-    -fx-background-color: -fx-outer-border, -fx-inner-border, CHART_COLOR_1;
+    -fx-background-color: -fx-outer-border, -fx-inner-border, #f3622d;
 }
 .week-entry1:focused {
-    -fx-background-color: -fx-faint-focus-color, -fx-focus-color, -fx-inner-border, CHART_COLOR_1;
+    -fx-background-color: -fx-faint-focus-color, -fx-focus-color, -fx-inner-border, #f3622d;
 }
 .week-entry2 {
-    -fx-background-color: -fx-outer-border, -fx-inner-border, CHART_COLOR_2;
+    -fx-background-color: -fx-outer-border, -fx-inner-border, #fba71b;
 }
 .week-entry2:focused {
-    -fx-background-color: -fx-faint-focus-color, -fx-focus-color, -fx-inner-border, CHART_COLOR_2;
+    -fx-background-color: -fx-faint-focus-color, -fx-focus-color, -fx-inner-border, #fba71b;
 }
 .week-entry3 {
-    -fx-background-color: -fx-outer-border, -fx-inner-border, CHART_COLOR_3;
+    -fx-background-color: -fx-outer-border, -fx-inner-border, #57b757;
 }
 .week-entry3:focused {
-    -fx-background-color: -fx-faint-focus-color, -fx-focus-color, -fx-inner-border, CHART_COLOR_3;
+    -fx-background-color: -fx-faint-focus-color, -fx-focus-color, -fx-inner-border, #57b757;
 }
 .week-entry4 {
-    -fx-background-color: -fx-outer-border, -fx-inner-border, CHART_COLOR_4;
+    -fx-background-color: -fx-outer-border, -fx-inner-border, #41a9c9;
 }
 .week-entry4:focused {
-    -fx-background-color: -fx-faint-focus-color, -fx-focus-color, -fx-inner-border, CHART_COLOR_4;
+    -fx-background-color: -fx-faint-focus-color, -fx-focus-color, -fx-inner-border, #41a9c9;
 }
 .week-entry5 {
-    -fx-background-color: -fx-outer-border, -fx-inner-border, CHART_COLOR_5;
+    -fx-background-color: -fx-outer-border, -fx-inner-border, #4258c9;
 }
 .week-entry5:focused {
-    -fx-background-color: -fx-faint-focus-color, -fx-focus-color, -fx-inner-border, CHART_COLOR_5;
+    -fx-background-color: -fx-faint-focus-color, -fx-focus-color, -fx-inner-border, #4258c9;
 }
 .week-entry6 {
-    -fx-background-color: -fx-outer-border, -fx-inner-border, CHART_COLOR_6;
+    -fx-background-color: -fx-outer-border, -fx-inner-border, #9a42c8;
 }
 .week-entry6:focused {
-    -fx-background-color: -fx-faint-focus-color, -fx-focus-color, -fx-inner-border, CHART_COLOR_6;
+    -fx-background-color: -fx-faint-focus-color, -fx-focus-color, -fx-inner-border, #9a42c8;
 }
 .week-entry7 {
-    -fx-background-color: -fx-outer-border, -fx-inner-border, CHART_COLOR_7;
+    -fx-background-color: -fx-outer-border, -fx-inner-border, #c84164;
 }
 .week-entry7:focused {
-    -fx-background-color: -fx-faint-focus-color, -fx-focus-color, -fx-inner-border, CHART_COLOR_7;
+    -fx-background-color: -fx-faint-focus-color, -fx-focus-color, -fx-inner-border, #c84164;
 }
 .week-entry8 {
-    -fx-background-color: -fx-outer-border, -fx-inner-border, CHART_COLOR_8;
+    -fx-background-color: -fx-outer-border, -fx-inner-border, #888888;
 }
 .week-entry8:focused {
-    -fx-background-color: -fx-faint-focus-color, -fx-focus-color, -fx-inner-border, CHART_COLOR_8;
+    -fx-background-color: -fx-faint-focus-color, -fx-focus-color, -fx-inner-border, #888888;
 }

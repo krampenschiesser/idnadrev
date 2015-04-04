@@ -28,7 +28,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 
 public class WeekViewAppointment<T> implements Comparable<WeekViewAppointment> {
-  String styleClass;
+  protected String styleClass;
 
   protected String title;
 
@@ -123,6 +123,7 @@ public class WeekViewAppointment<T> implements Comparable<WeekViewAppointment> {
     this.startDate = date;
     this.startTime = time;
   }
+
   public void setStart(LocalDate date, LocalTime time) {
     this.startDate = date;
     this.startTime = time;
@@ -135,7 +136,12 @@ public class WeekViewAppointment<T> implements Comparable<WeekViewAppointment> {
     return duration;
   }
 
-  public WeekViewAppointment setEnhancer(Consumer<Button> enhancer) {
+  public WeekViewAppointment<T> setDuration(Duration duration) {
+    this.duration = duration;
+    return this;
+  }
+
+  public WeekViewAppointment<T> setEnhancer(Consumer<Button> enhancer) {
     this.enhancer = enhancer;
     return this;
   }
@@ -219,11 +225,11 @@ public class WeekViewAppointment<T> implements Comparable<WeekViewAppointment> {
   @Override
   public String toString() {
     return "WeekViewAppointment{" +
-            "title='" + title + '\'' +
-            ", startDate=" + startDate +
-            ", startTime=" + startTime +
-            ", duration=" + duration +
-            ", userData=" + userData +
-            '}';
+      "title='" + title + '\'' +
+      ", startDate=" + startDate +
+      ", startTime=" + startTime +
+      ", duration=" + duration +
+      ", userData=" + userData +
+      '}';
   }
 }

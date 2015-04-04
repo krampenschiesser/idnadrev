@@ -15,6 +15,7 @@
 
 package de.ks.scheduler;
 
+import de.ks.persistence.converter.DurationConverter;
 import de.ks.persistence.converter.LocalDateConverter;
 import de.ks.persistence.converter.LocalTimeConverter;
 import de.ks.persistence.entity.AbstractPersistentObject;
@@ -50,6 +51,10 @@ public class Schedule extends AbstractPersistentObject<Schedule> {
 
   @Enumerated(EnumType.STRING)
   protected RepetitionType repetition = null;
+
+  @Column(columnDefinition = "BIGINT(19)")
+  @Convert(converter = DurationConverter.class)
+  protected Duration duration;//fixme version 5.1 db update
 
   protected String identifier;
 
@@ -168,6 +173,14 @@ public class Schedule extends AbstractPersistentObject<Schedule> {
   public Schedule setProposedYear(int proposedYear) {
     this.proposedYear = proposedYear;
     return this;
+  }
+
+  public Duration getDuration() {
+    return duration;
+  }
+
+  public void setDuration(Duration duration) {
+    this.duration = duration;
   }
 
   public String getIdentifier() {

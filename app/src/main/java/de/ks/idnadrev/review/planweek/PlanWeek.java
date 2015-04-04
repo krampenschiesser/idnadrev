@@ -29,20 +29,17 @@ import de.ks.persistence.PersistentWork;
 import de.ks.scheduler.Schedule;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeTableView;
+import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
+import org.controlsfx.dialog.Dialogs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -81,6 +78,9 @@ public class PlanWeek extends BaseController<List<Task>> implements AppointmentR
         }
       }
     });
+    viewController.getTasksView().setOnMouseClicked(e -> {
+      onEdit();
+    });
 
     viewController.getTasksView().setOnDragDetected(e -> {
       TreeItem<Task> selectedItem = viewController.getTasksView().getSelectionModel().getSelectedItem();
@@ -112,6 +112,9 @@ public class PlanWeek extends BaseController<List<Task>> implements AppointmentR
     WeekViewAppointment<Task> appointment = new WeekViewAppointment<>(task.getName(), weekView.getFirstDayOfWeek(), task.getEstimatedTime());
     Schedule taskSchedule = task.getSchedule();
     if (taskSchedule != null) {
+      if (taskSchedule.getDuration() != null) {
+        appointment.setDuration(taskSchedule.getDuration());
+      }
       if (taskSchedule.getScheduledDate() != null) {
         appointment.setStart(taskSchedule.getScheduledDate(), taskSchedule.getScheduledTime());
       } else if (taskSchedule.getProposedWeek() != 0) {
@@ -127,7 +130,35 @@ public class PlanWeek extends BaseController<List<Task>> implements AppointmentR
       controller.getExecutorService().submit(() -> changeSchedule(appointment, date, time));
     });
     appointment.setNewTimePossiblePredicate((date, time) -> true);
+    appointment.setEnhancer(btn -> {
+      MenuItem item = new MenuItem(Localized.get("change.duration"));
+      item.setOnAction(e -> changeDuration(appointment, task));
+      ContextMenu menu = new ContextMenu(item);
+      btn.setContextMenu(menu);
+    });
+    appointment.setAction((btn, t) -> {
+      edit(() -> t);
+    });
     return appointment;
+  }
+
+  protected void changeDuration(WeekViewAppointment<Task> appointment, Task task) {
+    Optional<String> optional = Dialogs.create().title(Localized.get("enter.time.minutes")).showTextInput(String.valueOf(appointment.getDuration().toMinutes()));
+    if (optional.isPresent()) {
+      String input = optional.get();
+      try {
+        long duration = Long.parseLong(input);
+        Duration minutes = Duration.ofMinutes(duration);
+        appointment.setDuration(minutes);
+        PersistentWork.wrap(() -> {
+          Task reloaded = PersistentWork.reload(appointment.getUserData());
+          reloaded.getSchedule().setDuration(minutes);
+        });
+        weekView.recreateEntries();
+      } catch (NumberFormatException e) {
+        log.warn("Could not parse input {}", input);
+      }
+    }
   }
 
   protected void changeSchedule(WeekViewAppointment<Task> appointment, LocalDate date, LocalTime time) {
@@ -192,10 +223,14 @@ public class PlanWeek extends BaseController<List<Task>> implements AppointmentR
   @FXML
   protected void onEdit() {
     TreeTableView<Task> tasksView = viewController.getTasksView();
+    Supplier<Task> supplier = () -> tasksView.getSelectionModel().getSelectedItem().getValue();
+    edit(supplier);
+  }
+
+  protected void edit(Supplier<Task> supplier) {
     ActivityHint hint = new ActivityHint(CreateTaskActivity.class);
     hint.setReturnToActivity(controller.getCurrentActivityId());
 
-    Supplier supplier = () -> tasksView.getSelectionModel().getSelectedItem().getValue();
     hint.setReturnToDatasourceHint(supplier);
     hint.setDataSourceHint(supplier);
 
