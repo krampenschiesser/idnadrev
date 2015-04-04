@@ -8,9 +8,13 @@ import de.ks.idnadrev.entity.cost.Account;
 import de.ks.idnadrev.entity.cost.Booking;
 import de.ks.persistence.PersistentWork;
 import de.ks.util.FXPlatform;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
+import javafx.event.EventType;
 import javafx.scene.control.TableColumn;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -90,5 +94,27 @@ public class BookingViewActivityTest extends ActivityTest {
     FXPlatform.waitForFX();
 
     assertEquals(3, bookingView.bookingTable.getItems().size());
+  }
+
+  @Test
+  public void testDeleteBooking() throws Exception {
+    BookingViewController bookingView = activityController.getControllerInstance(BookingViewController.class);
+
+    ObservableList<Booking> items = bookingView.bookingTable.getItems();
+    assertEquals(12, items.size());
+
+    FXPlatform.invokeLater(() -> {
+      bookingView.bookingTable.getSelectionModel().select(1, bookingView.timeColumn);
+      KeyEvent keyEvent = new KeyEvent(bookingView.bookingTable, bookingView.bookingTable, new EventType<KeyEvent>("test"), " ", " ", KeyCode.SPACE, false, false, false, false);
+      bookingView.bookingTable.getOnKeyPressed().handle(keyEvent);
+    });
+    Booking selectedItem = bookingView.bookingTable.getSelectionModel().getSelectedItem();
+    SimpleBooleanProperty property = bookingView.markedForDelete.get(selectedItem);
+    assertTrue("not marked for delete", property.get());
+
+    FXPlatform.invokeLater(() -> bookingView.onDelete(false));
+    activityController.waitForDataSource();
+    items = bookingView.bookingTable.getItems();
+    assertEquals(11, items.size());
   }
 }

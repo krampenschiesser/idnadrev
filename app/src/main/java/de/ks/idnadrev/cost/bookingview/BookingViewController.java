@@ -44,10 +44,7 @@ import org.slf4j.LoggerFactory;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -244,21 +241,32 @@ public class BookingViewController extends BaseController<BookingViewModel> {
 
   @FXML
   public void onDelete() {
+    boolean interactive = false;
+    onDelete(interactive);
+  }
+
+  protected void onDelete(boolean interactive) {
     List<Booking> bookingsToDelete = markedForDelete.entrySet().stream().filter(e -> e.getValue().get()).map(e -> e.getKey()).collect(Collectors.toList());
 
-    Dialog dialog = new Dialog();
-    dialog.initModality(Modality.APPLICATION_MODAL);
-    dialog.setContentText(Localized.get("bookings.delete", bookingsToDelete.size()));
-    dialog.setTitle(Localized.get("delete"));
-    dialog.setOnCloseRequest(r -> dialog.close());
-    ButtonType yes = new ButtonType(Localized.get("yes"), ButtonBar.ButtonData.YES);
-    ButtonType no = new ButtonType(Localized.get("no"), ButtonBar.ButtonData.NO);
-    dialog.getDialogPane().getButtonTypes().addAll(yes, no);
+    Optional optional;
+    if (interactive) {
+      Dialog dialog = new Dialog();
+      dialog.initModality(Modality.APPLICATION_MODAL);
+      dialog.setContentText(Localized.get("bookings.delete", bookingsToDelete.size()));
+      dialog.setTitle(Localized.get("delete"));
+      dialog.setOnCloseRequest(r -> dialog.close());
+      ButtonType yes = new ButtonType(Localized.get("yes"), ButtonBar.ButtonData.YES);
+      ButtonType no = new ButtonType(Localized.get("no"), ButtonBar.ButtonData.NO);
+      dialog.getDialogPane().getButtonTypes().addAll(yes, no);
 
-    dialog.showAndWait().filter(response -> {
-      ButtonType type = (ButtonType) response;
-      return type.getButtonData() == ButtonBar.ButtonData.YES;
-    }).ifPresent(o -> {
+      optional = dialog.showAndWait().filter(response -> {
+        ButtonType type = (ButtonType) response;
+        return type.getButtonData() == ButtonBar.ButtonData.YES;
+      });
+    } else {
+      optional = Optional.of(true);
+    }
+    optional.ifPresent(o -> {
       PersistentWork.run(em -> {
         for (Booking booking : bookingsToDelete) {
           Booking reload = PersistentWork.reload(booking);
