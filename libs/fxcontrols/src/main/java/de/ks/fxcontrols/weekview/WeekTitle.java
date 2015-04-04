@@ -44,6 +44,7 @@ public class WeekTitle extends GridPane {
 
   public WeekTitle(String today, SimpleIntegerProperty weekOfYearProperty, SimpleIntegerProperty yearProperty) {
     this.weekOfYearProperty = weekOfYearProperty;
+    this.today.setText(today);
     this.yearProperty = yearProperty;
     week.getStyleClass().add("week-week");
     month.getStyleClass().add("week-month");
