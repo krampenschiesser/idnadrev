@@ -16,40 +16,44 @@
         <RowConstraints minHeight="30.0" vgrow="NEVER"/>
         <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
         <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
         <RowConstraints minHeight="30.0" vgrow="NEVER"/>
         <RowConstraints minHeight="30.0" vgrow="NEVER"/>
         <RowConstraints/>
         <RowConstraints/>
     </rowConstraints>
     <children>
-        <Label text="%import.template"/>
-        <ComboBox fx:id="templates" onAction="#onFillFromTemplate" GridPane.columnIndex="1"/>
+        <Label text="%import.template:"/>
+        <ComboBox fx:id="templates" GridPane.columnIndex="1"/>
         <Button fx:id="saveTemplate" mnemonicParsing="false" onAction="#onSaveTemplate" text="%save.template"
                 GridPane.columnIndex="3" GridPane.halignment="RIGHT"/>
 
-        <Label text="%import.account" GridPane.rowIndex="1"/>
+        <Label text="%import.account:" GridPane.rowIndex="1"/>
         <ComboBox fx:id="account" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
-        <Label text="%import.separator" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
-        <TextField fx:id="separator" text=";" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+        <Label text="%import.separator:" GridPane.rowIndex="2"/>
+        <TextField fx:id="separator" text=";" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
 
-        <Label text="%import.column.description" GridPane.rowIndex="2"/>
-        <TextField fx:id="descriptionColumn" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        <Label text="%import.column.description:" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+        <TextField fx:id="descriptionColumn" GridPane.columnIndex="3" GridPane.rowIndex="2"/>
 
-        <Label text="%import.column.amount" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
-        <TextField fx:id="amountColumn" GridPane.columnIndex="3" GridPane.rowIndex="2"/>
+        <Label text="%import.column.amount:" GridPane.rowIndex="3"/>
+        <TextField fx:id="amountColumn" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
 
-        <Label text="%import.column.date" GridPane.rowIndex="3"/>
-        <TextField fx:id="dateColumn" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+        <Label text="%import.column.date:" GridPane.rowIndex="4"/>
+        <TextField fx:id="dateColumn" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
 
-        <Label text="%import.column.time" GridPane.columnIndex="2" GridPane.rowIndex="3"/>
-        <TextField fx:id="timeColumn" GridPane.columnIndex="3" GridPane.rowIndex="3"/>
+        <Label text="%import.column.time:" GridPane.columnIndex="2" GridPane.rowIndex="4"/>
+        <TextField fx:id="timeColumn" GridPane.columnIndex="3" GridPane.rowIndex="4"/>
 
-        <Label text="%import.column.date.pattern" GridPane.rowIndex="4"/>
-        <TextField fx:id="datePattern" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+        <Label text="%import.column.date.pattern:" GridPane.rowIndex="5"/>
+        <TextField fx:id="datePattern" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
 
-        <Label text="%import.column.time.pattern" GridPane.columnIndex="2" GridPane.rowIndex="4"/>
-        <TextField fx:id="timePattern" GridPane.columnIndex="3" GridPane.rowIndex="4"/>
+        <Label text="%import.column.time.pattern:" GridPane.columnIndex="2" GridPane.rowIndex="5"/>
+        <TextField fx:id="timePattern" GridPane.columnIndex="3" GridPane.rowIndex="5"/>
+        <CheckBox fx:id="useComma" mnemonicParsing="false" text="%importer.comma.check" GridPane.columnIndex="3"
+                  GridPane.rowIndex="3"/>
+        <Label text="%importer.use.comma:" GridPane.columnIndex="2" GridPane.rowIndex="3"/>
     </children>
     <padding>
         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>

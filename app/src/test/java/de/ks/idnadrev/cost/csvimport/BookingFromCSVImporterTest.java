@@ -2,7 +2,7 @@ package de.ks.idnadrev.cost.csvimport;
 
 import de.ks.idnadrev.cost.csvimport.columnmapping.AmountColumnMapping;
 import de.ks.idnadrev.cost.csvimport.columnmapping.BookingColumnMapping;
-import de.ks.idnadrev.cost.csvimport.columnmapping.BookingTimeColumnMapping;
+import de.ks.idnadrev.cost.csvimport.columnmapping.BookingDateColumnMapping;
 import de.ks.idnadrev.cost.csvimport.columnmapping.DescriptionColumnMapping;
 import de.ks.idnadrev.entity.cost.Booking;
 import org.apache.commons.lang3.StringUtils;
@@ -21,8 +21,8 @@ import static org.junit.Assert.fail;
 
 public class BookingFromCSVImporterTest {
   private BookingFromCSVImporter importer;
-  private static final String simpleAddBooking = "02.16.2015;DE4711;DE0815;Simple adding test booking;;31;EUR";
-  private static final String simpleSubBooking = "03.17.2015;DE4711;;Simple subtracting test booking;-7;;EUR";
+  private static final String simpleAddBooking = "02.16.2015;DE4711;DE0815;Simple adding test booking;;31.34;EUR";
+  private static final String simpleSubBooking = "03.17.2015;DE4711;;Simple subtracting test booking;-7,12;;EUR";
 
   @Test
   public void testDamnFormatter() throws Exception {
@@ -50,10 +50,10 @@ public class BookingFromCSVImporterTest {
 
   @Test
   public void testImportFromCSV() throws Exception {
-    BookingColumnMapping<LocalDateTime> dateMapping = new BookingTimeColumnMapping(0, "M.d.y");
+    BookingColumnMapping<LocalDate> dateMapping = new BookingDateColumnMapping(0, "M.d.y");
     BookingColumnMapping<String> descMapping = new DescriptionColumnMapping(3);
-    BookingColumnMapping<Double> value1 = new AmountColumnMapping(4);
-    BookingColumnMapping<Double> value2 = new AmountColumnMapping(5);
+    BookingColumnMapping<Double> value1 = new AmountColumnMapping(4, true);
+    BookingColumnMapping<Double> value2 = new AmountColumnMapping(5, false);
 
     importer = new BookingFromCSVImporter(";", dateMapping, value1, value2, descMapping);
 
@@ -68,7 +68,19 @@ public class BookingFromCSVImporterTest {
     assertEquals(firstDate, first.getBookingTime());
     assertEquals(secondDate, second.getBookingTime());
 
-    assertEquals(31, first.getAmount(), 0.0001);
-    assertEquals(-7, second.getAmount(), 0.0001);
+    assertEquals(31.34, first.getAmount(), 0.0001);
+    assertEquals(-7.12, second.getAmount(), 0.0001);
+  }
+
+  @Test
+  public void testParseBigNumber() throws Exception {
+    BookingColumnMapping<Double> value1 = new AmountColumnMapping(0, true);
+    Booking booking = new Booking();
+    value1.apply(booking, new String[]{"31.389,34"});
+    assertEquals(31389.34, booking.getAmount(), 0.001);
+
+    value1 = new AmountColumnMapping(0, false);
+    value1.apply(booking, new String[]{"31,389.34"});
+    assertEquals(31389.34, booking.getAmount(), 0.001);
   }
 }

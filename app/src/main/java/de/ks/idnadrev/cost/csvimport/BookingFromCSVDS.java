@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,19 +15,61 @@
  */
 package de.ks.idnadrev.cost.csvimport;
 
+import com.google.common.base.Charsets;
+import de.ks.activity.ActivityController;
 import de.ks.datasource.DataSource;
-import de.ks.idnadrev.cost.bookingview.BookingViewModel;
+import de.ks.idnadrev.entity.cost.Booking;
 
+import javax.inject.Inject;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.function.Consumer;
 
-public class BookingFromCSVDS implements DataSource<BookingViewModel> {
+public class BookingFromCSVDS implements DataSource<ImporterBookingViewModel> {
+  private File fileToLoad;
+  @Inject
+  ActivityController activityController;
+
   @Override
-  public BookingViewModel loadModel(Consumer<BookingViewModel> furtherProcessing) {
-    return new BookingViewModel();
+  public ImporterBookingViewModel loadModel(Consumer<ImporterBookingViewModel> furtherProcessing) {
+    ImporterBookingViewModel retval = new ImporterBookingViewModel();
+
+    if (fileToLoad != null) {
+      LinkedList<Booking> bookings = new LinkedList<>();
+
+      CSVParseDefinitionController controller = activityController.getControllerInstance(CSVParseDefinitionController.class);
+      BookingFromCSVImporter importer = controller.getImporter();
+      try {
+        List<String> lines = Files.readAllLines(fileToLoad.toPath(), Charsets.ISO_8859_1);
+        for (String line : lines) {
+          try {
+            Booking booking = importer.createBooking(line);
+            bookings.add(booking);
+          } catch (Exception e) {
+            retval.addError(e, line);
+
+          }
+        }
+      } catch (IOException e) {
+        retval.addError(e);
+      }
+      retval.getBookings().addAll(bookings);
+    }
+    return retval;
   }
 
   @Override
-  public void saveModel(BookingViewModel model, Consumer<BookingViewModel> beforeSaving) {
+  public void saveModel(ImporterBookingViewModel model, Consumer<ImporterBookingViewModel> beforeSaving) {
 
+  }
+
+  @Override
+  public void setLoadingHint(Object dataSourceHint) {
+    if (dataSourceHint instanceof File) {
+      this.fileToLoad = (File) dataSourceHint;
+    }
   }
 }

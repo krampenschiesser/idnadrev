@@ -15,18 +15,20 @@
  */
 package de.ks.idnadrev.cost.csvimport;
 
+import com.google.common.base.StandardSystemProperty;
 import de.ks.BaseController;
 import de.ks.i18n.Localized;
 import de.ks.idnadrev.cost.bookingview.BookingViewTableController;
 import de.ks.idnadrev.entity.cost.Booking;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.stage.FileChooser;
 
+import java.io.File;
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 
-public class BookingFromCSVController extends BaseController<List<Booking>> {
+public class BookingFromCSVController extends BaseController<ImporterBookingViewModel> {
 
   @FXML
   protected Accordion accordion;
@@ -57,14 +59,33 @@ public class BookingFromCSVController extends BaseController<List<Booking>> {
 
   }
 
-  @FXML
-  public void onImport() {
+  @Override
+  protected void onRefresh(ImporterBookingViewModel model) {
+    errorField.setText(model.getErrors());
+  }
 
+  public void onSelectFile(File file) {
+    store.getDatasource().setLoadingHint(file);
+    controller.reload();
   }
 
   @FXML
   public void onSelectFile() {
+    FileChooser fileChooser = new FileChooser();
+    fileChooser.setTitle(Localized.get("import.select.csv.file"));
+    String homeDir = StandardSystemProperty.USER_HOME.value();
+    fileChooser.setInitialDirectory(new File(homeDir));
 
+    FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("*.csv", "*.csv");
+    fileChooser.getExtensionFilters().add(extensionFilter);
+    fileChooser.setSelectedExtensionFilter(extensionFilter);
+    File file = fileChooser.showOpenDialog(selectFile.getScene().getWindow());
+    if (file != null && file.exists()) {
+      onSelectFile(file);
+    }
   }
 
+  @FXML
+  public void onImport() {
+  }
 }

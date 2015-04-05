@@ -19,6 +19,7 @@ import de.ks.fxcontrols.weekview.WeekHelper;
 import de.ks.idnadrev.entity.*;
 import de.ks.idnadrev.entity.cost.Account;
 import de.ks.idnadrev.entity.cost.Booking;
+import de.ks.idnadrev.entity.cost.BookingCsvTemplate;
 import de.ks.idnadrev.entity.information.*;
 import de.ks.persistence.PersistentWork;
 import de.ks.scheduler.Schedule;
@@ -41,13 +42,13 @@ public class DummyData extends Service {
   private static final Logger log = LoggerFactory.getLogger(DummyData.class);
   public static final String CREATE_DUMMYDATA = "create.dummydata";
   public static final String UML_CLASS_DIAGRAM = "class Car\n" +
-          "\n" +
-          "Driver - Car : drives >\n" +
-          "Car *- Wheel : have 4 >\n" +
-          "Car -- Person : < owns";
+    "\n" +
+    "Driver - Car : drives >\n" +
+    "Car *- Wheel : have 4 >\n" +
+    "Car -- Person : < owns";
   public static final String UML_ACTIVITY_DIAGRAM = "(*) --> \"First Activity\"\n" +
-          "-->[You can put also labels] \"Second Activity\"\n" +
-          "--> (*)";
+    "-->[You can put also labels] \"Second Activity\"\n" +
+    "--> (*)";
 
   @Override
   public int getPriority() {
@@ -204,6 +205,15 @@ public class DummyData extends Service {
       booking.setBookingTime(dateTime.plusDays(i));
       PersistentWork.persist(booking);
     }
+
+    BookingCsvTemplate template = new BookingCsvTemplate("template1");
+    template.setAccount(account2);
+    template.setSeparator(";");
+    template.setDatePattern("M/d/y");
+    template.setDateColumn(0);
+    template.setDescriptionColumn(4);
+    template.setAmountColumns(Arrays.asList(13, 14));
+    PersistentWork.persist(template);
   }
 
   @Override
@@ -212,87 +222,87 @@ public class DummyData extends Service {
   }
 
   private static final String asciiDocString = "The Article Title\n" +
-          "=================\n" +
-          "Author's Name <authors@email.address>\n" +
-          "v $version, 2003-12\n" +
-          "\n" +
-          ":toc:\n" +
-          "\n" +
-          "This is the optional preamble (an untitled section body). Useful for\n" +
-          "writing simple sectionless documents consisting only of a preamble.\n" +
-          "\n" +
-          "NOTE: The abstract, preface, appendix, bibliography, glossary and\n" +
-          "index section titles are significant ('specialsections').\n" +
-          "\n" +
-          "\n" +
-          ":numbered!:\n" +
-          "[abstract]\n" +
-          "Example Abstract\n" +
-          "----------------\n" +
-          "The optional abstract (one or more paragraphs) goes here.\n" +
-          "\n" +
-          "This document is an AsciiDoc article skeleton containing briefly\n" +
-          "annotated element placeholders plus a couple of example index entries\n" +
-          "and footnotes.\n" +
-          "\n" +
-          ":numbered:\n" +
-          "\n" +
-          "The First Section\n" +
-          "-----------------\n" +
-          "Article sections start at level 1 and can be nested up to four levels\n" +
-          "deep.\n" +
-          "footnote:[An example footnote.]\n" +
-          "indexterm:[Example index entry]\n" +
-          "\n" +
-          "And now for something completely different: ((monkeys)), lions and\n" +
-          "tigers (Bengal and Siberian) using the alternative syntax index\n" +
-          "entries.\n" +
-          "(((Big cats,Lions)))\n" +
-          "(((Big cats,Tigers,Bengal Tiger)))\n" +
-          "(((Big cats,Tigers,Siberian Tiger)))\n" +
-          "Note that multi-entry terms generate separate index entries.\n" +
-          "\n" +
-          "Here are a couple of image examples: an image:images/smallnew.png[]\n" +
-          "example inline image followed by an example block image:\n" +
-          "\n" +
-          ".Tiger block image\n" +
-          "image::images/tiger.png[Tiger image]\n" +
-          "\n" +
-          "Followed by an example table:\n" +
-          "\n" +
-          ".An example table\n" +
-          "[width=\"60%\",options=\"header\"]\n" +
-          "|==============================================\n" +
-          "| Option          | Description\n" +
-          "| -a 'USER GROUP' | Add 'USER' to 'GROUP'.\n" +
-          "| -R 'GROUP'      | Disables access to 'GROUP'.\n" +
-          "|==============================================\n" +
-          "\n" +
-          ".An example example\n" +
-          "===============================================\n" +
-          "Lorum ipum...\n" +
-          "===============================================\n" +
-          "\n" +
-          "[[X1]]\n" +
-          "Sub-section with Anchor\n" +
-          "~~~~~~~~~~~~~~~~~~~~~~~\n" +
-          "Sub-section at level 2.\n" +
-          "\n" +
-          "[source,java]\n" +
-          "----\n" +
-          "@MenuItem(\"/main/help\")\n" +
-          "public class About implements NodeProvider<StackPane> {\n" +
-          "  private static final Logger log = LoggerFactory.getLogger(About.class);\n" +
-          "\n" +
-          "  @Override\n" +
-          "  public StackPane getNode() {\n" +
-          "    return new DefaultLoader<StackPane, Object>(getClass().getResource(\"about.fxml\")).getView();\n" +
-          "  }\n" +
-          "}\n" +
-          "\n" +
-          "----" +
-          "\n" +
-          "+++\n" +
-          "$$x = (-b +- sqrt(b^2-4ac))/(2a)$$\n" +
-          "+++";
+    "=================\n" +
+    "Author's Name <authors@email.address>\n" +
+    "v $version, 2003-12\n" +
+    "\n" +
+    ":toc:\n" +
+    "\n" +
+    "This is the optional preamble (an untitled section body). Useful for\n" +
+    "writing simple sectionless documents consisting only of a preamble.\n" +
+    "\n" +
+    "NOTE: The abstract, preface, appendix, bibliography, glossary and\n" +
+    "index section titles are significant ('specialsections').\n" +
+    "\n" +
+    "\n" +
+    ":numbered!:\n" +
+    "[abstract]\n" +
+    "Example Abstract\n" +
+    "----------------\n" +
+    "The optional abstract (one or more paragraphs) goes here.\n" +
+    "\n" +
+    "This document is an AsciiDoc article skeleton containing briefly\n" +
+    "annotated element placeholders plus a couple of example index entries\n" +
+    "and footnotes.\n" +
+    "\n" +
+    ":numbered:\n" +
+    "\n" +
+    "The First Section\n" +
+    "-----------------\n" +
+    "Article sections start at level 1 and can be nested up to four levels\n" +
+    "deep.\n" +
+    "footnote:[An example footnote.]\n" +
+    "indexterm:[Example index entry]\n" +
+    "\n" +
+    "And now for something completely different: ((monkeys)), lions and\n" +
+    "tigers (Bengal and Siberian) using the alternative syntax index\n" +
+    "entries.\n" +
+    "(((Big cats,Lions)))\n" +
+    "(((Big cats,Tigers,Bengal Tiger)))\n" +
+    "(((Big cats,Tigers,Siberian Tiger)))\n" +
+    "Note that multi-entry terms generate separate index entries.\n" +
+    "\n" +
+    "Here are a couple of image examples: an image:images/smallnew.png[]\n" +
+    "example inline image followed by an example block image:\n" +
+    "\n" +
+    ".Tiger block image\n" +
+    "image::images/tiger.png[Tiger image]\n" +
+    "\n" +
+    "Followed by an example table:\n" +
+    "\n" +
+    ".An example table\n" +
+    "[width=\"60%\",options=\"header\"]\n" +
+    "|==============================================\n" +
+    "| Option          | Description\n" +
+    "| -a 'USER GROUP' | Add 'USER' to 'GROUP'.\n" +
+    "| -R 'GROUP'      | Disables access to 'GROUP'.\n" +
+    "|==============================================\n" +
+    "\n" +
+    ".An example example\n" +
+    "===============================================\n" +
+    "Lorum ipum...\n" +
+    "===============================================\n" +
+    "\n" +
+    "[[X1]]\n" +
+    "Sub-section with Anchor\n" +
+    "~~~~~~~~~~~~~~~~~~~~~~~\n" +
+    "Sub-section at level 2.\n" +
+    "\n" +
+    "[source,java]\n" +
+    "----\n" +
+    "@MenuItem(\"/main/help\")\n" +
+    "public class About implements NodeProvider<StackPane> {\n" +
+    "  private static final Logger log = LoggerFactory.getLogger(About.class);\n" +
+    "\n" +
+    "  @Override\n" +
+    "  public StackPane getNode() {\n" +
+    "    return new DefaultLoader<StackPane, Object>(getClass().getResource(\"about.fxml\")).getView();\n" +
+    "  }\n" +
+    "}\n" +
+    "\n" +
+    "----" +
+    "\n" +
+    "+++\n" +
+    "$$x = (-b +- sqrt(b^2-4ac))/(2a)$$\n" +
+    "+++";
 }

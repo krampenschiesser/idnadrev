@@ -17,26 +17,21 @@ package de.ks.idnadrev.cost.csvimport.columnmapping;
 
 import de.ks.idnadrev.entity.cost.Booking;
 import de.ks.reflection.PropertyPath;
-import org.apache.commons.lang3.StringUtils;
 
-public class AmountColumnMapping extends BookingColumnMapping<Double> {
-  private final boolean useComma;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
-  public AmountColumnMapping(int column, boolean useComma) {
-    super(column, PropertyPath.ofTypeSafe(Booking.class, b -> b.setAmount(0D)));
-    this.useComma = useComma;
+public class BookingDateColumnMapping extends BookingColumnMapping<LocalDate> {
+  private final DateTimeFormatter formatter;
+
+  public BookingDateColumnMapping(int column, String pattern) {
+    super(column, PropertyPath.ofTypeSafe(Booking.class, b -> b.setBookingLocalDate(null)));
+    formatter = DateTimeFormatter.ofPattern(pattern);
   }
 
   @Override
-  protected Double transform(String content) {
-    if (content == null || content.isEmpty()) {
-      return null;
-    } else {
-      if (useComma) {
-        content = StringUtils.replaceEach(content, new String[]{",", "."}, new String[]{".", ","});
-      }
-      content = StringUtils.remove(content, ",");
-      return Double.valueOf(content);
-    }
+  protected LocalDate transform(String content) {
+    LocalDate date = LocalDate.parse(content, formatter);
+    return date;
   }
 }

@@ -19,6 +19,7 @@ import de.ks.persistence.entity.NamedPersistentObject;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,11 +30,12 @@ public class BookingCsvTemplate extends NamedPersistentObject<BookingCsvTemplate
   protected String amountColumns;
   protected int descriptionColumn;
   protected int dateColumn;
-  protected int timeColumn;
+  protected Integer timeColumn;
   protected String timePattern;
   protected String datePattern;
 
-  @ManyToOne
+  @ManyToOne(optional = false)
+  @NotNull
   protected Account account;
 
   protected BookingCsvTemplate() {
@@ -90,7 +92,7 @@ public class BookingCsvTemplate extends NamedPersistentObject<BookingCsvTemplate
     return this;
   }
 
-  public int getTimeColumn() {
+  public Integer getTimeColumn() {
     return timeColumn;
   }
 

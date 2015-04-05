@@ -21,9 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import javax.persistence.metamodel.EntityType;
 import java.util.Collection;
 import java.util.Collections;
@@ -51,7 +49,9 @@ public class Cleanup {
         CriteriaUpdate update = criteriaBuilder.createCriteriaUpdate(owner);
 
         @SuppressWarnings("unchecked") Root root = update.from(owner);
-        update.set(root.get(relation.getName()), criteriaBuilder.nullLiteral(relation.getRelationClass()));
+        Expression nullLiteral = criteriaBuilder.nullLiteral(relation.getRelationClass());
+        Path path = root.get(relation.getName());
+        update.set(path, nullLiteral);
 
         int i = em.createQuery(update).executeUpdate();
         if (i > 0) {
