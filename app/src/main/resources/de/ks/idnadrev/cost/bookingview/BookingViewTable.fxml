@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.StackPane?>
+<StackPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="de.ks.idnadrev.cost.bookingview.BookingViewTableController">
+    <children>
+        <TableView fx:id="bookingTable" tableMenuButtonVisible="true" GridPane.columnSpan="4" GridPane.rowIndex="1">
+            <columns>
+                <TableColumn fx:id="deleteColumn" prefWidth="75.0" sortable="false" text="%delete"/>
+                <TableColumn fx:id="timeColumn" prefWidth="150.0" text="%time"/>
+                <TableColumn fx:id="descriptionColumn" prefWidth="400.0" text="%description"/>
+                <TableColumn fx:id="categoryColumn" prefWidth="150.0" text="%category"/>
+                <TableColumn fx:id="amountColumn" prefWidth="100.0" text="%added"/>
+            </columns>
+        </TableView>
+    </children>
+</StackPane>

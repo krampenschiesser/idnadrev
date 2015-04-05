@@ -40,15 +40,11 @@
         <Label text="%amount:" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
         <TextField fx:id="amount" GridPane.columnIndex="3" GridPane.rowIndex="2"/>
 
-        <TableView fx:id="bookingTable" tableMenuButtonVisible="true" GridPane.columnSpan="4" GridPane.rowIndex="3">
-            <columns>
-                <TableColumn fx:id="deleteColumn" prefWidth="75.0" sortable="false" text="%delete"/>
-                <TableColumn fx:id="timeColumn" prefWidth="150.0" text="%time"/>
-                <TableColumn fx:id="descriptionColumn" prefWidth="400.0" text="%description"/>
-                <TableColumn fx:id="categoryColumn" prefWidth="150.0" text="%category"/>
-                <TableColumn fx:id="amountColumn" prefWidth="100.0" text="%added"/>
-            </columns>
-        </TableView>
+        <StackPane GridPane.columnSpan="4" GridPane.rowIndex="3">
+            <children>
+                <fx:include fx:id="bookingTable" source="BookingViewTable.fxml"/>
+            </children>
+        </StackPane>
         <Button text="%delete.mnemonic" onAction="#onDelete" fx:id="delete" GridPane.halignment="LEFT"
                 GridPane.rowIndex="4"/>
     </children>

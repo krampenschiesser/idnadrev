@@ -13,6 +13,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.EventType;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import org.junit.Test;
@@ -73,14 +74,15 @@ public class BookingViewActivityTest extends ActivityTest {
     activityController.waitForDataSource();
     FXPlatform.waitForFX();
 
-    ObservableList<Booking> items = bookingView.bookingTable.getItems();
+    TableView<Booking> bookingTable = bookingView.bookingTableController.bookingTable;
+    ObservableList<Booking> items = bookingTable.getItems();
     assertEquals(12, items.size());
     Booking addition = items.get(3);
     Booking deletion = items.get(4);
-    TableColumn<Booking, Double> columnAmount = (TableColumn<Booking, Double>) bookingView.bookingTable.getColumns().get(4);
-    ObservableValue<Double> call = columnAmount.getCellValueFactory().call(new TableColumn.CellDataFeatures<>(bookingView.bookingTable, columnAmount, addition));
+    TableColumn<Booking, Double> columnAmount = (TableColumn<Booking, Double>) bookingTable.getColumns().get(4);
+    ObservableValue<Double> call = columnAmount.getCellValueFactory().call(new TableColumn.CellDataFeatures<>(bookingTable, columnAmount, addition));
     assertEquals(20D, call.getValue(), 0.1D);
-    call = columnAmount.getCellValueFactory().call(new TableColumn.CellDataFeatures<>(bookingView.bookingTable, columnAmount, deletion));
+    call = columnAmount.getCellValueFactory().call(new TableColumn.CellDataFeatures<>(bookingTable, columnAmount, deletion));
     assertEquals(-30D, call.getValue(), 0.1D);
   }
 
@@ -93,28 +95,29 @@ public class BookingViewActivityTest extends ActivityTest {
     activityController.waitForDataSource();
     FXPlatform.waitForFX();
 
-    assertEquals(3, bookingView.bookingTable.getItems().size());
+    assertEquals(3, bookingView.getBookingTable().getItems().size());
   }
 
   @Test
   public void testDeleteBooking() throws Exception {
     BookingViewController bookingView = activityController.getControllerInstance(BookingViewController.class);
 
-    ObservableList<Booking> items = bookingView.bookingTable.getItems();
+    TableView<Booking> bookingTable = bookingView.getBookingTable();
+    ObservableList<Booking> items = bookingTable.getItems();
     assertEquals(12, items.size());
 
     FXPlatform.invokeLater(() -> {
-      bookingView.bookingTable.getSelectionModel().select(1, bookingView.timeColumn);
-      KeyEvent keyEvent = new KeyEvent(bookingView.bookingTable, bookingView.bookingTable, new EventType<KeyEvent>("test"), " ", " ", KeyCode.SPACE, false, false, false, false);
-      bookingView.bookingTable.getOnKeyPressed().handle(keyEvent);
+      bookingTable.getSelectionModel().select(1, bookingView.bookingTableController.timeColumn);
+      KeyEvent keyEvent = new KeyEvent(bookingTable, bookingTable, new EventType<KeyEvent>("test"), " ", " ", KeyCode.SPACE, false, false, false, false);
+      bookingTable.getOnKeyPressed().handle(keyEvent);
     });
-    Booking selectedItem = bookingView.bookingTable.getSelectionModel().getSelectedItem();
-    SimpleBooleanProperty property = bookingView.markedForDelete.get(selectedItem);
+    Booking selectedItem = bookingTable.getSelectionModel().getSelectedItem();
+    SimpleBooleanProperty property = bookingView.bookingTableController.getMarked().get(selectedItem);
     assertTrue("not marked for delete", property.get());
 
     FXPlatform.invokeLater(() -> bookingView.onDelete(false));
     activityController.waitForDataSource();
-    items = bookingView.bookingTable.getItems();
+    items = bookingTable.getItems();
     assertEquals(11, items.size());
   }
 }

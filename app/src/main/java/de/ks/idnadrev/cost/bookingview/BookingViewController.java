@@ -22,29 +22,19 @@ import de.ks.idnadrev.entity.cost.Account;
 import de.ks.idnadrev.entity.cost.Booking;
 import de.ks.javafx.event.ClearTextOnEscape;
 import de.ks.persistence.PersistentWork;
-import de.ks.validation.cell.ValidatingTableCell;
 import de.ks.validation.validators.DoubleValidator;
 import de.ks.validation.validators.NotNullValidator;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.CheckBoxTableCell;
-import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.input.KeyCode;
 import javafx.stage.Modality;
-import javafx.util.converter.DoubleStringConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -66,100 +56,12 @@ public class BookingViewController extends BaseController<BookingViewModel> {
   protected Button delete;
 
   @FXML
-  protected TableView<Booking> bookingTable;
-  @FXML
-  protected TableColumn<Booking, Boolean> deleteColumn;
-  @FXML
-  protected TableColumn<Booking, String> timeColumn;
-  @FXML
-  protected TableColumn<Booking, String> descriptionColumn;
-  @FXML
-  protected TableColumn<Booking, String> categoryColumn;
-  @FXML
-  protected TableColumn<Booking, Double> amountColumn;
-
-  protected DateTimeFormatter dateTimeFormatter;
-  protected final Map<Booking, SimpleBooleanProperty> markedForDelete = new HashMap<>();
+  protected BookingViewTableController bookingTableController;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    String pattern = Localized.get("fullDate");
-    dateTimeFormatter = DateTimeFormatter.ofPattern(pattern);
     startTime.setValue(LocalDate.now().minusMonths(3));
     endTime.setValue(LocalDate.now().plusDays(1));
-    bookingTable.setEditable(true);
-
-    timeColumn.setCellValueFactory(c -> new SimpleStringProperty(dateTimeFormatter.format(c.getValue().getBookingTime())));
-
-    descriptionColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getDescription()));
-    descriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-    descriptionColumn.setOnEditCommit(e -> {
-      String newCat = e.getNewValue();
-      Booking booking = e.getRowValue();
-      PersistentWork.wrap(() -> {
-        PersistentWork.reload(booking).setDescription(newCat);
-      });
-    });
-    categoryColumn.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getCategory()));
-    categoryColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-    categoryColumn.setOnEditCommit(e -> {
-      String newCat = e.getNewValue();
-      Booking booking = e.getRowValue();
-      PersistentWork.wrap(() -> {
-        PersistentWork.reload(booking).setCategory(newCat);
-      });
-    });
-
-    amountColumn.setCellValueFactory(c -> (ObservableValue) new SimpleDoubleProperty(c.getValue().getAmount()));
-    amountColumn.setCellFactory(b -> new ValidatingTableCell<Booking, Double>(new DoubleStringConverter(), new DoubleValidator()));
-    amountColumn.setOnEditCommit(e -> {
-      Double newValue = e.getNewValue();
-      Double oldValue = e.getOldValue();
-      Booking booking = e.getRowValue();
-      if (!newValue.equals(oldValue)) {
-        PersistentWork.wrap(() -> {
-          PersistentWork.reload(booking).setAmount(newValue);
-        });
-        controller.reload();
-      }
-    });
-
-    deleteColumn.setCellFactory(column -> {
-      if (column == null) {
-        return null;
-      } else {
-        CheckBoxTableCell cell = new CheckBoxTableCell();
-        cell.setSelectedStateCallback(i -> {
-          Booking booking = bookingTable.getItems().get((int) i);
-          SimpleBooleanProperty property = markedForDelete.get(booking);
-          return property;
-        });
-        return cell;
-      }
-    });
-
-    bookingTable.setOnKeyPressed(e -> {
-      TablePosition focusedCell = bookingTable.getFocusModel().getFocusedCell();
-      int beginOfEditableColumns = 2;
-      if (focusedCell.getColumn() < beginOfEditableColumns && !e.isControlDown() && !e.isAltDown()) {
-        Booking item = bookingTable.getSelectionModel().getSelectedItem();
-        if (e.getCode() == KeyCode.SPACE) {
-          if (item != null) {
-            SimpleBooleanProperty property = markedForDelete.get(item);
-            property.set(!property.get());
-            e.consume();
-          }
-        }
-        if (e.getCode() == KeyCode.D) {
-          e.consume();
-          bookingTable.edit(bookingTable.getSelectionModel().getSelectedIndex(), descriptionColumn);
-        }
-        if (e.getCode() == KeyCode.C) {
-          e.consume();
-          bookingTable.edit(bookingTable.getSelectionModel().getSelectedIndex(), categoryColumn);
-        }
-      }
-    });
 
     validationRegistry.registerValidator(startTime, new NotNullValidator());
     validationRegistry.registerValidator(endTime, new NotNullValidator());
@@ -228,17 +130,6 @@ public class BookingViewController extends BaseController<BookingViewModel> {
       }, controller.getJavaFXExecutor());
   }
 
-  @Override
-  protected void onRefresh(BookingViewModel model) {
-    ObservableList<Booking> bookings = FXCollections.observableArrayList(model.getBookings());
-    bookingTable.setItems(bookings);
-
-    markedForDelete.clear();
-    for (Booking booking : bookings) {
-      markedForDelete.put(booking, new SimpleBooleanProperty(false));
-    }
-  }
-
   @FXML
   public void onDelete() {
     boolean interactive = false;
@@ -246,7 +137,7 @@ public class BookingViewController extends BaseController<BookingViewModel> {
   }
 
   protected void onDelete(boolean interactive) {
-    List<Booking> bookingsToDelete = markedForDelete.entrySet().stream().filter(e -> e.getValue().get()).map(e -> e.getKey()).collect(Collectors.toList());
+    List<Booking> bookingsToDelete = bookingTableController.getMarked().entrySet().stream().filter(e -> e.getValue().get()).map(e -> e.getKey()).collect(Collectors.toList());
 
     Optional optional;
     if (interactive) {
@@ -275,5 +166,9 @@ public class BookingViewController extends BaseController<BookingViewModel> {
       });
       controller.reload();
     });
+  }
+
+  protected TableView<Booking> getBookingTable() {
+    return bookingTableController.bookingTable;
   }
 }
