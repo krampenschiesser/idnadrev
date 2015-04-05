@@ -27,10 +27,10 @@ public class BookingFromCSVActivityTest extends ActivityTest {
     Account account2 = new Account("account2");
 
     BookingCsvTemplate template1 = new BookingCsvTemplate("template1");
-    template1.setAccount(account2).setSeparator(";").setDateColumn(0).setTimeColumn(1).setDescriptionColumn(4).setAmountColumns(Arrays.asList(5, 62));
+    template1.setAccount(account2).setSeparator(";").setDateColumn(0).setTimeColumn(1).setDescriptionColumn(4).setAmountColumns(Arrays.asList(5, 6)).setDatePattern("d.M.y").setTimePattern("H:m");
 
     BookingCsvTemplate template2 = new BookingCsvTemplate("template2");
-    template2.setAccount(account1).setSeparator(",;").setDateColumn(0).setTimeColumn(0).setDescriptionColumn(2).setAmountColumns(Arrays.asList(5));
+    template2.setAccount(account1).setSeparator(",").setDateColumn(0).setTimeColumn(0).setDescriptionColumn(2).setAmountColumns(Arrays.asList(5)).setDatePattern("M/d/y");
 
     em.persist(account1);
     em.persist(account2);
@@ -49,5 +49,14 @@ public class BookingFromCSVActivityTest extends ActivityTest {
 
     assertEquals(2, controller.account.getItems().size());
     assertEquals("account2", controller.account.getSelectionModel().getSelectedItem());//selected from template
+
+
+    assertEquals(";", controller.separator.getText());
+    assertEquals("5,6", controller.amountColumn.getText());
+    assertEquals("0", controller.dateColumn.getText());
+    assertEquals("1", controller.timeColumn.getText());
+    assertEquals("4", controller.descriptionColumn.getText());
+    assertEquals("d.M.y", controller.datePattern.getText());
+    assertEquals("H:m", controller.timePattern.getText());
   }
 }

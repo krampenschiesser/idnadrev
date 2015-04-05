@@ -52,6 +52,15 @@ public class BookingCsvTemplate extends NamedPersistentObject<BookingCsvTemplate
     return this;
   }
 
+  public String getAmountColumnString() {
+    return amountColumns;
+  }
+
+  public BookingCsvTemplate setAmountColumnString(String amountColumns) {
+    this.amountColumns = amountColumns;
+    return this;
+  }
+
   public List<Integer> getAmountColumns() {
     String[] split = amountColumns.split("\\,");
     List<Integer> collect = Arrays.asList(split).stream().mapToInt(Integer::valueOf).boxed().collect(Collectors.toList());

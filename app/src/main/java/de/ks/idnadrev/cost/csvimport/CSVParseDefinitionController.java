@@ -66,6 +66,21 @@ public class CSVParseDefinitionController extends BaseController<Object> {
         return PersistentWork.forName(BookingCsvTemplate.class, string);
       }
     });
+
+    templates.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
+      if (n != null) {
+        String accountName = n.getAccount().getName();
+        account.getSelectionModel().select(accountName);
+        separator.setText(n.getSeparator());
+        timePattern.setText(n.getTimePattern());
+        datePattern.setText(n.getDatePattern());
+
+        dateColumn.setText(String.valueOf(n.getDateColumn()));
+        timeColumn.setText(String.valueOf(n.getTimeColumn()));
+        descriptionColumn.setText(String.valueOf(n.getDescriptionColumn()));
+        amountColumn.setText(n.getAmountColumnString());
+      }
+    });
   }
 
   @FXML
