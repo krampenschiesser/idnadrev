@@ -90,6 +90,7 @@ public class CSVParseDefinitionController extends BaseController<Object> {
         }
         descriptionColumn.setText(String.valueOf(n.getDescriptionColumn()));
         amountColumn.setText(n.getAmountColumnString());
+        useComma.setSelected(n.isUseComma());
       }
     });
 
@@ -155,6 +156,7 @@ public class CSVParseDefinitionController extends BaseController<Object> {
       template.setDatePattern(datePattern.getText());
       template.setTimePattern(timePattern.textProperty().getValueSafe());
       template.setSeparator(separator.getText());
+      template.setUseComma(useComma.isSelected());
       Account account = PersistentWork.forName(Account.class, this.account.getValue());
       template.setAccount(account);
       PersistentWork.persist(template);

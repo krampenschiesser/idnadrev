@@ -33,6 +33,7 @@ public class BookingCsvTemplate extends NamedPersistentObject<BookingCsvTemplate
   protected Integer timeColumn;
   protected String timePattern;
   protected String datePattern;
+  protected boolean useComma;
 
   @ManyToOne(optional = false)
   @NotNull
@@ -125,6 +126,15 @@ public class BookingCsvTemplate extends NamedPersistentObject<BookingCsvTemplate
 
   public BookingCsvTemplate setAccount(Account account) {
     this.account = account;
+    return this;
+  }
+
+  public boolean isUseComma() {
+    return useComma;
+  }
+
+  public BookingCsvTemplate setUseComma(boolean useComma) {
+    this.useComma = useComma;
     return this;
   }
 }
