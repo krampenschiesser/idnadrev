@@ -9,7 +9,7 @@
     <children>
         <TableView fx:id="bookingTable" tableMenuButtonVisible="true" GridPane.columnSpan="4" GridPane.rowIndex="1">
             <columns>
-                <TableColumn fx:id="deleteColumn" prefWidth="75.0" sortable="false" text="%delete"/>
+                <TableColumn fx:id="markedColumn" prefWidth="75.0" sortable="false" text="%delete"/>
                 <TableColumn fx:id="timeColumn" prefWidth="150.0" text="%time"/>
                 <TableColumn fx:id="descriptionColumn" prefWidth="400.0" text="%description"/>
                 <TableColumn fx:id="categoryColumn" prefWidth="150.0" text="%category"/>

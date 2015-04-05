@@ -15,20 +15,19 @@
  */
 package de.ks.idnadrev.cost.csvimport;
 
-import de.ks.datasource.ListDataSource;
-import de.ks.idnadrev.entity.cost.Booking;
+import de.ks.datasource.DataSource;
+import de.ks.idnadrev.cost.bookingview.BookingViewModel;
 
-import java.util.List;
 import java.util.function.Consumer;
 
-public class BookingFromCSVDS implements ListDataSource<Booking> {
+public class BookingFromCSVDS implements DataSource<BookingViewModel> {
   @Override
-  public List<Booking> loadModel(Consumer<List<Booking>> furtherProcessing) {
-    return null;
+  public BookingViewModel loadModel(Consumer<BookingViewModel> furtherProcessing) {
+    return new BookingViewModel();
   }
 
   @Override
-  public void saveModel(List<Booking> model, Consumer<List<Booking>> beforeSaving) {
+  public void saveModel(BookingViewModel model, Consumer<BookingViewModel> beforeSaving) {
 
   }
 }

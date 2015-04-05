@@ -46,7 +46,7 @@ public class BookingViewTableController extends BaseController<BookingViewModel>
   @FXML
   protected TableView<Booking> bookingTable;
   @FXML
-  protected TableColumn<Booking, Boolean> deleteColumn;
+  protected TableColumn<Booking, Boolean> markedColumn;
   @FXML
   protected TableColumn<Booking, String> timeColumn;
   @FXML
@@ -100,7 +100,7 @@ public class BookingViewTableController extends BaseController<BookingViewModel>
       }
     });
 
-    deleteColumn.setCellFactory(column -> {
+    markedColumn.setCellFactory(column -> {
       if (column == null) {
         return null;
       } else {
@@ -151,5 +151,9 @@ public class BookingViewTableController extends BaseController<BookingViewModel>
 
   public Map<Booking, SimpleBooleanProperty> getMarked() {
     return marked;
+  }
+
+  public TableColumn<Booking, Boolean> getMarkedColumn() {
+    return markedColumn;
   }
 }
