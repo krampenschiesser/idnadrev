@@ -90,7 +90,7 @@ public class Booking extends AbstractPersistentObject<Booking> {
 
   public Booking setBookingLocalTime(LocalTime time) {
     if (bookingTime == null) {
-      bookingTime = LocalDateTime.of(LocalDate.of(0, 0, 0), time);
+      bookingTime = LocalDateTime.of(LocalDate.of(1, 1, 1), time);
     } else {
       bookingTime = LocalDateTime.of(bookingTime.toLocalDate(), time);
     }
