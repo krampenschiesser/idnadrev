@@ -85,7 +85,18 @@ public class BookingViewTableController extends BaseController<BookingViewModel>
     });
 
     amountColumn.setCellValueFactory(c -> (ObservableValue) new SimpleDoubleProperty(c.getValue().getAmount()));
-    amountColumn.setCellFactory(b -> new ValidatingTableCell<Booking, Double>(new DoubleStringConverter(), new DoubleValidator()));
+    amountColumn.setCellFactory(b -> new ValidatingTableCell<Booking, Double>(new DoubleStringConverter(), new DoubleValidator()) {
+      @Override
+      public void updateItem(Double item, boolean empty) {
+        super.updateItem(item, empty);
+        getStyleClass().clear();
+        if (item != null && item.doubleValue() < 0) {
+          getStyleClass().add("bookingNegative");
+        } else if (item != null && item.doubleValue() > 0) {
+          getStyleClass().add("bookingPositive");
+        }
+      }
+    });
     amountColumn.setOnEditCommit(e -> {
       Double newValue = e.getNewValue();
       Double oldValue = e.getOldValue();
