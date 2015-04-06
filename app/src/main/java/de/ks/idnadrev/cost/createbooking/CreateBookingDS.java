@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.cost.booking;
+package de.ks.idnadrev.cost.createbooking;
 
 import de.ks.datasource.CreateEditDS;
 import de.ks.idnadrev.entity.cost.Booking;

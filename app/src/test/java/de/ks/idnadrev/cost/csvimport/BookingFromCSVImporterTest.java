@@ -21,8 +21,8 @@ import static org.junit.Assert.fail;
 
 public class BookingFromCSVImporterTest {
   private BookingFromCSVImporter importer;
-  private static final String simpleAddBooking = "02.16.2015;DE4711;DE0815;Simple adding test booking;;31.34;EUR";
-  private static final String simpleSubBooking = "03.17.2015;DE4711;;Simple subtracting test booking;-7,12;;EUR";
+  private static final String simpleAddBooking = "02.16.2015;DE4711;DE0815;Simple adding test createbooking;;31.34;EUR";
+  private static final String simpleSubBooking = "03.17.2015;DE4711;;Simple subtracting test createbooking;-7,12;;EUR";
 
   @Test
   public void testDamnFormatter() throws Exception {

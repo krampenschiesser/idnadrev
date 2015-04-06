@@ -1,4 +1,4 @@
-package de.ks.idnadrev.cost.booking;
+package de.ks.idnadrev.cost.createbooking;
 
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityCfg;

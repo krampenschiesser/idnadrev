@@ -31,7 +31,7 @@ public class BookingViewDSTest {
       LocalDateTime dateTime = LocalDateTime.now().minusDays(amount);
       for (int i = 0; i < amount; i++) {
         Booking booking = new Booking(account1, (i + 1) * 10);
-        booking.setDescription("booking #" + i);
+        booking.setDescription("createbooking #" + i);
         booking.setCategory("Category" + i % 5);
         booking.setBookingTime(dateTime.plusDays(i));
         PersistentWork.persist(booking);

@@ -189,7 +189,7 @@ public class DummyData extends Service {
     LocalDateTime dateTime = LocalDateTime.now().minusDays(30);
     for (int i = 0; i < 15; i++) {
       Booking booking = new Booking(account1, (i + 1) * 10);
-      booking.setDescription("booking #" + i);
+      booking.setDescription("createbooking #" + i);
       booking.setCategory("Categtory" + i % 5);
       booking.setBookingTime(dateTime.plusDays(i));
       PersistentWork.persist(booking);
@@ -200,7 +200,7 @@ public class DummyData extends Service {
       int subAdd = i % 2 == 0 ? 1 : -1;
       int amount = i * 10 * subAdd;
       Booking booking = new Booking(account2, amount);
-      booking.setDescription("booking #" + i);
+      booking.setDescription("createbooking #" + i);
       booking.setCategory("Categtory" + i % 5);
       booking.setBookingTime(dateTime.plusDays(i));
       PersistentWork.persist(booking);
