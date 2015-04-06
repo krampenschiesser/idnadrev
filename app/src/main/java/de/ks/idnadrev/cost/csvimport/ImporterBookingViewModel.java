@@ -16,19 +16,37 @@
 package de.ks.idnadrev.cost.csvimport;
 
 import de.ks.idnadrev.cost.bookingview.BookingViewModel;
+import de.ks.idnadrev.entity.cost.Booking;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class ImporterBookingViewModel extends BookingViewModel {
   protected StringBuilder errors = new StringBuilder();
+
+  protected final List<Booking> bookingsToImport = new LinkedList<>();
 
   public String getErrors() {
     return errors.toString();
   }
 
+  public void addError(String error) {
+    errors.append(error).append("\n");
+  }
+
   public void addError(Exception e) {
-    errors.append(e.getMessage()).append("\n");
+    errors.append(e.toString()).append("\n");
   }
 
   public void addError(Exception e, String line) {
-    errors.append("Cannot parse line \"").append(line).append("\"\n\tReason: ").append(e.getMessage()).append("\n");
+    errors.append("Cannot parse line \"").append(line).append("\"\n\tReason: ").append(e.toString()).append("\n");
+  }
+
+  public List<Booking> getBookingsToImport() {
+    return bookingsToImport;
+  }
+
+  public void setBookingsToImport(List<Booking> bookings) {
+    bookingsToImport.addAll(bookings);
   }
 }

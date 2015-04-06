@@ -176,4 +176,7 @@ public class BookingViewTableController extends BaseController<BookingViewModel>
     return markedColumn;
   }
 
+  public TableView<Booking> getBookingTable() {
+    return bookingTable;
+  }
 }

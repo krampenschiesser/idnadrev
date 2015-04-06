@@ -17,12 +17,12 @@ package de.ks.idnadrev.cost.csvimport;
 
 import de.ks.idnadrev.cost.csvimport.columnmapping.BookingColumnMapping;
 import de.ks.idnadrev.entity.cost.Booking;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class BookingFromCSVImporter {
@@ -43,8 +43,7 @@ public class BookingFromCSVImporter {
   }
 
   public Booking createBooking(String line) {
-    String quote = Pattern.quote(separator);
-    String[] split = line.split(quote);
+    String[] split = StringUtils.splitPreserveAllTokens(line, separator);
 
     Booking booking = new Booking();
 

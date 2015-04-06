@@ -28,8 +28,8 @@ public abstract class BookingColumnMapping<T> {
   }
 
   public void apply(Booking booking, String[] columns) {
-    if (columns.length < column) {
-      throw new IllegalArgumentException("not enough columns in line, expected " + column + " but was " + columns.length);
+    if (columns.length <= column) {
+      throw new IllegalArgumentException("not enough columns in line, expected " + column + " but was " + (columns.length - 1));
     }
     T value = transform(columns[column]);
     if (value != null) {

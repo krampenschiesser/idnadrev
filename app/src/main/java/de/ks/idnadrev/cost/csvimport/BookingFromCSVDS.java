@@ -18,17 +18,30 @@ package de.ks.idnadrev.cost.csvimport;
 import com.google.common.base.Charsets;
 import de.ks.activity.ActivityController;
 import de.ks.datasource.DataSource;
+import de.ks.idnadrev.entity.cost.Account;
 import de.ks.idnadrev.entity.cost.Booking;
+import de.ks.persistence.PersistentWork;
+import de.ks.reflection.PropertyPath;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import javax.persistence.criteria.Predicate;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public class BookingFromCSVDS implements DataSource<ImporterBookingViewModel> {
+  private static final Logger log = LoggerFactory.getLogger(BookingFromCSVDS.class);
+  private static final String KEY_DESCRIPTION = PropertyPath.property(Booking.class, b -> b.getDescription());
+  private static final String KEY_BOOKINGTIME = PropertyPath.property(Booking.class, b -> b.getBookingTime());
+  private static final String KEY_AMOUNT = PropertyPath.property(Booking.class, b -> b.getAmount());
+
   private File fileToLoad;
   @Inject
   ActivityController activityController;
@@ -38,32 +51,70 @@ public class BookingFromCSVDS implements DataSource<ImporterBookingViewModel> {
     ImporterBookingViewModel retval = new ImporterBookingViewModel();
 
     if (fileToLoad != null) {
-      LinkedList<Booking> bookings = new LinkedList<>();
+      List<Booking> bookings = Collections.synchronizedList(new LinkedList<>());
+      LinkedList<CompletableFuture<Void>> futures = new LinkedList<>();
 
       CSVParseDefinitionController controller = activityController.getControllerInstance(CSVParseDefinitionController.class);
+      String accountName = controller.account.getSelectionModel().getSelectedItem();
+      Account account = PersistentWork.forName(Account.class, accountName);
+
       BookingFromCSVImporter importer = controller.getImporter();
       try {
         List<String> lines = Files.readAllLines(fileToLoad.toPath(), Charsets.ISO_8859_1);
         for (String line : lines) {
           try {
             Booking booking = importer.createBooking(line);
-            bookings.add(booking);
+            booking.setAccount(account);
+            CompletableFuture<Void> future = checkForExistingBooking(bookings, booking, retval);
+            futures.add(future);
           } catch (Exception e) {
+            log.debug("Error during parsing line \"{}\"", line, e);
             retval.addError(e, line);
-
           }
         }
       } catch (IOException e) {
         retval.addError(e);
       }
+      futures.forEach(f -> f.join());
       retval.getBookings().addAll(bookings);
     }
     return retval;
   }
 
+  protected CompletableFuture<Void> checkForExistingBooking(List<Booking> bookings, Booking booking, ImporterBookingViewModel retval) {
+    CompletableFuture<Void> future = CompletableFuture.supplyAsync(() -> booking, activityController.getExecutorService()).thenApply(b -> {
+      List<Booking> found = PersistentWork.from(Booking.class, (root, query, builder) -> {
+        Predicate sameDesc = builder.equal(root.get(KEY_DESCRIPTION), b.getDescription());
+        Predicate sameTime = builder.equal(root.get(KEY_BOOKINGTIME), b.getBookingTime());
+        Predicate sameAmount = builder.equal(root.get(KEY_AMOUNT), b.getAmount());
+        query.where(sameAmount, sameDesc, sameTime);
+      }, null);
+
+      if (found.isEmpty()) {
+        return b;
+      } else {
+        retval.addError("Booking " + booking.getDescription() + " already exists.");
+        return null;
+      }
+    }).thenAccept(b -> {
+      if (b != null) {
+        bookings.add(b);
+      }
+    });
+    return future;
+  }
+
   @Override
   public void saveModel(ImporterBookingViewModel model, Consumer<ImporterBookingViewModel> beforeSaving) {
-
+    beforeSaving.accept(model);
+    PersistentWork.run(em -> {
+      List<Booking> bookingsToImport = model.getBookingsToImport();
+      for (Booking booking : bookingsToImport) {
+        Account account = PersistentWork.reload(booking.getAccount());
+        booking.setAccount(account);
+        em.persist(booking);
+      }
+    });
   }
 
   @Override

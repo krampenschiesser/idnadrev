@@ -26,7 +26,9 @@ import javafx.stage.FileChooser;
 
 import java.io.File;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class BookingFromCSVController extends BaseController<ImporterBookingViewModel> {
 
@@ -64,6 +66,12 @@ public class BookingFromCSVController extends BaseController<ImporterBookingView
     errorField.setText(model.getErrors());
   }
 
+  @Override
+  public void duringSave(ImporterBookingViewModel model) {
+    List<Booking> bookingsToImport = bookingTableController.getMarked().entrySet().stream().filter(b -> b.getValue().get()).map(e -> e.getKey()).collect(Collectors.toList());
+    model.setBookingsToImport(bookingsToImport);
+  }
+
   public void onSelectFile(File file) {
     store.getDatasource().setLoadingHint(file);
     controller.reload();
@@ -87,5 +95,7 @@ public class BookingFromCSVController extends BaseController<ImporterBookingView
 
   @FXML
   public void onImport() {
+    controller.save();
+    controller.reload();
   }
 }
