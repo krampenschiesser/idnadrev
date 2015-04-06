@@ -28,9 +28,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TablePosition;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
@@ -110,6 +108,16 @@ public class BookingViewTableController extends BaseController<BookingViewModel>
           SimpleBooleanProperty property = marked.get(booking);
           return property;
         });
+        MenuItem selectItem = new MenuItem(Localized.get("select.all"));
+        selectItem.setOnAction(e -> {
+          marked.values().forEach(property -> property.set(true));
+        });
+        MenuItem deselectItem = new MenuItem(Localized.get("deselect.all"));
+        deselectItem.setOnAction(e -> {
+          marked.values().forEach(property -> property.set(false));
+        });
+        ContextMenu contextMenu = new ContextMenu(selectItem, deselectItem);
+        cell.setContextMenu(contextMenu);
         return cell;
       }
     });
@@ -156,4 +164,5 @@ public class BookingViewTableController extends BaseController<BookingViewModel>
   public TableColumn<Booking, Boolean> getMarkedColumn() {
     return markedColumn;
   }
+
 }
