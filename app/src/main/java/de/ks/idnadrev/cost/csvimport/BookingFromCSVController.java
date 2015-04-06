@@ -43,8 +43,6 @@ public class BookingFromCSVController extends BaseController<ImporterBookingView
   @FXML
   protected Button importer;
   @FXML
-  protected TextField filePath;
-  @FXML
   protected Button selectFile;
 
   @FXML

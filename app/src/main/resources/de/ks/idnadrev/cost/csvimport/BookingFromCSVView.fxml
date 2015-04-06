@@ -18,8 +18,6 @@
         <GridPane hgap="5.0" vgap="5.0" GridPane.halignment="CENTER">
             <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
-                <ColumnConstraints hgrow="NEVER" minWidth="10.0" prefWidth="90.0"/>
-                <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
                 <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
             </columnConstraints>
@@ -27,9 +25,8 @@
                 <RowConstraints minHeight="30.0" vgrow="NEVER"/>
             </rowConstraints>
             <children>
-                <TextField fx:id="filePath" minWidth="300.0" GridPane.columnIndex="2"/>
                 <Button fx:id="selectFile" mnemonicParsing="false" onAction="#onSelectFile" text="%select.csv.file"
-                        GridPane.columnIndex="3"/>
+                        GridPane.columnIndex="1"/>
 
 
             </children>
