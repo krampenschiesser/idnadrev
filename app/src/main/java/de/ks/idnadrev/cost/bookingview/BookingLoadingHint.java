@@ -112,10 +112,10 @@ public class BookingLoadingHint {
     }
 
     if (category != null) {
-      predicates.add(builder.like(root.get(KEY_CATEGORY), "%" + category.trim() + "%"));
+      predicates.add(builder.like(builder.lower(root.get(KEY_CATEGORY)), "%" + category.trim() + "%"));
     }
     if (description != null) {
-      predicates.add(builder.like(root.get(KEY_DESCRIPTION), "%" + description.trim() + "%"));
+      predicates.add(builder.like(builder.lower(root.get(KEY_DESCRIPTION)), "%" + description.trim() + "%"));
     }
     if (amount != null) {
       double begin = amount - 0.001D;

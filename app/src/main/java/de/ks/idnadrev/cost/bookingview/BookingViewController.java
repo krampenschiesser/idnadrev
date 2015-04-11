@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,21 +18,25 @@ package de.ks.idnadrev.cost.bookingview;
 import de.ks.BaseController;
 import de.ks.executor.group.LastTextChange;
 import de.ks.i18n.Localized;
+import de.ks.idnadrev.cost.pattern.view.BookingPatternParser;
 import de.ks.idnadrev.entity.cost.Account;
 import de.ks.idnadrev.entity.cost.Booking;
 import de.ks.javafx.event.ClearTextOnEscape;
 import de.ks.persistence.PersistentWork;
 import de.ks.validation.validators.DoubleValidator;
 import de.ks.validation.validators.NotNullValidator;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Modality;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
@@ -54,9 +58,14 @@ public class BookingViewController extends BaseController<BookingViewModel> {
   protected TextField category;
   @FXML
   protected Button delete;
+  @FXML
+  protected Button applyPatterns;
 
   @FXML
   protected BookingViewTableController bookingTableController;
+
+  @Inject
+  BookingPatternParser patternParser;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -92,7 +101,7 @@ public class BookingViewController extends BaseController<BookingViewModel> {
 
     String desc = description.textProperty().getValueSafe().trim();
     if (!desc.isEmpty()) {
-      hint.setDescription(desc);
+      hint.setDescription(desc.toLowerCase(Locale.ROOT));
     }
     String amt = amount.textProperty().getValueSafe().trim();
     if (!amt.isEmpty()) {
@@ -104,7 +113,7 @@ public class BookingViewController extends BaseController<BookingViewModel> {
     }
     String cat = category.textProperty().getValueSafe().trim();
     if (!cat.isEmpty()) {
-      hint.setCategory(cat);
+      hint.setCategory(cat.toLowerCase(Locale.ROOT));
     }
 
     store.getDatasource().setLoadingHint(hint);
@@ -166,6 +175,23 @@ public class BookingViewController extends BaseController<BookingViewModel> {
       });
       controller.reload();
     });
+  }
+
+  @FXML
+  public void onApplyPatterns() {
+    ObservableList<Booking> items = bookingTableController.getBookingTable().getItems();
+    store.executeCustomRunnable(() -> {
+      items.forEach(i -> {
+        PersistentWork.wrap(() -> {
+          Booking reload = PersistentWork.reload(i);
+          String result = patternParser.parseLine(reload.getDescription());
+          if (result != null) {
+            reload.setCategory(result);
+          }
+        });
+      });
+    });
+    store.reload();
   }
 
   protected TableView<Booking> getBookingTable() {

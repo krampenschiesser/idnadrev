@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <GridPane hgap="5.0" minHeight="-Infinity" minWidth="-Infinity" vgap="5.0" xmlns:fx="http://javafx.com/fxml/1"
-          xmlns="http://javafx.com/javafx/8" fx:controller="de.ks.idnadrev.cost.pattern.BookingPatternController">
+          xmlns="http://javafx.com/javafx/8" fx:controller="de.ks.idnadrev.cost.pattern.view.BookingPatternController">
     <columnConstraints>
         <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0"/>
     </columnConstraints>

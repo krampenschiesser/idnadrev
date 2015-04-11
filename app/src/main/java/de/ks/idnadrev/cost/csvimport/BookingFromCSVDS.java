@@ -18,6 +18,7 @@ package de.ks.idnadrev.cost.csvimport;
 import com.google.common.base.Charsets;
 import de.ks.activity.ActivityController;
 import de.ks.datasource.DataSource;
+import de.ks.idnadrev.cost.pattern.view.BookingPatternParser;
 import de.ks.idnadrev.entity.cost.Account;
 import de.ks.idnadrev.entity.cost.Booking;
 import de.ks.persistence.PersistentWork;
@@ -45,17 +46,19 @@ public class BookingFromCSVDS implements DataSource<ImporterBookingViewModel> {
   private File fileToLoad;
   @Inject
   ActivityController activityController;
+  @Inject
+  BookingPatternParser patternParser;
 
   @Override
   public ImporterBookingViewModel loadModel(Consumer<ImporterBookingViewModel> furtherProcessing) {
     ImporterBookingViewModel retval = new ImporterBookingViewModel();
 
-    if (fileToLoad != null) {
+    CSVParseDefinitionController controller = activityController.getControllerInstance(CSVParseDefinitionController.class);
+    String accountName = controller.account.getSelectionModel().getSelectedItem();
+    if (fileToLoad != null && accountName != null) {
       List<Booking> bookings = Collections.synchronizedList(new LinkedList<>());
       LinkedList<CompletableFuture<Void>> futures = new LinkedList<>();
 
-      CSVParseDefinitionController controller = activityController.getControllerInstance(CSVParseDefinitionController.class);
-      String accountName = controller.account.getSelectionModel().getSelectedItem();
       Account account = PersistentWork.forName(Account.class, accountName);
 
       BookingFromCSVImporter importer = controller.getImporter();
@@ -91,6 +94,9 @@ public class BookingFromCSVDS implements DataSource<ImporterBookingViewModel> {
       }, null);
 
       if (found.isEmpty()) {
+        if (b.getCategory() == null || b.getCategory().isEmpty()) {
+          b.setCategory(patternParser.parseLine(b.getDescription()));
+        }
         return b;
       } else {
         retval.addError("Booking " + booking.getDescription() + " already exists.");

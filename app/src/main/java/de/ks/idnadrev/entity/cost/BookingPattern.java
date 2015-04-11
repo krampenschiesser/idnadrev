@@ -19,6 +19,8 @@ import de.ks.persistence.entity.NamedPersistentObject;
 
 import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
+import java.util.Locale;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Entity
@@ -74,5 +76,25 @@ public class BookingPattern extends NamedPersistentObject<BookingPattern> {
   public BookingPattern setSimpleContains(boolean simpleContains) {
     this.simpleContains = simpleContains;
     return this;
+  }
+
+  public Optional<String> parse(String text) {
+    if (simpleContains) {
+      String regexLower = getRegex().toLowerCase(Locale.ROOT);
+      text = text.toLowerCase(Locale.ROOT);
+      String[] split = regexLower.split("\\,");
+      for (String currentRegex : split) {
+        if (text.contains(currentRegex)) {
+          return Optional.of(getCategory());
+        }
+      }
+      return Optional.empty();
+    } else {
+      if (getCompiledPattern().matcher(text).matches()) {
+        return Optional.of(getCategory());
+      } else {
+        return Optional.empty();
+      }
+    }
   }
 }

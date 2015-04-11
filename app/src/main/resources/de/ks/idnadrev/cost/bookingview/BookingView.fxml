@@ -45,7 +45,9 @@
                 <fx:include fx:id="bookingTable" source="BookingViewTable.fxml"/>
             </children>
         </StackPane>
-        <Button text="%delete.mnemonic" onAction="#onDelete" fx:id="delete" GridPane.halignment="LEFT"
+        <Button fx:id="delete" onAction="#onDelete" text="%delete.mnemonic" GridPane.halignment="LEFT"
                 GridPane.rowIndex="4"/>
+        <Button fx:id="applyPatterns" mnemonicParsing="false" onAction="#onApplyPatterns" text="%apply.patterns"
+                GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="4"/>
     </children>
 </GridPane>

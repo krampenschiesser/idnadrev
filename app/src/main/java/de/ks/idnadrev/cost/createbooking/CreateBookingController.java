@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,9 @@
 package de.ks.idnadrev.cost.createbooking;
 
 import de.ks.BaseController;
+import de.ks.executor.group.LastTextChange;
 import de.ks.idnadrev.cost.bookingview.BookingLoadingHint;
+import de.ks.idnadrev.cost.pattern.view.BookingPatternParser;
 import de.ks.idnadrev.entity.cost.Account;
 import de.ks.idnadrev.entity.cost.Booking;
 import de.ks.option.Options;
@@ -33,6 +35,7 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 
+import javax.inject.Inject;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Path;
 import java.net.URL;
@@ -65,6 +68,9 @@ public class CreateBookingController extends BaseController<Booking> {
 
   private CustomAutoCompletionBinding categoryAutoCompletion;
   private TimeHHMMValidator timeValidator;
+  @Inject
+  BookingPatternParser patternParser;
+  private LastTextChange lastTextChange;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -80,6 +86,14 @@ public class CreateBookingController extends BaseController<Booking> {
     book.disableProperty().bind(validationRegistry.invalidProperty());
 
     controller.getJavaFXExecutor().submit(() -> categoryAutoCompletion = new CustomAutoCompletionBinding(category, this::supplyCategoryCompletion));
+
+
+    lastTextChange = new LastTextChange(description, controller.getExecutorService());
+    lastTextChange.registerHandler(cf -> cf.thenApply(patternParser::parseLine).thenAcceptAsync(s -> {
+      if (s != null) {
+        category.setText(s);
+      }
+    }, controller.getJavaFXExecutor()));
   }
 
   protected List<String> supplyCategoryCompletion(AutoCompletionBinding.ISuggestionRequest request) {
@@ -125,18 +139,18 @@ public class CreateBookingController extends BaseController<Booking> {
     String defaultAccount = options.getDefaultAccount();
 
     CompletableFuture.supplyAsync(() -> PersistentWork.from(Account.class), controller.getExecutorService())//
-            .thenAcceptAsync(accounts -> {
-              List<String> accountNames = accounts.stream().map(a -> a.getName()).collect(Collectors.toList());
-              account.getItems().clear();
-              account.getItems().addAll(accountNames);
-              if (!accountNames.isEmpty()) {
-                if (accountNames.contains(defaultAccount)) {
-                  account.getSelectionModel().select(defaultAccount);
-                } else {
-                  account.getSelectionModel().select(0);
-                }
-              }
-            }, controller.getJavaFXExecutor());
+      .thenAcceptAsync(accounts -> {
+        List<String> accountNames = accounts.stream().map(a -> a.getName()).collect(Collectors.toList());
+        account.getItems().clear();
+        account.getItems().addAll(accountNames);
+        if (!accountNames.isEmpty()) {
+          if (accountNames.contains(defaultAccount)) {
+            account.getSelectionModel().select(defaultAccount);
+          } else {
+            account.getSelectionModel().select(0);
+          }
+        }
+      }, controller.getJavaFXExecutor());
   }
 
   @Override

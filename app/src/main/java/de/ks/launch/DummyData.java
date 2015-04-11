@@ -216,17 +216,21 @@ public class DummyData extends Service {
     template.setAmountColumns(Arrays.asList(13, 14));
     PersistentWork.persist(template);
 
-    BookingPattern pattern1 = new BookingPattern("pattern1");
-    pattern1.setRegex("1");
-    pattern1.setCategory("Category1");
+    BookingPattern pattern1 = new BookingPattern("Gehalt");
+    pattern1.setRegex("Lohn,Gehalt");
+    pattern1.setCategory("Gehalt");
     pattern1.setSimpleContains(true);
 
-    BookingPattern pattern2 = new BookingPattern("pattern2");
-    pattern2.setRegex(".*[2,3]");
-    pattern2.setCategory("Category2,Category3");
-    pattern2.setSimpleContains(false);
+    BookingPattern pattern2 = new BookingPattern("Tanken");
+    pattern2.setRegex("shell,aral,star tst,jetstar,sb tank,total-,esso,sb-tank");
+    pattern2.setCategory("Tanken");
+    pattern2.setSimpleContains(true);
 
-    PersistentWork.persist(pattern1, pattern2);
+    BookingPattern pattern3 = new BookingPattern("Geldautomat");
+    pattern3.setRegex("^GA .*");
+    pattern3.setCategory("Bargeldabhebung");
+
+    PersistentWork.persist(pattern1, pattern2, pattern3);
   }
 
   @Override
