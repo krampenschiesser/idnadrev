@@ -48,7 +48,7 @@ public class BookingViewDSTest {
     BookingLoadingHint hint = new BookingLoadingHint("testAccount1");
     datasource.setLoadingHint(hint);
     BookingViewModel model = datasource.loadModel(null);
-    assertEquals(18, model.bookings.size());
+    assertEquals(19, model.bookings.size());
   }
 
   @Test
@@ -58,7 +58,7 @@ public class BookingViewDSTest {
     hint.setEndDate(hint.getEndDate().toLocalDate().minusDays(2));
     datasource.setLoadingHint(hint);
     BookingViewModel model = datasource.loadModel(null);
-    assertEquals(15, model.bookings.size());
+    assertEquals(16, model.bookings.size());
   }
 
   @Test
@@ -67,7 +67,7 @@ public class BookingViewDSTest {
     hint.setAmount(20D);
     datasource.setLoadingHint(hint);
     BookingViewModel model = datasource.loadModel(null);
-    assertEquals(3, model.bookings.size());
+    assertEquals(4, model.bookings.size());
   }
 
   @Test
@@ -76,7 +76,7 @@ public class BookingViewDSTest {
     hint.setAmount(-42D);
     datasource.setLoadingHint(hint);
     BookingViewModel model = datasource.loadModel(null);
-    assertEquals(3, model.bookings.size());
+    assertEquals(4, model.bookings.size());
     assertEquals(-42D, model.getBookings().get(1).getAmount(), 0.01D);
   }
 
@@ -87,7 +87,7 @@ public class BookingViewDSTest {
     hint.setDescription("book");
     datasource.setLoadingHint(hint);
     BookingViewModel model = datasource.loadModel(null);
-    assertEquals(3, model.bookings.size());
+    assertEquals(4, model.bookings.size());
     hint.setDescription("bla");
     model = datasource.loadModel(null);
     assertEquals(0, model.bookings.size());
@@ -99,6 +99,6 @@ public class BookingViewDSTest {
     hint.setCategory("Category3");
     datasource.setLoadingHint(hint);
     BookingViewModel model = datasource.loadModel(null);
-    assertEquals(5, model.bookings.size());
+    assertEquals(6, model.bookings.size());
   }
 }

@@ -36,7 +36,6 @@ import javax.inject.Inject;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
@@ -101,7 +100,7 @@ public class BookingViewController extends BaseController<BookingViewModel> {
 
     String desc = description.textProperty().getValueSafe().trim();
     if (!desc.isEmpty()) {
-      hint.setDescription(desc.toLowerCase(Locale.ROOT));
+      hint.setDescription(desc);
     }
     String amt = amount.textProperty().getValueSafe().trim();
     if (!amt.isEmpty()) {
@@ -113,7 +112,7 @@ public class BookingViewController extends BaseController<BookingViewModel> {
     }
     String cat = category.textProperty().getValueSafe().trim();
     if (!cat.isEmpty()) {
-      hint.setCategory(cat.toLowerCase(Locale.ROOT));
+      hint.setCategory(cat);
     }
 
     store.getDatasource().setLoadingHint(hint);

@@ -76,7 +76,7 @@ public class BookingViewActivityTest extends ActivityTest {
 
     TableView<Booking> bookingTable = bookingView.bookingTableController.bookingTable;
     ObservableList<Booking> items = bookingTable.getItems();
-    assertEquals(12, items.size());
+    assertEquals(13, items.size());
     Booking addition = items.get(3);
     Booking deletion = items.get(4);
     TableColumn<Booking, Double> columnAmount = (TableColumn<Booking, Double>) bookingTable.getColumns().get(4);
@@ -95,7 +95,7 @@ public class BookingViewActivityTest extends ActivityTest {
     activityController.waitForDataSource();
     FXPlatform.waitForFX();
 
-    assertEquals(3, bookingView.getBookingTable().getItems().size());
+    assertEquals(4, bookingView.getBookingTable().getItems().size());
   }
 
   @Test
@@ -104,7 +104,7 @@ public class BookingViewActivityTest extends ActivityTest {
 
     TableView<Booking> bookingTable = bookingView.getBookingTable();
     ObservableList<Booking> items = bookingTable.getItems();
-    assertEquals(12, items.size());
+    assertEquals(13, items.size());
 
     FXPlatform.invokeLater(() -> {
       bookingTable.getSelectionModel().select(1, bookingView.bookingTableController.timeColumn);
@@ -118,6 +118,6 @@ public class BookingViewActivityTest extends ActivityTest {
     FXPlatform.invokeLater(() -> bookingView.onDelete(false));
     activityController.waitForDataSource();
     items = bookingTable.getItems();
-    assertEquals(11, items.size());
+    assertEquals(12, items.size());
   }
 }

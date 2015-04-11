@@ -349,7 +349,12 @@ public class PersistentWork {
       criteriaQuery.select(updateTime);
       TypedQuery<LocalDateTime> query = em.createQuery(criteriaQuery);
       query.setMaxResults(1);
-      return query.getSingleResult();
+      List<LocalDateTime> resultList = query.getResultList();
+      if (resultList.isEmpty()) {
+        return null;
+      } else {
+        return resultList.get(0);
+      }
     });
   }
 }

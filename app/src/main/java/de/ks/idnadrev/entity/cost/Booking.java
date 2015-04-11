@@ -30,6 +30,8 @@ public class Booking extends AbstractPersistentObject<Booking> {
   protected double amount;
   protected String internalIdentifier;
   protected String description;
+  protected String from;
+  protected String to;
 
   @ManyToOne(optional = false)
   protected Account account;

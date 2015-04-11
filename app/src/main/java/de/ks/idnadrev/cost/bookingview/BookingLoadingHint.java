@@ -24,6 +24,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class BookingLoadingHint {
   public static final String KEY_ACCOUNT = PropertyPath.property(Booking.class, b -> b.getAccount());
@@ -112,10 +113,10 @@ public class BookingLoadingHint {
     }
 
     if (category != null) {
-      predicates.add(builder.like(builder.lower(root.get(KEY_CATEGORY)), "%" + category.trim() + "%"));
+      predicates.add(builder.like(builder.lower(root.get(KEY_CATEGORY)), "%" + category.trim().toLowerCase(Locale.ROOT) + "%"));
     }
     if (description != null) {
-      predicates.add(builder.like(builder.lower(root.get(KEY_DESCRIPTION)), "%" + description.trim() + "%"));
+      predicates.add(builder.like(builder.lower(root.get(KEY_DESCRIPTION)), "%" + description.trim().toLowerCase(Locale.ROOT) + "%"));
     }
     if (amount != null) {
       double begin = amount - 0.001D;
