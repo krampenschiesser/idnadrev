@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -49,9 +49,15 @@ public class BookingViewDS implements DataSource<BookingViewModel> {
       if (!bookings.isEmpty()) {
         Booking totalBefore = getTotalBefore(bookings.get(0).getBookingTime());
         bookings = new ArrayList<>(bookings);
-        bookings.add(0, totalBefore);
 
         Booking totalAfter = getTotalBeforeIncluding(bookings.get(bookings.size() - 1).getBookingTime());
+
+        double sum = bookings.stream().mapToDouble(Booking::getAmount).sum();
+        Account account = PersistentWork.forName(Account.class, loadingHint.getAccountName());
+        Booking sumBooking = new Booking(account, sum, false).setBookingTime(totalAfter.getBookingTime()).setDescription(Localized.get("sum"));
+
+        bookings.add(0, totalBefore);
+        bookings.add(sumBooking);
         bookings.add(totalAfter);
       }
       return new BookingViewModel(0D, bookings);
