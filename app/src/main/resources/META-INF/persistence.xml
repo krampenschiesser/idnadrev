@@ -43,6 +43,7 @@
         <class>de.ks.idnadrev.entity.information.UmlDiagramInfo</class>
 
         <class>de.ks.idnadrev.entity.cost.Booking</class>
+        <class>de.ks.idnadrev.entity.cost.BookingPattern</class>
         <class>de.ks.idnadrev.entity.cost.ScheduledBooking</class>
         <class>de.ks.idnadrev.entity.cost.Account</class>
         <class>de.ks.idnadrev.entity.cost.BookingCsvTemplate</class>
