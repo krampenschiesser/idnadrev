@@ -29,6 +29,7 @@ import javax.enterprise.inject.spi.CDI;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -334,6 +335,21 @@ public class PersistentWork {
         consumer.accept(root, criteriaQuery, em.getCriteriaBuilder());
       }
       return em.createQuery(criteriaQuery).getSingleResult();
+    });
+  }
+
+  private static final String KEY_UPDATETIME = PropertyPath.property(AbstractPersistentObject.class, a -> a.getUpdateTime());
+
+  public static <T extends AbstractPersistentObject<T>> LocalDateTime lastUpdate(Class<T> clazz) {
+    return read(em -> {
+      CriteriaQuery<LocalDateTime> criteriaQuery = em.getCriteriaBuilder().createQuery(LocalDateTime.class);
+      Root<T> root = criteriaQuery.from(clazz);
+      Path updateTime = root.get(KEY_UPDATETIME);
+      criteriaQuery.orderBy(em.getCriteriaBuilder().desc(updateTime));
+      criteriaQuery.select(updateTime);
+      TypedQuery<LocalDateTime> query = em.createQuery(criteriaQuery);
+      query.setMaxResults(1);
+      return query.getSingleResult();
     });
   }
 }
