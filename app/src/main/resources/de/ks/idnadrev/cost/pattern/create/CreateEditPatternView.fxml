@@ -37,11 +37,11 @@
                         <TextField fx:id="pattern" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
                         <TextField fx:id="category" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
                         <Label text="%category" GridPane.rowIndex="2"/>
-                        <Button fx:id="save" defaultButton="true" onAction="#onSave" text="%save.mnemonic"
-                                GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.rowIndex="4"/>
                         <Label text="%regex.or.contains" GridPane.rowIndex="3"/>
                         <CheckBox fx:id="contains" mnemonicParsing="false" selected="true" text="%simpleContains"
                                   GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                        <Button fx:id="save" defaultButton="true" onAction="#onSave" text="%save.mnemonic"
+                                GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.rowIndex="4"/>
                     </children>
                 </GridPane>
             </children>
