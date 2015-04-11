@@ -160,7 +160,8 @@ public class BookingViewTableController extends BaseController<BookingViewModel>
   @Override
   protected void onRefresh(BookingViewModel model) {
     ObservableList<Booking> bookings = FXCollections.observableArrayList(model.getBookings());
-    bookingTable.setItems(bookings);
+    bookingTable.getItems().clear();
+    bookingTable.getItems().addAll(bookings);
 
     marked.clear();
     for (Booking booking : bookings) {
