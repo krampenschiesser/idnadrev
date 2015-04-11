@@ -20,6 +20,7 @@ import de.ks.idnadrev.entity.*;
 import de.ks.idnadrev.entity.cost.Account;
 import de.ks.idnadrev.entity.cost.Booking;
 import de.ks.idnadrev.entity.cost.BookingCsvTemplate;
+import de.ks.idnadrev.entity.cost.BookingPattern;
 import de.ks.idnadrev.entity.information.*;
 import de.ks.persistence.PersistentWork;
 import de.ks.scheduler.Schedule;
@@ -201,7 +202,7 @@ public class DummyData extends Service {
       int amount = i * 10 * subAdd;
       Booking booking = new Booking(account2, amount);
       booking.setDescription("createbooking #" + i);
-      booking.setCategory("Categtory" + i % 5);
+      booking.setCategory("Category" + i % 5);
       booking.setBookingTime(dateTime.plusDays(i));
       PersistentWork.persist(booking);
     }
@@ -214,6 +215,18 @@ public class DummyData extends Service {
     template.setDescriptionColumn(4);
     template.setAmountColumns(Arrays.asList(13, 14));
     PersistentWork.persist(template);
+
+    BookingPattern pattern1 = new BookingPattern("pattern1");
+    pattern1.setRegex("1");
+    pattern1.setCategory("Category1");
+    pattern1.setSimpleContains(true);
+
+    BookingPattern pattern2 = new BookingPattern("pattern2");
+    pattern2.setRegex(".*[2,3]");
+    pattern2.setCategory("Category2,Category3");
+    pattern2.setSimpleContains(false);
+
+    PersistentWork.persist(pattern1, pattern2);
   }
 
   @Override
