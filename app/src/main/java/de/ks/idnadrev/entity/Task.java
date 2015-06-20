@@ -33,18 +33,11 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
-/**
- * Created by Christian Loehnert
- * Krampenschiesser@freenet.de
- * All rights reserved by now, license may come later.
- */
 
 @Entity
 public class Task extends NamedPersistentObject<Task> implements FileContainer<Task>, Tagged {
   private static final long serialVersionUID = 1L;
   private static final String TASK_TAG_JOINTABLE = "task_tag";
-
-//  @Column(length = 40000)
 
   @Lob
   protected String description;
