@@ -29,6 +29,7 @@ import java.util.UUID;
 public class Booking extends AbstractPersistentObject<Booking> {
   protected double amount;
   protected String internalIdentifier;
+  @Column(length = 1000)
   protected String description;
 
   @ManyToOne(optional = false)

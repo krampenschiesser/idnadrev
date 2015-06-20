@@ -17,6 +17,7 @@ package de.ks.idnadrev.entity.cost;
 
 import de.ks.persistence.entity.NamedPersistentObject;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
 import java.util.Locale;
@@ -26,6 +27,7 @@ import java.util.regex.Pattern;
 @Entity
 public class BookingPattern extends NamedPersistentObject<BookingPattern> {
   @NotNull
+  @Column(length = 1000)
   protected String regex;
   protected transient Pattern compiledPattern;
   @NotNull
