@@ -4,7 +4,7 @@
 
 == Download
 
-link:https://github.com/krampenschiesser/idnadrev/releases/download/050_RC1/idnadrev-0.5.0-RC1.zip[Idnadrev Version 0.5.0 RC1] +
+link:https://github.com/krampenschiesser/idnadrev/releases/download/051_rel/idnadrev-0.5.1.zip[Idnadrev Version 0.5.1] +
 
 == About
 
