@@ -54,7 +54,7 @@ public class Schedule extends AbstractPersistentObject<Schedule> {
 
   @Column(columnDefinition = "BIGINT(19)")
   @Convert(converter = DurationConverter.class)
-  protected Duration duration;//fixme version 5.1 db update
+  protected Duration duration;
 
   protected String identifier;
 
