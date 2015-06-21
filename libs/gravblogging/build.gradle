@@ -1,0 +1,8 @@
+dependencies {
+    compile project(":libs:application")
+//    compile "org.apache.commons:commons-vfs2:$commonsVfs"
+    compile "org.apache.sanselan:sanselan:$commonsImage"
+    compile "org.eclipse.jgit:org.eclipse.jgit:$jgit"
+
+    testCompile project(":libs:testutil")
+}

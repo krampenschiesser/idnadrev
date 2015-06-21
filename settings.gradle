@@ -21,6 +21,7 @@ include "libs:launch"
 //PC stuff
 include "libs:validation", "libs:hibernate-pool", "libs:persistence", "libs:eventsystem", "libs:i18n", "libs:scheduler"
 include "libs:executor"
+include "libs:gravblogging"
 //javaFX stuff
 include "libs:images", "libs:application"
 include "libs:application-jpa"
