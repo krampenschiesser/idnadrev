@@ -37,4 +37,8 @@ public class GravSettings {
   public PostDateFormat getDefaultDateFormat() {
     return PostDateFormat.EUROPEAN;
   }
+
+  public boolean useShootingTimeAsFileName() {
+    return true;
+  }
 }

@@ -16,6 +16,8 @@
 package de.ks.blogging.grav.posts;
 
 import com.google.common.net.MediaType;
+import de.ks.blogging.grav.GravSettings;
+import de.ks.blogging.grav.posts.media.ImageScaler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -129,6 +131,27 @@ public class BasePost {
       Files.write(file.toPath(), Arrays.asList(fileContent));
     } catch (IOException e) {
       log.error("Could not write file {}", file, e);
+    }
+  }
+
+  public File addMedia(File src) {
+    try {
+      Files.createDirectories(src.getParentFile().toPath());
+      File target = new File(file.getParentFile(), src.getName());
+
+      String contentType = Files.probeContentType(src.toPath());
+      boolean isImage = MediaType.parse(contentType).is(MediaType.ANY_IMAGE_TYPE);
+      if (isImage) {
+        GravSettings gravSettings = Header.GRAV_SETTINGS.get();
+        ImageScaler imageScaler = new ImageScaler();
+        imageScaler.rotateAndWriteImage(src, target, gravSettings.getImageDimension());
+      } else {
+        Files.copy(src.toPath(), file.getParentFile().toPath());
+      }
+      return target;
+    } catch (Exception e) {
+      log.error("Could not add media {}", src, e);
+      return null;
     }
   }
 }

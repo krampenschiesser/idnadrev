@@ -19,7 +19,7 @@ public class ImageScalerTest {
     GravSettings settings = new GravSettings();
     ImageScaler imageScaler = new ImageScaler();
 
-    File landscapeFile = new File(getClass().getResource("landscape.jpg").getFile());
+    File landscapeFile = new File(ImageScalerTest.class.getResource("landscape.jpg").getFile());
     File portraitFile = new File(getClass().getResource("portrait.jpg").getFile());
 
     File landscapeTarget = new File(new File(StandardSystemProperty.JAVA_IO_TMPDIR.value()), "landscape.jpg");

@@ -3,6 +3,9 @@ package de.ks.blogging.grav.fs.local;
 import com.google.common.base.StandardSystemProperty;
 import de.ks.blogging.grav.GravSettings;
 import de.ks.blogging.grav.posts.*;
+import de.ks.blogging.grav.posts.media.ImageScalerTest;
+import org.apache.sanselan.ImageInfo;
+import org.apache.sanselan.Sanselan;
 import org.junit.Test;
 
 import java.io.File;
@@ -14,8 +17,7 @@ import java.time.LocalTime;
 import java.util.Collection;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
 public class GravPagesTest {
   @Test
@@ -113,5 +115,32 @@ public class GravPagesTest {
     assertEquals(HeaderContainer.INDENTATION + "tag: [test, blubber]", lines.get(5));
 
     assertEquals(content, lines.get(8));
+  }
+
+  @Test
+  public void testAddImage() throws Exception {
+    Header.GRAV_SETTINGS = () -> new GravSettings();
+    GravPages gravPages = new GravPages(StandardSystemProperty.JAVA_IO_TMPDIR.value());
+    String title = "Title 1  ";
+    String content = "Bla";
+
+    BlogItem blogItem = gravPages.addBlogItem(title);
+    blogItem.setContent(content);
+    blogItem.getHeader().setTags("test", "blubber");
+
+    File src = new File(ImageScalerTest.class.getResource("landscape.jpg").getFile());
+    File mediaFile = blogItem.addMedia(src);
+
+    blogItem.write();
+    File file = blogItem.getFile();
+
+    mediaFile.deleteOnExit();
+    file.deleteOnExit();
+
+    assertTrue(file.exists());
+
+    assertTrue(mediaFile.exists());
+    ImageInfo imageInfo = Sanselan.getImageInfo(mediaFile);
+    assertEquals(1024, imageInfo.getWidth());
   }
 }
