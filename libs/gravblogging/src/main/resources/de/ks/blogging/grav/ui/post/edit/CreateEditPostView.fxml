@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<GridPane hgap="5.0" minHeight="-Infinity" minWidth="-Infinity" vgap="5.0" xmlns="http://javafx.com/javafx/8"
+          xmlns:fx="http://javafx.com/fxml/1">
+    <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+        <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="30.0" vgrow="ALWAYS"/>
+        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+    </rowConstraints>
+    <children>
+        <DatePicker fx:id="date" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+        <TextField fx:id="time" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <TextField fx:id="title" GridPane.columnIndex="1" GridPane.columnSpan="2147483647"/>
+        <TextField fx:id="tags" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="2"/>
+        <Label text="%grav.post.title"/>
+        <Label text="%grav.post.dateTime" GridPane.rowIndex="1"/>
+        <Label text="%grav.post.tags" GridPane.rowIndex="2"/>
+        <TextArea fx:id="content" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2147483647"
+                  GridPane.rowIndex="6"/>
+        <Accordion GridPane.columnSpan="2147483647" GridPane.rowIndex="7">
+            <panes>
+                <TitledPane animated="false" text="%grav.post.media">
+                    <content>
+                        <ScrollPane fx:id="mediaContainer" prefHeight="200.0" prefWidth="200.0"/>
+                    </content>
+                </TitledPane>
+            </panes>
+        </Accordion>
+        <Accordion GridPane.columnSpan="2147483647" GridPane.rowIndex="5">
+            <panes>
+                <TitledPane animated="false" text="%grav.post.otherHeader">
+                    <content>
+                        <ScrollPane fx:id="headerContainer" prefHeight="200.0" prefWidth="200.0"/>
+                    </content>
+                </TitledPane>
+            </panes>
+        </Accordion>
+        <HBox maxHeight="-Infinity" maxWidth="-Infinity" spacing="25.0" GridPane.columnSpan="2147483647"
+              GridPane.halignment="CENTER" GridPane.rowIndex="8">
+            <children>
+                <Button fx:id="post" defaultButton="true" onAction="#onPost" text="%grav.post"
+                        GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.rowIndex="8"/>
+                <Button fx:id="cancel" mnemonicParsing="false" onAction="#onCancel" text="%cancel"/>
+            </children>
+        </HBox>
+        <Label text="%grav.post.type" GridPane.rowIndex="3"/>
+        <Label text="%grav.post.filePath" GridPane.rowIndex="4"/>
+        <Button fx:id="selectFilePath" mnemonicParsing="false" onAction="#onFilePathSelection" text="%select"
+                GridPane.columnIndex="2" GridPane.rowIndex="4"/>
+        <ChoiceBox fx:id="type" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+        <TextField fx:id="filePath" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+    </children>
+    <padding>
+        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+    </padding>
+</GridPane>

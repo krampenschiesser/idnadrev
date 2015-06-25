@@ -29,6 +29,7 @@ import org.eclipse.jgit.lib.RepositoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -45,17 +46,21 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+@Singleton
 public class GravPages implements AutoCloseable {
   private static final Logger log = LoggerFactory.getLogger(GravPages.class);
-  public static final String GIT_REPO = ".git";
 
-  protected final String filePath;
+  protected String filePath;
   protected final Set<BasePost> posts = new HashSet<>();
   protected final Set<Future<BasePost>> postLoader = new HashSet<>();
   protected final ExecutorService executorService = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(true).build());
   protected final AtomicReference<Git> git = new AtomicReference<>();
 
   public GravPages(String filePath) {
+    this.filePath = filePath;
+  }
+
+  public void setFilePath(String filePath) {
     this.filePath = filePath;
   }
 
@@ -189,8 +194,6 @@ public class GravPages implements AutoCloseable {
   }
 
   public void addCommit(String msg) throws RuntimeException {
-    GravSettings gravSettings = getGravSettings();
-
     Git git = getGit();
     if (git != null) {
       try {

@@ -21,9 +21,10 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-public class HeaderContainer {
+public class HeaderContainer implements Cloneable {
   private static final Logger log = LoggerFactory.getLogger(HeaderContainer.class);
   public static final String INDENTATION = "    ";
+
   protected final String key;
   protected final int level;
   protected final Map<String, String> elements = new LinkedHashMap<>();
@@ -118,5 +119,29 @@ public class HeaderContainer {
       }
       lastIndentation = currentIndentation;
     }
+  }
+
+  public void fillFrom(HeaderContainer other) {
+    other.elements.forEach((key, value) -> {
+      if (elements.get(key) == null) {
+        elements.put(key, value);
+      }
+    });
+    other.childContainers.forEach(otherChild -> {
+      HeaderContainer childContainer = getChildContainer(otherChild.key);
+      if (childContainer == null) {
+        childContainers.add(otherChild.clone());
+      } else {
+        childContainer.fillFrom(otherChild);
+      }
+    });
+  }
+
+  @Override
+  public HeaderContainer clone() {
+    HeaderContainer clone = new HeaderContainer(key, level);
+    elements.forEach(clone.elements::put);
+    childContainers.forEach(cc -> clone.childContainers.add(cc.clone()));
+    return clone;
   }
 }

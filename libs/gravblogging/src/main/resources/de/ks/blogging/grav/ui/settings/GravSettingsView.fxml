@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<GridPane hgap="5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" vgap="5.0"
+          xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8">
+    <columnConstraints>
+        <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
+        <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
+        <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+    </rowConstraints>
+    <children>
+        <Label text="%grav.settings.pagesDir"/>
+        <Label text="%grav.settings.blogsubpath" GridPane.rowIndex="1"/>
+        <Label text="%grav.settings.defaultAuthor" GridPane.rowIndex="2"/>
+        <Label text="%grav.settings.imageDimension" GridPane.rowIndex="3"/>
+        <Label text="%grav.settings.dateFormat" GridPane.rowIndex="4"/>
+        <TextField GridPane.columnIndex="1"/>
+        <TextField GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <TextField GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="2"/>
+        <TextField GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="3"/>
+        <TextField GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="4"/>
+        <Button mnemonicParsing="false" text="Button" GridPane.columnIndex="2"/>
+        <Button mnemonicParsing="false" text="Button" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+    </children>
+    <padding>
+        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+    </padding>
+</GridPane>
