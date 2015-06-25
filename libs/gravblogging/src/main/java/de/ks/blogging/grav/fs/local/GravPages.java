@@ -1,12 +1,12 @@
 /**
  * Copyright [2015] [Christian Loehnert]
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,6 +20,12 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import de.ks.blogging.grav.GravSettings;
 import de.ks.blogging.grav.posts.*;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jgit.api.AddCommand;
+import org.eclipse.jgit.api.CommitCommand;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.RepositoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,15 +42,18 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-public class GravPages {
+public class GravPages implements AutoCloseable {
   private static final Logger log = LoggerFactory.getLogger(GravPages.class);
+  public static final String GIT_REPO = ".git";
 
   protected final String filePath;
   protected final Set<BasePost> posts = new HashSet<>();
   protected final Set<Future<BasePost>> postLoader = new HashSet<>();
   protected final ExecutorService executorService = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(true).build());
+  protected final AtomicReference<Git> git = new AtomicReference<>();
 
   public GravPages(String filePath) {
     this.filePath = filePath;
@@ -87,8 +96,12 @@ public class GravPages {
     File file = getPostFile(title, fileName);
     BasePost page = new BasePost(file);
     page.getHeader().setTitle(title);
-    page.getHeader().setAuthor(Header.GRAV_SETTINGS.get().getDefaultAuthor());
+    page.getHeader().setAuthor(getGravSettings().getDefaultAuthor());
     return page;
+  }
+
+  private GravSettings getGravSettings() {
+    return Header.GRAV_SETTINGS.get();
   }
 
   public synchronized Page addPage(String title) {
@@ -96,12 +109,12 @@ public class GravPages {
     File file = getPostFile(title, fileName);
     Page page = new Page(file);
     page.getHeader().setTitle(title);
-    page.getHeader().setAuthor(Header.GRAV_SETTINGS.get().getDefaultAuthor());
+    page.getHeader().setAuthor(getGravSettings().getDefaultAuthor());
     return page;
   }
 
   public synchronized BlogItem addBlogItem(String title) {
-    GravSettings gravSettings = Header.GRAV_SETTINGS.get();
+    GravSettings gravSettings = getGravSettings();
 
     String fileName = "item.md";
     String blogSubPath = gravSettings.getBlogSubPath();
@@ -152,5 +165,55 @@ public class GravPages {
 
   public Collection<BasePost> getAllPosts() {
     return getPosts();
+  }
+
+  public boolean hasGitRepository() {
+    return new RepositoryBuilder().findGitDir(new File(filePath)).setMustExist(true).getGitDir() != null;
+  }
+
+  public Git getGit() {
+    git.getAndUpdate(git -> {
+      if (git == null) {
+        try {
+          Repository repository = new RepositoryBuilder().findGitDir(new File(filePath)).setMustExist(true).build();
+          return new Git(repository);
+        } catch (Exception e) {
+          log.error("Could not get Git ", e);
+          return null;
+        }
+      } else {
+        return git;
+      }
+    });
+    return git.get();
+  }
+
+  public void addCommit(String msg) throws RuntimeException {
+    GravSettings gravSettings = getGravSettings();
+
+    Git git = getGit();
+    if (git != null) {
+      try {
+        AddCommand add = git.add();
+        add.addFilepattern(filePath).call();
+        CommitCommand commit = git.commit();
+        if (msg == null || msg.isEmpty()) {
+          commit.setAmend(true);
+        } else {
+          commit.setMessage(msg);
+        }
+        commit.call();
+      } catch (GitAPIException e) {
+        log.error("Could not add and commit ", e);
+        throw new RuntimeException(e);
+      }
+    }
+  }
+
+  @Override
+  public void close() throws Exception {
+    if (git.get() != null) {
+      git.get().close();
+    }
   }
 }

@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -99,16 +99,18 @@ public class BasePost {
       @Override
       public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
         String contentType = Files.probeContentType(path);
-        try {
-          MediaType mediaType = MediaType.parse(contentType);
-          if (mediaType.is(MediaType.ANY_AUDIO_TYPE) || mediaType.is(MediaType.ANY_IMAGE_TYPE) || mediaType.is(MediaType.ANY_VIDEO_TYPE)) {
-            File file = path.toFile();
-            media.put(file.getName(), file);
-            mediaTypes.put(file.getName(), mediaType);
-            log.debug("Found media file {}", file);
+        if (contentType != null) {
+          try {
+            MediaType mediaType = MediaType.parse(contentType);
+            if (mediaType.is(MediaType.ANY_AUDIO_TYPE) || mediaType.is(MediaType.ANY_IMAGE_TYPE) || mediaType.is(MediaType.ANY_VIDEO_TYPE)) {
+              File file = path.toFile();
+              media.put(file.getName(), file);
+              mediaTypes.put(file.getName(), mediaType);
+              log.debug("Found media file {}", file);
+            }
+          } catch (IllegalArgumentException e) {
+            log.debug("No media type {} for path ", contentType, path.getFileName(), e);
           }
-        } catch (IllegalArgumentException e) {
-          log.debug("No media type {} for path ", contentType, path.getFileName(), e);
         }
         return super.visitFile(path, attrs);
       }

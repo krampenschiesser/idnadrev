@@ -6,14 +6,22 @@ import de.ks.blogging.grav.posts.*;
 import de.ks.blogging.grav.posts.media.ImageScalerTest;
 import org.apache.sanselan.ImageInfo;
 import org.apache.sanselan.Sanselan;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.InitCommand;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -61,6 +69,83 @@ public class GravPagesTest {
     assertFalse(page.getHeader().getLocalDateTime().isPresent());
     assertEquals("Christian Löhnert", page.getHeader().getAuthor());
     assertEquals("# PCT 2013", page.getContent());
+  }
+
+  @Test
+  public void testDiscoverGitDirSameDir() throws Exception {
+    Header.GRAV_SETTINGS = () -> new GravSettings();
+    GravPages gravPages = new GravPages(StandardSystemProperty.JAVA_IO_TMPDIR.value() + StandardSystemProperty.FILE_SEPARATOR.value() + "gittest");
+
+    File tmpDir = new File(StandardSystemProperty.JAVA_IO_TMPDIR.value() + StandardSystemProperty.FILE_SEPARATOR.value() + "gittest");
+    if (!tmpDir.exists()) {
+      tmpDir.mkdir();
+    }
+    try {
+      File gitDir = new File(tmpDir, ".git");
+      InitCommand init = Git.init();
+      init.setDirectory(tmpDir);
+      init.setGitDir(gitDir).call();
+
+      assertTrue(gravPages.hasGitRepository());
+    } finally {
+//      deleteDir(tmpDir);
+    }
+  }
+
+  @Test
+  public void testDiscoverGitDirTopDir() throws Exception {
+    Header.GRAV_SETTINGS = () -> new GravSettings();
+
+    File tmpDir = new File(StandardSystemProperty.JAVA_IO_TMPDIR.value() + StandardSystemProperty.FILE_SEPARATOR.value() + "gittest");
+
+    if (!tmpDir.exists()) {
+      tmpDir.mkdir();
+    }
+    try {
+
+      File gitDir = new File(tmpDir, ".git");
+
+      InitCommand init = Git.init();
+      init.setDirectory(tmpDir);
+      init.setGitDir(gitDir).call();
+
+      File sub = new File(tmpDir, "sub");
+      if (!sub.exists()) {
+        sub.mkdir();
+      }
+
+      GravPages gravPages = new GravPages(sub.getPath());
+      assertTrue(gravPages.hasGitRepository());
+    } finally {
+      deleteDir(tmpDir);
+    }
+  }
+
+  @Test
+  public void testAddCommit() throws Exception {
+    Header.GRAV_SETTINGS = () -> new GravSettings();
+    File tmpDir = new File(StandardSystemProperty.JAVA_IO_TMPDIR.value() + StandardSystemProperty.FILE_SEPARATOR.value() + "gittest");
+    if (!tmpDir.exists()) {
+      tmpDir.mkdir();
+    }
+    try {
+      File gitDir = new File(tmpDir, ".git");
+
+      InitCommand init = Git.init();
+      init.setDirectory(tmpDir);
+      init.setGitDir(gitDir);
+      init.call();
+
+      GravPages gravPages = new GravPages(tmpDir.getPath());
+
+      File mdfile = new File(tmpDir, "test.md");
+      Files.write(mdfile.toPath(), Arrays.asList("Hello Sauerland"));
+
+      gravPages.addCommit("First commit");
+      gravPages.close();
+    } finally {
+      deleteDir(tmpDir);
+    }
   }
 
   @Test
@@ -142,5 +227,23 @@ public class GravPagesTest {
     assertTrue(mediaFile.exists());
     ImageInfo imageInfo = Sanselan.getImageInfo(mediaFile);
     assertEquals(1024, imageInfo.getWidth());
+  }
+
+  private void deleteDir(File dir) throws IOException {
+    SimpleFileVisitor<Path> visitor = new SimpleFileVisitor<Path>() {
+      @Override
+      public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+        Files.deleteIfExists(file);
+        return super.visitFile(file, attrs);
+      }
+
+      @Override
+      public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+        Files.deleteIfExists(dir);
+        return super.postVisitDirectory(dir, exc);
+      }
+    };
+    Files.walkFileTree(dir.toPath(), visitor);
+    Files.deleteIfExists(dir.toPath());
   }
 }
