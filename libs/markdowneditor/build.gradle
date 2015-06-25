@@ -1,0 +1,6 @@
+dependencies {
+    compile project(":libs:application")
+    compile "com.github.rjeschke:txtmark:$txtMark"
+
+    testCompile project(":libs:testutil")
+}
