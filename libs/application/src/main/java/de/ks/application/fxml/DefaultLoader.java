@@ -88,7 +88,12 @@ public class DefaultLoader<V extends Node, C> {
       throw new FXMLFileNotFoundException("FXML file not found, is null!");
     }
     controllerFactory = new ControllerFactory();
-    resourceBundle = Localized.getBundle();
+
+    if (controller != null) {
+      resourceBundle = Localized.getBundle(controller);
+    } else {
+      resourceBundle = Localized.getBundle();
+    }
     loader = new FXMLLoader(fxmlFile, resourceBundle, new JavaFXBuilderFactory(), controllerFactory);
   }
 
@@ -188,7 +193,7 @@ public class DefaultLoader<V extends Node, C> {
   @Override
   public String toString() {
     return "DefaultLoader{" +
-            "fxmlFile=" + fxmlFile +
-            '}';
+      "fxmlFile=" + fxmlFile +
+      '}';
   }
 }

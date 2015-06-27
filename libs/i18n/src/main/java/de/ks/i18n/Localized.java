@@ -17,9 +17,12 @@ package de.ks.i18n;
 
 import de.ks.eventsystem.bus.EventBus;
 import de.ks.i18n.event.LanguageChangedEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.spi.CDI;
 import java.lang.reflect.Field;
+import java.net.URL;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -28,9 +31,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Main interface to the i18n facilities.
  */
 public class Localized {
+  private static final Logger log = LoggerFactory.getLogger(Localized.class);
   protected static final AtomicBoolean initialized = new AtomicBoolean(false);
   protected static volatile ResourceBundleWrapper bundle;
-  public static final String BASENAME = "de.ks.i18n.Translation";
+  public static final String FILENAME = "Translation";
+  public static final String BASENAME = "de.ks.i18n." + FILENAME;
 
   /**
    * Use this method in order to notify possible listeners and replace the resource bundle.
@@ -57,6 +62,29 @@ public class Localized {
   public static ResourceBundleWrapper getBundle() {
     if (!initialized.get()) {
       initialize();
+    }
+    return bundle;
+  }
+
+  public static ResourceBundleWrapper getBundle(Class callerClass) {
+    if (!initialized.get()) {
+      initialize();
+    }
+    Locale locale = Locale.getDefault();
+    String substring = callerClass.getName().substring(0, callerClass.getName().lastIndexOf('.') + 1);
+
+
+    UTF8Control control = new UTF8Control();
+    String baseName = substring + Localized.FILENAME;
+    URL resource = callerClass.getResource("/" + control.getResourceName(baseName, locale));
+    if (resource == null) {
+      resource = callerClass.getResource("/" + control.getResourceName(baseName, control.getFallbackLocale(baseName, locale)));
+    }
+
+    if (resource != null) {
+      log.debug("Found local bundle {}", baseName);
+      ResourceBundle localBundle = ResourceBundle.getBundle(baseName, locale, control);
+      return new ResourceBundleWrapper(localBundle, baseName + "_" + locale.getLanguage() + ".properties");
     }
     return bundle;
   }

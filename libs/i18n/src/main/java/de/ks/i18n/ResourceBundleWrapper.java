@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -64,7 +65,7 @@ class ResourceBundleWrapper extends ResourceBundle {
     } else if (key.endsWith("=")) {
       key = key.substring(0, key.length() - 1);
     }
-    boolean isContained = bundle.containsKey(key);
+    boolean isContained = getBundle().containsKey(key);
     if (!isContained) {
       log.warn("Key \"{}\" not found in properties missingKeyFile:{}", key, path);
       return true;
@@ -74,12 +75,12 @@ class ResourceBundleWrapper extends ResourceBundle {
 
   @Override
   public Set<String> keySet() {
-    return bundle.keySet();
+    return getBundle().keySet();
   }
 
   @Override
   public Enumeration<String> getKeys() {
-    return bundle.getKeys();
+    return getBundle().getKeys();
   }
 
   @Override
@@ -96,7 +97,7 @@ class ResourceBundleWrapper extends ResourceBundle {
     try {
       Method method = ResourceBundle.class.getDeclaredMethod("handleGetObject", String.class);
       method.setAccessible(true);
-      Object retval = method.invoke(bundle, key);
+      Object retval = method.invoke(getBundle(), key);
       if ((ending != null) && (retval instanceof String)) {
         retval = retval + ending;
       }
@@ -132,25 +133,66 @@ class ResourceBundleWrapper extends ResourceBundle {
 
   @Override
   public int hashCode() {
-    return bundle.hashCode();
+    return getBundle().hashCode();
   }
 
   @Override
   public boolean equals(Object obj) {
-    return bundle.equals(obj);
+    return getBundle().equals(obj);
   }
 
   @Override
   public String toString() {
-    return bundle.toString();
+    return getBundle().toString();
   }
 
   @Override
   public Locale getLocale() {
-    return bundle.getLocale();
+    return getBundle().getLocale();
   }
 
   public File getMissingKeyFile() {
     return missingKeyFile;
   }
+
+  protected ResourceBundle getBundle() {
+    String baseBundleName = bundle.getBaseBundleName();
+    StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+    boolean isNext = false;
+
+    String callerClassName = null;
+    for (StackTraceElement stackTraceElement : stackTrace) {
+      String className = stackTraceElement.getClassName();
+      if (className.equals(Thread.class.getName()) || className.equals(ResourceBundle.class.getName()) || className.equals(getClass().getName()) || className.equals(Localized.class.getName())) {
+        continue;
+      } else if (className.contains("$")) {
+        continue;
+      } else {
+        callerClassName = className;
+        break;
+      }
+    }
+    log.trace("Found caller class {}, basename={}", callerClassName, baseBundleName);
+    Locale locale = Locale.getDefault();
+
+    String substring = callerClassName.substring(0, callerClassName.lastIndexOf('.') + 1);
+
+
+    UTF8Control control = new UTF8Control();
+    String baseName = substring + Localized.FILENAME;
+    URL resource = getClass().getClassLoader().getResource(control.getResourceName(baseName, locale));
+    if (resource == null) {
+      resource = getClass().getClassLoader().getResource(control.getResourceName(baseName, control.getFallbackLocale(baseName, locale)));
+    }
+
+    if (resource != null) {
+      ResourceBundle localBundle = ResourceBundle.getBundle(baseName, locale, control);
+      log.debug("Found local bundle {}", baseName);
+      if (localBundle != null) {
+        return localBundle;
+      }
+    }
+    return this.bundle;
+  }
+
 }

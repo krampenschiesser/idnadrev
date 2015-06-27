@@ -21,6 +21,8 @@ import com.google.common.io.Files;
 import de.ks.LauncherRunner;
 import de.ks.eventsystem.bus.EventBus;
 import de.ks.i18n.event.LanguageChangedEvent;
+import de.ks.i18n.nobundle.NoBundleClass;
+import de.ks.i18n.other.OtherClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,6 +31,7 @@ import javax.enterprise.inject.spi.CDI;
 import java.io.File;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
@@ -119,5 +122,28 @@ public class LocalizedTest {
   @Subscribe
   public void onLanguageChange(LanguageChangedEvent event) {
     this.event = event;
+  }
+
+  @Test
+  public void testSubPackageKey() throws Exception {
+    Supplier<String> supplier = () -> new OtherClass().getString();
+    assertEquals("Hello SubPackage", supplier.get());
+    assertEquals("Hello SubPackage", new OtherClass().getString());
+  }
+
+  @Test
+  public void testNoSubPackageKey() throws Exception {
+    assertEquals("?subPackageString?", new NoBundleClass().getString());
+  }
+
+  @Test
+  public void testRootSubPackageKey() throws Exception {
+    assertEquals("?subPackageString?", Localized.get("subPackageString"));
+  }
+
+  @Test
+  public void testGetBundleForClass() throws Exception {
+
+
   }
 }
