@@ -23,6 +23,7 @@ dependencies {
     compile project(":libs:application-jpa")
     compile project(":libs:adoceditor")
     compile project(":libs:scheduler")
+    compile project(":libs:gravblogging")
     compile "commons-codec:commons-codec:$commonscodec"
     compile "$jpa2api"
     compile "org.apache.poi:poi:$poi"
