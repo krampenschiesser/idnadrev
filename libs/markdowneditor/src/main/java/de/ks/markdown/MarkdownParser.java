@@ -16,6 +16,7 @@
 package de.ks.markdown;
 
 import com.github.rjeschke.txtmark.Processor;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +24,7 @@ import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
 
 @Singleton
 public class MarkdownParser {
@@ -38,6 +40,11 @@ public class MarkdownParser {
   public String parse(File markdownFile) {
     try {
       String body = Processor.process(markdownFile, true);
+
+      File directory = markdownFile.getParentFile();
+      URL url = directory.toURI().toURL();
+
+      body = StringUtils.replace(body, "src=\"", "src=\"" + url.toExternalForm());
       return createHtmlPage(body);
     } catch (IOException e) {
       log.error("Could not parse markdown file {}", markdownFile, e);
