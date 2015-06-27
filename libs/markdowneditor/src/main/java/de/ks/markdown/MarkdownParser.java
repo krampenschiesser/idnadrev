@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Optional;
 
 @Singleton
 public class MarkdownParser {
@@ -32,24 +33,35 @@ public class MarkdownParser {
   public static final String CSS_FILE_NAME = "markdown.css";
   protected String cssUrl;
 
-  public String parse(String plainMarkDown) {
+  public String parse(String plainMarkDown, Optional<File> path) {
     String body = Processor.process(plainMarkDown, true);
+    if (path.isPresent()) {
+      body = replaceImagePaths(path.get(), body);
+    }
     return createHtmlPage(body);
   }
 
   public String parse(File markdownFile) {
     try {
       String body = Processor.process(markdownFile, true);
-
-      File directory = markdownFile.getParentFile();
-      URL url = directory.toURI().toURL();
-
-      body = StringUtils.replace(body, "src=\"", "src=\"" + url.toExternalForm());
+      body = replaceImagePaths(markdownFile, body);
       return createHtmlPage(body);
     } catch (IOException e) {
       log.error("Could not parse markdown file {}", markdownFile, e);
       return null;
     }
+  }
+
+  protected String replaceImagePaths(File path, String body) {
+    try {
+      File directory = path.getParentFile();
+      URL url = directory.toURI().toURL();
+
+      body = StringUtils.replace(body, "src=\"", "src=\"" + url.toExternalForm());
+    } catch (IOException e) {
+      log.error("Could not repalce image paths for file {}", path, e);
+    }
+    return body;
   }
 
   protected String createHtmlPage(String body) {

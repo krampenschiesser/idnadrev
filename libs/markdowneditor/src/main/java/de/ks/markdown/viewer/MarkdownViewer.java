@@ -22,6 +22,7 @@ import de.ks.activity.initialization.ActivityInitialization;
 import de.ks.application.fxml.DefaultLoader;
 import de.ks.executor.JavaFXExecutorService;
 import de.ks.markdown.MarkdownParser;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -37,10 +38,7 @@ import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import java.io.File;
 import java.net.URL;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
@@ -55,6 +53,7 @@ public class MarkdownViewer implements Initializable, ActivityCallback {
         return loader;
       });
   }
+
   private static final Logger log = LoggerFactory.getLogger(MarkdownViewer.class);
 
   public static final String DEFAULT = "default";
@@ -72,6 +71,8 @@ public class MarkdownViewer implements Initializable, ActivityCallback {
   @FXML
   protected StackPane root;
   protected WebView webView;
+
+  protected final SimpleObjectProperty<File> file = new SimpleObjectProperty();
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -126,34 +127,36 @@ public class MarkdownViewer implements Initializable, ActivityCallback {
     ActivityExecutor executorService = controller.getExecutorService();
     JavaFXExecutorService javaFXExecutor = controller.getJavaFXExecutor();
     load.forEach(t -> {
-      CompletableFuture<Pair<String, String>> completableFuture = CompletableFuture.supplyAsync(() -> {
-        if (t.hasFile()) {
-          return parser.parse(t.getMarkdownFile());
-        } else {
-          String desc = t.getMarkdown();
-          if (desc == null || desc.trim().isEmpty()) {
-            return "";
+        CompletableFuture<Pair<String, String>> completableFuture = CompletableFuture.supplyAsync(() -> {
+          if (t.hasFile()) {
+            return parser.parse(t.getMarkdownFile());
           } else {
-            return parser.parse(desc);
+            String desc = t.getMarkdown();
+            if (desc == null || desc.trim().isEmpty()) {
+              return "";
+            } else {
+              return parser.parse(desc, Optional.ofNullable(this.file.getValue()));
+            }
           }
-        }
-      })//
-        .thenApply(html -> Pair.of(t.getIdentifier(), html));
-      completableFuture.thenApply(pair -> {
-        preloaded.put(pair.getKey(), pair.getValue());
-        return pair;
-      }).thenAcceptAsync(pair -> {
-        if (currentIdentifier.getValueSafe().equals(pair.getKey())) {
-          String html = pair.getValue();
-          currentHtml.set(html);
-          webView.getEngine().loadContent(html);
-        }
-      }, javaFXExecutor)//
-        .exceptionally(e -> {
-          log.error("Could not parse adoc", e);
-          return null;
-        });
-    });
+        })//
+          .thenApply(html -> Pair.of(t.getIdentifier(), html));
+        completableFuture.thenApply(pair -> {
+          preloaded.put(pair.getKey(), pair.getValue());
+          return pair;
+        }).thenAcceptAsync(pair -> {
+          if (currentIdentifier.getValueSafe().equals(pair.getKey())) {
+            String html = pair.getValue();
+            currentHtml.set(html);
+            webView.getEngine().loadContent(html);
+          }
+        }, javaFXExecutor)//
+          .exceptionally(e -> {
+            log.error("Could not parse adoc", e);
+            return null;
+          });
+      }
+
+    );
   }
 
   public String getCurrentHtml() {
@@ -170,5 +173,17 @@ public class MarkdownViewer implements Initializable, ActivityCallback {
 
   public WebView getWebView() {
     return webView;
+  }
+
+  public File getFile() {
+    return file.get();
+  }
+
+  public SimpleObjectProperty<File> fileProperty() {
+    return file;
+  }
+
+  public void setFile(File file) {
+    this.file.set(file);
   }
 }

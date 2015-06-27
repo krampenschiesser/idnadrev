@@ -24,6 +24,7 @@ import de.ks.i18n.Localized;
 import de.ks.javafx.ScreenResolver;
 import de.ks.markdown.viewer.MarkdownContent;
 import de.ks.markdown.viewer.MarkdownViewer;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -95,6 +96,8 @@ public class MarkdownEditor implements Initializable, ActivityCallback {
   protected File lastFile;
 
   protected final SimpleStringProperty text = new SimpleStringProperty();
+  protected final SimpleObjectProperty<File> file = new SimpleObjectProperty();
+
   protected LastExecutionGroup<String> renderGroup;
   protected Button insertImage = null;
   protected boolean focusOnEditor = true;
@@ -169,6 +172,7 @@ public class MarkdownEditor implements Initializable, ActivityCallback {
         e.consume();
       }
     });
+
   }
 
   protected void initializePreview() {
@@ -177,12 +181,14 @@ public class MarkdownEditor implements Initializable, ActivityCallback {
     previewTab.setContent(previewNode);
     preview = previewLoader.getController();
     plainHtml.textProperty().bind(preview.currentHtmlProperty());
+    preview.fileProperty().bind(file);
   }
 
   protected void initializePopupPreview() {
     DefaultLoader<Node, MarkdownViewer> previewLoader = initialization.loadAdditionalController(MarkdownViewer.class);
     popupPreviewNode = previewLoader.getView();
     popupPreview = previewLoader.getController();
+    popupPreview.fileProperty().bind(file);
   }
 
   @FXML
@@ -257,6 +263,18 @@ public class MarkdownEditor implements Initializable, ActivityCallback {
 
   public WebView getPreview() {
     return preview.getWebView();
+  }
+
+  public File getFile() {
+    return file.get();
+  }
+
+  public SimpleObjectProperty<File> fileProperty() {
+    return file;
+  }
+
+  public void setFile(File file) {
+    this.file.set(file);
   }
 
   @Override
