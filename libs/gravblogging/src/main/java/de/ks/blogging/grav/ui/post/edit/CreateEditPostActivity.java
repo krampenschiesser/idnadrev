@@ -18,7 +18,7 @@ package de.ks.blogging.grav.ui.post.edit;
 import de.ks.activity.ActivityCfg;
 import de.ks.menu.MenuItem;
 
-@MenuItem(order = 70, value = "/main/blogging")
+@MenuItem(order = 72, value = "/main/blogging")
 public class CreateEditPostActivity extends ActivityCfg {
   public CreateEditPostActivity() {
     super(CreateEditPostDS.class, CreateEditPostController.class);

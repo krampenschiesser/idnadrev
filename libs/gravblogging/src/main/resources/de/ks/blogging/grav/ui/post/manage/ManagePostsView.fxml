@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<SplitPane dividerPositions="0.5" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8"
+           xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.blogging.grav.ui.post.manage.ManagePostsController">
+    <items>
+        <GridPane hgap="5.0" vgap="5.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+                <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
+            </rowConstraints>
+            <children>
+                <TableView fx:id="postTable" GridPane.columnSpan="2147483647" GridPane.rowIndex="1">
+                    <columns>
+                        <TableColumn fx:id="dateColumn" prefWidth="150.0" text="%grav.post.date"/>
+                        <TableColumn fx:id="titleColumn" prefWidth="400.0" text="%grav.post.title"/>
+                    </columns>
+                </TableView>
+                <Label text="%grav.search.title"/>
+                <TextField fx:id="titleSearch" GridPane.columnIndex="1"/>
+            </children>
+        </GridPane>
+        <GridPane>
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+            </rowConstraints>
+            <children>
+                <StackPane fx:id="previewContainer" prefHeight="150.0" prefWidth="200.0"/>
+                <HBox maxHeight="-Infinity" maxWidth="-Infinity" spacing="10.0" GridPane.halignment="CENTER"
+                      GridPane.rowIndex="1">
+                    <children>
+                        <Button fx:id="create" onAction="#onCreate" text="%create.mnemonic"/>
+                        <Button fx:id="edit" defaultButton="true" onAction="#onEdit" text="%edit.mnemonic"/>
+                        <Button fx:id="delete" onAction="#onDelete" text="%delete.mnemonic"/>
+                    </children>
+                </HBox>
+            </children>
+        </GridPane>
+    </items>
+    <padding>
+        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+    </padding>
+</SplitPane>
