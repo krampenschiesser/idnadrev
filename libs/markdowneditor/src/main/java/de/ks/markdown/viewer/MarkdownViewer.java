@@ -18,11 +18,14 @@ package de.ks.markdown.viewer;
 import de.ks.activity.ActivityController;
 import de.ks.activity.executor.ActivityExecutor;
 import de.ks.activity.initialization.ActivityCallback;
+import de.ks.activity.initialization.ActivityInitialization;
+import de.ks.application.fxml.DefaultLoader;
 import de.ks.executor.JavaFXExecutorService;
 import de.ks.markdown.MarkdownParser;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Control;
 import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebView;
@@ -30,6 +33,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import java.io.File;
 import java.net.URL;
@@ -39,8 +43,18 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 public class MarkdownViewer implements Initializable, ActivityCallback {
+  public static CompletableFuture<DefaultLoader<Node, MarkdownViewer>> load(Consumer<StackPane> viewConsumer, Consumer<MarkdownViewer> controllerConsumer) {
+    ActivityInitialization initialization = CDI.current().select(ActivityInitialization.class).get();
+    return initialization.loadAdditionalControllerWithFuture(MarkdownViewer.class)//
+      .thenApply(loader -> {
+        viewConsumer.accept((StackPane) loader.getView());
+        controllerConsumer.accept(loader.getController());
+        return loader;
+      });
+  }
   private static final Logger log = LoggerFactory.getLogger(MarkdownViewer.class);
 
   public static final String DEFAULT = "default";
