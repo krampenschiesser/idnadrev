@@ -8,6 +8,8 @@ import org.apache.sanselan.ImageInfo;
 import org.apache.sanselan.Sanselan;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.InitCommand;
+import org.eclipse.jgit.api.Status;
+import org.eclipse.jgit.lib.RepositoryBuilder;
 import org.junit.Test;
 
 import java.io.File;
@@ -53,7 +55,7 @@ public class GravPagesTest {
 
     assertEquals("Hello World", post.getHeader().getTitle());
     assertEquals("Hello Sauerland", post.getContent());
-    assertEquals(LocalDate.of(2015, 6, 14), post.getHeader().getLocalDate());
+    assertEquals(LocalDate.of(2015, 6, 14), post.getHeader().getLocalDate().get());
     assertEquals(LocalTime.of(14, 3, 0), post.getHeader().getLocalDateTime().get().toLocalTime());
     assertEquals("Christian Loehnert", post.getHeader().getAuthor());
     assertEquals("blog", post.getHeader().getCategory());
@@ -65,7 +67,7 @@ public class GravPagesTest {
     Page page = pages.iterator().next();
 
     assertEquals("PCT 2013", page.getHeader().getTitle());
-    assertEquals(LocalDate.of(2015, 6, 19), page.getHeader().getLocalDate());
+    assertEquals(LocalDate.of(2015, 6, 19), page.getHeader().getLocalDate().get());
     assertFalse(page.getHeader().getLocalDateTime().isPresent());
     assertEquals("Christian Löhnert", page.getHeader().getAuthor());
     assertEquals("# PCT 2013", page.getContent());
@@ -143,6 +145,13 @@ public class GravPagesTest {
 
       gravPages.addCommit("First commit");
       gravPages.close();
+
+      Git git = new Git(new RepositoryBuilder().findGitDir(gitDir).build());
+      Status call = git.status().call();
+      assertEquals(0, call.getModified().size());
+      assertEquals(0, call.getUncommittedChanges().size());
+      assertEquals(0, call.getUntracked().size());
+      git.close();
     } finally {
       deleteDir(tmpDir);
     }

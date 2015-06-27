@@ -23,9 +23,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryBuilder;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,6 +72,8 @@ public class GravPages implements AutoCloseable {
   }
 
   public synchronized GravPages scan() {
+    posts.clear();
+    postLoader.clear();
     SimpleFileVisitor<Path> visitor = new SimpleFileVisitor<Path>() {
       @Override
       public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
@@ -203,16 +206,26 @@ public class GravPages implements AutoCloseable {
     Git git = getGit();
     if (git != null) {
       try {
+        Status status = git.status().call();
+
+        Set<String> modified = status.getModified();
+        Set<String> untracked = status.getUntracked();
+
         AddCommand add = git.add();
-        add.addFilepattern(filePath).call();
+        modified.forEach(s -> add.addFilepattern(s));
+        untracked.forEach(s -> add.addFilepattern(s));
+        add.call();
+
+
         CommitCommand commit = git.commit();
         if (msg == null || msg.isEmpty()) {
           commit.setAmend(true);
         } else {
           commit.setMessage(msg);
         }
-        commit.call();
-      } catch (GitAPIException e) {
+        RevCommit rev = commit.call();
+        log.info("Commited change {} with new rev {}", msg, rev);
+      } catch (Exception e) {
         log.error("Could not add and commit ", e);
         throw new RuntimeException(e);
       }
