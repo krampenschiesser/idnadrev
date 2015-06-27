@@ -57,17 +57,18 @@ import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-public class MarkDownEditor implements Initializable, ActivityCallback {
-  public static CompletableFuture<DefaultLoader<Node, MarkDownEditor>> load(Consumer<StackPane> viewConsumer, Consumer<MarkDownEditor> controllerConsumer) {
+public class MarkdownEditor implements Initializable, ActivityCallback {
+  public static CompletableFuture<DefaultLoader<Node, MarkdownEditor>> load(Consumer<StackPane> viewConsumer, Consumer<MarkdownEditor> controllerConsumer) {
     ActivityInitialization initialization = CDI.current().select(ActivityInitialization.class).get();
-    return initialization.loadAdditionalControllerWithFuture(MarkDownEditor.class)//
+    return initialization.loadAdditionalControllerWithFuture(MarkdownEditor.class)//
       .thenApply(loader -> {
         viewConsumer.accept((StackPane) loader.getView());
         controllerConsumer.accept(loader.getController());
         return loader;
       });
   }
-  private static final Logger log = LoggerFactory.getLogger(MarkDownEditor.class);
+
+  private static final Logger log = LoggerFactory.getLogger(MarkdownEditor.class);
 
   @Inject
   ActivityController controller;

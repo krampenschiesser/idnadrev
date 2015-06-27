@@ -20,7 +20,7 @@
 <?import javafx.scene.layout.*?>
 <StackPane id="StackPane" fx:id="root" minHeight="-Infinity" minWidth="-Infinity" prefWidth="900.0"
            xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="de.ks.markdown.editor.MarkDownEditor">
+           fx:controller="de.ks.markdown.editor.MarkdownEditor">
     <children>
         <GridPane fx:id="mainPane" hgap="5.0" prefHeight="300.0" prefWidth="350.0" vgap="5.0">
             <columnConstraints>
