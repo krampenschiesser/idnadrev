@@ -122,30 +122,34 @@ public class Header extends HeaderContainer {
         }
       }
     }
-    throw new DateTimeParseException("Could not find any valid date in date string ", dateString, 0);
+    throw new DateTimeParseException("Could not find any valid date in date string ", dateString == null ? "" : dateString, 0);
   }
 
   public Optional<LocalDateTime> getLocalDateTime() {
-    LocalDate date = getLocalDate();
-    LocalTime time = null;
-    String dateString = getDate();
-    if (dateString != null) {
-      String[] split = dateString.split(" ");
-      for (String string : split) {
-        boolean isTime = string.contains(":");
-        if (isTime) {
-          try {
-            time = LocalTime.parse(string.trim(), timeFormatterFull);
-          } catch (DateTimeParseException e) {
-            time = LocalTime.parse(string.trim(), timeFormatterShort);
+    try {
+      LocalDate date = getLocalDate();
+      LocalTime time = null;
+      String dateString = getDate();
+      if (dateString != null) {
+        String[] split = dateString.split(" ");
+        for (String string : split) {
+          boolean isTime = string.contains(":");
+          if (isTime) {
+            try {
+              time = LocalTime.parse(string.trim(), timeFormatterFull);
+            } catch (DateTimeParseException e) {
+              time = LocalTime.parse(string.trim(), timeFormatterShort);
+            }
           }
         }
       }
-    }
-    if (time == null) {
+      if (time == null) {
+        return Optional.empty();
+      } else {
+        return Optional.of(LocalDateTime.of(date, time));
+      }
+    } catch (DateTimeParseException e) {
       return Optional.empty();
-    } else {
-      return Optional.of(LocalDateTime.of(date, time));
     }
   }
 
