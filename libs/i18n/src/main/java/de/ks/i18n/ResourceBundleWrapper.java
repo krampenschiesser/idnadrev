@@ -23,10 +23,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.util.Enumeration;
-import java.util.Locale;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Ignores ":" and "=" at the end of a string.
@@ -38,8 +35,10 @@ class ResourceBundleWrapper extends ResourceBundle {
   private final ResourceBundle bundle;
   private final String path;
   private final File missingKeyFile;
+  private final ResourceBundle fallback;
 
-  public ResourceBundleWrapper(ResourceBundle bundle, String path) {
+  public ResourceBundleWrapper(ResourceBundle bundle, ResourceBundle fallback, String path) {
+    this.fallback = fallback;
     String tempDir = System.getProperty("java.io.tmpdir");
     String pathname = tempDir + File.separator + "idnadrev_missing_keys.properties";
     File missing = null;
@@ -66,8 +65,11 @@ class ResourceBundleWrapper extends ResourceBundle {
       key = key.substring(0, key.length() - 1);
     }
     boolean isContained = getBundle().containsKey(key);
+    if (!isContained && hasFallback()) {
+      isContained = getFallback().containsKey(key);
+    }
     if (!isContained) {
-      log.warn("Key \"{}\" not found in properties missingKeyFile:{}", key, path);
+      log.warn("Key \"{}\" not found in properties: {}", key, path);
       return true;
     }
     return true;
@@ -75,12 +77,39 @@ class ResourceBundleWrapper extends ResourceBundle {
 
   @Override
   public Set<String> keySet() {
-    return getBundle().keySet();
+    HashSet<String> retval = new HashSet<>();
+    retval.addAll(getBundle().keySet());
+    if (hasFallback()) {
+      retval.addAll(getFallback().keySet());
+    }
+    return retval;
   }
 
   @Override
   public Enumeration<String> getKeys() {
-    return getBundle().getKeys();
+    Enumeration<String> keys = getBundle().getKeys();
+    if (hasFallback()) {
+      Enumeration<String> fallbackKeys = getFallback().getKeys();
+      return new Enumeration<String>() {
+        @Override
+        public boolean hasMoreElements() {
+          if (!keys.hasMoreElements()) {
+            return fallbackKeys.hasMoreElements();
+          }
+          return keys.hasMoreElements();
+        }
+
+        @Override
+        public String nextElement() {
+          if (!keys.hasMoreElements()) {
+            return fallbackKeys.nextElement();
+          }
+          return keys.nextElement();
+        }
+      };
+    } else {
+      return keys;
+    }
   }
 
   @Override
@@ -98,6 +127,9 @@ class ResourceBundleWrapper extends ResourceBundle {
       Method method = ResourceBundle.class.getDeclaredMethod("handleGetObject", String.class);
       method.setAccessible(true);
       Object retval = method.invoke(getBundle(), key);
+      if (retval == null && hasFallback()) {
+        retval = method.invoke(getFallback(), key);
+      }
       if ((ending != null) && (retval instanceof String)) {
         retval = retval + ending;
       }
@@ -153,6 +185,14 @@ class ResourceBundleWrapper extends ResourceBundle {
 
   public File getMissingKeyFile() {
     return missingKeyFile;
+  }
+
+  protected boolean hasFallback() {
+    return fallback != null;
+  }
+
+  public ResourceBundle getFallback() {
+    return fallback;
   }
 
   protected ResourceBundle getBundle() {

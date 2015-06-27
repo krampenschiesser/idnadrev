@@ -52,7 +52,7 @@ public class Localized {
   protected synchronized static void initialize() {
     Locale locale = Locale.getDefault();
     String path = BASENAME + "_" + locale.getLanguage() + ".properties";
-    bundle = new ResourceBundleWrapper(ResourceBundle.getBundle(BASENAME, locale, new UTF8Control()), path);
+    bundle = new ResourceBundleWrapper(ResourceBundle.getBundle(BASENAME, locale, new UTF8Control()), null, path);
     initialized.set(true);
   }
 
@@ -84,7 +84,7 @@ public class Localized {
     if (resource != null) {
       log.debug("Found local bundle {}", baseName);
       ResourceBundle localBundle = ResourceBundle.getBundle(baseName, locale, control);
-      return new ResourceBundleWrapper(localBundle, baseName + "_" + locale.getLanguage() + ".properties");
+      return new ResourceBundleWrapper(localBundle, bundle.getBundle(), baseName + "_" + locale.getLanguage() + ".properties");
     }
     return bundle;
   }
