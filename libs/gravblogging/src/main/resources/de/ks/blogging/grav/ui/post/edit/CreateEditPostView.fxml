@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <GridPane hgap="5.0" minHeight="-Infinity" minWidth="-Infinity" vgap="5.0" xmlns="http://javafx.com/javafx/8"
-          xmlns:fx="http://javafx.com/fxml/1">
+          xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.blogging.grav.ui.post.edit.CreateEditPostController">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
@@ -29,8 +29,6 @@
         <Label text="%grav.post.title"/>
         <Label text="%grav.post.dateTime" GridPane.rowIndex="1"/>
         <Label text="%grav.post.tags" GridPane.rowIndex="2"/>
-        <TextArea fx:id="content" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2147483647"
-                  GridPane.rowIndex="6"/>
         <Accordion GridPane.columnSpan="2147483647" GridPane.rowIndex="7">
             <panes>
                 <TitledPane animated="false" text="%grav.post.media">
@@ -63,6 +61,7 @@
                 GridPane.columnIndex="2" GridPane.rowIndex="4"/>
         <ChoiceBox fx:id="type" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
         <TextField fx:id="filePath" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+        <StackPane fx:id="contentContainer" GridPane.columnSpan="2147483647" GridPane.rowIndex="6"/>
     </children>
     <padding>
         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>

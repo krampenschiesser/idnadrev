@@ -17,8 +17,10 @@ package de.ks.blogging.grav.ui.post.edit;
 
 import de.ks.BaseController;
 import de.ks.blogging.grav.posts.BasePost;
+import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.StackPane;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -45,12 +47,13 @@ public class CreateEditPostController extends BaseController<BasePost> {
   @FXML
   private ChoiceBox<?> type;
   @FXML
-  private TextArea content;
+  private StackPane contentContainer;
   @FXML
   private TextField tags;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
+    StringProperty contentBinding = store.getBinding().getStringProperty(BasePost.class, b -> b.getContent());
 
   }
 

@@ -50,3 +50,9 @@ applicationDistribution.from("../data") {
     into 'data'
     include '*.zip'
 }
+
+applicationDistribution.from("../cfg") {
+    into 'cfg'
+    include 'logback-release.xml'
+    rename('logback-release.xml', 'logback.xml')
+}

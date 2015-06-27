@@ -45,6 +45,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import java.awt.*;
 import java.io.File;
@@ -53,8 +54,19 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Collections;
 import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 public class MarkDownEditor implements Initializable, ActivityCallback {
+  public static CompletableFuture<DefaultLoader<Node, MarkDownEditor>> load(Consumer<StackPane> viewConsumer, Consumer<MarkDownEditor> controllerConsumer) {
+    ActivityInitialization initialization = CDI.current().select(ActivityInitialization.class).get();
+    return initialization.loadAdditionalControllerWithFuture(MarkDownEditor.class)//
+      .thenApply(loader -> {
+        viewConsumer.accept((StackPane) loader.getView());
+        controllerConsumer.accept(loader.getController());
+        return loader;
+      });
+  }
   private static final Logger log = LoggerFactory.getLogger(MarkDownEditor.class);
 
   @Inject
