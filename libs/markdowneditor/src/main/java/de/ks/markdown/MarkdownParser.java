@@ -19,24 +19,67 @@ import com.github.rjeschke.txtmark.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 
+@Singleton
 public class MarkdownParser {
   private static final Logger log = LoggerFactory.getLogger(MarkdownParser.class);
+  public static final String CSS_FILE_NAME = "markdown.css";
+  protected String cssUrl;
 
   public String parse(String plainMarkDown) {
-    String html = Processor.process(plainMarkDown, true);
-    return html;
+    String body = Processor.process(plainMarkDown, true);
+    return createHtmlPage(body);
   }
 
   public String parse(File markdownFile) {
     try {
-      String html = Processor.process(markdownFile, true);
-      return html;
+      String body = Processor.process(markdownFile, true);
+      return createHtmlPage(body);
     } catch (IOException e) {
       log.error("Could not parse markdown file {}", markdownFile, e);
       return null;
     }
   }
+
+  protected String createHtmlPage(String body) {
+    String cssUrl = getCssUrl();
+    return "<!DOCTYPE html>\n" +
+      "<html lang=\"en\">\n" +
+      "<head>\n" +
+      "<meta charset=\"UTF-8\">\n" +
+      (cssUrl != null ? "<link rel=\"stylesheet\" href=\"file:/home/scar/idnadrev/data//" + CSS_FILE_NAME + "\">\n" : "") +
+      "</head>\n" +
+      "<body class=\"markdown-body\">\n" +
+      body +
+      "</body>\n" +
+      "</html>";
+  }
+
+  protected File disocverDataDir() {
+    File workingDirectory;
+    String pathname = "data" + File.separator + CSS_FILE_NAME;
+    for (workingDirectory = new File(System.getProperty("user.dir")); workingDirectory != null && !new File(workingDirectory, pathname).exists(); workingDirectory = workingDirectory.getParentFile()) {
+    }
+    File dir = new File(workingDirectory, "data");
+    log.info("Discovered data dir {}", dir);
+    return dir;
+  }
+
+  public String getCssUrl() {
+    if (cssUrl == null) {
+      File file = disocverDataDir();
+      File cssFile = new File(file, CSS_FILE_NAME);
+      try {
+        cssUrl = cssFile.toURI().toURL().toExternalForm();
+      } catch (MalformedURLException e) {
+        log.error("Could not resolve css file {}", cssFile, e);
+      }
+    }
+    return cssUrl;
+  }
+
 }
