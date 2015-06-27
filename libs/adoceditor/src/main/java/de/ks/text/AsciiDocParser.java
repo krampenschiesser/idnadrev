@@ -28,9 +28,7 @@ import javax.enterprise.inject.Vetoed;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URL;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -231,39 +229,5 @@ public class AsciiDocParser {
 
   private String removeFontLink(String render) {
     return StringUtils.remove(render, fontlink);
-  }
-
-  protected String inlineCss(String input) {
-    String asciidoc = getCssString("asciidoctor.css");
-    String coderay = getCssString("asciidoctor-coderay.css");
-
-    input = input.replace("<link rel=\"stylesheet\" href=\"./asciidoctor.css\">", asciidoc);
-    input = input.replace("<link rel=\"stylesheet\" href=\"./asciidoctor-coderay.css\">", coderay);
-    return input;
-  }
-
-  private String getCssString(String cssFile) {
-    return cssCache.computeIfAbsent(cssFile, (fileName) -> {
-      String beginTag = "<style type=\"text/css\">";
-      String endTag = "</style>";
-
-      StringBuilder asciiDocCss = new StringBuilder();
-      asciiDocCss.append(beginTag).append("\n");
-
-      appendCssFile(asciiDocCss, fileName);
-      asciiDocCss.append(endTag);
-      return asciiDocCss.toString();
-    });
-  }
-
-  private void appendCssFile(StringBuilder builder, String cssFile) {
-    URL asciiDoctorCss = getClass().getResource("/org/asciidoctor/" + cssFile);
-    File file = new File(asciiDoctorCss.getFile());
-    try {
-      List<String> lines = Files.readLines(file, Charsets.US_ASCII);
-      lines.forEach(line -> builder.append(line).append("\n"));
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
   }
 }
