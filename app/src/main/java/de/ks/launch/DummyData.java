@@ -234,7 +234,7 @@ public class DummyData extends Service {
 
     PersistentWork.persist(pattern1, pattern2, pattern3);
 
-    Options.store("/home/scar/blog/grav/user/pages", GravSettings.class).getGravPagesDirectory();
+    Options.store("/home/scar/blog/grav-bk/user/pages", GravSettings.class).getGravPagesDirectory();
   }
 
   @Override
