@@ -29,6 +29,7 @@ import org.eclipse.jgit.lib.RepositoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.enterprise.inject.Default;
 import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
@@ -47,6 +48,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Singleton
+@Default
 public class GravPages implements AutoCloseable {
   private static final Logger log = LoggerFactory.getLogger(GravPages.class);
 
@@ -58,6 +60,10 @@ public class GravPages implements AutoCloseable {
 
   public GravPages(String filePath) {
     this.filePath = filePath;
+  }
+
+  public String getFilePath() {
+    return filePath;
   }
 
   public void setFilePath(String filePath) {
