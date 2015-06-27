@@ -30,8 +30,9 @@ public class AsciiDocMetaData {
   public static final String ASCIIDOCTOR_CSS = "asciidoctor.css";
   public static final String CODERAY_CSS = "asciidoctor-coderay.css";
   public static final String ADOC_CSS_ZIP = "adoc-css.zip";
+  public static final String MARKDOWN_ZIP = "markdown.zip";
+  public static final String MARKDOWN_CSS = "markdown.css";
 
-  public static String DIR = null;
   private File dataDir;
 
   public void extract() {
@@ -41,6 +42,9 @@ public class AsciiDocMetaData {
     }
     if (!new File(dataDir, ASCIIDOCTOR_CSS).exists()) {
       new Unzipper(new File(dataDir, ADOC_CSS_ZIP)).unzip(dataDir);
+    }
+    if (!new File(dataDir, MARKDOWN_CSS).exists()) {
+      new Unzipper(new File(dataDir, MARKDOWN_ZIP)).unzip(dataDir);
     }
   }
 
