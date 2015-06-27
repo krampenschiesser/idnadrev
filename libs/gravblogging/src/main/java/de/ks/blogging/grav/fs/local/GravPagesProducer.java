@@ -19,11 +19,13 @@ import de.ks.blogging.grav.GravSettings;
 import de.ks.option.Options;
 
 import javax.enterprise.inject.Produces;
+import javax.inject.Singleton;
 import java.io.File;
 
 public class GravPagesProducer {
 
   @Produces
+  @Singleton
   public GravPages getPages() {
     GravSettings gravSettings = Options.get(GravSettings.class);
     String directory = gravSettings.getGravPagesDirectory();
