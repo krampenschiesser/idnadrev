@@ -87,6 +87,7 @@ allprojects {
         file('data/mathjax').deleteDir();
         file('data/asciidoctor.css').delete();
         file('data/asciidoctor-coderay.css').delete();
+        file('data/markdown.css').delete();
         file('files').deleteDir();
         file('db').deleteDir();
         file('version.info').delete();
