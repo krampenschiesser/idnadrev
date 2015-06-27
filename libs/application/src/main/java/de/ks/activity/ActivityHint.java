@@ -57,6 +57,10 @@ public class ActivityHint {
     return this;
   }
 
+  public ActivityHint returnToCurrent() {
+    return setReturnToActivity(CDI.current().select(ActivityController.class).get().getCurrentActivityId());
+  }
+
   public Supplier getReturnToDatasourceHint() {
     return returnToDatasourceHint;
   }
