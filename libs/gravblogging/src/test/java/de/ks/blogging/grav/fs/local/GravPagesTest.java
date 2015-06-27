@@ -90,7 +90,7 @@ public class GravPagesTest {
 
       assertTrue(gravPages.hasGitRepository());
     } finally {
-//      deleteDir(tmpDir);
+      deleteDir(tmpDir);
     }
   }
 
