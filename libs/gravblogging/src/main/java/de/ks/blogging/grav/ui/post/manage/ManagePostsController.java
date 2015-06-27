@@ -16,7 +16,9 @@
 package de.ks.blogging.grav.ui.post.manage;
 
 import de.ks.BaseController;
+import de.ks.activity.ActivityHint;
 import de.ks.blogging.grav.posts.BasePost;
+import de.ks.blogging.grav.ui.post.edit.CreateEditPostActivity;
 import de.ks.executor.group.LastTextChange;
 import de.ks.i18n.Localized;
 import de.ks.javafx.event.ClearTextOnEscape;
@@ -38,6 +40,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class ManagePostsController extends BaseController<List<BasePost>> {
@@ -71,7 +74,7 @@ public class ManagePostsController extends BaseController<List<BasePost>> {
     MarkdownViewer.load(node -> previewContainer.getChildren().add(node), ctrl -> markdownViewer = ctrl);
 
     titleColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getHeader().getTitle()));
-    dateColumn.setCellValueFactory(param -> new SimpleObjectProperty<LocalDateTime>(param.getValue().getHeader().getLocalDateTime().orElseGet(() -> LocalDateTime.now())));
+    dateColumn.setCellValueFactory(param -> new SimpleObjectProperty<LocalDateTime>(param.getValue().getHeader().getLocalDateTime().orElse(LocalDateTime.of(1970, 1, 1, 12, 42, 0))));
 
     dateColumn.setCellFactory(new Callback<TableColumn<BasePost, LocalDateTime>, TableCell<BasePost, LocalDateTime>>() {
       @Override
@@ -116,12 +119,23 @@ public class ManagePostsController extends BaseController<List<BasePost>> {
 
   @FXML
   public void onCreate() {
+    ActivityHint hint = new ActivityHint(CreateEditPostActivity.class);
+    hint.returnToCurrent();
+    hint.setDataSourceHint(() -> null);
 
+    controller.startOrResume(hint);
   }
 
   @FXML
   public void onEdit() {
+    ActivityHint hint = new ActivityHint(CreateEditPostActivity.class);
+    hint.returnToCurrent();
 
+    Supplier supplier = () -> postTable.getSelectionModel().getSelectedItem();
+    hint.setReturnToDatasourceHint(supplier);
+    hint.setDataSourceHint(supplier);
+
+    controller.startOrResume(hint);
   }
 
   @FXML

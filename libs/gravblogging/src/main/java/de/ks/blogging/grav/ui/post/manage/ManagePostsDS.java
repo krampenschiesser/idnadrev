@@ -33,6 +33,7 @@ public class ManagePostsDS implements ListDataSource<BasePost> {
 
   @Override
   public List<BasePost> loadModel(Consumer<List<BasePost>> furtherProcessing) {
+    pages.scan();
     Comparator<BasePost> comparing = Comparator.comparing(p -> p.getHeader().getLocalDateTime().orElse(LocalDateTime.now()));
     List<BasePost> allPosts = pages.getAllPosts().stream()//
       .filter(p -> p != null)//

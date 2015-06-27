@@ -100,56 +100,56 @@ public class Header extends HeaderContainer {
     return (Header) setHeaderElement(DATE_KEY, date);
   }
 
-  public LocalDate getLocalDate() {
-    String dateString = getDate();
-    if (dateString != null) {
-      String[] split = dateString.split(" ");
-      for (String string : split) {
-        boolean isTime = string.contains(":");
-        boolean isDate = !isTime;
-        boolean americanDate = isDate && string.contains("/");
-        boolean europeanDashDate = isDate && string.contains("-");
-        boolean europeanDotDate = isDate && string.contains(".");
-
-        if (americanDate) {
-          return LocalDate.parse(string, american);
-        }
-        if (europeanDashDate) {
-          return LocalDate.parse(string, europeanDash);
-        }
-        if (europeanDotDate) {
-          return LocalDate.parse(string, europeanDot);
-        }
-      }
-    }
-    throw new DateTimeParseException("Could not find any valid date in date string ", dateString == null ? "" : dateString, 0);
-  }
-
-  public Optional<LocalDateTime> getLocalDateTime() {
+  public Optional<LocalDate> getLocalDate() {
     try {
-      LocalDate date = getLocalDate();
-      LocalTime time = null;
       String dateString = getDate();
       if (dateString != null) {
         String[] split = dateString.split(" ");
         for (String string : split) {
           boolean isTime = string.contains(":");
-          if (isTime) {
-            try {
-              time = LocalTime.parse(string.trim(), timeFormatterFull);
-            } catch (DateTimeParseException e) {
-              time = LocalTime.parse(string.trim(), timeFormatterShort);
-            }
+          boolean isDate = !isTime;
+          boolean americanDate = isDate && string.contains("/");
+          boolean europeanDashDate = isDate && string.contains("-");
+          boolean europeanDotDate = isDate && string.contains(".");
+
+          if (americanDate) {
+            return Optional.of(LocalDate.parse(string, american));
+          }
+          if (europeanDashDate) {
+            return Optional.of(LocalDate.parse(string, europeanDash));
+          }
+          if (europeanDotDate) {
+            return Optional.of(LocalDate.parse(string, europeanDot));
           }
         }
       }
-      if (time == null) {
-        return Optional.empty();
-      } else {
-        return Optional.of(LocalDateTime.of(date, time));
-      }
     } catch (DateTimeParseException e) {
+      //
+    }
+    return Optional.empty();
+  }
+
+  public Optional<LocalDateTime> getLocalDateTime() {
+    Optional<LocalDate> date = getLocalDate();
+    LocalTime time = null;
+    String dateString = getDate();
+    if (dateString != null) {
+      String[] split = dateString.split(" ");
+      for (String string : split) {
+        boolean isTime = string.contains(":");
+        if (isTime) {
+          try {
+            time = LocalTime.parse(string.trim(), timeFormatterFull);
+          } catch (DateTimeParseException e) {
+            time = LocalTime.parse(string.trim(), timeFormatterShort);
+          }
+        }
+      }
+    }
+    if (time == null || !date.isPresent()) {
       return Optional.empty();
+    } else {
+      return Optional.of(LocalDateTime.of(date.get(), time));
     }
   }
 
@@ -179,6 +179,26 @@ public class Header extends HeaderContainer {
 
   protected PostDateFormat getDateFormat() {
     return GRAV_SETTINGS.get().getDefaultDateFormat();
+  }
+
+  public String getTagString() {
+    String tagsString = getChildContainer(TAXONOMY_KEY).getHeaderElement(TAG_KEY);
+    if (tagsString != null && !tagsString.isEmpty()) {
+      tagsString = StringUtils.remove(tagsString, "[");
+      tagsString = StringUtils.remove(tagsString, "]");
+      return tagsString;
+    }
+    return "";
+  }
+
+  public Header setTagString(String tagsString) {
+    HeaderContainer childContainer = getChildContainer(TAXONOMY_KEY);
+    StringBuilder builder = new StringBuilder();
+    builder.append("[");
+    builder.append(tagsString);
+    builder.append("]");
+    childContainer.setHeaderElement(TAG_KEY, builder.toString());
+    return this;
   }
 
   public List<String> getTags() {

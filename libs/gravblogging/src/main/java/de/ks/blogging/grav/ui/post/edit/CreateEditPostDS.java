@@ -29,6 +29,8 @@ public class CreateEditPostDS implements DataSource<BasePost> {
   @Inject
   GravPages gravPages;
 
+  private String commitMsg;
+
   @Override
   public BasePost loadModel(Consumer<BasePost> furtherProcessing) {
     if (editPost != null) {
@@ -62,12 +64,20 @@ public class CreateEditPostDS implements DataSource<BasePost> {
     } else if (model instanceof Page) {
       model.write();
     }
+    if (commitMsg != null) {
+      gravPages.addCommit(commitMsg);
+    }
   }
 
   @Override
   public void setLoadingHint(Object dataSourceHint) {
     if (dataSourceHint instanceof BasePost) {
       this.editPost = (BasePost) dataSourceHint;
+    } else if (dataSourceHint instanceof String) {
+      this.commitMsg = (String) dataSourceHint;
+    } else {
+      editPost = null;
+      this.commitMsg = null;
     }
   }
 }

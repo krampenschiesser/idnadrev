@@ -69,7 +69,7 @@ public class BasePost {
     return header;
   }
 
-  public void setContent(List<String> content) {
+  public void setContentFromLines(List<String> content) {
     StringBuilder builder = new StringBuilder();
     builder.append(content.stream().collect(Collectors.joining("\n")));
     this.content = builder.toString();
@@ -106,10 +106,10 @@ public class BasePost {
               File file = path.toFile();
               media.put(file.getName(), file);
               mediaTypes.put(file.getName(), mediaType);
-              log.debug("Found media file {}", file);
+              log.trace("Found media file {}", file);
             }
           } catch (IllegalArgumentException e) {
-            log.debug("No media type {} for path ", contentType, path.getFileName(), e);
+            log.trace("No media type {} for path ", contentType, path.getFileName(), e);
           }
         }
         return super.visitFile(path, attrs);
@@ -124,6 +124,7 @@ public class BasePost {
   }
 
   public void write() {
+    log.info("Writing changes of {} to {}", getHeader().getTitle(), file.getAbsolutePath());
     String fileContent = header.writeHeader() + "\n" + content;
     try {
       if (!file.exists()) {

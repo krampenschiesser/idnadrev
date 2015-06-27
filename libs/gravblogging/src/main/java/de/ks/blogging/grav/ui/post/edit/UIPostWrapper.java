@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 public class UIPostWrapper extends BasePost {
   protected PostType postType;
   protected String filePath;
+  protected Integer pageIndex;
 
   public UIPostWrapper() {
     super(null);
@@ -45,5 +46,13 @@ public class UIPostWrapper extends BasePost {
 
   public void setFilePath(String filePath) {
     this.filePath = filePath;
+  }
+
+  public Integer getPageIndex() {
+    return pageIndex;
+  }
+
+  public void setPageIndex(Integer pageIndex) {
+    this.pageIndex = pageIndex;
   }
 }

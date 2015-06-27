@@ -45,7 +45,7 @@ public class PostParser implements Callable<BasePost> {
       post = new BasePost(file);
     }
     post.getHeader().read(lines);
-    post.setContent(lines.subList(post.getHeader().getBodyStart(), lines.size()));
+    post.setContentFromLines(lines.subList(post.getHeader().getBodyStart(), lines.size()));
     post.scanMedia(file.getParentFile());
     return post;
   }
