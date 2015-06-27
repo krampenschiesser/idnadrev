@@ -17,6 +17,7 @@ package de.ks.blogging.grav.ui.post.edit;
 
 import de.ks.BaseController;
 import de.ks.blogging.grav.posts.BasePost;
+import de.ks.markdown.editor.MarkdownEditor;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -51,8 +52,12 @@ public class CreateEditPostController extends BaseController<BasePost> {
   @FXML
   private TextField tags;
 
+  protected MarkdownEditor editor;
+
   @Override
   public void initialize(URL location, ResourceBundle resources) {
+    MarkdownEditor.load(pane -> contentContainer.getChildren().addAll(pane), ctrl -> editor = ctrl);
+
     StringProperty contentBinding = store.getBinding().getStringProperty(BasePost.class, b -> b.getContent());
 
   }
