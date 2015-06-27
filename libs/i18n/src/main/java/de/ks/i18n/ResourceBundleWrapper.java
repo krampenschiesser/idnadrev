@@ -38,7 +38,7 @@ class ResourceBundleWrapper extends ResourceBundle {
   private final ResourceBundle fallback;
 
   public ResourceBundleWrapper(ResourceBundle bundle, ResourceBundle fallback, String path) {
-    this.fallback = fallback;
+    this.fallback = fallback == null ? bundle : fallback;
     String tempDir = System.getProperty("java.io.tmpdir");
     String pathname = tempDir + File.separator + "idnadrev_missing_keys.properties";
     File missing = null;
