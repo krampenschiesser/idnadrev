@@ -29,9 +29,11 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
+import javafx.stage.FileChooser;
 import org.controlsfx.validation.ValidationResult;
 
 import javax.inject.Inject;
+import java.io.File;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -99,14 +101,23 @@ public class CreateEditPostController extends BaseController<BasePost> {
         }
       }
     });
+    validationRegistry.registerValidator(filePath, new NotEmptyValidator() {
+      @Override
+      public ValidationResult apply(Control control, String s) {
+        if (type.getValue() == PostType.UNKNOWN) {
+          return super.apply(control, s);
+        } else {
+          return null;
+        }
+      }
+    });
+
 
     type.disableProperty().bind(knownContent);
-
     post.disableProperty().bind(validationRegistry.invalidProperty());
 
     type.setItems(FXCollections.observableArrayList(PostType.values()));
 
-    BooleanBinding isBlogItem = type.getSelectionModel().selectedItemProperty().isEqualTo(PostType.BLOGITEM);
     BooleanBinding isPage = type.getSelectionModel().selectedItemProperty().isEqualTo(PostType.PAGE);
     BooleanBinding isUnknown = type.getSelectionModel().selectedItemProperty().isEqualTo(PostType.UNKNOWN);
 
@@ -178,6 +189,12 @@ public class CreateEditPostController extends BaseController<BasePost> {
 
   @FXML
   public void onFilePathSelection() {
-
+    FileChooser chooser = new FileChooser();
+    chooser.setInitialDirectory(new File(gravPages.getBlog().getPagesDirectory()));
+    chooser.setTitle(Localized.get("choose.dir"));
+    File file = chooser.showSaveDialog(contentContainer.getScene().getWindow());
+    if (file != null) {
+      filePath.setText(file.getAbsolutePath());
+    }
   }
 }
