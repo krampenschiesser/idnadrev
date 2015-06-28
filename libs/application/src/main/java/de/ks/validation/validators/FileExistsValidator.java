@@ -31,11 +31,15 @@ public class FileExistsValidator implements Validator<String> {
     if (s == null || s.isEmpty()) {
       return validationResult;
     } else {
-      File file = new File(s);
+      File file = new File(getFilePathFromString(s));
       if (!file.exists()) {
         return validationResult;
       }
     }
     return null;
+  }
+
+  protected String getFilePathFromString(String s) {
+    return s;
   }
 }

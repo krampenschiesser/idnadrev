@@ -48,10 +48,14 @@ public class CreateEditDS<T extends AbstractPersistentObject<T>> implements Data
       });
       return read;
     } else {
-      T instance = ReflectionUtil.newInstance(clazz);
+      T instance = getNewInstance();
       furtherProcessing.accept(instance);
       return instance;
     }
+  }
+
+  protected T getNewInstance() {
+    return ReflectionUtil.newInstance(clazz);
   }
 
   @Override
