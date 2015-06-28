@@ -4,13 +4,15 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <GridPane hgap="5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" vgap="5.0"
-          xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8">
+          xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="de.ks.blogging.grav.ui.blog.edit.CreateEditBlogController">
     <columnConstraints>
         <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
         <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
         <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
     </columnConstraints>
     <rowConstraints>
+        <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
         <RowConstraints minHeight="30.0" vgrow="NEVER"/>
         <RowConstraints minHeight="30.0" vgrow="NEVER"/>
         <RowConstraints minHeight="30.0" vgrow="NEVER"/>
@@ -19,18 +21,36 @@
         <RowConstraints minHeight="30.0" vgrow="NEVER"/>
     </rowConstraints>
     <children>
-        <Label text="%grav.settings.pagesDir"/>
-        <Label text="%grav.settings.blogsubpath" GridPane.rowIndex="1"/>
-        <Label text="%grav.settings.defaultAuthor" GridPane.rowIndex="2"/>
-        <Label text="%grav.settings.imageDimension" GridPane.rowIndex="3"/>
-        <Label text="%grav.settings.dateFormat" GridPane.rowIndex="4"/>
-        <TextField GridPane.columnIndex="1"/>
-        <TextField GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-        <TextField GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="2"/>
-        <TextField GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="3"/>
-        <TextField GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="4"/>
-        <Button mnemonicParsing="false" text="Button" GridPane.columnIndex="2"/>
-        <Button mnemonicParsing="false" text="Button" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+        <Label text="%name:"/>
+        <TextField fx:id="name" GridPane.columnIndex="1" GridPane.columnSpan="2147483647"/>
+
+        <Label text="%grav.settings.pagesDir:" GridPane.rowIndex="1"/>
+        <TextField fx:id="pagesDir" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <Button fx:id="pageDirSelection" mnemonicParsing="false" onAction="#onPageDirSelection" text="%select.dir"
+                GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+
+        <Label text="%grav.settings.blogsubpath:" GridPane.rowIndex="2"/>
+        <TextField fx:id="blogSubPath" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        <Button fx:id="blogSubPathSelection" mnemonicParsing="false" onAction="#onBlogSubPathSelection"
+                text="%select.dir" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+
+        <Label text="%grav.settings.defaultAuthor:" GridPane.rowIndex="3"/>
+        <TextField fx:id="defaultAuthor" GridPane.columnIndex="1" GridPane.columnSpan="2147483647"
+                   GridPane.rowIndex="3"/>
+
+        <Label text="%grav.settings.imageDimension:" GridPane.rowIndex="4"/>
+        <TextField fx:id="imageDimension" GridPane.columnIndex="1" GridPane.columnSpan="2147483647"
+                   GridPane.rowIndex="4"/>
+
+        <Label text="%grav.settings.dateFormat:" GridPane.rowIndex="5"/>
+        <ChoiceBox fx:id="dateFormat" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+        <HBox maxHeight="-Infinity" spacing="10.0" GridPane.columnIndex="1" GridPane.columnSpan="2147483647"
+              GridPane.rowIndex="6">
+            <children>
+                <Button fx:id="save" defaultButton="true" onAction="#onSave" text="%save.mnemonic"/>
+                <Button fx:id="cancel" cancelButton="true" onAction="#onCancel" text="%cancel.mnemonic"/>
+            </children>
+        </HBox>
     </children>
     <padding>
         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>

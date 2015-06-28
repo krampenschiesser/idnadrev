@@ -15,11 +15,23 @@
  */
 package de.ks.blogging.grav.ui.blog.edit;
 
+import com.google.common.base.StandardSystemProperty;
+import de.ks.blogging.grav.PostDateFormat;
 import de.ks.blogging.grav.entity.GravBlog;
 import de.ks.datasource.CreateEditDS;
 
 public class CreateEditBlogDS extends CreateEditDS<GravBlog> {
   public CreateEditBlogDS() {
     super(GravBlog.class);
+  }
+
+  @Override
+  protected GravBlog getNewInstance() {
+    GravBlog newInstance = super.getNewInstance();
+    newInstance.setDefaultAuthor(StandardSystemProperty.USER_NAME.value());
+    newInstance.setImageDimension(1024);
+    newInstance.setBlogSubPath("01.blog");
+    newInstance.setDateFormat(PostDateFormat.EUROPEAN);
+    return newInstance;
   }
 }
