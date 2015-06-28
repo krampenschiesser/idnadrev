@@ -30,7 +30,6 @@ public class CreateEditBlogDS extends CreateEditDS<GravBlog> {
     GravBlog newInstance = super.getNewInstance();
     newInstance.setDefaultAuthor(StandardSystemProperty.USER_NAME.value());
     newInstance.setImageDimension(1024);
-    newInstance.setBlogSubPath("01.blog");
     newInstance.setDateFormat(PostDateFormat.EUROPEAN);
     return newInstance;
   }

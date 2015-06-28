@@ -15,9 +15,11 @@
  */
 package de.ks.blogging.grav.ui.blog.edit;
 
+import com.google.common.base.StandardSystemProperty;
 import de.ks.BaseController;
 import de.ks.blogging.grav.PostDateFormat;
 import de.ks.blogging.grav.entity.GravBlog;
+import de.ks.i18n.Localized;
 import de.ks.validation.validators.FileExistsValidator;
 import de.ks.validation.validators.IntegerRangeValidator;
 import de.ks.validation.validators.NotEmptyValidator;
@@ -26,7 +28,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
+import javafx.stage.DirectoryChooser;
 import javafx.util.StringConverter;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.net.URL;
@@ -97,21 +101,53 @@ public class CreateEditBlogController extends BaseController<GravBlog> {
 
   @FXML
   public void onPageDirSelection() {
-
+    DirectoryChooser chooser = new DirectoryChooser();
+    chooser.setTitle(Localized.get("grav.blog.chooseDir"));
+    chooser.setInitialDirectory(new File(StandardSystemProperty.USER_HOME.value()));
+    File file = chooser.showDialog(pageDirSelection.getScene().getWindow());
+    if (file != null) {
+      pagesDir.setText(file.getAbsolutePath());
+    }
   }
 
   @FXML
   public void onBlogSubPathSelection() {
+    DirectoryChooser chooser = new DirectoryChooser();
+    chooser.setTitle(Localized.get("grav.blog.chooseBlogDir"));
+    String text = pagesDir.textProperty().getValueSafe().trim();
+    if (!text.isEmpty()) {
+      chooser.setInitialDirectory(new File(text));
+    }
+    File file = chooser.showDialog(pageDirSelection.getScene().getWindow());
+    if (file != null) {
+      String subPath = StringUtils.remove(file.getAbsolutePath(), text);
+      String separator = StandardSystemProperty.FILE_SEPARATOR.value();
+      if (subPath.startsWith(separator)) {
+        subPath = subPath.substring(1);
+      }
+      blogSubPath.setText(subPath);
+    }
+  }
 
+  @Override
+  protected void onRefresh(GravBlog model) {
+    super.onRefresh(model);
+    dateFormat.setValue(model.getDateFormat());
+  }
+
+  @Override
+  public void duringSave(GravBlog model) {
+    model.setDateFormat(dateFormat.getValue());
   }
 
   @FXML
   public void onSave() {
-
+    controller.save();
+    controller.stopCurrent();
   }
 
   @FXML
   public void onCancel() {
-
+    controller.stopCurrent();
   }
 }
