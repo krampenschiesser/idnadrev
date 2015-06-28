@@ -36,6 +36,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.time.LocalDateTime;
@@ -47,6 +49,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class ManagePostsController extends BaseController<List<BasePost>> {
+  private static final Logger log = LoggerFactory.getLogger(ManagePostsController.class);
   @FXML
   protected ChoiceBox<GravBlog> blogSelection;
   @FXML
@@ -62,6 +65,8 @@ public class ManagePostsController extends BaseController<List<BasePost>> {
   protected Button create;
   @FXML
   protected Button delete;
+  @FXML
+  protected Button showFolder;
 
   @FXML
   protected StackPane previewContainer;
@@ -69,6 +74,7 @@ public class ManagePostsController extends BaseController<List<BasePost>> {
   protected TextField titleSearch;
 
   protected final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(Localized.get("fullDate"));
+  protected final java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
   protected LastTextChange lastTextChange;
   protected ObservableList<BasePost> items;
 
@@ -111,6 +117,7 @@ public class ManagePostsController extends BaseController<List<BasePost>> {
 
     BooleanBinding nothingSelected = postTable.getSelectionModel().selectedItemProperty().isNull();
     edit.disableProperty().bind(nothingSelected);
+    showFolder.disableProperty().bind(nothingSelected);
     delete.disableProperty().bind(nothingSelected);
 
     postTable.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
@@ -156,6 +163,20 @@ public class ManagePostsController extends BaseController<List<BasePost>> {
     hint.setDataSourceHint(supplier);
 
     controller.startOrResume(hint);
+  }
+
+  @FXML
+  public void onShowFolder() {
+    BasePost post = postTable.getSelectionModel().getSelectedItem();
+    Thread thread = new Thread(() -> {
+      try {
+        desktop.open(post.getFile().getParentFile());
+      } catch (Exception e) {
+        log.error("Could not open {}", post.getFile(), e);
+      }
+    });
+    thread.setDaemon(true);
+    thread.start();
   }
 
   @FXML

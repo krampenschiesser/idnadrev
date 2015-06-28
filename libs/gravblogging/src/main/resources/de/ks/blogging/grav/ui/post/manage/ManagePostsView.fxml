@@ -46,6 +46,7 @@
                         <Button fx:id="create" onAction="#onCreate" text="%create.mnemonic"/>
                         <Button fx:id="edit" defaultButton="true" onAction="#onEdit" text="%edit.mnemonic"/>
                         <Button fx:id="delete" onAction="#onDelete" text="%delete.mnemonic"/>
+                        <Button fx:id="showFolder" onAction="#onShowFolder" text="%show.folder.mnemonic"/>
                     </children>
                 </HBox>
             </children>
