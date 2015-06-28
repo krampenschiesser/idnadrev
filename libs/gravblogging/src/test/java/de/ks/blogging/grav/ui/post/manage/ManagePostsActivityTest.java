@@ -6,6 +6,7 @@ import de.ks.activity.ActivityCfg;
 import de.ks.blogging.grav.ActivityTest;
 import de.ks.blogging.grav.entity.GravBlog;
 import de.ks.blogging.grav.pages.GravPages;
+import de.ks.util.FXPlatform;
 import javafx.collections.ObservableList;
 import org.junit.After;
 import org.junit.Test;
@@ -68,7 +69,19 @@ public class ManagePostsActivityTest extends ActivityTest {
     ManagePostsController managePosts = activityController.getControllerInstance(ManagePostsController.class);
     ObservableList items = managePosts.blogSelection.getItems();
     assertEquals(2, items.size());
+    assertEquals(0, managePosts.blogSelection.getSelectionModel().getSelectedIndex());
+
+    assertEquals(1, managePosts.postTable.getItems().size());
+
+    FXPlatform.invokeLater(() -> managePosts.blogSelection.getSelectionModel().select(1));
+    activityController.waitForDataSource();
+
+    assertEquals(1, managePosts.blogSelection.getSelectionModel().getSelectedIndex());
+    assertEquals(2, managePosts.postTable.getItems().size());
   }
+
+
+  // utility methods
 
   protected String getBlog(String title, String content) {
     StringBuilder builder = new StringBuilder();

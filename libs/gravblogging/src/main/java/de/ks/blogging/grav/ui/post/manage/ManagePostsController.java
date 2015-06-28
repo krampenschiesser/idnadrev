@@ -17,6 +17,7 @@ package de.ks.blogging.grav.ui.post.manage;
 
 import de.ks.BaseController;
 import de.ks.activity.ActivityHint;
+import de.ks.blogging.grav.entity.GravBlog;
 import de.ks.blogging.grav.posts.BasePost;
 import de.ks.blogging.grav.ui.post.edit.CreateEditPostActivity;
 import de.ks.executor.group.LastTextChange;
@@ -24,6 +25,7 @@ import de.ks.i18n.Localized;
 import de.ks.javafx.event.ClearTextOnEscape;
 import de.ks.markdown.viewer.MarkdownContent;
 import de.ks.markdown.viewer.MarkdownViewer;
+import de.ks.persistence.PersistentWork;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -33,6 +35,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.util.Callback;
+import javafx.util.StringConverter;
 
 import java.net.URL;
 import java.time.LocalDateTime;
@@ -45,7 +48,7 @@ import java.util.stream.Collectors;
 
 public class ManagePostsController extends BaseController<List<BasePost>> {
   @FXML
-  protected ChoiceBox blogSelection;
+  protected ChoiceBox<GravBlog> blogSelection;
   @FXML
   protected TableView<BasePost> postTable;
   @FXML
@@ -117,6 +120,21 @@ public class ManagePostsController extends BaseController<List<BasePost>> {
         markdownViewer.show(createMarkdownContent(n));
       }
     });
+    blogSelection.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
+      store.getDatasource().setLoadingHint(n);
+      controller.reload();
+    });
+    blogSelection.setConverter(new StringConverter<GravBlog>() {
+      @Override
+      public String toString(GravBlog object) {
+        return object.getName();
+      }
+
+      @Override
+      public GravBlog fromString(String string) {
+        return blogSelection.getItems().stream().filter(i -> i.getName().equals(string)).findFirst().get();
+      }
+    });
   }
 
   @FXML
@@ -143,6 +161,23 @@ public class ManagePostsController extends BaseController<List<BasePost>> {
   @FXML
   public void onDelete() {
 
+  }
+
+  @Override
+  public void onStart() {
+    onResume();
+  }
+
+  @Override
+  public void onResume() {
+    List<GravBlog> blogs = PersistentWork.from(GravBlog.class);
+    controller.getJavaFXExecutor().submit(() -> {
+      blogSelection.setItems(FXCollections.observableList(blogs));
+      SingleSelectionModel<GravBlog> selectionModel = blogSelection.getSelectionModel();
+      if (blogs.size() > 0 && selectionModel.isEmpty()) {
+        selectionModel.select(0);
+      }
+    });
   }
 
   @Override

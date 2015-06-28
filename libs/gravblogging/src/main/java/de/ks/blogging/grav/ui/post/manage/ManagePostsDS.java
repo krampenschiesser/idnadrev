@@ -15,12 +15,14 @@
  */
 package de.ks.blogging.grav.ui.post.manage;
 
+import de.ks.blogging.grav.entity.GravBlog;
 import de.ks.blogging.grav.pages.GravPages;
 import de.ks.blogging.grav.posts.BasePost;
 import de.ks.datasource.ListDataSource;
 
 import javax.inject.Inject;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
@@ -31,20 +33,34 @@ public class ManagePostsDS implements ListDataSource<BasePost> {
   @Inject
   GravPages pages;
 
+  GravBlog selectedBlog;
+
   @Override
   public List<BasePost> loadModel(Consumer<List<BasePost>> furtherProcessing) {
-    pages.scan();
-    Comparator<BasePost> comparing = Comparator.comparing(p -> p.getHeader().getLocalDateTime().orElse(LocalDateTime.now()));
-    List<BasePost> allPosts = pages.getAllPosts().stream()//
-      .filter(p -> p != null)//
-      .filter(p -> p.getHeader().getTitle() != null && p.getHeader().getTitle().length() > 0)//
-      .sorted(comparing.reversed())//
-      .collect(Collectors.toList());
-    return allPosts;
+    if (selectedBlog == null) {
+      return Collections.emptyList();
+    } else {
+      pages.setBlog(selectedBlog);
+      pages.scan();
+      Comparator<BasePost> comparing = Comparator.comparing(p -> p.getHeader().getLocalDateTime().orElse(LocalDateTime.now()));
+      List<BasePost> allPosts = pages.getAllPosts().stream()//
+        .filter(p -> p != null)//
+        .filter(p -> p.getHeader().getTitle() != null && p.getHeader().getTitle().length() > 0)//
+        .sorted(comparing.reversed())//
+        .collect(Collectors.toList());
+      return allPosts;
+    }
   }
 
   @Override
   public void saveModel(List<BasePost> model, Consumer<List<BasePost>> beforeSaving) {
 
+  }
+
+  @Override
+  public void setLoadingHint(Object dataSourceHint) {
+    if (dataSourceHint instanceof GravBlog) {
+      selectedBlog = (GravBlog) dataSourceHint;
+    }
   }
 }
