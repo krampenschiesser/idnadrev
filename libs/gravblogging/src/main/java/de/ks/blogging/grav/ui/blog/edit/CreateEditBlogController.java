@@ -75,7 +75,6 @@ public class CreateEditBlogController extends BaseController<GravBlog> {
       }
     });
 
-
     dateFormat.setItems(FXCollections.observableArrayList(PostDateFormat.values()));
     dateFormat.getSelectionModel().selectLast();
 
