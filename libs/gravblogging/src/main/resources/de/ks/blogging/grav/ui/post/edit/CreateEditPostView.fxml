@@ -25,22 +25,27 @@
         <RowConstraints minHeight="30.0" vgrow="NEVER"/>
     </rowConstraints>
     <children>
-        <DatePicker fx:id="date" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
-        <TextField fx:id="time" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
-        <TextField fx:id="title" GridPane.columnIndex="2" GridPane.columnSpan="2"/>
-        <TextField fx:id="tags" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="2"/>
         <Label text="%grav.post.title" GridPane.columnIndex="1"/>
+        <TextField fx:id="title" GridPane.columnIndex="2" GridPane.columnSpan="2"/>
+
         <Label text="%grav.post.dateTime" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <TextField fx:id="time" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+        <DatePicker fx:id="date" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+
         <Label text="%grav.post.tags" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-        <Accordion GridPane.columnSpan="2147483647" GridPane.rowIndex="8">
-            <panes>
-                <TitledPane animated="false" text="%grav.post.media">
-                    <content>
-                        <ScrollPane fx:id="mediaContainer" prefHeight="200.0" prefWidth="200.0"/>
-                    </content>
-                </TitledPane>
-            </panes>
-        </Accordion>
+        <TextField fx:id="tags" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="2"/>
+
+        <Label text="%grav.post.type" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+        <ChoiceBox fx:id="type" prefWidth="150.0" GridPane.columnIndex="2" GridPane.rowIndex="3"/>
+
+        <Label text="%grav.post.pageIndex" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+        <TextField fx:id="pageIndex" GridPane.columnIndex="2" GridPane.rowIndex="4"/>
+
+        <Label text="%grav.post.filePath" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+        <TextField fx:id="filePath" GridPane.columnIndex="2" GridPane.rowIndex="5"/>
+        <Button fx:id="selectFilePath" mnemonicParsing="false" onAction="#onFilePathSelection" text="%select"
+                GridPane.columnIndex="3" GridPane.rowIndex="5"/>
+
         <Accordion GridPane.columnSpan="2147483647" GridPane.rowIndex="6">
             <panes>
                 <TitledPane animated="false" text="%grav.post.otherHeader">
@@ -50,6 +55,19 @@
                 </TitledPane>
             </panes>
         </Accordion>
+
+        <StackPane fx:id="contentContainer" GridPane.columnSpan="2147483647" GridPane.rowIndex="7"/>
+
+        <Accordion GridPane.columnSpan="2147483647" GridPane.rowIndex="8">
+            <panes>
+                <TitledPane animated="false" text="%grav.post.media">
+                    <content>
+                        <ScrollPane fx:id="mediaContainer" prefHeight="200.0" prefWidth="200.0"/>
+                    </content>
+                </TitledPane>
+            </panes>
+        </Accordion>
+
         <HBox maxHeight="-Infinity" maxWidth="-Infinity" spacing="25.0" GridPane.columnSpan="2147483647"
               GridPane.halignment="CENTER" GridPane.rowIndex="9">
             <children>
@@ -58,15 +76,6 @@
                 <Button fx:id="cancel" mnemonicParsing="false" onAction="#onCancel" text="%cancel"/>
             </children>
         </HBox>
-        <Label text="%grav.post.type" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-        <Label text="%grav.post.filePath" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
-        <Button fx:id="selectFilePath" mnemonicParsing="false" onAction="#onFilePathSelection" text="%select"
-                GridPane.columnIndex="3" GridPane.rowIndex="5"/>
-        <ChoiceBox fx:id="type" prefWidth="150.0" GridPane.columnIndex="2" GridPane.rowIndex="3"/>
-        <TextField fx:id="filePath" GridPane.columnIndex="2" GridPane.rowIndex="5"/>
-        <StackPane fx:id="contentContainer" GridPane.columnSpan="2147483647" GridPane.rowIndex="7"/>
-        <Label text="%grav.post.pageIndex" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
-        <TextField fx:id="pageIndex" GridPane.columnIndex="2" GridPane.rowIndex="4"/>
     </children>
     <padding>
         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
