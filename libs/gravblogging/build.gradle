@@ -6,6 +6,13 @@ dependencies {
     compile "org.imgscalr:imgscalr-lib:$imgScaler"
 
     compile "org.eclipse.jgit:org.eclipse.jgit:$jgit"
+    compile "commons-net:commons-net:$commonsNet"
 
     testCompile project(":libs:testutil")
+    testCompile('org.apache.ftpserver:ftpserver:1.0.6') {
+        exclude module: "slf4j-log4j12"
+        exclude module: "log4j"
+        exclude module: "jcl-over-slf4j"
+        exclude module: "slf4j-api"
+    }
 }

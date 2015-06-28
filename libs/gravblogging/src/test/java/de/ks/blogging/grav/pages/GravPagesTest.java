@@ -240,7 +240,7 @@ public class GravPagesTest {
     assertEquals(1024, imageInfo.getWidth());
   }
 
-  private void deleteDir(File dir) throws IOException {
+  static void deleteDir(File dir) throws IOException {
     SimpleFileVisitor<Path> visitor = new SimpleFileVisitor<Path>() {
       @Override
       public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {

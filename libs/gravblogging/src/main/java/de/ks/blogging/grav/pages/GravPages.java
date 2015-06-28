@@ -128,7 +128,6 @@ public class GravPages implements AutoCloseable {
   }
 
   public synchronized BlogItem addBlogItem(String title) {
-
     String fileName = "item.md";
     String blogSubPath = blog.getBlogSubPath();
     File parent = new File(new File(blog.getPagesDirectory()), blogSubPath);
