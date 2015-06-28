@@ -182,7 +182,7 @@ public class GravPagesTest {
     assertEquals("author: " + StandardSystemProperty.USER_NAME.value(), lines.get(2));
     assertEquals("date: 06.06.2015 12:42:00", lines.get(3));
 
-    assertEquals(content, lines.get(6));
+    assertEquals(content, lines.get(5));
   }
 
   @Test
@@ -210,7 +210,7 @@ public class GravPagesTest {
     assertEquals(HeaderContainer.INDENTATION + "category: blog", lines.get(4));
     assertEquals(HeaderContainer.INDENTATION + "tag: [test, blubber]", lines.get(5));
 
-    assertEquals(content, lines.get(8));
+    assertEquals(content, lines.get(7));
   }
 
   @Test

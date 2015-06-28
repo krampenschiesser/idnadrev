@@ -3,8 +3,6 @@ package de.ks.blogging.grav.ui.post.manage;
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityCfg;
 import de.ks.blogging.grav.ui.post.AbstractBlogIntegrationTest;
-import de.ks.blogging.grav.ui.post.edit.CreateEditPostActivity;
-import de.ks.blogging.grav.ui.post.edit.CreateEditPostController;
 import de.ks.util.FXPlatform;
 import javafx.collections.ObservableList;
 import org.junit.Test;
@@ -34,18 +32,4 @@ public class ManagePostsActivityTest extends AbstractBlogIntegrationTest {
     assertEquals(1, managePosts.blogSelection.getSelectionModel().getSelectedIndex());
     assertEquals(2, managePosts.postTable.getItems().size());
   }
-
-  @Test
-  public void testEditPost() throws Exception {
-    ManagePostsController managePosts = activityController.getControllerInstance(ManagePostsController.class);
-    managePosts.onEdit();
-
-    activityController.waitForTasks();
-    assertEquals(CreateEditPostActivity.class.getSimpleName(), activityController.getCurrentActivityId());
-
-    CreateEditPostController editor = activityController.getControllerInstance(CreateEditPostController.class);
-    assertEquals("post 1", editor);
-
-  }
-
 }
