@@ -45,9 +45,14 @@ public abstract class ActivityTest {
       }
     });
 
+    beforeActivityStart();
     activityController.startOrResume(new ActivityHint(getActivityClass()));
     activityController.waitForTasks();
     FXPlatform.waitForFX();
+  }
+
+  protected void beforeActivityStart() throws Exception {
+
   }
 
   protected abstract Class<? extends ActivityCfg> getActivityClass();

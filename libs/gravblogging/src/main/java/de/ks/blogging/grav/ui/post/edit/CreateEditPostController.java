@@ -28,6 +28,7 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
+import org.controlsfx.validation.ValidationResult;
 
 import javax.inject.Inject;
 import java.net.URL;
@@ -40,37 +41,37 @@ import java.util.ResourceBundle;
 
 public class CreateEditPostController extends BaseController<BasePost> {
   @FXML
-  private DatePicker date;
+  protected DatePicker date;
   @FXML
-  private Button cancel;
+  protected Button cancel;
   @FXML
-  private ScrollPane mediaContainer;
+  protected ScrollPane mediaContainer;
   @FXML
-  private ScrollPane headerContainer;
+  protected ScrollPane headerContainer;
   @FXML
-  private Button post;
+  protected Button post;
   @FXML
-  private Button selectFilePath;
+  protected Button selectFilePath;
   @FXML
-  private TextField filePath;
+  protected TextField filePath;
   @FXML
-  private TextField time;
+  protected TextField time;
   @FXML
-  private TextField title;
+  protected TextField title;
   @FXML
-  private ChoiceBox<PostType> type;
+  protected ChoiceBox<PostType> type;
   @FXML
-  private StackPane contentContainer;
+  protected StackPane contentContainer;
   @FXML
-  private TextField tags;
+  protected TextField tags;
   @FXML
-  private TextField pageIndex;
+  protected TextField pageIndex;
 
   protected MarkdownEditor editor;
-  private TimeHHMMValidator validator;
+  protected TimeHHMMValidator validator;
 
-  private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-  private final SimpleBooleanProperty knownContent = new SimpleBooleanProperty(false);
+  protected final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+  protected final SimpleBooleanProperty knownContent = new SimpleBooleanProperty(false);
 
   @Inject
   GravPages gravPages;
@@ -85,18 +86,26 @@ public class CreateEditPostController extends BaseController<BasePost> {
 
     validator = new TimeHHMMValidator();
     validationRegistry.registerValidator(time, validator);
-
+    validationRegistry.registerValidator(title, new NotEmptyValidator());
+    validationRegistry.registerValidator(pageIndex, new IntegerRangeValidator(0, Integer.MAX_VALUE));
+    validationRegistry.registerValidator(pageIndex, new NotEmptyValidator() {
+      @Override
+      public ValidationResult apply(Control control, String s) {
+        if (type.getValue() == PostType.PAGE) {
+          return super.apply(control, s);
+        } else {
+          return null;
+        }
+      }
+    });
 
     filePath.disableProperty().bind(knownContent);
     type.disableProperty().bind(knownContent);
     selectFilePath.disableProperty().bind(knownContent);
 
-    type.setItems(FXCollections.observableArrayList(PostType.values()));
-
-    validationRegistry.registerValidator(title, new NotEmptyValidator());
-    validationRegistry.registerValidator(pageIndex, new IntegerRangeValidator(0, Integer.MAX_VALUE));
-
     post.disableProperty().bind(validationRegistry.invalidProperty());
+
+    type.setItems(FXCollections.observableArrayList(PostType.values()));
   }
 
   @FXML
@@ -134,7 +143,9 @@ public class CreateEditPostController extends BaseController<BasePost> {
       UIPostWrapper wrapper = (UIPostWrapper) model;
       wrapper.setFilePath(filePath.getText());
       wrapper.setPostType(type.getValue());
-      wrapper.setPageIndex(Integer.parseInt(pageIndex.textProperty().getValueSafe().trim()));
+      if (type.getValue() == PostType.PAGE) {
+        wrapper.setPageIndex(Integer.parseInt(pageIndex.textProperty().getValueSafe().trim()));
+      }
     }
   }
 

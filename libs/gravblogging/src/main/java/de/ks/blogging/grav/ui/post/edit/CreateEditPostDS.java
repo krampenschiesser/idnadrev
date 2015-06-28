@@ -17,8 +17,6 @@ package de.ks.blogging.grav.ui.post.edit;
 
 import de.ks.blogging.grav.pages.GravPages;
 import de.ks.blogging.grav.posts.BasePost;
-import de.ks.blogging.grav.posts.BlogItem;
-import de.ks.blogging.grav.posts.Page;
 import de.ks.datasource.DataSource;
 
 import javax.inject.Inject;
@@ -58,12 +56,9 @@ public class CreateEditPostDS implements DataSource<BasePost> {
       }
       basePost.setContent(wrapper.getContent());
       basePost.getHeader().fillFrom(wrapper.getHeader());
-
-    } else if (model instanceof BlogItem) {
-      model.write();
-    } else if (model instanceof Page) {
-      model.write();
+      model = basePost;
     }
+    model.write();
     if (commitMsg != null) {
       gravPages.addCommit(commitMsg);
     }
