@@ -15,7 +15,7 @@
 package de.ks.launch;
 
 import de.ks.application.FXApplicationExceptionHandler;
-import de.ks.blogging.grav.GravSettings;
+import de.ks.blogging.grav.entity.GravBlog;
 import de.ks.fxcontrols.weekview.WeekHelper;
 import de.ks.idnadrev.entity.*;
 import de.ks.idnadrev.entity.cost.Account;
@@ -23,7 +23,6 @@ import de.ks.idnadrev.entity.cost.Booking;
 import de.ks.idnadrev.entity.cost.BookingCsvTemplate;
 import de.ks.idnadrev.entity.cost.BookingPattern;
 import de.ks.idnadrev.entity.information.*;
-import de.ks.option.Options;
 import de.ks.persistence.PersistentWork;
 import de.ks.scheduler.Schedule;
 import org.slf4j.Logger;
@@ -234,7 +233,8 @@ public class DummyData extends Service {
 
     PersistentWork.persist(pattern1, pattern2, pattern3);
 
-    Options.store("/home/scar/blog/grav-bk/user/pages", GravSettings.class).getGravPagesDirectory();
+    GravBlog gravBlog = new GravBlog("grav-bk", "/home/scar/blog/grav-bk/user/pages");
+    PersistentWork.persist(gravBlog);
   }
 
   @Override

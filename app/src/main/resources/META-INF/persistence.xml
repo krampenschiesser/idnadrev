@@ -48,6 +48,8 @@
         <class>de.ks.idnadrev.entity.cost.Account</class>
         <class>de.ks.idnadrev.entity.cost.BookingCsvTemplate</class>
 
+        <class>de.ks.blogging.grav.entity.GravBlog</class>
+
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
             <property name="javax.persistence.jdbc.user" value="SA"/>
