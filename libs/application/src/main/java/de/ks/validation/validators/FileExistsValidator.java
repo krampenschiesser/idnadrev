@@ -25,13 +25,15 @@ import java.io.File;
 public class FileExistsValidator implements Validator<String> {
   @Override
   public ValidationResult apply(Control control, String s) {
-    String validationMsg = Localized.get("validation.fileDoesNotExist", s);
+    String filePath = s == null || s.isEmpty() ? "" : getFilePathFromString(s);
+
+    String validationMsg = Localized.get("validation.fileDoesNotExist", filePath);
     ValidationResult validationResult = ValidationResult.fromError(control, validationMsg);
 
     if (s == null || s.isEmpty()) {
       return validationResult;
     } else {
-      File file = new File(getFilePathFromString(s));
+      File file = new File(filePath);
       if (!file.exists()) {
         return validationResult;
       }
