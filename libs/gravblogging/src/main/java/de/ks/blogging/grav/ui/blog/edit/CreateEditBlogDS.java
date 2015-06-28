@@ -13,21 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.blogging.grav.ui.settings;
+package de.ks.blogging.grav.ui.blog.edit;
 
 import de.ks.blogging.grav.entity.GravBlog;
-import de.ks.datasource.DataSource;
+import de.ks.datasource.CreateEditDS;
 
-import java.util.function.Consumer;
-
-public class CreateEditBlogDS implements DataSource<GravBlog> {
-  @Override
-  public GravBlog loadModel(Consumer<GravBlog> furtherProcessing) {
-    return null;
-  }
-
-  @Override
-  public void saveModel(GravBlog model, Consumer<GravBlog> beforeSaving) {
-    beforeSaving.accept(model);
+public class CreateEditBlogDS extends CreateEditDS<GravBlog> {
+  public CreateEditBlogDS() {
+    super(GravBlog.class);
   }
 }

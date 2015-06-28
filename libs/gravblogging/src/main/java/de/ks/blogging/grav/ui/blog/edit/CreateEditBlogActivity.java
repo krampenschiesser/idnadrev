@@ -13,17 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.blogging.grav.ui.settings;
+package de.ks.blogging.grav.ui.blog.edit;
 
-import de.ks.BaseController;
-import de.ks.blogging.grav.entity.GravBlog;
+import de.ks.activity.ActivityCfg;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
-public class CreateEditBlogController extends BaseController<GravBlog> {
-  @Override
-  public void initialize(URL location, ResourceBundle resources) {
-
+public class CreateEditBlogActivity extends ActivityCfg {
+  public CreateEditBlogActivity() {
+    super(CreateEditBlogDS.class, CreateEditBlogController.class);
   }
 }
