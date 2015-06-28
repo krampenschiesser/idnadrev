@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.blogging.grav.ui.blog.edit;
+package de.ks.blogging.grav.ui.blog.manage;
 
 import de.ks.activity.ActivityCfg;
+import de.ks.menu.MenuItem;
 
-public class CreateEditBlogActivity extends ActivityCfg {
-  public CreateEditBlogActivity() {
-    super(CreateEditBlogDS.class, CreateEditBlogController.class);
+@MenuItem(order = 72, value = "/main/blogging")
+public class ManageBlogsActivity extends ActivityCfg {
+  public ManageBlogsActivity() {
+    super(ManageBlogsDS.class, ManageBlogsController.class);
   }
 }

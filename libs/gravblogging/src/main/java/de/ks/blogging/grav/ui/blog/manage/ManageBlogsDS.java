@@ -13,12 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.blogging.grav.ui.blog.edit;
+package de.ks.blogging.grav.ui.blog.manage;
 
-import de.ks.activity.ActivityCfg;
+import de.ks.blogging.grav.entity.GravBlog;
+import de.ks.datasource.ListDataSource;
+import de.ks.persistence.PersistentWork;
 
-public class CreateEditBlogActivity extends ActivityCfg {
-  public CreateEditBlogActivity() {
-    super(CreateEditBlogDS.class, CreateEditBlogController.class);
+import java.util.List;
+import java.util.function.Consumer;
+
+public class ManageBlogsDS implements ListDataSource<GravBlog> {
+  @Override
+  public List<GravBlog> loadModel(Consumer<List<GravBlog>> furtherProcessing) {
+    return PersistentWork.from(GravBlog.class);
+  }
+
+  @Override
+  public void saveModel(List<GravBlog> model, Consumer<List<GravBlog>> beforeSaving) {
+
   }
 }
