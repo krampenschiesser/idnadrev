@@ -213,7 +213,7 @@ public class ManagePostsController extends BaseController<List<BasePost>> {
 
   protected MarkdownContent createMarkdownContent(BasePost m) {
     if (m.getFile() != null) {
-      return new MarkdownContent(m.getHeader().getTitle(), m.getFile());
+      return new MarkdownContent(m.getFile().getAbsolutePath(), m.getFile());
     } else {
       return new MarkdownContent(m.getHeader().getTitle(), m.getContent());
     }
