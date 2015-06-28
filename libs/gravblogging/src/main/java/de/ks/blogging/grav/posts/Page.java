@@ -15,10 +15,12 @@
  */
 package de.ks.blogging.grav.posts;
 
+import de.ks.blogging.grav.PostDateFormat;
+
 import java.io.File;
 
 public class Page extends BasePost {
-  public Page(File file) {
-    super(file);
+  public Page(File file, PostDateFormat dateFormat) {
+    super(file, dateFormat);
   }
 }

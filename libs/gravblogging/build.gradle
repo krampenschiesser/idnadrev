@@ -1,5 +1,5 @@
 dependencies {
-    compile project(":libs:application")
+    compile project(":libs:application-jpa")
     compile project(":libs:markdowneditor")
     compile "org.apache.sanselan:sanselan:$commonsImage"
     compile "org.imgscalr:imgscalr-lib:$imgScaler"

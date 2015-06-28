@@ -15,22 +15,19 @@
  */
 package de.ks.blogging.grav.ui.settings;
 
-import de.ks.blogging.grav.GravSettings;
+import de.ks.blogging.grav.entity.GravBlog;
 import de.ks.datasource.DataSource;
-import de.ks.option.Options;
 
 import java.util.function.Consumer;
 
-public class GravSettingsDS implements DataSource<GravSettings> {
+public class CreateEditBlogDS implements DataSource<GravBlog> {
   @Override
-  public GravSettings loadModel(Consumer<GravSettings> furtherProcessing) {
-    GravSettings gravSettings = Options.get(GravSettings.class);
-    furtherProcessing.accept(gravSettings);
-    return gravSettings;
+  public GravBlog loadModel(Consumer<GravBlog> furtherProcessing) {
+    return null;
   }
 
   @Override
-  public void saveModel(GravSettings model, Consumer<GravSettings> beforeSaving) {
+  public void saveModel(GravBlog model, Consumer<GravBlog> beforeSaving) {
     beforeSaving.accept(model);
   }
 }

@@ -1,8 +1,11 @@
-package de.ks.blogging.grav.fs.local;
+package de.ks.blogging.grav.pages;
 
 import com.google.common.base.StandardSystemProperty;
-import de.ks.blogging.grav.GravSettings;
-import de.ks.blogging.grav.posts.*;
+import de.ks.blogging.grav.entity.GravBlog;
+import de.ks.blogging.grav.posts.BasePost;
+import de.ks.blogging.grav.posts.BlogItem;
+import de.ks.blogging.grav.posts.HeaderContainer;
+import de.ks.blogging.grav.posts.Page;
 import de.ks.blogging.grav.posts.media.ImageScalerTest;
 import org.apache.sanselan.ImageInfo;
 import org.apache.sanselan.Sanselan;
@@ -41,7 +44,7 @@ public class GravPagesTest {
     }
 
     File postDir = new File(file, "src/test/resources/de/ks/blogging/grav/posts/");
-    GravPages gravPages = new GravPages(postDir.getAbsolutePath());
+    GravPages gravPages = new GravPages(new GravBlog("test", postDir.getAbsolutePath()));
     gravPages.scan();
     Collection<BasePost> allPosts = gravPages.getAllPosts();
     assertEquals(3, allPosts.size());
@@ -75,8 +78,8 @@ public class GravPagesTest {
 
   @Test
   public void testDiscoverGitDirSameDir() throws Exception {
-    Header.GRAV_SETTINGS = () -> new GravSettings();
-    GravPages gravPages = new GravPages(StandardSystemProperty.JAVA_IO_TMPDIR.value() + StandardSystemProperty.FILE_SEPARATOR.value() + "gittest");
+    GravBlog blog = new GravBlog("test", StandardSystemProperty.JAVA_IO_TMPDIR.value() + StandardSystemProperty.FILE_SEPARATOR.value() + "gittest");
+    GravPages gravPages = new GravPages(blog);
 
     File tmpDir = new File(StandardSystemProperty.JAVA_IO_TMPDIR.value() + StandardSystemProperty.FILE_SEPARATOR.value() + "gittest");
     if (!tmpDir.exists()) {
@@ -96,8 +99,6 @@ public class GravPagesTest {
 
   @Test
   public void testDiscoverGitDirTopDir() throws Exception {
-    Header.GRAV_SETTINGS = () -> new GravSettings();
-
     File tmpDir = new File(StandardSystemProperty.JAVA_IO_TMPDIR.value() + StandardSystemProperty.FILE_SEPARATOR.value() + "gittest");
 
     if (!tmpDir.exists()) {
@@ -116,7 +117,8 @@ public class GravPagesTest {
         sub.mkdir();
       }
 
-      GravPages gravPages = new GravPages(sub.getPath());
+      GravBlog blog = new GravBlog("test", sub.getPath());
+      GravPages gravPages = new GravPages(blog);
       assertTrue(gravPages.hasGitRepository());
     } finally {
       deleteDir(tmpDir);
@@ -125,7 +127,6 @@ public class GravPagesTest {
 
   @Test
   public void testAddCommit() throws Exception {
-    Header.GRAV_SETTINGS = () -> new GravSettings();
     File tmpDir = new File(StandardSystemProperty.JAVA_IO_TMPDIR.value() + StandardSystemProperty.FILE_SEPARATOR.value() + "gittest");
     if (!tmpDir.exists()) {
       tmpDir.mkdir();
@@ -138,7 +139,8 @@ public class GravPagesTest {
       init.setGitDir(gitDir);
       init.call();
 
-      GravPages gravPages = new GravPages(tmpDir.getPath());
+      GravBlog blog = new GravBlog("test", tmpDir.getPath());
+      GravPages gravPages = new GravPages(blog);
 
       File mdfile = new File(tmpDir, "test.md");
       Files.write(mdfile.toPath(), Arrays.asList("Hello Sauerland"));
@@ -159,8 +161,8 @@ public class GravPagesTest {
 
   @Test
   public void testCreatePage() throws Exception {
-    Header.GRAV_SETTINGS = () -> new GravSettings();
-    GravPages gravPages = new GravPages(StandardSystemProperty.JAVA_IO_TMPDIR.value());
+    GravBlog blog = new GravBlog("test", StandardSystemProperty.JAVA_IO_TMPDIR.value());
+    GravPages gravPages = new GravPages(blog);
 
     String title = "Ein Bier, ein Würstchen!#+?  ";
     String content = "Hello Sauerland";
@@ -185,8 +187,8 @@ public class GravPagesTest {
 
   @Test
   public void testCreateBlogItem() throws Exception {
-    Header.GRAV_SETTINGS = () -> new GravSettings();
-    GravPages gravPages = new GravPages(StandardSystemProperty.JAVA_IO_TMPDIR.value());
+    GravBlog blog = new GravBlog("test", StandardSystemProperty.JAVA_IO_TMPDIR.value());
+    GravPages gravPages = new GravPages(blog);
 
     String title = "Title 1  ";
     String content = "Bla";
@@ -213,8 +215,8 @@ public class GravPagesTest {
 
   @Test
   public void testAddImage() throws Exception {
-    Header.GRAV_SETTINGS = () -> new GravSettings();
-    GravPages gravPages = new GravPages(StandardSystemProperty.JAVA_IO_TMPDIR.value());
+    GravBlog blog = new GravBlog("test", StandardSystemProperty.JAVA_IO_TMPDIR.value());
+    GravPages gravPages = new GravPages(blog);
     String title = "Title 1  ";
     String content = "Bla";
 
@@ -223,7 +225,7 @@ public class GravPagesTest {
     blogItem.getHeader().setTags("test", "blubber");
 
     File src = new File(ImageScalerTest.class.getResource("landscape.jpg").getFile());
-    File mediaFile = blogItem.addMedia(src);
+    File mediaFile = blogItem.addMedia(src, blog.getImageDimension());
 
     blogItem.write();
     File file = blogItem.getFile();

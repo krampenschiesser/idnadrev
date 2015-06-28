@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.blogging.grav.fs.local;
+package de.ks.blogging.grav.pages;
 
 import com.google.common.base.Charsets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import de.ks.blogging.grav.GravSettings;
-import de.ks.blogging.grav.posts.*;
+import de.ks.blogging.grav.entity.GravBlog;
+import de.ks.blogging.grav.posts.BasePost;
+import de.ks.blogging.grav.posts.BlogItem;
+import de.ks.blogging.grav.posts.Page;
+import de.ks.blogging.grav.posts.PostParser;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.CommitCommand;
@@ -53,32 +56,33 @@ import java.util.stream.Collectors;
 public class GravPages implements AutoCloseable {
   private static final Logger log = LoggerFactory.getLogger(GravPages.class);
 
-  protected String filePath;
+  protected GravBlog blog;
   protected final Set<BasePost> posts = new HashSet<>();
   protected final Set<Future<BasePost>> postLoader = new HashSet<>();
   protected final ExecutorService executorService = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(true).build());
   protected final AtomicReference<Git> git = new AtomicReference<>();
 
-  public GravPages(String filePath) {
-    this.filePath = filePath;
+  public GravPages(GravBlog blog) {
+    this.blog = blog;
   }
 
-  public String getFilePath() {
-    return filePath;
+  public GravBlog getBlog() {
+    return blog;
   }
 
-  public void setFilePath(String filePath) {
-    this.filePath = filePath;
+  public void setBlog(GravBlog blog) {
+    this.blog = blog;
   }
 
   public synchronized GravPages scan() {
+    String filePath = blog.getPagesDirectory();
     posts.clear();
     postLoader.clear();
     SimpleFileVisitor<Path> visitor = new SimpleFileVisitor<Path>() {
       @Override
       public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
         if (file != null && file.toString().endsWith("md")) {
-          postLoader.add(executorService.submit(new PostParser(file)));
+          postLoader.add(executorService.submit(new PostParser(file, blog)));
         }
         return FileVisitResult.CONTINUE;
       }
@@ -108,42 +112,37 @@ public class GravPages implements AutoCloseable {
 
   public synchronized BasePost addPost(String title, String fileName) {
     File file = getPostFile(title, fileName);
-    BasePost page = new BasePost(file);
+    BasePost page = new BasePost(file, blog.getDateFormat());
     page.getHeader().setTitle(title);
-    page.getHeader().setAuthor(getGravSettings().getDefaultAuthor());
+    page.getHeader().setAuthor(blog.getDefaultAuthor());
     return page;
-  }
-
-  private GravSettings getGravSettings() {
-    return Header.GRAV_SETTINGS.get();
   }
 
   public synchronized Page addPage(String title) {
     String fileName = "default.md";
     File file = getPostFile(title, fileName);
-    Page page = new Page(file);
+    Page page = new Page(file, blog.getDateFormat());
     page.getHeader().setTitle(title);
-    page.getHeader().setAuthor(getGravSettings().getDefaultAuthor());
+    page.getHeader().setAuthor(blog.getDefaultAuthor());
     return page;
   }
 
   public synchronized BlogItem addBlogItem(String title) {
-    GravSettings gravSettings = getGravSettings();
 
     String fileName = "item.md";
-    String blogSubPath = gravSettings.getBlogSubPath();
-    File parent = new File(new File(filePath), blogSubPath);
+    String blogSubPath = blog.getBlogSubPath();
+    File parent = new File(new File(blog.getPagesDirectory()), blogSubPath);
     File file = getPostFile(title, fileName, parent);
 
-    BlogItem page = new BlogItem(file);
+    BlogItem page = new BlogItem(file, blog.getDateFormat());
     page.getHeader().setTitle(title);
     page.getHeader().setCategory("blog");
-    page.getHeader().setAuthor(gravSettings.getDefaultAuthor());
+    page.getHeader().setAuthor(blog.getDefaultAuthor());
     return page;
   }
 
   protected File getPostFile(String title, String fileName) {
-    return getPostFile(title, fileName, new File(filePath));
+    return getPostFile(title, fileName, new File(blog.getPagesDirectory()));
   }
 
   protected File getPostFile(String title, String fileName, File parent) {
@@ -182,14 +181,14 @@ public class GravPages implements AutoCloseable {
   }
 
   public boolean hasGitRepository() {
-    return new RepositoryBuilder().findGitDir(new File(filePath)).setMustExist(true).getGitDir() != null;
+    return new RepositoryBuilder().findGitDir(new File(blog.getPagesDirectory())).setMustExist(true).getGitDir() != null;
   }
 
   public Git getGit() {
     git.getAndUpdate(git -> {
       if (git == null) {
         try {
-          Repository repository = new RepositoryBuilder().findGitDir(new File(filePath)).setMustExist(true).build();
+          Repository repository = new RepositoryBuilder().findGitDir(new File(blog.getPagesDirectory())).setMustExist(true).build();
           return new Git(repository);
         } catch (Exception e) {
           log.error("Could not get Git ", e);

@@ -45,29 +45,31 @@ import java.util.stream.Collectors;
 
 public class ManagePostsController extends BaseController<List<BasePost>> {
   @FXML
-  private TableView<BasePost> postTable;
+  protected ChoiceBox blogSelection;
   @FXML
-  private TableColumn<BasePost, String> titleColumn;
+  protected TableView<BasePost> postTable;
   @FXML
-  private TableColumn<BasePost, LocalDateTime> dateColumn;
+  protected TableColumn<BasePost, String> titleColumn;
+  @FXML
+  protected TableColumn<BasePost, LocalDateTime> dateColumn;
 
   @FXML
-  private Button edit;
+  protected Button edit;
   @FXML
-  private Button create;
+  protected Button create;
   @FXML
-  private Button delete;
+  protected Button delete;
 
   @FXML
-  private StackPane previewContainer;
+  protected StackPane previewContainer;
   @FXML
-  private TextField titleSearch;
+  protected TextField titleSearch;
 
-  private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(Localized.get("fullDate"));
-  private LastTextChange lastTextChange;
-  private ObservableList<BasePost> items;
+  protected final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(Localized.get("fullDate"));
+  protected LastTextChange lastTextChange;
+  protected ObservableList<BasePost> items;
 
-  private MarkdownViewer markdownViewer;
+  protected MarkdownViewer markdownViewer;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -153,7 +155,7 @@ public class ManagePostsController extends BaseController<List<BasePost>> {
     });
   }
 
-  private MarkdownContent createMarkdownContent(BasePost m) {
+  protected MarkdownContent createMarkdownContent(BasePost m) {
     if (m.getFile() != null) {
       return new MarkdownContent(m.getHeader().getTitle(), m.getFile());
     } else {

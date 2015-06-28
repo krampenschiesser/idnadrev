@@ -13,32 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.blogging.grav;
+package de.ks.blogging.grav.entity;
 
-import com.google.common.base.StandardSystemProperty;
+import de.ks.persistence.PersistentWork;
 
-public class GravSettings {
-  public String getGravPagesDirectory() {
-    return null;
-  }
+import java.util.List;
 
-  public String getBlogSubPath() {
-    return "01.blog";
-  }
-
-  public String getDefaultAuthor() {
-    return StandardSystemProperty.USER_NAME.value();
-  }
-
-  public int getImageDimension() {
-    return 1024;
-  }
-
-  public PostDateFormat getDefaultDateFormat() {
-    return PostDateFormat.EUROPEAN;
-  }
-
-  public boolean useShootingTimeAsFileName() {
-    return true;
+public class GravBlogProvider {
+  public List<GravBlog> getBlogs() {
+    return PersistentWork.from(GravBlog.class);
   }
 }

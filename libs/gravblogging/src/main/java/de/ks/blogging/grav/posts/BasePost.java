@@ -16,7 +16,7 @@
 package de.ks.blogging.grav.posts;
 
 import com.google.common.net.MediaType;
-import de.ks.blogging.grav.GravSettings;
+import de.ks.blogging.grav.PostDateFormat;
 import de.ks.blogging.grav.posts.media.ImageScaler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,14 +39,15 @@ public class BasePost {
 
   protected final File file;
 
-  protected final Header header = new Header();
+  protected final Header header;
 
   protected final SortedMap<String, File> media = new TreeMap<>();
   protected final SortedMap<String, MediaType> mediaTypes = new TreeMap<>();
   private String content;
 
-  public BasePost(File file) {
+  public BasePost(File file, PostDateFormat dateFormat) {
     this.file = file;
+    header = new Header(dateFormat);
   }
 
   public File getFile() {
@@ -137,7 +138,7 @@ public class BasePost {
     }
   }
 
-  public File addMedia(File src) {
+  public File addMedia(File src, int imageDimension) {
     try {
       Files.createDirectories(src.getParentFile().toPath());
       File target = new File(file.getParentFile(), src.getName());
@@ -145,9 +146,8 @@ public class BasePost {
       String contentType = Files.probeContentType(src.toPath());
       boolean isImage = MediaType.parse(contentType).is(MediaType.ANY_IMAGE_TYPE);
       if (isImage) {
-        GravSettings gravSettings = Header.GRAV_SETTINGS.get();
         ImageScaler imageScaler = new ImageScaler();
-        imageScaler.rotateAndWriteImage(src, target, gravSettings.getImageDimension());
+        imageScaler.rotateAndWriteImage(src, target, imageDimension);
       } else {
         Files.copy(src.toPath(), file.getParentFile().toPath());
       }

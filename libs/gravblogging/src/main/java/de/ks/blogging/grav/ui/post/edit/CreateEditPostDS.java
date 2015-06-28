@@ -15,7 +15,8 @@
  */
 package de.ks.blogging.grav.ui.post.edit;
 
-import de.ks.blogging.grav.fs.local.GravPages;
+import de.ks.blogging.grav.entity.GravBlog;
+import de.ks.blogging.grav.pages.GravPages;
 import de.ks.blogging.grav.posts.BasePost;
 import de.ks.blogging.grav.posts.BlogItem;
 import de.ks.blogging.grav.posts.Page;
@@ -30,13 +31,14 @@ public class CreateEditPostDS implements DataSource<BasePost> {
   GravPages gravPages;
 
   private String commitMsg;
+  private GravBlog blog;
 
   @Override
   public BasePost loadModel(Consumer<BasePost> furtherProcessing) {
     if (editPost != null) {
       return editPost;
     } else {
-      return new UIPostWrapper();
+      return new UIPostWrapper(blog.getDateFormat(), blog.getDefaultAuthor());
     }
   }
 

@@ -15,7 +15,7 @@
  */
 package de.ks.blogging.grav.ui.post.manage;
 
-import de.ks.blogging.grav.fs.local.GravPages;
+import de.ks.blogging.grav.pages.GravPages;
 import de.ks.blogging.grav.posts.BasePost;
 import de.ks.datasource.ListDataSource;
 

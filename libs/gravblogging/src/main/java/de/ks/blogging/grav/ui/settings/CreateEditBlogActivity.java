@@ -15,15 +15,11 @@
  */
 package de.ks.blogging.grav.ui.settings;
 
-import de.ks.BaseController;
-import de.ks.blogging.grav.GravSettings;
+import de.ks.activity.ActivityCfg;
+import de.ks.datasource.DataSource;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
-public class GravSettingsController extends BaseController<GravSettings> {
-  @Override
-  public void initialize(URL location, ResourceBundle resources) {
-
+public class CreateEditBlogActivity extends ActivityCfg {
+  public CreateEditBlogActivity(Class<? extends DataSource<?>> dataSource, Class<?> initialController) {
+    super(dataSource, initialController);
   }
 }

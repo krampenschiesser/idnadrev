@@ -15,9 +15,7 @@
  */
 package de.ks.blogging.grav.posts;
 
-import de.ks.blogging.grav.GravSettings;
 import de.ks.blogging.grav.PostDateFormat;
-import de.ks.option.Options;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,13 +29,10 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class Header extends HeaderContainer {
   private static final Logger log = LoggerFactory.getLogger(Header.class);
-
-  public static Supplier<GravSettings> GRAV_SETTINGS = () -> Options.get(GravSettings.class);
 
   private static final String TITLE_KEY = "title";
   private static final String DATE_KEY = "date";
@@ -53,9 +48,11 @@ public class Header extends HeaderContainer {
   protected final DateTimeFormatter timeFormatterFull = DateTimeFormatter.ofPattern("HH:mm:ss");
   protected final DateTimeFormatter timeFormatterShort = DateTimeFormatter.ofPattern("HH:mm");
   protected int bodyStart;
+  protected final PostDateFormat dateFormat;
 
-  public Header() {
+  public Header(PostDateFormat dateFormat) {
     super(null, 0);
+    this.dateFormat = dateFormat;
   }
 
   public String getTitle() {
@@ -178,7 +175,7 @@ public class Header extends HeaderContainer {
   }
 
   protected PostDateFormat getDateFormat() {
-    return GRAV_SETTINGS.get().getDefaultDateFormat();
+    return dateFormat;
   }
 
   public String getTagString() {

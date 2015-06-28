@@ -15,6 +15,8 @@
  */
 package de.ks.blogging.grav.posts;
 
+import de.ks.blogging.grav.entity.GravBlog;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,9 +25,11 @@ import java.util.concurrent.Callable;
 
 public class PostParser implements Callable<BasePost> {
   private final Path path;
+  private final GravBlog blog;
 
-  public PostParser(Path path) {
+  public PostParser(Path path, GravBlog blog) {
     this.path = path;
+    this.blog = blog;
   }
 
   @Override
@@ -36,13 +40,13 @@ public class PostParser implements Callable<BasePost> {
 
     BasePost post;
     if (fileName.equals("item.md")) {
-      post = new BlogItem(file);
+      post = new BlogItem(file, blog.getDateFormat());
     } else if (fileName.equals("default.md")) {
-      post = new Page(file);
+      post = new Page(file, blog.getDateFormat());
     } else if (fileName.equals("blog.md")) {
-      post = new Blog(file);
+      post = new Blog(file, blog.getDateFormat());
     } else {
-      post = new BasePost(file);
+      post = new BasePost(file, blog.getDateFormat());
     }
     post.getHeader().read(lines);
     post.setContentFromLines(lines.subList(post.getHeader().getBodyStart(), lines.size()));

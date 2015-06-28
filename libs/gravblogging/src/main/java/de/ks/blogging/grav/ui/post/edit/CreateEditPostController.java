@@ -16,7 +16,7 @@
 package de.ks.blogging.grav.ui.post.edit;
 
 import de.ks.BaseController;
-import de.ks.blogging.grav.fs.local.GravPages;
+import de.ks.blogging.grav.pages.GravPages;
 import de.ks.blogging.grav.posts.BasePost;
 import de.ks.i18n.Localized;
 import de.ks.markdown.editor.MarkdownEditor;

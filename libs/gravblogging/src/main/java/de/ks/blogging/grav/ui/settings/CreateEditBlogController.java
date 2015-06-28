@@ -13,26 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.blogging.grav.fs.local;
+package de.ks.blogging.grav.ui.settings;
 
-import de.ks.blogging.grav.GravSettings;
-import de.ks.option.Options;
+import de.ks.BaseController;
+import de.ks.blogging.grav.entity.GravBlog;
 
-import javax.enterprise.inject.Produces;
-import javax.inject.Singleton;
-import java.io.File;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-public class GravPagesProducer {
+public class CreateEditBlogController extends BaseController<GravBlog> {
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
 
-  @Produces
-  @Singleton
-  public GravPages getPages() {
-    GravSettings gravSettings = Options.get(GravSettings.class);
-    String directory = gravSettings.getGravPagesDirectory();
-    if (directory != null && new File(directory).exists()) {
-      return new GravPages(directory).scan();
-    } else {
-      return new GravPages(null);
-    }
   }
 }

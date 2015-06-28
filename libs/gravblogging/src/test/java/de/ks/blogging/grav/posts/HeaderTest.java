@@ -61,11 +61,11 @@ public class HeaderTest {
   public void testReadHeader() throws Exception {
     List<String> lines = Arrays.asList(StringUtils.split(headerString + bodyString, '\n'));
 
-    Header header = new Header();
+    Header header = new Header(PostDateFormat.EUROPEAN);
     header.read(lines);
 
     assertEquals(TITLE, header.getTitle());
-    assertEquals(DATE, header.getLocalDate());
+    assertEquals(DATE, header.getLocalDate().get());
     assertEquals(DATE_TIME, header.getLocalDateTime().get());
     assertEquals(AUTHOR, header.getAuthor());
     assertEquals(CATEGORY, header.getCategory());
@@ -74,12 +74,7 @@ public class HeaderTest {
 
   @Test
   public void testWriteHeader() throws Exception {
-    Header header = new Header() {
-      @Override
-      protected PostDateFormat getDateFormat() {
-        return PostDateFormat.EUROPEAN;
-      }
-    };
+    Header header = new Header(PostDateFormat.EUROPEAN);
     header.setTitle(TITLE);
     header.setLocalDateTime(DATE_TIME);
     header.setAuthor(AUTHOR);
@@ -94,12 +89,7 @@ public class HeaderTest {
   public void testParseHeaderWithUnknownTags() throws Exception {
     List<String> lines = Arrays.asList(StringUtils.split(blogHeader, '\n'));
 
-    Header header = new Header() {
-      @Override
-      protected PostDateFormat getDateFormat() {
-        return PostDateFormat.EUROPEAN;
-      }
-    };
+    Header header = new Header(PostDateFormat.EUROPEAN);
     header.read(lines);
     String result = header.writeHeader();
     assertEquals(blogHeader, result);

@@ -9,6 +9,8 @@
         <GridPane hgap="5.0" vgap="5.0">
             <columnConstraints>
                 <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
+                <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
+                <ColumnConstraints hgrow="NEVER" minWidth="10.0" prefWidth="100.0"/>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
             </columnConstraints>
             <rowConstraints>
@@ -22,8 +24,10 @@
                         <TableColumn fx:id="titleColumn" prefWidth="400.0" text="%grav.post.title"/>
                     </columns>
                 </TableView>
-                <Label text="%grav.search.title"/>
-                <TextField fx:id="titleSearch" GridPane.columnIndex="1"/>
+                <Label text="%grav.search.title" GridPane.columnIndex="2"/>
+                <TextField fx:id="titleSearch" GridPane.columnIndex="3"/>
+                <Label text="%grav.search.blog"/>
+                <ChoiceBox fx:id="blogSelection" prefWidth="150.0" GridPane.columnIndex="1"/>
             </children>
         </GridPane>
         <GridPane>

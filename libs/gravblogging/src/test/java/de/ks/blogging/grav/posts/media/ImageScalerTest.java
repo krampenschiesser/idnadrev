@@ -1,7 +1,6 @@
 package de.ks.blogging.grav.posts.media;
 
 import com.google.common.base.StandardSystemProperty;
-import de.ks.blogging.grav.GravSettings;
 import org.apache.sanselan.ImageInfo;
 import org.apache.sanselan.Sanselan;
 import org.junit.Test;
@@ -16,7 +15,6 @@ import static org.junit.Assert.assertTrue;
 public class ImageScalerTest {
   @Test
   public void testCopyImage() throws Exception {
-    GravSettings settings = new GravSettings();
     ImageScaler imageScaler = new ImageScaler();
 
     File landscapeFile = new File(ImageScalerTest.class.getResource("landscape.jpg").getFile());

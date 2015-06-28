@@ -15,8 +15,8 @@
  */
 package de.ks.blogging.grav.ui.post.edit;
 
+import de.ks.blogging.grav.PostDateFormat;
 import de.ks.blogging.grav.posts.BasePost;
-import de.ks.blogging.grav.posts.Header;
 
 import java.time.LocalDateTime;
 
@@ -25,11 +25,11 @@ public class UIPostWrapper extends BasePost {
   protected String filePath;
   protected Integer pageIndex;
 
-  public UIPostWrapper() {
-    super(null);
+  public UIPostWrapper(PostDateFormat dateFormat, String author) {
+    super(null, dateFormat);
     getHeader().setLocalDateTime(LocalDateTime.now());
     getHeader().setPublished(true);
-    getHeader().setAuthor(Header.GRAV_SETTINGS.get().getDefaultAuthor());
+    getHeader().setAuthor(author);
   }
 
   public PostType getPostType() {

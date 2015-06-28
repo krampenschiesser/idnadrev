@@ -13,13 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.blogging.grav.ui.settings;
+package de.ks.blogging.grav.pages;
 
-import de.ks.activity.ActivityCfg;
-import de.ks.datasource.DataSource;
+import javax.enterprise.inject.Produces;
+import javax.inject.Singleton;
 
-public class GravSettingsActivity extends ActivityCfg {
-  public GravSettingsActivity(Class<? extends DataSource<?>> dataSource, Class<?> initialController) {
-    super(dataSource, initialController);
+public class GravPagesProducer {
+
+  @Produces
+  @Singleton
+  public GravPages getPages() {
+    return new GravPages(null);
   }
 }
