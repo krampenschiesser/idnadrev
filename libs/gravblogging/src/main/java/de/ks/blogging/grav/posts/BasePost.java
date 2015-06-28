@@ -126,7 +126,7 @@ public class BasePost {
 
   public void write() {
     log.info("Writing changes of {} to {}", getHeader().getTitle(), file.getAbsolutePath());
-    String fileContent = header.writeHeader() + "\n" + content;
+    String fileContent = header.writeHeader() + content;
     try {
       if (!file.exists()) {
         Files.createDirectories(file.getParentFile().toPath());
