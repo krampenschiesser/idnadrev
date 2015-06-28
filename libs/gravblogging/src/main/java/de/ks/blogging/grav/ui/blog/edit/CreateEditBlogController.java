@@ -27,6 +27,7 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 import javafx.util.StringConverter;
@@ -55,6 +56,13 @@ public class CreateEditBlogController extends BaseController<GravBlog> {
   protected Button blogSubPathSelection;
 
   @FXML
+  protected TextField ftpUrl;
+  @FXML
+  protected TextField ftpUser;
+  @FXML
+  protected PasswordField ftpPass;
+
+  @FXML
   protected Button save;
   @FXML
   protected Button cancel;
@@ -66,6 +74,8 @@ public class CreateEditBlogController extends BaseController<GravBlog> {
     pagesDir.textProperty().bindBidirectional(store.getBinding().getStringProperty(GravBlog.class, b -> b.getPagesDirectory()));
     defaultAuthor.textProperty().bindBidirectional(store.getBinding().getStringProperty(GravBlog.class, b -> b.getDefaultAuthor()));
     name.textProperty().bindBidirectional(store.getBinding().getStringProperty(GravBlog.class, b -> b.getName()));
+    ftpUrl.textProperty().bindBidirectional(store.getBinding().getStringProperty(GravBlog.class, b -> b.getFtpUrl()));
+    ftpUser.textProperty().bindBidirectional(store.getBinding().getStringProperty(GravBlog.class, b -> b.getFtpUser()));
 
     imageDimension.textProperty().bindBidirectional(store.getBinding().getIntegerProperty(GravBlog.class, b -> b.getImageDimension()), new StringConverter<Number>() {
       @Override
@@ -138,6 +148,9 @@ public class CreateEditBlogController extends BaseController<GravBlog> {
   @Override
   public void duringSave(GravBlog model) {
     model.setDateFormat(dateFormat.getValue());
+    if (!ftpPass.textProperty().getValueSafe().isEmpty()) {
+      model.setFtpPass(ftpPass.getText());
+    }
   }
 
   @FXML

@@ -18,6 +18,9 @@
         <RowConstraints minHeight="30.0" vgrow="NEVER"/>
         <RowConstraints minHeight="30.0" vgrow="NEVER"/>
         <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
         <RowConstraints minHeight="30.0" vgrow="NEVER"/>
     </rowConstraints>
     <children>
@@ -44,8 +47,18 @@
 
         <Label text="%grav.settings.dateFormat:" GridPane.rowIndex="5"/>
         <ChoiceBox fx:id="dateFormat" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+
+        <Label text="%grav.settings.ftpUrl:" GridPane.rowIndex="6"/>
+        <TextField fx:id="ftpUrl" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="6"/>
+
+        <Label text="%grav.settings.ftpUser:" GridPane.rowIndex="7"/>
+        <TextField fx:id="ftpUser" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="7"/>
+
+        <Label text="%grav.settings.ftpPass:" GridPane.rowIndex="8"/>
+        <PasswordField fx:id="ftpPass" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="8"/>
+
         <HBox maxHeight="-Infinity" spacing="10.0" GridPane.columnIndex="1" GridPane.columnSpan="2147483647"
-              GridPane.rowIndex="6">
+              GridPane.rowIndex="9">
             <children>
                 <Button fx:id="save" defaultButton="true" onAction="#onSave" text="%save.mnemonic"/>
                 <Button fx:id="cancel" cancelButton="true" onAction="#onCancel" text="%cancel.mnemonic"/>

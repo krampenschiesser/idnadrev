@@ -18,6 +18,7 @@ package de.ks.blogging.grav.entity;
 import com.google.common.base.StandardSystemProperty;
 import de.ks.blogging.grav.PostDateFormat;
 import de.ks.persistence.entity.NamedPersistentObject;
+import de.ks.util.Smoke;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -34,8 +35,11 @@ public class GravBlog extends NamedPersistentObject<GravBlog> {
   @Enumerated(EnumType.STRING)
   protected PostDateFormat dateFormat;
 
+  protected String ftpUrl;
+  protected String ftpUser;
+  protected String ftpPass;
+
   protected GravBlog() {
-    //hibernate
   }
 
   public GravBlog(String name, String pagesDirectory) {
@@ -89,6 +93,33 @@ public class GravBlog extends NamedPersistentObject<GravBlog> {
 
   public GravBlog setDateFormat(PostDateFormat dateFormat) {
     this.dateFormat = dateFormat;
+    return this;
+  }
+
+  public String getFtpPass() {
+    return Smoke.instance.fadeAway(ftpPass);
+  }
+
+  public GravBlog setFtpPass(String ftpPass) {
+    this.ftpPass = Smoke.instance.emerge(ftpPass);
+    return this;
+  }
+
+  public String getFtpUrl() {
+    return ftpUrl;
+  }
+
+  public GravBlog setFtpUrl(String ftpUrl) {
+    this.ftpUrl = ftpUrl;
+    return this;
+  }
+
+  public String getFtpUser() {
+    return ftpUser;
+  }
+
+  public GravBlog setFtpUser(String ftpUser) {
+    this.ftpUser = ftpUser;
     return this;
   }
 }
