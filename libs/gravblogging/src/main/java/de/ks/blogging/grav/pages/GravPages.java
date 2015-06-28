@@ -118,9 +118,9 @@ public class GravPages implements AutoCloseable {
     return page;
   }
 
-  public synchronized Page addPage(String title) {
+  public synchronized Page addPage(String title, int index) {
     String fileName = "default.md";
-    File file = getPostFile(title, fileName);
+    File file = getPostFile(index + "." + title, fileName);
     Page page = new Page(file, blog.getDateFormat());
     page.getHeader().setTitle(title);
     page.getHeader().setAuthor(blog.getDefaultAuthor());
@@ -151,7 +151,7 @@ public class GravPages implements AutoCloseable {
     Charset ascii = Charsets.US_ASCII;
     CharsetEncoder encoder = ascii.newEncoder();
     for (char character : chars) {
-      boolean isCharacter = Character.isLetterOrDigit(character) || character == '-';
+      boolean isCharacter = Character.isLetterOrDigit(character) || character == '-' || character == '.';
       boolean isAscii = encoder.canEncode(character);
       if (isCharacter && isAscii) {
         folderName.append(character);

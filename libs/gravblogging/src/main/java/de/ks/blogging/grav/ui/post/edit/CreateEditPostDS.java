@@ -50,7 +50,7 @@ public class CreateEditPostDS implements DataSource<BasePost> {
       if (postType == PostType.BLOGITEM) {
         basePost = gravPages.addBlogItem(wrapper.getHeader().getTitle());
       } else if (postType == PostType.PAGE) {
-        basePost = gravPages.addPage(wrapper.getHeader().getTitle());
+        basePost = gravPages.addPage(wrapper.getHeader().getTitle(), wrapper.getPageIndex());
       } else {
         basePost = gravPages.addPost(wrapper.getHeader().getTitle(), wrapper.getFilePath());
       }

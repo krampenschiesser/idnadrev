@@ -23,6 +23,7 @@ import de.ks.markdown.editor.MarkdownEditor;
 import de.ks.validation.validators.IntegerRangeValidator;
 import de.ks.validation.validators.NotEmptyValidator;
 import de.ks.validation.validators.TimeHHMMValidator;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -99,13 +100,19 @@ public class CreateEditPostController extends BaseController<BasePost> {
       }
     });
 
-    filePath.disableProperty().bind(knownContent);
     type.disableProperty().bind(knownContent);
-    selectFilePath.disableProperty().bind(knownContent);
 
     post.disableProperty().bind(validationRegistry.invalidProperty());
 
     type.setItems(FXCollections.observableArrayList(PostType.values()));
+
+    BooleanBinding isBlogItem = type.getSelectionModel().selectedItemProperty().isEqualTo(PostType.BLOGITEM);
+    BooleanBinding isPage = type.getSelectionModel().selectedItemProperty().isEqualTo(PostType.PAGE);
+    BooleanBinding isUnknown = type.getSelectionModel().selectedItemProperty().isEqualTo(PostType.UNKNOWN);
+
+    filePath.disableProperty().bind(knownContent.or(isUnknown.not()));
+    selectFilePath.disableProperty().bind(knownContent.or(isUnknown.not()));
+    pageIndex.disableProperty().bind(knownContent.or(isPage.not()));
   }
 
   @FXML

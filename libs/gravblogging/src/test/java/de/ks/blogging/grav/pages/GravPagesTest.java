@@ -167,14 +167,14 @@ public class GravPagesTest {
     String title = "Ein Bier, ein Würstchen!#+?  ";
     String content = "Hello Sauerland";
 
-    Page page = gravPages.addPage(title);
+    Page page = gravPages.addPage(title, 42);
     page.getHeader().setLocalDateTime(LocalDateTime.of(2015, 06, 06, 12, 42, 0));
     page.setContent(content);
     page.write();
 
     File file = page.getFile();
     file.deleteOnExit();
-    assertEquals("ein-bier-ein-wuerstchen", file.getParentFile().getName());
+    assertEquals("42.ein-bier-ein-wuerstchen", file.getParentFile().getName());
     assertEquals("default.md", file.getName());
 
     List<String> lines = Files.readAllLines(file.toPath());

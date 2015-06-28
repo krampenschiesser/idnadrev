@@ -9,6 +9,7 @@ import de.ks.blogging.grav.posts.BasePost;
 import de.ks.blogging.grav.ui.post.AbstractBlogIntegrationTest;
 import de.ks.persistence.PersistentWork;
 import de.ks.util.FXPlatform;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 @RunWith(LauncherRunner.class)
 public class CreateEditPostActivityTest extends AbstractBlogIntegrationTest {
@@ -138,6 +140,8 @@ public class CreateEditPostActivityTest extends AbstractBlogIntegrationTest {
     assertEquals(2, post.getHeader().getTags().size());
     assertEquals("tag 1", post.getHeader().getTags().get(0));
     assertEquals("tag 2", post.getHeader().getTags().get(1));
+
+    assertThat(post.getFile().getParentFile().getName(), Matchers.startsWith("42."));
   }
 
   @Test
