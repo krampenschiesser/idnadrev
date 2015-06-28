@@ -118,7 +118,8 @@ public class ManagePostsController extends BaseController<List<BasePost>> {
     BooleanBinding nothingSelected = postTable.getSelectionModel().selectedItemProperty().isNull();
     edit.disableProperty().bind(nothingSelected);
     showFolder.disableProperty().bind(nothingSelected);
-    delete.disableProperty().bind(nothingSelected);
+//    delete.disableProperty().bind(nothingSelected);
+    delete.setDisable(true);
 
     postTable.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
       if (n == null) {
