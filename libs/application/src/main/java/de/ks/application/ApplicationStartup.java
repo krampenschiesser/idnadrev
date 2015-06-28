@@ -24,6 +24,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import org.slf4j.Logger;
@@ -44,7 +45,13 @@ public class ApplicationStartup {
       Instance<MainWindow> select = cdi.select(MainWindow.class);
       if (select.isUnsatisfied()) {
         stage.setTitle(Localized.get("warning.general"));
-        stage.setScene(new Scene(new Label(Localized.get("warning.unsatisfiedApplication")), 640, 480));
+        StackPane container = new StackPane();
+        Label label = new Label(Localized.get("warning.unsatisfiedApplication"));
+        container.getChildren().add(label);
+        Scene scene = new Scene(container, 640, 480);
+        stage.setScene(scene);
+
+        Navigator.register(stage, container);
       } else {
         mainWindow = select.get();
         stage.setTitle(mainWindow.getApplicationTitle());
