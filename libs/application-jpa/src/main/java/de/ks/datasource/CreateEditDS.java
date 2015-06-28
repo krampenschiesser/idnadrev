@@ -35,6 +35,8 @@ public class CreateEditDS<T extends AbstractPersistentObject<T>> implements Data
   public void setLoadingHint(Object dataSourceHint) {
     if (dataSourceHint != null && clazz.isAssignableFrom(dataSourceHint.getClass())) {
       hint = ((T) dataSourceHint);
+    } else {
+      hint = null;
     }
   }
 
