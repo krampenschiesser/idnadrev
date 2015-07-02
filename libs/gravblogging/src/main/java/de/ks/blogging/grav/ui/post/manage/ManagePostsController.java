@@ -194,10 +194,16 @@ public class ManagePostsController extends BaseController<List<BasePost>> {
   public void onResume() {
     List<GravBlog> blogs = PersistentWork.from(GravBlog.class);
     controller.getJavaFXExecutor().submit(() -> {
-      blogSelection.setItems(FXCollections.observableList(blogs));
       SingleSelectionModel<GravBlog> selectionModel = blogSelection.getSelectionModel();
-      if (blogs.size() > 0 && selectionModel.isEmpty()) {
-        selectionModel.select(0);
+      GravBlog selectedItem = selectionModel.getSelectedItem();
+
+      blogSelection.setItems(FXCollections.observableList(blogs));
+      if (blogs.size() > 0) {
+        if (selectedItem != null) {
+          selectionModel.select(selectedItem);
+        } else {
+          selectionModel.select(0);
+        }
       }
     });
   }
