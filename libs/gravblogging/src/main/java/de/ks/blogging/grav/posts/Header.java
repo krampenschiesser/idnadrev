@@ -72,11 +72,11 @@ public class Header extends HeaderContainer {
   }
 
   public String getCategory() {
-    return getChildContainer(TAXONOMY_KEY).getHeaderElement(CATEGORY_KEY);
+    return getOrCreateChildContainer(TAXONOMY_KEY).getHeaderElement(CATEGORY_KEY);
   }
 
   public Header setCategory(String category) {
-    HeaderContainer childContainer = getChildContainer(TAXONOMY_KEY);
+    HeaderContainer childContainer = getOrCreateChildContainer(TAXONOMY_KEY);
     childContainer.setHeaderElement(CATEGORY_KEY, category);
     return this;
   }
@@ -179,7 +179,7 @@ public class Header extends HeaderContainer {
   }
 
   public String getTagString() {
-    String tagsString = getChildContainer(TAXONOMY_KEY).getHeaderElement(TAG_KEY);
+    String tagsString = getOrCreateChildContainer(TAXONOMY_KEY).getHeaderElement(TAG_KEY);
     if (tagsString != null && !tagsString.isEmpty()) {
       tagsString = StringUtils.remove(tagsString, "[");
       tagsString = StringUtils.remove(tagsString, "]");
@@ -189,7 +189,7 @@ public class Header extends HeaderContainer {
   }
 
   public Header setTagString(String tagsString) {
-    HeaderContainer childContainer = getChildContainer(TAXONOMY_KEY);
+    HeaderContainer childContainer = getOrCreateChildContainer(TAXONOMY_KEY);
     StringBuilder builder = new StringBuilder();
     builder.append("[");
     builder.append(tagsString);
@@ -201,7 +201,7 @@ public class Header extends HeaderContainer {
   public List<String> getTags() {
     LinkedList<String> retval = new LinkedList<>();
 
-    String tagsString = getChildContainer(TAXONOMY_KEY).getHeaderElement(TAG_KEY);
+    String tagsString = getOrCreateChildContainer(TAXONOMY_KEY).getHeaderElement(TAG_KEY);
     if (tagsString != null && !tagsString.isEmpty()) {
       tagsString = StringUtils.remove(tagsString, "[");
       tagsString = StringUtils.remove(tagsString, "]");
@@ -221,7 +221,7 @@ public class Header extends HeaderContainer {
     if (tags.isEmpty()) {
       return this;
     } else {
-      HeaderContainer childContainer = getChildContainer(TAXONOMY_KEY);
+      HeaderContainer childContainer = getOrCreateChildContainer(TAXONOMY_KEY);
       StringBuilder builder = new StringBuilder();
       builder.append("[");
       String tagsString = tags.stream().collect(Collectors.joining(", "));

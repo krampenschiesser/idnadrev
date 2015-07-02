@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class HeaderContainer implements Cloneable {
   private static final Logger log = LoggerFactory.getLogger(HeaderContainer.class);
@@ -35,6 +36,21 @@ public class HeaderContainer implements Cloneable {
     this.level = level;
   }
 
+  public List<HeaderElement> getHeaderElements() {
+    ArrayList<HeaderElement> retval = new ArrayList<>();
+    retval.addAll(elements.entrySet().stream().map(e -> new HeaderElement(e, this)).collect(Collectors.toList()));
+    return retval;
+  }
+
+  public List<HeaderElement> getHeaderElementsRecursively() {
+    List<HeaderElement> retval = getHeaderElements();
+    retval.addAll(childContainers.stream().map(e -> e.getHeaderElements()).reduce(new ArrayList<HeaderElement>(), (old, cur) -> {
+      old.addAll(cur);
+      return old;
+    }));
+    return retval;
+  }
+
   public String getHeaderElement(String key) {
     return elements.get(key);
   }
@@ -44,7 +60,7 @@ public class HeaderContainer implements Cloneable {
     return this;
   }
 
-  public HeaderContainer getChildContainer(String key) {
+  public HeaderContainer getOrCreateChildContainer(String key) {
     return childContainers.stream().filter(c -> c.getKey().equals(key)).findFirst().orElseGet(() -> {
       HeaderContainer container = new HeaderContainer(key, level + 1);
       childContainers.add(container);
@@ -128,7 +144,7 @@ public class HeaderContainer implements Cloneable {
       }
     });
     other.childContainers.forEach(otherChild -> {
-      HeaderContainer childContainer = getChildContainer(otherChild.key);
+      HeaderContainer childContainer = getOrCreateChildContainer(otherChild.key);
       if (childContainer == null) {
         childContainers.add(otherChild.clone());
       } else {
@@ -143,5 +159,34 @@ public class HeaderContainer implements Cloneable {
     elements.forEach(clone.elements::put);
     childContainers.forEach(cc -> clone.childContainers.add(cc.clone()));
     return clone;
+  }
+
+  public List<HeaderContainer> getChildContainers() {
+    return childContainers;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof HeaderContainer)) {
+      return false;
+    }
+
+    HeaderContainer that = (HeaderContainer) o;
+
+    if (level != that.level) {
+      return false;
+    }
+    return !(key != null ? !key.equals(that.key) : that.key != null);
+
+  }
+
+  @Override
+  public int hashCode() {
+    int result = key != null ? key.hashCode() : 0;
+    result = 31 * result + level;
+    return result;
   }
 }

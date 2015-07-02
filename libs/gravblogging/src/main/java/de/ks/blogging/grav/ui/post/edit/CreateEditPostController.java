@@ -27,6 +27,7 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
@@ -81,6 +82,9 @@ public class CreateEditPostController extends BaseController<BasePost> {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
+    Node view = activityInitialization.loadAdditionalController(AdvancedHeader.class).getView();
+    headerContainer.setContent(view);
+
     MarkdownEditor.load(pane -> contentContainer.getChildren().addAll(pane), ctrl -> editor = ctrl);
 
     editor.textProperty().bindBidirectional(store.getBinding().getStringProperty(BasePost.class, b -> b.getContent()));

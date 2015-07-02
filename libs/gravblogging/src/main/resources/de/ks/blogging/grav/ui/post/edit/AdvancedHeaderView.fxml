@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TreeTableColumn?>
+<?import javafx.scene.control.TreeTableView?>
+<?import javafx.scene.layout.StackPane?>
+<StackPane fx:id="root" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="de.ks.blogging.grav.ui.post.edit.AdvancedHeader">
+    <children>
+        <TreeTableView fx:id="table">
+            <columns>
+                <TreeTableColumn fx:id="keyColumn" prefWidth="300.0" text="%grav.header.key"/>
+                <TreeTableColumn fx:id="valueColumn" prefWidth="500.0" text="%grav.header.value"/>
+            </columns>
+        </TreeTableView>
+    </children>
+</StackPane>
