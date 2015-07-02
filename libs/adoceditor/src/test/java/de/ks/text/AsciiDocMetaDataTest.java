@@ -51,10 +51,11 @@ public class AsciiDocMetaDataTest {
     }
     Files.deleteIfExists(new File(dataDir, "asciidoctor.css").toPath());
     Files.deleteIfExists(new File(dataDir, "asciidoctor-coderay.css").toPath());
+    Files.deleteIfExists(new File(dataDir, "markdown.css").toPath());
 
-    assertEquals(2, dataDir.listFiles().length);
+    assertEquals(3, dataDir.listFiles().length);
     asciiDocMetaData.extract();
-    assertEquals(5, dataDir.listFiles().length);
+    assertEquals(7, dataDir.listFiles().length);
   }
 
   protected void deleteDir(File file) throws IOException {
