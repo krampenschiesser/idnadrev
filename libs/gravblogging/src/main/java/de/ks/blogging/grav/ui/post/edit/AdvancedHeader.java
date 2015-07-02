@@ -97,6 +97,11 @@ public class AdvancedHeader extends BaseController<BasePost> {
     table.setRoot(root);
   }
 
+  @Override
+  public void onSuspend() {
+    actions.clear();
+  }
+
   private void addContainerToTable(HeaderContainer header, TreeItem<HeaderElement> root) {
     for (HeaderElement headerElement : header.getHeaderElements()) {
       root.getChildren().add(new TreeItem<>(headerElement));
