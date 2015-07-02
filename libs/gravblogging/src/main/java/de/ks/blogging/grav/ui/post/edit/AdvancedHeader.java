@@ -79,15 +79,6 @@ public class AdvancedHeader extends BaseController<BasePost> {
         resolved.setHeaderElement(headerElement.getKey(), newValue);
       });
     });
-//    table.setOnMouseClicked(e -> {
-//      if (e.getClickCount()   > 1 && e.isPrimaryButtonDown()) {
-//        TreeItem<HeaderElement> selectedItem = table.getSelectionModel().getSelectedItem();
-//        if (selectedItem != null) {
-//          int row = table.getRow(selectedItem);
-//          table.edit(row, valueColumn);
-//        }
-//      }
-//    });
   }
 
   @Override
