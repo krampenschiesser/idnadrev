@@ -37,7 +37,9 @@ public class PresentationArea {
       log.debug("Showing new node {} in content {} of presentation area {}", n, content, this);
       content.getChildren().clear();
 
-      content.getChildren().add(n);
+      if (n != null) {
+        content.getChildren().add(n);
+      }
     });
   }
 
@@ -65,7 +67,7 @@ public class PresentationArea {
   @Override
   public String toString() {
     return super.toString() + " {" +
-            "id='" + id + '\'' +
-            '}';
+      "id='" + id + '\'' +
+      '}';
   }
 }
