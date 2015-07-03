@@ -1,6 +1,7 @@
 package de.ks.blogging.grav.pages;
 
 import com.google.common.base.StandardSystemProperty;
+import de.ks.FileUtil;
 import de.ks.blogging.grav.entity.GravBlog;
 import de.ks.blogging.grav.posts.BasePost;
 import de.ks.blogging.grav.posts.BlogItem;
@@ -15,13 +16,8 @@ import org.eclipse.jgit.lib.RepositoryBuilder;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -92,7 +88,7 @@ public class GravPagesTest {
 
       assertTrue(gravPages.hasGitRepository());
     } finally {
-      deleteDir(tmpDir);
+      FileUtil.deleteDir(tmpDir);
     }
   }
 
@@ -120,7 +116,7 @@ public class GravPagesTest {
       GravPages gravPages = new GravPages(blog);
       assertTrue(gravPages.hasGitRepository());
     } finally {
-      deleteDir(tmpDir);
+      FileUtil.deleteDir(tmpDir);
     }
   }
 
@@ -154,7 +150,7 @@ public class GravPagesTest {
       assertEquals(0, call.getUntracked().size());
       git.close();
     } finally {
-      deleteDir(tmpDir);
+      FileUtil.deleteDir(tmpDir);
     }
   }
 
@@ -237,23 +233,5 @@ public class GravPagesTest {
     assertTrue(mediaFile.exists());
     ImageInfo imageInfo = Sanselan.getImageInfo(mediaFile);
     assertEquals(1024, imageInfo.getWidth());
-  }
-
-  static void deleteDir(File dir) throws IOException {
-    SimpleFileVisitor<Path> visitor = new SimpleFileVisitor<Path>() {
-      @Override
-      public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-        Files.deleteIfExists(file);
-        return super.visitFile(file, attrs);
-      }
-
-      @Override
-      public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-        Files.deleteIfExists(dir);
-        return super.postVisitDirectory(dir, exc);
-      }
-    };
-    Files.walkFileTree(dir.toPath(), visitor);
-    Files.deleteIfExists(dir.toPath());
   }
 }
