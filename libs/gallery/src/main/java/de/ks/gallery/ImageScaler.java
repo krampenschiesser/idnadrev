@@ -16,6 +16,7 @@
 package de.ks.gallery;
 
 import org.apache.sanselan.ImageInfo;
+import org.apache.sanselan.ImageReadException;
 import org.apache.sanselan.Sanselan;
 import org.apache.sanselan.common.IImageMetadata;
 import org.apache.sanselan.formats.jpeg.JpegImageMetadata;
@@ -28,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -61,33 +63,22 @@ public class ImageScaler {
     return Optional.empty();
   }
 
+  public BufferedImage rotateAndScale(File src, int requestedSize) throws IOException, ImageReadException {
+    BufferedImage image = ImageIO.read(src);
+    return rotateAndScale(src, requestedSize, image);
+  }
+
+  public BufferedImage rotate(File src) throws IOException, ImageReadException {
+    BufferedImage image = ImageIO.read(src);
+    return rotate(src, image);
+  }
+
   public void rotateAndWriteImage(File src, File target, int requestedSize) {
     try {
       BufferedImage image = ImageIO.read(src);
       ImageInfo imageInfo = Sanselan.getImageInfo(src);
 
-      int orientation = getExifOrientation(src);
-      if (orientation >= 0) {
-        if (orientation == ExifTagConstants.ORIENTATION_VALUE_ROTATE_90_CW) {
-          image = Scalr.rotate(image, Scalr.Rotation.CW_90);
-        } else if (orientation == ExifTagConstants.ORIENTATION_VALUE_ROTATE_180) {
-          image = Scalr.rotate(image, Scalr.Rotation.CW_180);
-        } else if (orientation == ExifTagConstants.ORIENTATION_VALUE_ROTATE_270_CW) {
-          image = Scalr.rotate(image, Scalr.Rotation.CW_270);
-        } else if (orientation == ExifTagConstants.ORIENTATION_VALUE_MIRROR_HORIZONTAL_AND_ROTATE_90_CW) {
-          image = Scalr.rotate(image, Scalr.Rotation.FLIP_HORZ);
-          image = Scalr.rotate(image, Scalr.Rotation.CW_90);
-
-        } else if (orientation == ExifTagConstants.ORIENTATION_VALUE_MIRROR_HORIZONTAL_AND_ROTATE_270_CW) {
-          image = Scalr.rotate(image, Scalr.Rotation.FLIP_HORZ);
-          image = Scalr.rotate(image, Scalr.Rotation.CW_270);
-        } else if (orientation == ExifTagConstants.ORIENTATION_VALUE_MIRROR_HORIZONTAL) {
-          image = Scalr.rotate(image, Scalr.Rotation.FLIP_HORZ);
-        } else if (orientation == ExifTagConstants.ORIENTATION_VALUE_MIRROR_VERTICAL) {
-          image = Scalr.rotate(image, Scalr.Rotation.FLIP_VERT);
-        }
-      }
-      image = Scalr.resize(image, requestedSize);
+      image = rotateAndScale(src, requestedSize, image);
       Files.createDirectories(target.getParentFile().toPath());
 
       String extension = imageInfo.getFormat().extension;
@@ -97,7 +88,38 @@ public class ImageScaler {
     }
   }
 
-  protected int getExifOrientation(File file) throws Exception {
+  protected BufferedImage rotateAndScale(File src, int requestedSize, BufferedImage image) throws IOException, ImageReadException {
+    image = rotate(src, image);
+    image = Scalr.resize(image, requestedSize);
+    return image;
+  }
+
+  protected BufferedImage rotate(File src, BufferedImage image) throws IOException, ImageReadException {
+    int orientation = getExifOrientation(src);
+    if (orientation >= 0) {
+      if (orientation == ExifTagConstants.ORIENTATION_VALUE_ROTATE_90_CW) {
+        image = Scalr.rotate(image, Scalr.Rotation.CW_90);
+      } else if (orientation == ExifTagConstants.ORIENTATION_VALUE_ROTATE_180) {
+        image = Scalr.rotate(image, Scalr.Rotation.CW_180);
+      } else if (orientation == ExifTagConstants.ORIENTATION_VALUE_ROTATE_270_CW) {
+        image = Scalr.rotate(image, Scalr.Rotation.CW_270);
+      } else if (orientation == ExifTagConstants.ORIENTATION_VALUE_MIRROR_HORIZONTAL_AND_ROTATE_90_CW) {
+        image = Scalr.rotate(image, Scalr.Rotation.FLIP_HORZ);
+        image = Scalr.rotate(image, Scalr.Rotation.CW_90);
+
+      } else if (orientation == ExifTagConstants.ORIENTATION_VALUE_MIRROR_HORIZONTAL_AND_ROTATE_270_CW) {
+        image = Scalr.rotate(image, Scalr.Rotation.FLIP_HORZ);
+        image = Scalr.rotate(image, Scalr.Rotation.CW_270);
+      } else if (orientation == ExifTagConstants.ORIENTATION_VALUE_MIRROR_HORIZONTAL) {
+        image = Scalr.rotate(image, Scalr.Rotation.FLIP_HORZ);
+      } else if (orientation == ExifTagConstants.ORIENTATION_VALUE_MIRROR_VERTICAL) {
+        image = Scalr.rotate(image, Scalr.Rotation.FLIP_VERT);
+      }
+    }
+    return image;
+  }
+
+  protected int getExifOrientation(File file) throws IOException, ImageReadException {
     IImageMetadata metadata = Sanselan.getMetadata(file);
     if (metadata instanceof JpegImageMetadata) {
       TiffField orientationField = ((JpegImageMetadata) metadata).findEXIFValue(ExifTagConstants.EXIF_TAG_ORIENTATION);
