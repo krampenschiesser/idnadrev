@@ -4,5 +4,6 @@ dependencies {
     compile "org.apache.sanselan:sanselan:$commonsImage"
     compile "org.imgscalr:imgscalr-lib:$imgScaler"
 
-    testCompile project(":libs:testutil")
+    testCompile project(":libs:application-test-util")
+    testCompile "org.hamcrest:hamcrest-all:$hamcrest"
 }

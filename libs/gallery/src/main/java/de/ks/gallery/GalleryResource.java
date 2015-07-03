@@ -26,8 +26,10 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 public class GalleryResource {
@@ -39,6 +41,8 @@ public class GalleryResource {
 
   protected Supplier<GallerySettings> settingsSupplier = () -> Options.get(GallerySettings.class);
   protected final Set<File> parents = new HashSet<>();
+  protected final Map<WatchKey, File> key2Dir = new ConcurrentHashMap<>();
+  protected final Set<File> knownDeleted = Collections.synchronizedSet(new HashSet<>());
 
   @Inject
   ActivityExecutor executor;
@@ -49,9 +53,9 @@ public class GalleryResource {
   private Thread watchThread;
 
   protected GalleryResource() {
-    clear();
+    reset();
     files.addListener((SetChangeListener<File>) c -> {
-      int thumbNailSize = settingsSupplier.get().getThumbNailSize();
+      int thumbNailSize = getThumbnailSize();
 
       HashSet<File> oldParents = new HashSet<File>(parents);
       HashSet<File> newParents = new HashSet<File>();
@@ -67,7 +71,9 @@ public class GalleryResource {
         newParents.removeAll(oldParents);
         for (File file : newParents) {
           try {
-            file.toPath().register(watchService, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE);
+            WatchKey watchKey = file.toPath().register(watchService, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_CREATE);
+            key2Dir.put(watchKey, file);
+            log.debug("Registered {} at watchservice.", file);
           } catch (IOException e) {
             log.error("Could not register {} at watchService.", file, e);
           }
@@ -80,6 +86,7 @@ public class GalleryResource {
     CompletableFuture<GalleryItem> future = CompletableFuture.supplyAsync(() -> {
       try {
         GalleryItem descriptor = new GalleryItem(file, thumbNailSize);
+        log.debug("Created gallery item for {}", file);
         return descriptor;
       } catch (Exception e) {
         log.info("Could not get image descriptor for {}", file, e);
@@ -96,26 +103,62 @@ public class GalleryResource {
     }, javaFXExecutorService);
   }
 
+  public void setFolder(File folder, boolean recurse) {
+    if (!folder.isDirectory()) {
+      throw new IllegalArgumentException("Given file " + folder + " is no folder");
+    }
+    ArrayList<File> files = new ArrayList<>();
+    SimpleFileVisitor<Path> visitor = new SimpleFileVisitor<Path>() {
+      @Override
+      public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+        files.add(file.toFile());
+        return super.visitFile(file, attrs);
+      }
+
+      @Override
+      public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+        if (dir.toFile().equals(folder)) {
+          return super.preVisitDirectory(dir, attrs);
+        } else if (recurse) {
+          return FileVisitResult.CONTINUE;
+        } else {
+          return FileVisitResult.SKIP_SUBTREE;
+        }
+      }
+    };
+    try {
+      Files.walkFileTree(folder.toPath(), visitor);
+    } catch (IOException e) {
+      log.error("Could not walk filetree {}", folder);
+    }
+    setFiles(files);
+  }
+
   public void setFiles(Collection<File> files) {
     javaFXExecutorService.submit(() -> {
-      clear();
+      reset();
       this.files.addAll(files);
     });
   }
 
-  public void clear() {
+  public void reset() {
     this.files.clear();
     file2item.clear();
     items.clear();
-    try {
-      watchService.close();
-    } catch (IOException e) {
-      log.error("Could not close watchService", e);
+    key2Dir.clear();
+    knownDeleted.clear();
+    if (watchService != null) {
+      try {
+        watchService.close();
+      } catch (IOException e) {
+        log.error("Could not close watchService", e);
+      }
     }
     watchService = null;
     try {
       watchService = FileSystems.getDefault().newWatchService();
       watchThread = new Thread(this::pollService);
+      watchThread.setName("WatchService-Poll-" + getClass().getSimpleName());
       watchThread.setDaemon(true);
       watchThread.start();
     } catch (IOException e) {
@@ -124,34 +167,63 @@ public class GalleryResource {
   }
 
   protected void pollService() {
-    WatchKey key = watchService.poll();
-    if (key.isValid()) {
-      List<WatchEvent<?>> watchEvents = key.pollEvents();
-      for (WatchEvent<?> watchEvent : watchEvents) {
-        final WatchEvent<Path> wePath = (WatchEvent<Path>) watchEvent;
-        Path path = wePath.context();
-        File file = path.toFile();
+    try {
+      while (true) {
+        WatchKey key = watchService.poll();
+        if (key != null && key.isValid()) {
+          File parentDir = key2Dir.get(key);
 
-        if (watchEvent.kind() == StandardWatchEventKinds.ENTRY_DELETE) {
-          handleItemDeleted(file);
-        } else {
-          handleItemModified(file);
+          List<WatchEvent<?>> watchEvents = key.pollEvents();
+          for (WatchEvent<?> watchEvent : watchEvents) {
+            final WatchEvent<Path> wePath = (WatchEvent<Path>) watchEvent;
+            Path path = wePath.context();
+            File file = new File(parentDir, path.toFile().getName());
+            log.trace("Got watchevent {} with file {} and kind {}", watchEvent, file.getAbsolutePath(), watchEvent.kind());
+
+            if (watchEvent.kind() == StandardWatchEventKinds.ENTRY_DELETE) {
+              handleItemDeleted(file);
+              knownDeleted.add(file);
+            } else if (watchEvent.kind() == StandardWatchEventKinds.ENTRY_MODIFY) {
+              handleItemModified(file);
+            } else if (watchEvent.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
+              handleItemCreated(file);
+            }
+          }
+          key.reset();
         }
       }
+    } catch (ClosedWatchServiceException e) {
+      log.debug("Closed watchservice normally");
+    } catch (Exception e) {
+      log.error("Exception while polling on watchservice ", e);
+    }
+  }
+
+  private void handleItemCreated(File file) {
+    if (knownDeleted.contains(file)) {
+      log.debug("Got previously deleted file back again {}", file);
+      int thumbNailSize = getThumbnailSize();
+      createFile(file, thumbNailSize);
     }
   }
 
   private void handleItemModified(File file) {
-    int thumbNailSize = settingsSupplier.get().getThumbNailSize();
+    int thumbNailSize = getThumbnailSize();
     handleItemDeleted(file);
     createFile(file, thumbNailSize);
   }
 
+  public int getThumbnailSize() {
+    return settingsSupplier.get().getThumbNailSize();
+  }
+
   private void handleItemDeleted(File file) {
     if (file2item.containsKey(file)) {
+      log.debug("File {} was deleted, removing it.", file);
       javaFXExecutorService.submit(() -> {
         GalleryItem descriptor = file2item.remove(file);
         items.remove(descriptor);
+        log.debug("Successfully removed {}.", file);
       });
     }
   }

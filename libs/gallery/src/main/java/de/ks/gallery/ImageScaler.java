@@ -63,12 +63,12 @@ public class ImageScaler {
     return Optional.empty();
   }
 
-  public BufferedImage rotateAndScale(File src, int requestedSize) throws IOException, ImageReadException {
+  public BufferedImage rotateAndScale(File src, int requestedSize) throws IOException {
     BufferedImage image = ImageIO.read(src);
     return rotateAndScale(src, requestedSize, image);
   }
 
-  public BufferedImage rotate(File src) throws IOException, ImageReadException {
+  public BufferedImage rotate(File src) throws IOException {
     BufferedImage image = ImageIO.read(src);
     return rotate(src, image);
   }
@@ -88,13 +88,13 @@ public class ImageScaler {
     }
   }
 
-  protected BufferedImage rotateAndScale(File src, int requestedSize, BufferedImage image) throws IOException, ImageReadException {
+  protected BufferedImage rotateAndScale(File src, int requestedSize, BufferedImage image) throws IOException {
     image = rotate(src, image);
     image = Scalr.resize(image, requestedSize);
     return image;
   }
 
-  protected BufferedImage rotate(File src, BufferedImage image) throws IOException, ImageReadException {
+  protected BufferedImage rotate(File src, BufferedImage image) throws IOException {
     int orientation = getExifOrientation(src);
     if (orientation >= 0) {
       if (orientation == ExifTagConstants.ORIENTATION_VALUE_ROTATE_90_CW) {
@@ -119,13 +119,17 @@ public class ImageScaler {
     return image;
   }
 
-  protected int getExifOrientation(File file) throws IOException, ImageReadException {
-    IImageMetadata metadata = Sanselan.getMetadata(file);
-    if (metadata instanceof JpegImageMetadata) {
-      TiffField orientationField = ((JpegImageMetadata) metadata).findEXIFValue(ExifTagConstants.EXIF_TAG_ORIENTATION);
+  protected int getExifOrientation(File file) throws IOException {
+    try {
+      IImageMetadata metadata = Sanselan.getMetadata(file);
+      if (metadata instanceof JpegImageMetadata) {
+        TiffField orientationField = ((JpegImageMetadata) metadata).findEXIFValue(ExifTagConstants.EXIF_TAG_ORIENTATION);
 
-      int orientation = orientationField.getIntValue();
-      return orientation;
+        int orientation = orientationField.getIntValue();
+        return orientation;
+      }
+    } catch (ImageReadException e) {
+      //
     }
     return -1;
   }
