@@ -12,21 +12,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-include "doc"
+package de.ks;
 
-include "libs:fxcontrols"
+import de.ks.activity.initialization.ActivityCallback;
+import javafx.fxml.Initializable;
 
-include "libs:testutil", "libs:util", "libs:reflection"
-include "libs:launch"
-//PC stuff
-include "libs:validation", "libs:hibernate-pool", "libs:persistence", "libs:eventsystem", "libs:i18n", "libs:scheduler"
-include "libs:executor"
-include "libs:gravblogging", "libs:gallery"
-//javaFX stuff
-include "libs:images", "libs:application"
-include "libs:application-test-util"
-include "libs:application-jpa"
-include "libs:adoceditor"
-include "libs:googleintegration"
-include "libs:markdowneditor"
-include "app"
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class Dummy implements Initializable, ActivityCallback {
+  public static boolean fail = false;
+  private boolean resumed;
+
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    if (fail) {
+      throw new RuntimeException("Failing as requested");
+    }
+  }
+
+  @Override
+  public void onResume() {
+    this.resumed = true;
+  }
+
+  public boolean isResumed() {
+    return resumed;
+  }
+}

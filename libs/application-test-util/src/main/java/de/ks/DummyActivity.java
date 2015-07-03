@@ -12,21 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-include "doc"
+package de.ks;
 
-include "libs:fxcontrols"
+import de.ks.activity.ActivityCfg;
 
-include "libs:testutil", "libs:util", "libs:reflection"
-include "libs:launch"
-//PC stuff
-include "libs:validation", "libs:hibernate-pool", "libs:persistence", "libs:eventsystem", "libs:i18n", "libs:scheduler"
-include "libs:executor"
-include "libs:gravblogging", "libs:gallery"
-//javaFX stuff
-include "libs:images", "libs:application"
-include "libs:application-test-util"
-include "libs:application-jpa"
-include "libs:adoceditor"
-include "libs:googleintegration"
-include "libs:markdowneditor"
-include "app"
+public class DummyActivity extends ActivityCfg {
+  public DummyActivity() {
+    super(DummyTestDataSource.class, Dummy.class);
+  }
+}

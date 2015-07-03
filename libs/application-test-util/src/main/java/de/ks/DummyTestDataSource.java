@@ -12,21 +12,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-include "doc"
+package de.ks;
 
-include "libs:fxcontrols"
+import de.ks.datasource.NewInstanceDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-include "libs:testutil", "libs:util", "libs:reflection"
-include "libs:launch"
-//PC stuff
-include "libs:validation", "libs:hibernate-pool", "libs:persistence", "libs:eventsystem", "libs:i18n", "libs:scheduler"
-include "libs:executor"
-include "libs:gravblogging", "libs:gallery"
-//javaFX stuff
-include "libs:images", "libs:application"
-include "libs:application-test-util"
-include "libs:application-jpa"
-include "libs:adoceditor"
-include "libs:googleintegration"
-include "libs:markdowneditor"
-include "app"
+import java.util.function.Consumer;
+
+public class DummyTestDataSource extends NewInstanceDataSource<Object> {
+  private static final Logger log = LoggerFactory.getLogger(DummyTestDataSource.class);
+
+  public DummyTestDataSource() {
+    super(Object.class);
+  }
+
+  @Override
+  public void saveModel(Object model, Consumer<Object> beforeSaving) {
+    log.info("Writing back {}", model);
+  }
+}

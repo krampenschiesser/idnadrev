@@ -1,0 +1,4 @@
+dependencies {
+    compile project(":libs:application")
+    compile project(":libs:testutil")
+}
