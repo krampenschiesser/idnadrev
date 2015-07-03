@@ -1,4 +1,4 @@
-package de.ks.blogging.grav.posts.media;
+package de.ks.gallery;
 
 import com.google.common.base.StandardSystemProperty;
 import org.apache.sanselan.ImageInfo;

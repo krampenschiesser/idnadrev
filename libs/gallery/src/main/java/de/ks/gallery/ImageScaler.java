@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.blogging.grav.posts.media;
+package de.ks.gallery;
 
 import org.apache.sanselan.ImageInfo;
 import org.apache.sanselan.Sanselan;

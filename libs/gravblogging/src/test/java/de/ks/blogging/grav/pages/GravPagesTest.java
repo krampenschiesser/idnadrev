@@ -6,7 +6,7 @@ import de.ks.blogging.grav.posts.BasePost;
 import de.ks.blogging.grav.posts.BlogItem;
 import de.ks.blogging.grav.posts.HeaderContainer;
 import de.ks.blogging.grav.posts.Page;
-import de.ks.blogging.grav.posts.media.ImageScalerTest;
+import de.ks.gallery.ImageScalerTest;
 import org.apache.sanselan.ImageInfo;
 import org.apache.sanselan.Sanselan;
 import org.eclipse.jgit.api.Git;

@@ -1,0 +1,8 @@
+dependencies {
+    compile project(":libs:application-jpa")
+
+    compile "org.apache.sanselan:sanselan:$commonsImage"
+    compile "org.imgscalr:imgscalr-lib:$imgScaler"
+
+    testCompile project(":libs:testutil")
+}

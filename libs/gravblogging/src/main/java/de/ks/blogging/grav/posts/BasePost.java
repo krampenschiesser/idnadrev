@@ -17,7 +17,7 @@ package de.ks.blogging.grav.posts;
 
 import com.google.common.net.MediaType;
 import de.ks.blogging.grav.PostDateFormat;
-import de.ks.blogging.grav.posts.media.ImageScaler;
+import de.ks.gallery.ImageScaler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
