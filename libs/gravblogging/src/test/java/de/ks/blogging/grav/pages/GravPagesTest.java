@@ -6,7 +6,6 @@ import de.ks.blogging.grav.posts.BasePost;
 import de.ks.blogging.grav.posts.BlogItem;
 import de.ks.blogging.grav.posts.HeaderContainer;
 import de.ks.blogging.grav.posts.Page;
-import de.ks.gallery.ImageScalerTest;
 import org.apache.sanselan.ImageInfo;
 import org.apache.sanselan.Sanselan;
 import org.eclipse.jgit.api.Git;
@@ -224,7 +223,7 @@ public class GravPagesTest {
     blogItem.setContent(content);
     blogItem.getHeader().setTags("test", "blubber");
 
-    File src = new File(ImageScalerTest.class.getResource("landscape.jpg").getFile());
+    File src = new File(getClass().getResource("landscape.jpg").getFile());
     File mediaFile = blogItem.addMedia(src, blog.getImageDimension());
 
     blogItem.write();
