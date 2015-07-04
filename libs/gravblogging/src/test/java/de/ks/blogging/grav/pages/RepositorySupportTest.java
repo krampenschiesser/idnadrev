@@ -1,6 +1,7 @@
 package de.ks.blogging.grav.pages;
 
 import com.google.common.base.StandardSystemProperty;
+import de.ks.FileUtil;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPSClient;
@@ -41,7 +42,7 @@ public class RepositorySupportTest {
     tmpDir = new File(StandardSystemProperty.JAVA_IO_TMPDIR.value());
     ftpDir = new File(tmpDir, "ftpserver");
     if (ftpDir.exists()) {
-      GravPagesTest.deleteDir(ftpDir);
+      FileUtil.deleteDir(ftpDir);
     }
     ftpDir.mkdir();
     fillDirectory(ftpDir);
