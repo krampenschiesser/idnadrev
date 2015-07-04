@@ -57,26 +57,20 @@ public class GalleryResource {
     files.addListener((SetChangeListener<File>) c -> {
       int thumbNailSize = getThumbnailSize();
 
-      HashSet<File> oldParents = new HashSet<File>(parents);
-      HashSet<File> newParents = new HashSet<File>();
+      File file = c.getElementAdded();
+      File parent = file.getParentFile();
 
-      for (File file : this.files) {
-        newParents.add(file.getParentFile());
-
-        if (!file2item.containsKey(file)) {
-          createFile(file, thumbNailSize);
-        }
+      if (!file2item.containsKey(file)) {
+        createFile(file, thumbNailSize);
       }
-      if (watchService != null) {
-        newParents.removeAll(oldParents);
-        for (File file : newParents) {
-          try {
-            WatchKey watchKey = file.toPath().register(watchService, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_CREATE);
-            key2Dir.put(watchKey, file);
-            log.debug("Registered {} at watchservice.", file);
-          } catch (IOException e) {
-            log.error("Could not register {} at watchService.", file, e);
-          }
+      if (watchService != null && !parents.contains(parent)) {
+        try {
+          WatchKey watchKey = parent.toPath().register(watchService, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_CREATE);
+          parents.add(parent);
+          key2Dir.put(watchKey, parent);
+          log.debug("Registered {} at watchservice.", parent);
+        } catch (IOException e) {
+          log.error("Could not register {} at watchService.", parent, e);
         }
       }
     });
@@ -229,6 +223,6 @@ public class GalleryResource {
   }
 
   public ObservableList<GalleryItem> getItems() {
-    return FXCollections.unmodifiableObservableList(items);
+    return items;
   }
 }

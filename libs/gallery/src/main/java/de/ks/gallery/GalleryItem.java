@@ -23,12 +23,15 @@ import org.apache.sanselan.ImageReadException;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Optional;
 
-public class GalleryItem {
+public class GalleryItem implements Comparable<GalleryItem> {
   protected final File file;
   protected final String name;
   protected final Image image;
   protected final Image thumbNail;
+  protected final Optional<LocalDateTime> shootingTime;
 
   public GalleryItem(File file, int thumbnailSize) throws IOException, ImageReadException {
     if (file == null) {
@@ -46,6 +49,8 @@ public class GalleryItem {
     this.image = SwingFXUtils.toFXImage(originalRotated, new WritableImage(originalRotated.getWidth(), originalRotated.getHeight()));
     this.thumbNail = SwingFXUtils.toFXImage(thumbNailImage, new WritableImage(thumbNailImage.getWidth(), thumbNailImage.getHeight()));
     name = file.getName();
+
+    shootingTime = scaler.getShootingTime(file);
   }
 
   public File getFile() {
@@ -62,5 +67,18 @@ public class GalleryItem {
 
   public Image getThumbNail() {
     return thumbNail;
+  }
+
+  public Optional<LocalDateTime> getShootingTime() {
+    return shootingTime;
+  }
+
+  @Override
+  public int compareTo(GalleryItem o) {
+    if (shootingTime.isPresent() && o.shootingTime.isPresent()) {
+      return shootingTime.get().compareTo(o.shootingTime.get());
+    } else {
+      return name.compareTo(o.name);
+    }
   }
 }
