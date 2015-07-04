@@ -53,7 +53,13 @@ public class ApplicationService extends Service {
     if (hasPreloader) {
       Platform.runLater(() -> new ApplicationStartup().start(stage));
     } else {
-      fx = executorService.submit(() -> Application.launch(App.class, args));
+      fx = executorService.submit(() -> {
+        try {
+          Application.launch(App.class, args);
+        } catch (Exception e) {
+          log.error("Could not start application ", e);
+        }
+      });
     }
     waitForJavaFXInitialized();
   }
