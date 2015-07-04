@@ -1,5 +1,6 @@
 package de.ks.idnadrev.task.view;
 
+import de.ks.Condition;
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityCfg;
 import de.ks.idnadrev.ActivityTest;
@@ -177,6 +178,6 @@ public class WorkUnitControllerTest extends ActivityTest {
     List<WorkUnit> workUnits = PersistentWork.from(WorkUnit.class);
     assertEquals(1, workUnits.size());
 
-    assertEquals(1, controller.workUnitTable.getItems().size());
+    Condition.waitFor1s(() -> controller.workUnitTable.getItems(), Matchers.hasSize(1));
   }
 }

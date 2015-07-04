@@ -1,5 +1,6 @@
 package de.ks.idnadrev.cost.csvimport;
 
+import de.ks.Condition;
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityCfg;
 import de.ks.idnadrev.ActivityTest;
@@ -50,7 +51,7 @@ public class BookingFromCSVActivityTemplatingTest extends ActivityTest {
     assertEquals(2, controller.templates.getItems().size());
     assertEquals("template1", controller.templates.getSelectionModel().getSelectedItem().getName());
 
-    assertEquals(2, controller.account.getItems().size());
+    Condition.waitFor1s(() -> controller.account.getItems(), Matchers.hasSize(2));
     assertEquals("account2", controller.account.getSelectionModel().getSelectedItem());//selected from template
 
     assertEquals(";", controller.separator.getText());
