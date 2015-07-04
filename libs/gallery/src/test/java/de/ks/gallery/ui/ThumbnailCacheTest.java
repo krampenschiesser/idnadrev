@@ -17,6 +17,7 @@ package de.ks.gallery.ui;
 
 import de.ks.DummyActivityTest;
 import de.ks.LauncherRunner;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -35,6 +36,12 @@ public class ThumbnailCacheTest extends DummyActivityTest {
 
   @Inject
   ThumbnailCache cache;
+
+  @Before
+  public void setUp() throws Exception {
+    cache.clear();
+
+  }
 
   @Test
   public void testCache() throws Exception {

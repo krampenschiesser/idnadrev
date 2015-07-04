@@ -16,11 +16,14 @@
 package de.ks.gallery.ui;
 
 import de.ks.BaseController;
+import de.ks.executor.group.LastExecutionGroup;
 import de.ks.gallery.GalleryItem;
 import de.ks.gallery.GalleryResource;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.layout.FlowPane;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -29,6 +32,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class ThumbnailGallery extends BaseController<Object> {
+  private static final Logger log = LoggerFactory.getLogger(ThumbnailGallery.class);
   @Inject
   protected GalleryResource resource;
   @Inject
@@ -37,11 +41,15 @@ public class ThumbnailGallery extends BaseController<Object> {
   protected FlowPane container;
 
   private Collection<Thumbnail> thumbNails;
+  private LastExecutionGroup<List<GalleryItem>> lastExecutionGroup;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
+
+    lastExecutionGroup = new LastExecutionGroup<>("wait for file changes", 700, controller.getExecutorService());
     resource.getItems().addListener((ListChangeListener<GalleryItem>) c -> {
-      recreate();
+      CompletableFuture<List<GalleryItem>> cf = lastExecutionGroup.schedule(resource::getItems);
+      cf.thenAcceptAsync(items -> recreate(items), controller.getJavaFXExecutor());
     });
   }
 
@@ -53,12 +61,12 @@ public class ThumbnailGallery extends BaseController<Object> {
     resource.setFolder(folder, recurse);
   }
 
-  protected void recreate() {
+  protected void recreate(List<GalleryItem> galleryItems) {
     if (thumbNails != null) {
       cache.release(thumbNails);
     }
-
-    List<GalleryItem> items = new ArrayList<>(resource.getItems());
+    log.info("Recreating gallery for {} items", galleryItems.size());
+    List<GalleryItem> items = new ArrayList<>(galleryItems);
     CompletableFuture<Collection<Thumbnail>> reserve = cache.reserve(items.size());
     reserve.thenAcceptAsync(thumbnails -> {
       int i = 0;
@@ -68,6 +76,7 @@ public class ThumbnailGallery extends BaseController<Object> {
         i++;
       }
 
+      container.getChildren().clear();
       ArrayList<Thumbnail> sorted = new ArrayList<>(thumbnails);
       Collections.sort(sorted, Comparator.comparing(t -> t.getItem()));
       sorted.forEach(item -> container.getChildren().add(item.getRoot()));

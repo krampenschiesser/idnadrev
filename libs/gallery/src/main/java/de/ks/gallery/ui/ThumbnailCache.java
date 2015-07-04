@@ -105,4 +105,8 @@ public class ThumbnailCache {
     return load.getController();
   }
 
+  public void clear() {
+    available.clear();
+    reserved.clear();
+  }
 }
