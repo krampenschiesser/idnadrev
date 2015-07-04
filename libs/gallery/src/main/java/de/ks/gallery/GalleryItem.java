@@ -15,9 +15,11 @@
  */
 package de.ks.gallery;
 
+import de.ks.javafx.ScreenResolver;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
+import javafx.stage.Screen;
 import org.apache.sanselan.ImageReadException;
 
 import java.awt.image.BufferedImage;
@@ -29,7 +31,6 @@ import java.util.Optional;
 public class GalleryItem implements Comparable<GalleryItem> {
   protected final File file;
   protected final String name;
-  protected final Image image;
   protected final Image thumbNail;
   protected final Optional<LocalDateTime> shootingTime;
 
@@ -43,10 +44,8 @@ public class GalleryItem implements Comparable<GalleryItem> {
     this.file = file;
 
     ImageScaler scaler = new ImageScaler();
-    BufferedImage originalRotated = scaler.rotate(file);
     BufferedImage thumbNailImage = scaler.rotateAndScale(file, thumbnailSize);
 
-    this.image = SwingFXUtils.toFXImage(originalRotated, new WritableImage(originalRotated.getWidth(), originalRotated.getHeight()));
     this.thumbNail = SwingFXUtils.toFXImage(thumbNailImage, new WritableImage(thumbNailImage.getWidth(), thumbNailImage.getHeight()));
     name = file.getName();
 
@@ -62,7 +61,17 @@ public class GalleryItem implements Comparable<GalleryItem> {
   }
 
   public Image getImage() {
-    return image;
+    Screen screen = new ScreenResolver().getScreenToShow();
+    double height = screen.getBounds().getHeight();
+    double width = screen.getBounds().getWidth();
+
+    try {
+      ImageScaler scaler = new ImageScaler();
+      BufferedImage originalRotated = scaler.rotateAndScale(file, (int) width, (int) height);
+      return SwingFXUtils.toFXImage(originalRotated, new WritableImage(originalRotated.getWidth(), originalRotated.getHeight()));
+    } catch (IOException e) {
+      throw new RuntimeException(e);//should not happen has constructor should have failed
+    }
   }
 
   public Image getThumbNail() {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.gallery.ui;
+package de.ks.gallery.ui.thumbnail;
 
 import de.ks.BaseController;
 import de.ks.executor.group.LastExecutionGroup;
@@ -40,16 +40,25 @@ public class ThumbnailGallery extends BaseController<Object> {
   @FXML
   protected FlowPane container;
 
-  private Collection<Thumbnail> thumbNails;
   private LastExecutionGroup<List<GalleryItem>> lastExecutionGroup;
+  protected final Set<Thumbnail> allThumbNails = new HashSet<>();
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
 
     lastExecutionGroup = new LastExecutionGroup<>("wait for file changes", 700, controller.getExecutorService());
     resource.getItems().addListener((ListChangeListener<GalleryItem>) c -> {
+      while (c.next()) {
+        List<? extends GalleryItem> removed = c.getRemoved();
+        List<GalleryItem> added = (List<GalleryItem>) c.getAddedSubList();
+
+        addItems(added, false, false);
+      }
+
       CompletableFuture<List<GalleryItem>> cf = lastExecutionGroup.schedule(resource::getItems);
-      cf.thenAcceptAsync(items -> recreate(items), controller.getJavaFXExecutor());
+      if (cf.getNumberOfDependents() == 0) {
+        cf.thenAcceptAsync(items -> addItems(items, true, true), controller.getJavaFXExecutor());
+      }
     });
   }
 
@@ -61,26 +70,42 @@ public class ThumbnailGallery extends BaseController<Object> {
     resource.setFolder(folder, recurse);
   }
 
-  protected void recreate(List<GalleryItem> galleryItems) {
-    if (thumbNails != null) {
-      cache.release(thumbNails);
-    }
+  protected void addItems(List<GalleryItem> galleryItems, boolean clear, boolean sort) {
     log.info("Recreating gallery for {} items", galleryItems.size());
+
+    if (clear) {
+      releaseThumbnails();
+      container.getChildren().clear();
+      allThumbNails.clear();
+    }
+
     List<GalleryItem> items = new ArrayList<>(galleryItems);
     CompletableFuture<Collection<Thumbnail>> reserve = cache.reserve(items.size());
+
     reserve.thenAcceptAsync(thumbnails -> {
       int i = 0;
       for (Thumbnail thumbnail : thumbnails) {
         GalleryItem item = items.get(i);
         thumbnail.setItem(item);
         i++;
+        container.getChildren().add(thumbnail.getRoot());
+        allThumbNails.add(thumbnail);
       }
 
-      container.getChildren().clear();
-      ArrayList<Thumbnail> sorted = new ArrayList<>(thumbnails);
-      Collections.sort(sorted, Comparator.comparing(t -> t.getItem()));
-      sorted.forEach(item -> container.getChildren().add(item.getRoot()));
-      this.thumbNails = thumbnails;
+      if (sort) {
+        ArrayList<Thumbnail> sorted = new ArrayList<>(allThumbNails);
+        Collections.sort(sorted, Comparator.comparing(t -> t.getItem()));
+        container.getChildren().clear();
+        sorted.forEach(item -> container.getChildren().add(item.getRoot()));
+      }
     }, controller.getJavaFXExecutor());
+  }
+
+  private void releaseThumbnails() {
+    cache.release(allThumbNails);
+  }
+
+  public FlowPane getRoot() {
+    return container;
   }
 }

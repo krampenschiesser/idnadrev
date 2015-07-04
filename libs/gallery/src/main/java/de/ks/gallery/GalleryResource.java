@@ -15,6 +15,7 @@
  */
 package de.ks.gallery;
 
+import com.google.common.net.MediaType;
 import de.ks.activity.executor.ActivityExecutor;
 import de.ks.executor.JavaFXExecutorService;
 import de.ks.option.Options;
@@ -77,6 +78,17 @@ public class GalleryResource {
   }
 
   protected void createFile(File file, int thumbNailSize) {
+    try {
+      String contentType = Files.probeContentType(file.toPath());
+      MediaType parse = MediaType.parse(contentType);
+      if (!parse.is(MediaType.ANY_IMAGE_TYPE)) {
+        log.debug("File {} is no image", file);
+        return;
+      }
+    } catch (IOException e) {
+      log.error("Could not probe content type of {}", file, e);
+      return;
+    }
     CompletableFuture<GalleryItem> future = CompletableFuture.supplyAsync(() -> {
       try {
         GalleryItem descriptor = new GalleryItem(file, thumbNailSize);

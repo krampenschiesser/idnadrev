@@ -63,6 +63,11 @@ public class ImageScaler {
     return Optional.empty();
   }
 
+  public BufferedImage rotateAndScale(File src, int width, int height) throws IOException {
+    BufferedImage image = ImageIO.read(src);
+    return rotateAndScale(src, width, height, image);
+  }
+
   public BufferedImage rotateAndScale(File src, int requestedSize) throws IOException {
     BufferedImage image = ImageIO.read(src);
     return rotateAndScale(src, requestedSize, image);
@@ -91,6 +96,12 @@ public class ImageScaler {
   protected BufferedImage rotateAndScale(File src, int requestedSize, BufferedImage image) throws IOException {
     image = rotate(src, image);
     image = Scalr.resize(image, requestedSize);
+    return image;
+  }
+
+  protected BufferedImage rotateAndScale(File src, int width, int heigth, BufferedImage image) throws IOException {
+    image = rotate(src, image);
+    image = Scalr.resize(image, Math.min(width, image.getWidth()), Math.min(heigth, image.getHeight()));
     return image;
   }
 

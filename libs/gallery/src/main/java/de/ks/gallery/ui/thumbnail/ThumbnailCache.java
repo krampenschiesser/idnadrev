@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.gallery.ui;
+package de.ks.gallery.ui.thumbnail;
 
 import de.ks.activity.executor.ActivityExecutor;
-import de.ks.application.fxml.DefaultLoader;
 import de.ks.executor.JavaFXExecutorService;
-import javafx.scene.layout.GridPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,8 +99,7 @@ public class ThumbnailCache {
   }
 
   protected Thumbnail load() {
-    DefaultLoader<GridPane, Thumbnail> load = new DefaultLoader<GridPane, Thumbnail>(Thumbnail.class).load();
-    return load.getController();
+    return new Thumbnail();
   }
 
   public void clear() {

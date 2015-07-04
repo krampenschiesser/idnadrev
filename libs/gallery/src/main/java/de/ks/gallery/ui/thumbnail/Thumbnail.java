@@ -13,50 +13,58 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.gallery.ui;
+package de.ks.gallery.ui.thumbnail;
 
 import de.ks.gallery.GalleryItem;
 import de.ks.javafx.ScreenResolver;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
+import javafx.scene.control.Button;
+import javafx.scene.control.ContentDisplay;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.net.URL;
-import java.util.ResourceBundle;
+public class Thumbnail {
+  private static final Logger log = LoggerFactory.getLogger(Thumbnail.class);
 
-public class Thumbnail implements Initializable {
-  @FXML
-  Label name;
-  @FXML
-  ImageView imageView;
-  @FXML
-  GridPane root;
+  private final Button button;
+  private final ImageView imageView;
 
   protected SimpleObjectProperty<GalleryItem> item = new SimpleObjectProperty<>();
   private Stage fullscreenStage;
 
-  @Override
-  public void initialize(URL location, ResourceBundle resources) {
+  public Thumbnail() {
+    button = new Button();
+    button.getStyleClass().add("thumbnail");
+    button.setContentDisplay(ContentDisplay.TOP);
+    imageView = new ImageView();
+    button.setGraphic(imageView);
     item.addListener((p, o, n) -> {
       if (n != null) {
-        name.setText(n.getName());
-        imageView.setImage(n.getThumbNail());
+
+        button.setText(n.getName());
+        Image image = n.getThumbNail();
+        imageView.setImage(image);
+        imageView.setFitHeight(image.getHeight());
+        imageView.setFitWidth(image.getWidth());
       } else {
-        name.setText("");
+        button.setText("");
         imageView.setImage(null);
       }
     });
 
     imageView.setOnMouseClicked(e -> openFullScreen());
+
+    button.setOnAction(e -> openFullScreen());
   }
 
   private void openFullScreen() {
@@ -66,8 +74,23 @@ public class Thumbnail implements Initializable {
 
     if (fullscreenStage == null) {
       fullscreenStage = new Stage();
+      fullscreenStage.setFullScreen(true);
+      fullscreenStage.setFullScreenExitHint("");
       fullscreenStage.setTitle(item.get().getName());
-      Scene scene = new Scene(new StackPane(new ImageView(item.get().getImage())));
+      Rectangle2D bounds = new ScreenResolver().getScreenToShow().getBounds();
+
+      Image image = item.get().getImage();
+      ImageView imageView = new ImageView(image);
+
+      StackPane root = new StackPane(imageView);
+      root.setStyle("-fx-background-color: black;");
+
+      if (bounds.getWidth() > bounds.getHeight()) {
+        imageView.fitHeightProperty().bind(Bindings.min(image.getHeight(), root.heightProperty()));
+      } else {
+        imageView.fitWidthProperty().bind(Bindings.min(image.getWidth(), root.widthProperty()));
+      }
+      Scene scene = new Scene(root);
       scene.setOnKeyReleased(e -> {
         if (e.getCode() == KeyCode.ESCAPE) {
           fullscreenStage.close();
@@ -75,7 +98,6 @@ public class Thumbnail implements Initializable {
       });
       fullscreenStage.setScene(scene);
 
-      Rectangle2D bounds = new ScreenResolver().getScreenToShow().getBounds();
       fullscreenStage.setX(bounds.getMinX());
       fullscreenStage.setY(bounds.getMinY());
       fullscreenStage.setWidth(bounds.getWidth());
@@ -83,11 +105,13 @@ public class Thumbnail implements Initializable {
 
       fullscreenStage.initModality(Modality.NONE);
       fullscreenStage.setOnCloseRequest(e -> this.fullscreenStage = null);
+      fullscreenStage.setOnHiding(e -> this.fullscreenStage = null);
       fullscreenStage.show();
     } else {
       StackPane root = (StackPane) fullscreenStage.getScene().getRoot();
       ImageView view = (ImageView) root.getChildren().iterator().next();
       view.setImage(item.get().getImage());
+      fullscreenStage.show();
     }
   }
 
@@ -103,7 +127,7 @@ public class Thumbnail implements Initializable {
     this.item.set(item);
   }
 
-  public GridPane getRoot() {
-    return root;
+  public Node getRoot() {
+    return button;
   }
 }
