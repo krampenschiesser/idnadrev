@@ -143,6 +143,13 @@ public class ManagePostsController extends BaseController<List<BasePost>> {
         return blogSelection.getItems().stream().filter(i -> i.getName().equals(string)).findFirst().get();
       }
     });
+    postTable.setOnMouseClicked(e -> {
+      if (e.getClickCount() > 1) {
+        if (!edit.isDisabled()) {
+          onEdit();
+        }
+      }
+    });
   }
 
   @FXML
