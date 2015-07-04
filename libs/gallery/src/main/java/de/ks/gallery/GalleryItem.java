@@ -25,6 +25,7 @@ import org.apache.sanselan.ImageReadException;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.lang.ref.SoftReference;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -33,6 +34,8 @@ public class GalleryItem implements Comparable<GalleryItem> {
   protected final String name;
   protected final Image thumbNail;
   protected final Optional<LocalDateTime> shootingTime;
+
+  protected SoftReference<Image> loadedImage;
 
   public GalleryItem(File file, int thumbnailSize) throws IOException, ImageReadException {
     if (file == null) {
@@ -61,6 +64,18 @@ public class GalleryItem implements Comparable<GalleryItem> {
   }
 
   public Image getImage() {
+    if (loadedImage != null) {
+      Image image = loadedImage.get();
+      if (image != null) {
+        return image;
+      }
+    }
+    Image image = loadImage();
+    loadedImage = new SoftReference<Image>(image);
+    return image;
+  }
+
+  protected Image loadImage() {
     Screen screen = new ScreenResolver().getScreenToShow();
     double height = screen.getBounds().getHeight();
     double width = screen.getBounds().getWidth();

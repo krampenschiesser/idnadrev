@@ -16,19 +16,13 @@
 package de.ks.gallery.ui.thumbnail;
 
 import de.ks.gallery.GalleryItem;
-import de.ks.javafx.ScreenResolver;
-import javafx.beans.binding.Bindings;
+import de.ks.gallery.ui.slideshow.Slideshow;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.layout.StackPane;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +34,7 @@ public class Thumbnail {
   private final ImageView imageView;
 
   protected SimpleObjectProperty<GalleryItem> item = new SimpleObjectProperty<>();
+  protected SimpleObjectProperty<Slideshow> slideshow = new SimpleObjectProperty<>();
   private Stage fullscreenStage;
 
   public Thumbnail() {
@@ -71,48 +66,10 @@ public class Thumbnail {
     if (item.get() == null) {
       return;
     }
-
-    if (fullscreenStage == null) {
-      fullscreenStage = new Stage();
-      fullscreenStage.setFullScreen(true);
-      fullscreenStage.setFullScreenExitHint("");
-      fullscreenStage.setTitle(item.get().getName());
-      Rectangle2D bounds = new ScreenResolver().getScreenToShow().getBounds();
-
-      Image image = item.get().getImage();
-      ImageView imageView = new ImageView(image);
-
-      StackPane root = new StackPane(imageView);
-      root.setStyle("-fx-background-color: black;");
-
-      if (bounds.getWidth() > bounds.getHeight()) {
-        imageView.fitHeightProperty().bind(Bindings.min(image.getHeight(), root.heightProperty()));
-      } else {
-        imageView.fitWidthProperty().bind(Bindings.min(image.getWidth(), root.widthProperty()));
-      }
-      Scene scene = new Scene(root);
-      scene.setOnKeyReleased(e -> {
-        if (e.getCode() == KeyCode.ESCAPE) {
-          fullscreenStage.close();
-        }
-      });
-      fullscreenStage.setScene(scene);
-
-      fullscreenStage.setX(bounds.getMinX());
-      fullscreenStage.setY(bounds.getMinY());
-      fullscreenStage.setWidth(bounds.getWidth());
-      fullscreenStage.setHeight(bounds.getHeight());
-
-      fullscreenStage.initModality(Modality.NONE);
-      fullscreenStage.setOnCloseRequest(e -> this.fullscreenStage = null);
-      fullscreenStage.setOnHiding(e -> this.fullscreenStage = null);
-      fullscreenStage.show();
-    } else {
-      StackPane root = (StackPane) fullscreenStage.getScene().getRoot();
-      ImageView view = (ImageView) root.getChildren().iterator().next();
-      view.setImage(item.get().getImage());
-      fullscreenStage.show();
+    if (slideshow.get() == null) {
+      return;
     }
+    slideshow.get().show(item.get());
   }
 
   public GalleryItem getItem() {
@@ -129,5 +86,17 @@ public class Thumbnail {
 
   public Node getRoot() {
     return button;
+  }
+
+  public Slideshow getSlideshow() {
+    return slideshow.get();
+  }
+
+  public SimpleObjectProperty<Slideshow> slideshowProperty() {
+    return slideshow;
+  }
+
+  public void setSlideshow(Slideshow slideshow) {
+    this.slideshow.set(slideshow);
   }
 }

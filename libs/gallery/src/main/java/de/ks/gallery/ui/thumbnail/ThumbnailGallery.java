@@ -19,6 +19,8 @@ import de.ks.BaseController;
 import de.ks.executor.group.LastExecutionGroup;
 import de.ks.gallery.GalleryItem;
 import de.ks.gallery.GalleryResource;
+import de.ks.gallery.ui.slideshow.Slideshow;
+import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.layout.FlowPane;
@@ -37,19 +39,22 @@ public class ThumbnailGallery extends BaseController<Object> {
   protected GalleryResource resource;
   @Inject
   protected ThumbnailCache cache;
+
   @FXML
   protected FlowPane container;
 
   private LastExecutionGroup<List<GalleryItem>> lastExecutionGroup;
   protected final Set<Thumbnail> allThumbNails = new HashSet<>();
+  @Inject
+  private Slideshow slideShow;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
+    Bindings.bindContent(slideShow.getItems(), resource.getItems());
 
     lastExecutionGroup = new LastExecutionGroup<>("wait for file changes", 700, controller.getExecutorService());
     resource.getItems().addListener((ListChangeListener<GalleryItem>) c -> {
       while (c.next()) {
-        List<? extends GalleryItem> removed = c.getRemoved();
         List<GalleryItem> added = (List<GalleryItem>) c.getAddedSubList();
 
         addItems(added, false, false);
@@ -86,6 +91,7 @@ public class ThumbnailGallery extends BaseController<Object> {
       int i = 0;
       for (Thumbnail thumbnail : thumbnails) {
         GalleryItem item = items.get(i);
+        thumbnail.setSlideshow(slideShow);
         thumbnail.setItem(item);
         i++;
         container.getChildren().add(thumbnail.getRoot());
@@ -107,5 +113,9 @@ public class ThumbnailGallery extends BaseController<Object> {
 
   public FlowPane getRoot() {
     return container;
+  }
+
+  public Set<Thumbnail> getAllThumbNails() {
+    return allThumbNails;
   }
 }
