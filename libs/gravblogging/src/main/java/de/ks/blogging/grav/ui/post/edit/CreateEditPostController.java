@@ -18,6 +18,7 @@ package de.ks.blogging.grav.ui.post.edit;
 import de.ks.BaseController;
 import de.ks.blogging.grav.pages.GravPages;
 import de.ks.blogging.grav.posts.BasePost;
+import de.ks.gallery.ui.thumbnail.ThumbnailGallery;
 import de.ks.i18n.Localized;
 import de.ks.markdown.editor.MarkdownEditor;
 import de.ks.validation.validators.IntegerRangeValidator;
@@ -79,11 +80,15 @@ public class CreateEditPostController extends BaseController<BasePost> {
 
   @Inject
   GravPages gravPages;
+  private ThumbnailGallery thumbnailGallery;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     Node view = activityInitialization.loadAdditionalController(AdvancedHeader.class).getView();
     headerContainer.setContent(view);
+
+    thumbnailGallery = activityInitialization.loadAdditionalController(ThumbnailGallery.class).getController();
+    mediaContainer.setContent(thumbnailGallery.getRoot());
 
     MarkdownEditor.load(pane -> contentContainer.getChildren().addAll(pane), ctrl -> editor = ctrl);
 
@@ -180,6 +185,7 @@ public class CreateEditPostController extends BaseController<BasePost> {
     localDateTime.ifPresent(ldt -> time.setText(formatter.format(ldt.toLocalTime())));
 
     editor.setFile(model.getFile());
+    thumbnailGallery.setFolder(model.getFile().getParentFile(), true);
 
     if (model instanceof UIPostWrapper) {
       UIPostWrapper wrapper = (UIPostWrapper) model;

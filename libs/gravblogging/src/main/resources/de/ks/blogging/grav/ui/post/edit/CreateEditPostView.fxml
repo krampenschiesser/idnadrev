@@ -74,7 +74,8 @@
             <panes>
                 <TitledPane animated="false" text="%grav.post.media">
                     <content>
-                        <ScrollPane fx:id="mediaContainer"/>
+                        <!--<StackPane fx:id="mediaContainer" fitToWidth="true" />-->
+                        <ScrollPane fx:id="mediaContainer" fitToWidth="true" maxHeight="500"/>
                     </content>
                 </TitledPane>
             </panes>
