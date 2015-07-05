@@ -18,9 +18,9 @@ package de.ks.gallery.ui.thumbnail;
 import de.ks.gallery.GalleryItem;
 import de.ks.gallery.ui.slideshow.Slideshow;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.Control;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
@@ -84,7 +84,7 @@ public class Thumbnail {
     this.item.set(item);
   }
 
-  public Node getRoot() {
+  public Control getRoot() {
     return button;
   }
 

@@ -24,6 +24,7 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Control;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
@@ -56,7 +57,7 @@ public class ThumbnailGallery extends BaseController<Object> {
   protected final Set<Thumbnail> allThumbNails = new HashSet<>();
   private Slideshow slideShow;
 
-  protected BiFunction<Node, Thumbnail, Node> enhancer;
+  protected BiFunction<Control, Thumbnail, Node> enhancer;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -117,9 +118,9 @@ public class ThumbnailGallery extends BaseController<Object> {
         thumbnail.setSlideshow(slideShow);
         thumbnail.setItem(item);
         i++;
-        Node root = thumbnail.getRoot();
-        root = enhance(root, thumbnail);
-        container.getChildren().add(root);
+        Control root = thumbnail.getRoot();
+        Node enhance = enhance(root, thumbnail);
+        container.getChildren().add(enhance);
         allThumbNails.add(thumbnail);
       }
 
@@ -128,15 +129,15 @@ public class ThumbnailGallery extends BaseController<Object> {
         Collections.sort(sorted, Comparator.comparing(t -> t.getItem()));
         container.getChildren().clear();
         sorted.forEach(item -> {
-          Node root = item.getRoot();
-          root = enhance(root, item);
-          container.getChildren().add(root);
+          Control root = item.getRoot();
+          Node enhance = enhance(root, item);
+          container.getChildren().add(enhance);
         });
       }
     }, controller.getJavaFXExecutor());
   }
 
-  private Node enhance(Node root, Thumbnail thumbnail) {
+  private Node enhance(Control root, Thumbnail thumbnail) {
     if (enhancer != null) {
       return enhancer.apply(root, thumbnail);
     }
@@ -155,11 +156,11 @@ public class ThumbnailGallery extends BaseController<Object> {
     return allThumbNails;
   }
 
-  public BiFunction<Node, Thumbnail, Node> getEnhancer() {
+  public BiFunction<Control, Thumbnail, Node> getEnhancer() {
     return enhancer;
   }
 
-  public void setEnhancer(BiFunction<Node, Thumbnail, Node> enhancer) {
+  public void setEnhancer(BiFunction<Control, Thumbnail, Node> enhancer) {
     this.enhancer = enhancer;
   }
 }
