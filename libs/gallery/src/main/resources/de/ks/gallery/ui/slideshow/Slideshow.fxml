@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<StackPane id="StackPane" fx:id="root" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="de.ks.gallery.ui.slideshow.Slideshow">
+    <children>
+        <ImageView fx:id="imageView" preserveRatio="true" StackPane.alignment="CENTER"/>
+        <GridPane fx:id="menuBar" hgap="5.0" maxHeight="-Infinity" vgap="5.0" StackPane.alignment="TOP_CENTER">
+            <columnConstraints>
+                <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
+                <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
+                <ColumnConstraints hgrow="NEVER" minWidth="10.0" prefWidth="100.0"/>
+                <ColumnConstraints hgrow="ALWAYS" minWidth="10.0"/>
+                <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
+                <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="30.0" valignment="CENTER" vgrow="NEVER"/>
+            </rowConstraints>
+            <children>
+                <Label text="%gallery.timeout:"/>
+                <ChoiceBox fx:id="speed" prefWidth="150.0" GridPane.columnIndex="1"/>
+                <ToggleButton fx:id="startStop" mnemonicParsing="true" onAction="#onStartStop"
+                              text="%gallery.start.mneominc"
+                              GridPane.columnIndex="2"/>
+                <Button fx:id="markImage" onAction="#onMarkImage" text="%gallery.markimage.mnemonic"
+                        GridPane.columnIndex="4"/>
+                <Button fx:id="markForDeletion" onAction="#onMarkForDeletion"
+                        text="%gallery.markimage.deletion.mnemonic" GridPane.columnIndex="5"/>
+            </children>
+            <padding>
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+            </padding>
+            <StackPane.margin>
+                <Insets/>
+            </StackPane.margin>
+        </GridPane>
+    </children>
+</StackPane>

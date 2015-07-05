@@ -2,6 +2,7 @@ package de.ks.gallery.ui.slideshow;
 
 import de.ks.Condition;
 import de.ks.LauncherRunner;
+import de.ks.activity.initialization.ActivityInitialization;
 import de.ks.gallery.AbstractGalleryTest;
 import de.ks.gallery.GalleryResource;
 import de.ks.util.FXPlatform;
@@ -10,7 +11,6 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 
 import static org.junit.Assert.assertFalse;
@@ -23,10 +23,12 @@ public class SlideshowTest extends AbstractGalleryTest {
 
   @Inject
   GalleryResource resource;
+  @Inject
+  ActivityInitialization initialization;
 
   @Test
   public void testNextPreloading() throws Exception {
-    slideshow = FXPlatform.invokeLater(() -> CDI.current().select(Slideshow.class).get());
+    slideshow = initialization.loadAdditionalController(Slideshow.class).getController();
     Bindings.bindContent(slideshow.getItems(), resource.getItems());
     resource.setFolder(folder, true);
 
@@ -48,7 +50,7 @@ public class SlideshowTest extends AbstractGalleryTest {
 
   @Test
   public void testPreviousPreloading() throws Exception {
-    slideshow = FXPlatform.invokeLater(() -> CDI.current().select(Slideshow.class).get());
+    slideshow = initialization.loadAdditionalController(Slideshow.class).getController();
     Bindings.bindContent(slideshow.getItems(), resource.getItems());
     resource.setFolder(folder, true);
 
@@ -69,7 +71,7 @@ public class SlideshowTest extends AbstractGalleryTest {
 
   @Test
   public void test2Items() throws Exception {
-    slideshow = FXPlatform.invokeLater(() -> CDI.current().select(Slideshow.class).get());
+    slideshow = initialization.loadAdditionalController(Slideshow.class).getController();
 
     Bindings.bindContent(slideshow.getItems(), resource.getItems());
     resource.setFolder(folder, false);
@@ -97,7 +99,7 @@ public class SlideshowTest extends AbstractGalleryTest {
 
   @Test
   public void test1Item() throws Exception {
-    slideshow = FXPlatform.invokeLater(() -> CDI.current().select(Slideshow.class).get());
+    slideshow = initialization.loadAdditionalController(Slideshow.class).getController();
 
     Bindings.bindContent(slideshow.getItems(), resource.getItems());
     resource.setFolder(sub, false);

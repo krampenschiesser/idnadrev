@@ -15,18 +15,25 @@
  */
 package de.ks.gallery.ui.slideshow;
 
+import de.ks.BaseController;
 import de.ks.activity.executor.ActivityExecutor;
 import de.ks.gallery.GalleryItem;
+import de.ks.i18n.Localized;
 import de.ks.javafx.ScreenResolver;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -34,28 +41,49 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.net.URL;
+import java.util.*;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Slideshow {
+public class Slideshow extends BaseController<Object> {
   private static final Logger log = LoggerFactory.getLogger(Slideshow.class);
 
-  protected ObservableList<GalleryItem> items = FXCollections.observableArrayList();
+  @FXML
+  private GridPane menuBar;
+  @FXML
+  private Button markForDeletion;
+  @FXML
+  private Button markImage;
+
+  @FXML
+  private ChoiceBox<Integer> speed;
+  @FXML
+  private ToggleButton startStop;
+
+  @FXML
+  private StackPane root;
+  @FXML
+  private ImageView imageView;
+
+  protected final ObservableList<GalleryItem> items = FXCollections.observableArrayList();
 
   protected final List<GalleryItem> sorted = new ArrayList<>();
 
   protected final AtomicInteger currentIndex = new AtomicInteger();
-  protected ImageView imageView = new ImageView();
-  protected StackPane root = new StackPane(imageView);
   protected Stage fullscreenStage;
-  private final Scene scene;
+  protected Scene scene;
+
+  protected final Set<GalleryItem> markedForDeletion = new LinkedHashSet<>();
+  protected final Set<GalleryItem> markedItems = new LinkedHashSet<>();
 
   @Inject
   ActivityExecutor executor;
+  private ScheduledFuture<?> scheduledFuture;
 
-  public Slideshow() {
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
     items.addListener((ListChangeListener<GalleryItem>) c -> {
       sorted.clear();
       sorted.addAll(items);
@@ -71,6 +99,23 @@ public class Slideshow {
       }
     });
 
+    controller.getJavaFXExecutor().submit(this::createStage);
+
+    speed.setItems(FXCollections.observableArrayList(1, 2, 3, 4, 5, 7, 8, 10, 15, 20));
+    speed.setValue(3);
+    speed.valueProperty().addListener((p, o, n) -> restartWithTimeout());
+
+    menuBar.setVisible(false);
+    root.setOnMouseMoved(e -> {
+      if (e.getSceneY() < 100) {
+        menuBar.setVisible(true);
+      } else {
+        menuBar.setVisible(false);
+      }
+    });
+  }
+
+  protected void createStage() {
     fullscreenStage = new Stage();
     fullscreenStage.setFullScreen(true);
     fullscreenStage.setFullScreenExitHint("");
@@ -89,6 +134,14 @@ public class Slideshow {
         next();
       } else if (e.getCode() == KeyCode.LEFT) {
         previous();
+      } else if (e.getCode() == KeyCode.ALT) {
+        menuBar.setVisible(false);
+      }
+
+    });
+    scene.setOnKeyPressed(e -> {
+      if (e.getCode() == KeyCode.ALT) {
+        menuBar.setVisible(true);
       }
     });
     scene.setOnScroll(e -> {
@@ -108,6 +161,7 @@ public class Slideshow {
     fullscreenStage.setHeight(bounds.getHeight());
 
     fullscreenStage.initModality(Modality.NONE);
+    fullscreenStage.setOnHiding(e -> stop());
   }
 
   public void show(GalleryItem item) {
@@ -210,6 +264,63 @@ public class Slideshow {
   }
 
   public void setItems(ObservableList<GalleryItem> items) {
-    this.items = items;
+    this.items.clear();
+    this.items.addAll(items);
+  }
+
+  @FXML
+  void onMarkImage() {
+    GalleryItem item = sorted.get(currentIndex.get());
+    log.info("Marked item {}", item.getName());
+    markedItems.add(item);
+  }
+
+  @FXML
+  void onMarkForDeletion() {
+    GalleryItem item = sorted.get(currentIndex.get());
+    log.info("Marked item {} for deletion", item.getName());
+    markedForDeletion.add(item);
+  }
+
+  @FXML
+  void onStartStop() {
+    if (startStop.isSelected()) {
+      start();
+    } else {
+      stop();
+    }
+  }
+
+  private void start() {
+    startStop.setText(Localized.get("gallery.stop.mneominc"));
+    restartWithTimeout();
+  }
+
+  private void stop() {
+    log.info("Stopping slideshow");
+    if (scheduledFuture != null) {
+      scheduledFuture.cancel(true);
+      scheduledFuture = null;
+    }
+    startStop.setText(Localized.get("gallery.start.mneominc"));
+    startStop.setSelected(false);
+  }
+
+  private void restartWithTimeout() {
+    if (scheduledFuture != null) {
+      scheduledFuture.cancel(true);
+      scheduledFuture = null;
+    }
+    log.info("Starting slideshow with timeout {}s", speed.getValue());
+    Integer delay = Integer.valueOf(speed.getValue());
+    scheduledFuture = controller.getExecutorService().scheduleAtFixedRate(() -> controller.getJavaFXExecutor().submit(this::next), delay, delay, TimeUnit.SECONDS);
+  }
+
+  public Button getMarkImage() {
+    return markImage;
+  }
+
+  public Button getMarkForDeletion() {
+    return markForDeletion;
   }
 }

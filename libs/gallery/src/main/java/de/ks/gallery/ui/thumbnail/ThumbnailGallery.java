@@ -54,13 +54,13 @@ public class ThumbnailGallery extends BaseController<Object> {
 
   private LastExecutionGroup<List<GalleryItem>> lastExecutionGroup;
   protected final Set<Thumbnail> allThumbNails = new HashSet<>();
-  @Inject
   private Slideshow slideShow;
 
   protected BiFunction<Node, Thumbnail, Node> enhancer;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
+    slideShow = activityInitialization.loadAdditionalController(Slideshow.class).getController();
     Bindings.bindContent(slideShow.getItems(), resource.getItems());
 
     lastExecutionGroup = new LastExecutionGroup<>("wait for file changes", 700, controller.getExecutorService());
