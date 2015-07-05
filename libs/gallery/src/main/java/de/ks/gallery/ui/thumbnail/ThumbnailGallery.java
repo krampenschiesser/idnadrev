@@ -23,7 +23,11 @@ import de.ks.gallery.ui.slideshow.Slideshow;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +36,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiFunction;
 
 public class ThumbnailGallery extends BaseController<Object> {
   private static final Logger log = LoggerFactory.getLogger(ThumbnailGallery.class);
@@ -41,12 +46,18 @@ public class ThumbnailGallery extends BaseController<Object> {
   protected ThumbnailCache cache;
 
   @FXML
+  protected StackPane root;
+  @FXML
+  protected ProgressIndicator loader;
+  @FXML
   protected FlowPane container;
 
   private LastExecutionGroup<List<GalleryItem>> lastExecutionGroup;
   protected final Set<Thumbnail> allThumbNails = new HashSet<>();
   @Inject
   private Slideshow slideShow;
+
+  protected BiFunction<Node, Thumbnail, Node> enhancer;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -68,10 +79,21 @@ public class ThumbnailGallery extends BaseController<Object> {
   }
 
   public void setFiles(Collection<File> files) {
+    controller.getJavaFXExecutor().submit(this::showLoader);
     resource.setFiles(files);
   }
 
+  protected void showLoader() {
+    loader.setProgress(-1);
+    loader.setVisible(true);
+  }
+
+  protected void hideLoader() {
+    loader.setVisible(false);
+  }
+
   public void setFolder(File folder, boolean recurse) {
+    controller.getJavaFXExecutor().submit(this::showLoader);
     resource.setFolder(folder, recurse);
   }
 
@@ -89,12 +111,15 @@ public class ThumbnailGallery extends BaseController<Object> {
 
     reserve.thenAcceptAsync(thumbnails -> {
       int i = 0;
+      hideLoader();
       for (Thumbnail thumbnail : thumbnails) {
         GalleryItem item = items.get(i);
         thumbnail.setSlideshow(slideShow);
         thumbnail.setItem(item);
         i++;
-        container.getChildren().add(thumbnail.getRoot());
+        Node root = thumbnail.getRoot();
+        root = enhance(root, thumbnail);
+        container.getChildren().add(root);
         allThumbNails.add(thumbnail);
       }
 
@@ -102,20 +127,39 @@ public class ThumbnailGallery extends BaseController<Object> {
         ArrayList<Thumbnail> sorted = new ArrayList<>(allThumbNails);
         Collections.sort(sorted, Comparator.comparing(t -> t.getItem()));
         container.getChildren().clear();
-        sorted.forEach(item -> container.getChildren().add(item.getRoot()));
+        sorted.forEach(item -> {
+          Node root = item.getRoot();
+          root = enhance(root, item);
+          container.getChildren().add(root);
+        });
       }
     }, controller.getJavaFXExecutor());
+  }
+
+  private Node enhance(Node root, Thumbnail thumbnail) {
+    if (enhancer != null) {
+      return enhancer.apply(root, thumbnail);
+    }
+    return root;
   }
 
   private void releaseThumbnails() {
     cache.release(allThumbNails);
   }
 
-  public FlowPane getRoot() {
-    return container;
+  public Pane getRoot() {
+    return root;
   }
 
   public Set<Thumbnail> getAllThumbNails() {
     return allThumbNails;
+  }
+
+  public BiFunction<Node, Thumbnail, Node> getEnhancer() {
+    return enhancer;
+  }
+
+  public void setEnhancer(BiFunction<Node, Thumbnail, Node> enhancer) {
+    this.enhancer = enhancer;
   }
 }
