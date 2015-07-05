@@ -3,8 +3,9 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<GridPane hgap="5.0" minHeight="-Infinity" minWidth="-Infinity" vgap="5.0" xmlns="http://javafx.com/javafx/8"
-          xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.blogging.grav.ui.post.edit.CreateEditPostController">
+<GridPane fx:id="root" hgap="5.0" minHeight="-Infinity" minWidth="-Infinity" vgap="5.0"
+          xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="de.ks.blogging.grav.ui.post.edit.CreateEditPostController">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
         <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
@@ -16,10 +17,10 @@
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
-        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
-        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
-        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints maxHeight="-Infinity" vgrow="NEVER"/>
+        <RowConstraints maxHeight="-Infinity" vgrow="NEVER"/>
+        <RowConstraints maxHeight="-Infinity" vgrow="NEVER"/>
+        <RowConstraints vgrow="NEVER"/>
         <RowConstraints minHeight="30.0" vgrow="SOMETIMES"/>
         <RowConstraints minHeight="30.0" vgrow="NEVER"/>
         <RowConstraints minHeight="30.0" vgrow="NEVER"/>
@@ -70,12 +71,12 @@
 
         <StackPane fx:id="contentContainer" GridPane.columnSpan="2147483647" GridPane.rowIndex="4"/>
 
-        <Accordion GridPane.columnSpan="2147483647" GridPane.rowIndex="5">
+        <Accordion fx:id="mediaPane" GridPane.columnSpan="2147483647" GridPane.rowIndex="5">
             <panes>
-                <TitledPane animated="false" text="%grav.post.media">
+                <TitledPane animated="false" maxHeight="-Infinity" text="%grav.post.media">
                     <content>
                         <!--<StackPane fx:id="mediaContainer" fitToWidth="true" />-->
-                        <ScrollPane fx:id="mediaContainer" fitToWidth="true" maxHeight="500"/>
+                        <ScrollPane fx:id="mediaContainer" fitToWidth="true" maxHeight="350.0"/>
                     </content>
                 </TitledPane>
             </panes>

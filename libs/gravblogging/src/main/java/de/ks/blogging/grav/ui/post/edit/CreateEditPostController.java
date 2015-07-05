@@ -18,6 +18,7 @@ package de.ks.blogging.grav.ui.post.edit;
 import de.ks.BaseController;
 import de.ks.blogging.grav.pages.GravPages;
 import de.ks.blogging.grav.posts.BasePost;
+import de.ks.gallery.ui.thumbnail.Thumbnail;
 import de.ks.gallery.ui.thumbnail.ThumbnailGallery;
 import de.ks.i18n.Localized;
 import de.ks.markdown.editor.MarkdownEditor;
@@ -28,8 +29,11 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 import org.controlsfx.validation.ValidationResult;
@@ -43,8 +47,11 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.function.Predicate;
 
 public class CreateEditPostController extends BaseController<BasePost> {
+  @FXML
+  protected GridPane root;
   @FXML
   protected DatePicker date;
   @FXML
@@ -71,6 +78,8 @@ public class CreateEditPostController extends BaseController<BasePost> {
   protected TextField tags;
   @FXML
   protected TextField pageIndex;
+  @FXML
+  protected Accordion mediaPane;
 
   protected MarkdownEditor editor;
   protected TimeHHMMValidator validator;
@@ -89,6 +98,7 @@ public class CreateEditPostController extends BaseController<BasePost> {
 
     thumbnailGallery = activityInitialization.loadAdditionalController(ThumbnailGallery.class).getController();
     mediaContainer.setContent(thumbnailGallery.getRoot());
+    thumbnailGallery.setEnhancer(this::enhanceThumbnail);
 
     MarkdownEditor.load(pane -> contentContainer.getChildren().addAll(pane), ctrl -> editor = ctrl);
 
@@ -121,7 +131,6 @@ public class CreateEditPostController extends BaseController<BasePost> {
       }
     });
 
-
     type.disableProperty().bind(knownContent);
     post.disableProperty().bind(validationRegistry.invalidProperty());
 
@@ -133,6 +142,50 @@ public class CreateEditPostController extends BaseController<BasePost> {
     filePath.disableProperty().bind(knownContent.or(isUnknown.not()));
     selectFilePath.disableProperty().bind(knownContent.or(isUnknown.not()));
     pageIndex.disableProperty().bind(knownContent.or(isPage.not()));
+
+    mediaPane.expandedPaneProperty().addListener((p, o, n) -> {
+      Predicate<Node> filter = c -> {
+        boolean hasRowIndex = GridPane.getRowIndex(c) != null;
+        boolean isUpperRow = hasRowIndex && GridPane.getRowIndex(c) < 4;
+        return (hasRowIndex && isUpperRow) || !hasRowIndex;//first row is null in fx
+      };
+      if (n == null) {
+        root.getRowConstraints().get(0).setPrefHeight(Region.USE_COMPUTED_SIZE);
+        root.getRowConstraints().get(1).setPrefHeight(Region.USE_COMPUTED_SIZE);
+        root.getRowConstraints().get(2).setPrefHeight(Region.USE_COMPUTED_SIZE);
+        root.getChildren().stream().filter(filter).forEach(c -> c.setVisible(true));
+      } else {
+        root.getRowConstraints().get(0).setPrefHeight(0);
+        root.getRowConstraints().get(1).setPrefHeight(0);
+        root.getRowConstraints().get(2).setPrefHeight(0);
+        root.getChildren().stream().filter(filter).forEach(c -> c.setVisible(false));
+      }
+    });
+  }
+
+  private Node enhanceThumbnail(Control node, Thumbnail thumbnail) {
+    StackPane box = new StackPane();
+    box.setPrefSize(node.getWidth(), node.getHeight());
+    box.maxWidthProperty().bind(node.widthProperty());
+    box.maxHeightProperty().bind(node.heightProperty());
+    box.getChildren().add(node);
+    String name = thumbnail.getItem().getName();
+
+    Button insertAtCursor = new Button(Localized.get("grav.post.insertAtCursor", name));
+    insertAtCursor.setOnAction(e -> {
+      TextArea textArea = this.editor.getEditor();
+      int pos = textArea.getCaretPosition();
+      String text = "![" + name + "](" + name + ")";
+      if (pos > 0) {
+        textArea.insertText(pos, text);
+      } else {
+        textArea.appendText(text);
+      }
+    });
+
+    box.getChildren().add(insertAtCursor);
+    StackPane.setAlignment(insertAtCursor, Pos.TOP_RIGHT);
+    return box;
   }
 
   @FXML
