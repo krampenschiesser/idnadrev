@@ -132,7 +132,10 @@ public class ImageScaler {
 
   protected int getExifOrientation(File file) throws IOException {
     try {
-      IImageMetadata metadata = Sanselan.getMetadata(file);
+      IImageMetadata metadata;
+      synchronized (ImageScaler.class) {//fucking sanselan is not thread save at all
+        metadata = Sanselan.getMetadata(file);
+      }
       if (metadata instanceof JpegImageMetadata) {
         TiffField orientationField = ((JpegImageMetadata) metadata).findEXIFValue(ExifTagConstants.EXIF_TAG_ORIENTATION);
 
