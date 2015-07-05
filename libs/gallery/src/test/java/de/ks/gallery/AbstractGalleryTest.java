@@ -28,6 +28,8 @@ import java.nio.file.Path;
 public class AbstractGalleryTest extends DummyActivityTest {
 
   protected File folder;
+  protected File sub;
+  protected File subsub;
 
   @Before
   public void setUp() throws Exception {
@@ -43,11 +45,11 @@ public class AbstractGalleryTest extends DummyActivityTest {
     Files.copy(src, new File(folder, "r1.jpg").toPath());
     Files.copy(src, new File(folder, "r2.jpg").toPath());
 
-    File sub = new File(folder, "sub");
+    sub = new File(folder, "sub");
     sub.mkdir();
     Files.copy(src, new File(sub, "sub1.jpg").toPath());
 
-    File subsub = new File(sub, "subsub");
+    subsub = new File(sub, "subsub");
     subsub.mkdir();
     Files.copy(src, new File(subsub, "subsub1.jpg").toPath());
     Files.copy(src, new File(subsub, "subsub2.jpg").toPath());

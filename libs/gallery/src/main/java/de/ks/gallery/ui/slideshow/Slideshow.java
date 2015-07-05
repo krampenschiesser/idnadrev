@@ -44,7 +44,7 @@ public class Slideshow {
 
   protected ObservableList<GalleryItem> items = FXCollections.observableArrayList();
 
-  protected List<GalleryItem> sorted = new ArrayList<>();
+  protected final List<GalleryItem> sorted = new ArrayList<>();
 
   protected final AtomicInteger currentIndex = new AtomicInteger();
   protected ImageView imageView = new ImageView();
@@ -134,9 +134,21 @@ public class Slideshow {
   }
 
   public void next() {
+    clearPrevious();
     int index = getNextIndex();
     show(index);
     preloadNext();
+  }
+
+  protected void clearPrevious() {
+    if (sorted.size() <= 3) {
+      return;
+    }
+    int old = currentIndex.get() - 1;
+    if (old < 0) {
+      old = sorted.size() - 1;
+    }
+    sorted.get(old).clear();
   }
 
   protected void preloadNext() {
@@ -158,9 +170,21 @@ public class Slideshow {
   }
 
   public void previous() {
+    clearNext();
     int index = getPreviousIndex();
     show(index);
     preloadPrevious();
+  }
+
+  protected void clearNext() {
+    if (sorted.size() <= 3) {
+      return;
+    }
+    int old = currentIndex.get() + 1;
+    if (old >= sorted.size()) {
+      old = 0;
+    }
+    sorted.get(old).clear();
   }
 
   protected void preloadPrevious() {

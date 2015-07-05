@@ -105,4 +105,14 @@ public class GalleryItem implements Comparable<GalleryItem> {
       return name.compareTo(o.name);
     }
   }
+
+  public void clear() {
+    if (loadedImage != null) {
+      loadedImage = null;
+    }
+  }
+
+  public boolean isImageLoaded() {
+    return loadedImage != null;
+  }
 }
