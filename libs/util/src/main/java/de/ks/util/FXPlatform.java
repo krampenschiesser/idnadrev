@@ -17,6 +17,8 @@ package de.ks.util;
 import javafx.application.Platform;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 public class FXPlatform {
   public static void invokeLater(Runnable runnable) {
@@ -33,6 +35,28 @@ public class FXPlatform {
       });
       try {
         latch.await();
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+
+  public static <T> T invokeLater(Supplier<T> runnable) {
+    if (Platform.isFxApplicationThread()) {
+      return runnable.get();
+    } else {
+      AtomicReference<T> ref = new AtomicReference<>();
+      CountDownLatch latch = new CountDownLatch(1);
+      Platform.runLater(() -> {
+        try {
+          ref.set(runnable.get());
+        } finally {
+          latch.countDown();
+        }
+      });
+      try {
+        latch.await();
+        return ref.get();
       } catch (InterruptedException e) {
         throw new RuntimeException(e);
       }
