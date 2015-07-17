@@ -17,6 +17,7 @@ package de.ks.text;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
+import de.ks.Condition;
 import de.ks.JunitMatchers;
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityCfg;
@@ -81,7 +82,7 @@ public class AsciiDocEditorTest {
 
     WebEngine engine = adocEditor.preview.getWebView().getEngine();
     JunitMatchers.withRetry(() -> adocEditor.preview.getWebView().getEngine() != null);
-    assertNull("document is not null", engine.getDocument());
+    Condition.waitFor5s(() -> engine.getDocument(), Matchers.nullValue());
 
     FXPlatform.invokeLater(() -> adocEditor.tabPane.getSelectionModel().select(1));
     JunitMatchers.withRetry(() -> engine.getDocument() != null);
