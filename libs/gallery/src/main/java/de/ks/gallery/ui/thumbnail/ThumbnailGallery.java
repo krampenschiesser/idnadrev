@@ -181,7 +181,6 @@ public class ThumbnailGallery extends BaseController<Object> {
         return cell;
       }
     });
-    listView.setFocusTraversable(false);
     listView.setItems(items);
     container.getChildren().add(listView);
   }
