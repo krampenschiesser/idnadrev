@@ -76,7 +76,7 @@
                 <TitledPane animated="false" maxHeight="-Infinity" text="%grav.post.media">
                     <content>
                         <!--<StackPane fx:id="mediaContainer" fitToWidth="true" />-->
-                        <ScrollPane fx:id="mediaContainer" fitToWidth="true" maxHeight="350.0"/>
+                        <StackPane fx:id="mediaContainer" maxHeight="350.0"/>
                     </content>
                 </TitledPane>
             </panes>

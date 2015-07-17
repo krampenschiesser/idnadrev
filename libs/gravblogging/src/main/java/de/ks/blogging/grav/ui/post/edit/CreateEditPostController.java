@@ -57,7 +57,7 @@ public class CreateEditPostController extends BaseController<BasePost> {
   @FXML
   protected Button cancel;
   @FXML
-  protected ScrollPane mediaContainer;
+  protected StackPane mediaContainer;
   @FXML
   protected ScrollPane headerContainer;
   @FXML
@@ -97,7 +97,7 @@ public class CreateEditPostController extends BaseController<BasePost> {
     headerContainer.setContent(view);
 
     thumbnailGallery = activityInitialization.loadAdditionalController(ThumbnailGallery.class).getController();
-    mediaContainer.setContent(thumbnailGallery.getRoot());
+    mediaContainer.getChildren().add(thumbnailGallery.getRoot());
     thumbnailGallery.setEnhancer(this::enhanceThumbnail);
 
     MarkdownEditor.load(pane -> contentContainer.getChildren().addAll(pane), ctrl -> editor = ctrl);
