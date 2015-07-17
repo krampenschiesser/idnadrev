@@ -227,7 +227,7 @@ class ResourceBundleWrapper extends ResourceBundle {
 
     if (resource != null) {
       ResourceBundle localBundle = ResourceBundle.getBundle(baseName, locale, control);
-      log.debug("Found local bundle {}", baseName);
+      log.trace("Found local bundle {}", baseName);
       if (localBundle != null) {
         return localBundle;
       }
