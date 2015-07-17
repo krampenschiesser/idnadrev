@@ -132,6 +132,7 @@ public class GalleryResource {
     int thumbNailSize = getThumbnailSize();
     CompletableFuture<Void> combined = null;
     for (File file : sorted) {
+      parents.add(file.getParentFile());
       CompletableFuture<Void> future = CompletableFuture.supplyAsync(() -> {
         if (currentLoad.get().equals(currentLoadIdentifier)) {
           return createItem(file, thumbNailSize);
@@ -169,6 +170,16 @@ public class GalleryResource {
         return null;
       });
     }
+
+    recreateWatchService();
+    parents.forEach(p -> {
+      try {
+        WatchKey register = p.toPath().register(watchService, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
+        key2Dir.put(register, p);
+      } catch (IOException e) {
+        log.error("Could not register {} at watchservice", p, e);
+      }
+    });
   }
 
   public synchronized void reset() {
@@ -214,7 +225,6 @@ public class GalleryResource {
 
             if (watchEvent.kind() == StandardWatchEventKinds.ENTRY_DELETE) {
               handleItemDeleted(file);
-              knownDeleted.add(file);
             } else if (watchEvent.kind() == StandardWatchEventKinds.ENTRY_MODIFY) {
               handleItemModified(file);
             } else if (watchEvent.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
@@ -235,14 +245,27 @@ public class GalleryResource {
     if (knownDeleted.contains(file)) {
       log.debug("Got previously deleted file back again {}", file);
       int thumbNailSize = getThumbnailSize();
-      createItem(file, thumbNailSize);
+      GalleryItem item = createItem(file, thumbNailSize);
+      submitItem(item);
     }
+  }
+
+  private void submitItem(GalleryItem item) {
+    items.put(item.getFile(), item);
+    List<GalleryItem> values = new ArrayList<>(items.values());
+    Collections.sort(values);
+    javaFXExecutorService.submit(() -> {
+      if (callback != null) {
+        callback.accept(values);
+      }
+    });
   }
 
   private void handleItemModified(File file) {
     int thumbNailSize = getThumbnailSize();
     handleItemDeleted(file);
-    createItem(file, thumbNailSize);
+    GalleryItem item = createItem(file, thumbNailSize);
+    submitItem(item);
   }
 
   public int getThumbnailSize() {
@@ -250,14 +273,11 @@ public class GalleryResource {
   }
 
   private void handleItemDeleted(File file) {
-//    if (file2item.containsKey(file)) {
-//      log.debug("File {} was deleted, removing it.", file);
-//      javaFXExecutorService.submit(() -> {
-//        GalleryItem descriptor = file2item.remove(file);
-//        items.remove(descriptor);
-//        log.debug("Successfully removed {}.", file);
-//      });
-//    }
+    if (items.containsKey(file)) {
+      knownDeleted.add(file);
+      log.debug("File {} was deleted, removing it.", file);
+      items.remove(file);
+    }
   }
 
   public void setCallback(Consumer<List<GalleryItem>> callback) {
