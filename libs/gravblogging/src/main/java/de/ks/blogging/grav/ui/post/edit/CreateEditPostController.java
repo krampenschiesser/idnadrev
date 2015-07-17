@@ -237,8 +237,12 @@ public class CreateEditPostController extends BaseController<BasePost> {
     Optional<LocalDateTime> localDateTime = model.getHeader().getLocalDateTime();
     localDateTime.ifPresent(ldt -> time.setText(formatter.format(ldt.toLocalTime())));
 
-    editor.setFile(model.getFile());
-    thumbnailGallery.setFolder(model.getFile().getParentFile(), true);
+    File file = model.getFile();
+    if (file != null) {
+      File parentFile = file.getParentFile();
+      editor.setFile(file);
+      thumbnailGallery.setFolder(parentFile, true);
+    }
 
     if (model instanceof UIPostWrapper) {
       UIPostWrapper wrapper = (UIPostWrapper) model;

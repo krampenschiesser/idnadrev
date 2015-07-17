@@ -22,6 +22,7 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
         <class>de.ks.blogging.grav.entity.GravBlog</class>
+        <class>de.ks.option.Option</class>
 
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
