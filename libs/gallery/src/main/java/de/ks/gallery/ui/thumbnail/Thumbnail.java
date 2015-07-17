@@ -21,44 +21,36 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Control;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.stage.Stage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Thumbnail {
-  private static final Logger log = LoggerFactory.getLogger(Thumbnail.class);
+  public static final int DEFAULT_WIDTH = 350;
 
   private final Button button;
   private final ImageView imageView;
 
   protected SimpleObjectProperty<GalleryItem> item = new SimpleObjectProperty<>();
   protected SimpleObjectProperty<Slideshow> slideshow = new SimpleObjectProperty<>();
-  private Stage fullscreenStage;
 
   public Thumbnail() {
     button = new Button();
+
     button.getStyleClass().add("thumbnail");
     button.setContentDisplay(ContentDisplay.TOP);
     imageView = new ImageView();
+    imageView.setFitWidth(DEFAULT_WIDTH);
+    imageView.setFitHeight(350);
     button.setGraphic(imageView);
     item.addListener((p, o, n) -> {
       if (n != null) {
-
         button.setText(n.getName());
-        Image image = n.getThumbNail();
-        imageView.setImage(image);
-        imageView.setFitHeight(image.getHeight());
-        imageView.setFitWidth(image.getWidth());
+        imageView.setImage(null);
       } else {
         button.setText("");
         imageView.setImage(null);
       }
     });
-
     imageView.setOnMouseClicked(e -> openFullScreen());
-
     button.setOnAction(e -> openFullScreen());
   }
 
@@ -98,5 +90,15 @@ public class Thumbnail {
 
   public void setSlideshow(Slideshow slideshow) {
     this.slideshow.set(slideshow);
+  }
+
+  public void reset() {
+    imageView.setFitWidth(Thumbnail.DEFAULT_WIDTH);
+    imageView.setFitHeight(Thumbnail.DEFAULT_WIDTH);
+    imageView.setImage(null);
+  }
+
+  public ImageView getImageView() {
+    return imageView;
   }
 }

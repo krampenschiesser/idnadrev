@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -77,14 +78,14 @@ public class ThumbnailCacheTest extends DummyActivityTest {
 //    ExecutorService executorService = Executors.newFixedThreadPool(1);
     ExecutorService executorService = Executors.newFixedThreadPool(nThreads);
 
-    ArrayList<Future<CompletableFuture<Collection<Thumbnail>>>> futures = new ArrayList<>();
+    ArrayList<Future<CompletableFuture<List<Thumbnail>>>> futures = new ArrayList<>();
     for (int i = 0; i < nThreads; i++) {
       futures.add(executorService.submit(() -> {
         return cache.reserve(amountPerThread);
       }));
     }
 
-    for (Future<CompletableFuture<Collection<Thumbnail>>> future : futures) {
+    for (Future<CompletableFuture<List<Thumbnail>>> future : futures) {
       Collection<Thumbnail> thumbnails = future.get().get();
       assertEquals(amountPerThread, thumbnails.size());
     }

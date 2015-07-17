@@ -6,7 +6,6 @@ import de.ks.activity.initialization.ActivityInitialization;
 import de.ks.gallery.AbstractGalleryTest;
 import de.ks.gallery.GalleryResource;
 import de.ks.util.FXPlatform;
-import javafx.beans.binding.Bindings;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +28,7 @@ public class SlideshowTest extends AbstractGalleryTest {
   @Test
   public void testNextPreloading() throws Exception {
     slideshow = initialization.loadAdditionalController(Slideshow.class).getController();
-    Bindings.bindContent(slideshow.getItems(), resource.getItems());
+    resource.setCallback(items -> slideshow.getItems().addAll(items));
     resource.setFolder(folder, true);
 
     Condition.waitFor5s(() -> slideshow.sorted, Matchers.hasSize(6));
@@ -51,7 +50,7 @@ public class SlideshowTest extends AbstractGalleryTest {
   @Test
   public void testPreviousPreloading() throws Exception {
     slideshow = initialization.loadAdditionalController(Slideshow.class).getController();
-    Bindings.bindContent(slideshow.getItems(), resource.getItems());
+    resource.setCallback(items -> slideshow.getItems().addAll(items));
     resource.setFolder(folder, true);
 
     Condition.waitFor5s(() -> slideshow.sorted, Matchers.hasSize(6));
@@ -73,7 +72,7 @@ public class SlideshowTest extends AbstractGalleryTest {
   public void test2Items() throws Exception {
     slideshow = initialization.loadAdditionalController(Slideshow.class).getController();
 
-    Bindings.bindContent(slideshow.getItems(), resource.getItems());
+    resource.setCallback(items -> slideshow.getItems().addAll(items));
     resource.setFolder(folder, false);
 
     Condition.waitFor5s(() -> slideshow.sorted, Matchers.hasSize(2));
@@ -101,7 +100,7 @@ public class SlideshowTest extends AbstractGalleryTest {
   public void test1Item() throws Exception {
     slideshow = initialization.loadAdditionalController(Slideshow.class).getController();
 
-    Bindings.bindContent(slideshow.getItems(), resource.getItems());
+    resource.setCallback(items -> slideshow.getItems().addAll(items));
     resource.setFolder(sub, false);
 
     Condition.waitFor5s(() -> slideshow.sorted, Matchers.hasSize(1));

@@ -19,7 +19,6 @@ import com.google.common.net.MediaType;
 import de.ks.activity.executor.ActivityExecutor;
 import de.ks.executor.JavaFXExecutorService;
 import de.ks.option.Options;
-import javafx.collections.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,14 +30,16 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class GalleryResource {
   private static final Logger log = LoggerFactory.getLogger(GalleryResource.class);
 
-  protected final ObservableSet<File> files = FXCollections.observableSet(new LinkedHashSet<File>());
-  protected final ObservableMap<File, GalleryItem> file2item = FXCollections.observableMap(new LinkedHashMap<File, GalleryItem>());
-  protected final ObservableList<GalleryItem> items = FXCollections.observableArrayList();
+  private final Set<File> files = new LinkedHashSet<>();
+  private final ConcurrentHashMap<File, GalleryItem> items = new ConcurrentHashMap<>();
+  private Consumer<List<GalleryItem>> callback;
 
   protected Supplier<GallerySettings> settingsSupplier = () -> Options.get(GallerySettings.class);
   protected final Set<File> parents = new HashSet<>();
@@ -53,60 +54,36 @@ public class GalleryResource {
   private WatchService watchService;
   private Thread watchThread;
 
+  private final AtomicReference<String> currentLoad = new AtomicReference<>();
+
   protected GalleryResource() {
     reset();
-    files.addListener((SetChangeListener<File>) c -> {
-      int thumbNailSize = getThumbnailSize();
-
-      File file = c.getElementAdded();
-      File parent = file.getParentFile();
-
-      if (!file2item.containsKey(file)) {
-        createFile(file, thumbNailSize);
-      }
-      if (watchService != null && !parents.contains(parent)) {
-        try {
-          WatchKey watchKey = parent.toPath().register(watchService, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_CREATE);
-          parents.add(parent);
-          key2Dir.put(watchKey, parent);
-          log.debug("Registered {} at watchservice.", parent);
-        } catch (IOException e) {
-          log.error("Could not register {} at watchService.", parent, e);
-        }
-      }
-    });
   }
 
-  protected void createFile(File file, int thumbNailSize) {
+  protected GalleryItem createItem(File file, int thumbNailSize) {
     try {
       String contentType = Files.probeContentType(file.toPath());
+      if (contentType == null) {
+        return null;
+      }
       MediaType parse = MediaType.parse(contentType);
       if (!parse.is(MediaType.ANY_IMAGE_TYPE)) {
         log.debug("File {} is no image", file);
-        return;
+        return null;
       }
     } catch (IOException e) {
       log.error("Could not probe content type of {}", file, e);
-      return;
+      return null;
     }
-    CompletableFuture<GalleryItem> future = CompletableFuture.supplyAsync(() -> {
-      try {
-        GalleryItem descriptor = new GalleryItem(file, thumbNailSize);
-        log.debug("Created gallery item for {}", file);
-        return descriptor;
-      } catch (Exception e) {
-        log.info("Could not get image descriptor for {}", file, e);
-        throw new RuntimeException(e);
-      }
-    }, executor);
 
-    future.thenAcceptAsync(desc -> {
-      File rf = desc.getFile();
-      if (!file2item.containsKey(file)) {
-        file2item.put(rf, desc);
-        items.add(desc);
-      }
-    }, javaFXExecutorService);
+    try {
+      GalleryItem descriptor = new GalleryItem(file, thumbNailSize, executor);
+      log.debug("Created gallery item for {}", file);
+      return descriptor;
+    } catch (Exception e) {
+      log.info("Could not get image descriptor for {}", file, e);
+      throw new RuntimeException(e);
+    }
   }
 
   public void setFolder(File folder, boolean recurse) {
@@ -140,19 +117,68 @@ public class GalleryResource {
     setFiles(files);
   }
 
-  public void setFiles(Collection<File> files) {
-    javaFXExecutorService.submit(() -> {
-      reset();
-      this.files.addAll(files);
-    });
+  public synchronized void setFiles(Collection<File> files) {
+    ArrayList<File> sorted = new ArrayList<>(files);
+    sorted.removeAll(this.files);
+
+    Collections.sort(sorted);
+    this.files.retainAll(files);
+    this.files.addAll(files);
+    this.items.keySet().retainAll(files);
+
+    final String currentLoadIdentifier = UUID.randomUUID().toString();
+    currentLoad.set(currentLoadIdentifier);
+
+    int thumbNailSize = getThumbnailSize();
+    CompletableFuture<Void> combined = null;
+    for (File file : sorted) {
+      CompletableFuture<Void> future = CompletableFuture.supplyAsync(() -> {
+        if (currentLoad.get().equals(currentLoadIdentifier)) {
+          return createItem(file, thumbNailSize);
+        } else {
+          return null;
+        }
+      }, executor).thenAccept(item -> {
+        if (item != null) {
+          items.put(item.getFile(), item);
+        }
+      });
+      if (combined == null) {
+        combined = future;
+      } else {
+        combined = CompletableFuture.allOf(combined, future);
+      }
+    }
+    if (combined != null) {
+      combined.thenApply(bla -> {
+        List<GalleryItem> values = new ArrayList<>(items.values());
+        if (currentLoad.get().equals(currentLoadIdentifier)) {
+          Collections.sort(values);
+          log.info("Got all");
+          return values;
+        } else {
+          return Collections.<GalleryItem>emptyList();
+        }
+      }).thenApplyAsync((List<GalleryItem> all) -> {
+        if (callback != null) {
+          callback.accept(all);
+        }
+        return all;
+      }, javaFXExecutorService).exceptionally(t -> {
+        log.error("Could not add items", t);
+        return null;
+      });
+    }
   }
 
-  public void reset() {
+  public synchronized void reset() {
     this.files.clear();
-    file2item.clear();
-    items.clear();
     key2Dir.clear();
     knownDeleted.clear();
+    recreateWatchService();
+  }
+
+  protected void recreateWatchService() {
     if (watchService != null) {
       try {
         watchService.close();
@@ -209,14 +235,14 @@ public class GalleryResource {
     if (knownDeleted.contains(file)) {
       log.debug("Got previously deleted file back again {}", file);
       int thumbNailSize = getThumbnailSize();
-      createFile(file, thumbNailSize);
+      createItem(file, thumbNailSize);
     }
   }
 
   private void handleItemModified(File file) {
     int thumbNailSize = getThumbnailSize();
     handleItemDeleted(file);
-    createFile(file, thumbNailSize);
+    createItem(file, thumbNailSize);
   }
 
   public int getThumbnailSize() {
@@ -224,17 +250,25 @@ public class GalleryResource {
   }
 
   private void handleItemDeleted(File file) {
-    if (file2item.containsKey(file)) {
-      log.debug("File {} was deleted, removing it.", file);
-      javaFXExecutorService.submit(() -> {
-        GalleryItem descriptor = file2item.remove(file);
-        items.remove(descriptor);
-        log.debug("Successfully removed {}.", file);
-      });
-    }
+//    if (file2item.containsKey(file)) {
+//      log.debug("File {} was deleted, removing it.", file);
+//      javaFXExecutorService.submit(() -> {
+//        GalleryItem descriptor = file2item.remove(file);
+//        items.remove(descriptor);
+//        log.debug("Successfully removed {}.", file);
+//      });
+//    }
   }
 
-  public ObservableList<GalleryItem> getItems() {
-    return items;
+  public void setCallback(Consumer<List<GalleryItem>> callback) {
+    this.callback = callback;
+  }
+
+  public Consumer<List<GalleryItem>> getCallback() {
+    return callback;
+  }
+
+  public Collection<GalleryItem> getItems() {
+    return items.values();
   }
 }

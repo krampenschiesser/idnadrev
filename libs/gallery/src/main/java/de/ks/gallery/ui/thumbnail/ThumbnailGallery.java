@@ -16,19 +16,21 @@
 package de.ks.gallery.ui.thumbnail;
 
 import de.ks.BaseController;
-import de.ks.executor.group.LastExecutionGroup;
 import de.ks.gallery.GalleryItem;
 import de.ks.gallery.GalleryResource;
 import de.ks.gallery.ui.slideshow.Slideshow;
-import javafx.beans.binding.Bindings;
-import javafx.collections.ListChangeListener;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.HPos;
 import javafx.scene.Node;
 import javafx.scene.control.Control;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
+import javafx.util.Callback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,32 +53,25 @@ public class ThumbnailGallery extends BaseController<Object> {
   @FXML
   protected ProgressIndicator loader;
   @FXML
-  protected FlowPane container;
+  protected StackPane container;
 
-  private LastExecutionGroup<List<GalleryItem>> lastExecutionGroup;
   protected final Set<Thumbnail> allThumbNails = new HashSet<>();
-  private Slideshow slideShow;
+  protected Slideshow slideShow;
 
   protected BiFunction<Control, Thumbnail, Node> enhancer;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     slideShow = activityInitialization.loadAdditionalController(Slideshow.class).getController();
-    Bindings.bindContent(slideShow.getItems(), resource.getItems());
-
-    lastExecutionGroup = new LastExecutionGroup<>("wait for file changes", 700, controller.getExecutorService());
-    resource.getItems().addListener((ListChangeListener<GalleryItem>) c -> {
-      while (c.next()) {
-        List<GalleryItem> added = (List<GalleryItem>) c.getAddedSubList();
-
-        addItems(added, false, false);
-      }
-
-      CompletableFuture<List<GalleryItem>> cf = lastExecutionGroup.schedule(resource::getItems);
-      if (cf.getNumberOfDependents() == 0) {
-        cf.thenAcceptAsync(items -> addItems(items, true, true), controller.getJavaFXExecutor());
-      }
+    resource.setCallback(items -> {
+      addItems(items);
+      slideShow.getItems().addAll(items);
     });
+    root.widthProperty().addListener((p, o, n) -> {
+      int itemsInRoot = Math.max(0, (int) ((Double) n / Thumbnail.DEFAULT_WIDTH));
+      relayoutThumbNails(itemsInRoot);
+    });
+    showLoader();
   }
 
   public void setFiles(Collection<File> files) {
@@ -87,10 +82,12 @@ public class ThumbnailGallery extends BaseController<Object> {
   protected void showLoader() {
     loader.setProgress(-1);
     loader.setVisible(true);
+    container.setVisible(false);
   }
 
   protected void hideLoader() {
     loader.setVisible(false);
+    container.setVisible(true);
   }
 
   public void setFolder(File folder, boolean recurse) {
@@ -98,19 +95,17 @@ public class ThumbnailGallery extends BaseController<Object> {
     resource.setFolder(folder, recurse);
   }
 
-  protected void addItems(List<GalleryItem> galleryItems, boolean clear, boolean sort) {
+  protected void addItems(List<GalleryItem> galleryItems) {
     log.info("Recreating gallery for {} items", galleryItems.size());
 
-    if (clear) {
-      releaseThumbnails();
-      container.getChildren().clear();
-      allThumbNails.clear();
-    }
+    releaseThumbnails();
+    container.getChildren().clear();
+    allThumbNails.clear();
 
     List<GalleryItem> items = new ArrayList<>(galleryItems);
-    CompletableFuture<Collection<Thumbnail>> reserve = cache.reserve(items.size());
+    CompletableFuture<List<Thumbnail>> reserve = cache.reserve(items.size());
 
-    reserve.thenAcceptAsync(thumbnails -> {
+    reserve.thenApplyAsync(thumbnails -> {
       int i = 0;
       hideLoader();
       for (Thumbnail thumbnail : thumbnails) {
@@ -118,23 +113,86 @@ public class ThumbnailGallery extends BaseController<Object> {
         thumbnail.setSlideshow(slideShow);
         thumbnail.setItem(item);
         i++;
-        Control root = thumbnail.getRoot();
-        Node enhance = enhance(root, thumbnail);
-        container.getChildren().add(enhance);
+
         allThumbNails.add(thumbnail);
       }
 
-      if (sort) {
-        ArrayList<Thumbnail> sorted = new ArrayList<>(allThumbNails);
-        Collections.sort(sorted, Comparator.comparing(t -> t.getItem()));
-        container.getChildren().clear();
-        sorted.forEach(item -> {
-          Control root = item.getRoot();
-          Node enhance = enhance(root, item);
-          container.getChildren().add(enhance);
-        });
-      }
+      int itemsInRoot = Math.max(0, (int) root.getWidth() / Thumbnail.DEFAULT_WIDTH);
+      relayoutThumbNails(itemsInRoot);
+      return thumbnails;
     }, controller.getJavaFXExecutor());
+  }
+
+  protected void relayoutThumbNails(int itemsInRoot) {
+    container.getChildren().clear();
+
+    ObservableList<GridPane> items = FXCollections.observableArrayList();
+    Map<GridPane, List<Thumbnail>> box2Thumbnail = new HashMap<>();
+
+    GridPane gridPane = createPane(itemsInRoot, items);
+    box2Thumbnail.put(gridPane, new ArrayList<>(5));
+    int i = 1;
+
+    ArrayList<Thumbnail> thumbnails = new ArrayList<>(allThumbNails);
+    Collections.sort(thumbnails, Comparator.comparing(t -> t.getItem()));
+    for (Thumbnail thumbnail : thumbnails) {
+      log.info("Processing thumbnail {}", thumbnail.getItem().getName());
+      Control root = thumbnail.getRoot();
+      box2Thumbnail.get(gridPane).add(thumbnail);
+      Node enhance = enhance(root, thumbnail);
+      gridPane.add(enhance, i - 1, 0);
+      i++;
+      if (i > itemsInRoot) {
+        i = 1;
+        gridPane = createPane(itemsInRoot, items);
+        box2Thumbnail.put(gridPane, new ArrayList<>(5));
+      }
+    }
+
+    ListView<GridPane> listView = new ListView<>();
+    listView.setCellFactory(new Callback<ListView<GridPane>, ListCell<GridPane>>() {
+      @Override
+      public ListCell<GridPane> call(ListView<GridPane> param) {
+        ListCell<GridPane> cell = new ListCell<GridPane>() {
+          @Override
+          protected void updateItem(GridPane item, boolean empty) {
+            super.updateItem(item, empty);
+            if (item != null) {
+              box2Thumbnail.get(item).forEach(t -> {
+                CompletableFuture.supplyAsync(() -> t.getItem().getThumbNail(), controller.getExecutorService())//
+                  .thenAcceptAsync(image -> {
+                    ImageView imageView = t.getImageView();
+                    if (image != null) {
+                      imageView.setImage(image);
+                      imageView.setFitHeight(image.getHeight());
+                      imageView.setFitWidth(image.getWidth());
+                    } else {
+                      imageView.setImage(null);
+                    }
+                  }, controller.getJavaFXExecutor());
+              });
+              setGraphic(item);
+              log.info("Updating item {}", items.indexOf(item));
+            } else {
+              setGraphic(null);
+            }
+          }
+        };
+        return cell;
+      }
+    });
+    listView.setFocusTraversable(false);
+    listView.setItems(items);
+    container.getChildren().add(listView);
+  }
+
+  private GridPane createPane(int itemsInRoot, ObservableList<GridPane> items) {
+    GridPane gridPane = new GridPane();
+    for (int i = 0; i < itemsInRoot; i++) {
+      gridPane.getColumnConstraints().add(new ColumnConstraints(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE, Priority.SOMETIMES, HPos.CENTER, true));
+    }
+    items.add(gridPane);
+    return gridPane;
   }
 
   private Node enhance(Control root, Thumbnail thumbnail) {
@@ -162,5 +220,9 @@ public class ThumbnailGallery extends BaseController<Object> {
 
   public void setEnhancer(BiFunction<Control, Thumbnail, Node> enhancer) {
     this.enhancer = enhancer;
+  }
+
+  public ProgressIndicator getLoader() {
+    return loader;
   }
 }

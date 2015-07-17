@@ -36,6 +36,6 @@ public class ThumbnailGalleryTest extends AbstractGalleryTest {
     ThumbnailGallery controller = initialization.loadAdditionalController(ThumbnailGallery.class).getController();
     controller.setFolder(folder, true);
 
-    Condition.waitFor5s(() -> controller.container.getChildren(), Matchers.hasSize(6));
+    Condition.waitFor5s(() -> controller.allThumbNails, Matchers.hasSize(6));
   }
 }

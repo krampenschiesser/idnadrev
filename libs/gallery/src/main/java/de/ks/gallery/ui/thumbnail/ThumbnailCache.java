@@ -16,7 +16,6 @@
 package de.ks.gallery.ui.thumbnail;
 
 import de.ks.activity.executor.ActivityExecutor;
-import de.ks.executor.JavaFXExecutorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,52 +31,55 @@ public class ThumbnailCache {
   @Inject
   protected ActivityExecutor executor;
   @Inject
-  protected JavaFXExecutorService javaFXExecutorService;
+  protected ActivityExecutor javaFXExecutor;
 
   protected Set<Thumbnail> available = new HashSet<>();
   protected Set<Thumbnail> reserved = new HashSet<>();
 
-  protected CompletableFuture<ArrayList<Thumbnail>> load(int amount) {
-    CompletableFuture<ArrayList<Thumbnail>> result = CompletableFuture.completedFuture(new ArrayList<Thumbnail>(amount));
+  protected CompletableFuture<List<Thumbnail>> load(int amount) {
+    CompletableFuture<List<Thumbnail>> result = CompletableFuture.completedFuture(Collections.synchronizedList(new ArrayList<>(amount)));
     for (int i = 0; i < amount; i++) {
-      CompletableFuture<Thumbnail> future = CompletableFuture.supplyAsync(this::load, executor).thenApplyAsync(t -> {
-        reserved.add(t);
+      CompletableFuture<Thumbnail> future = CompletableFuture.supplyAsync(this::load, executor).thenApply(t -> {
+        synchronized (this) {
+          reserved.add(t);
+        }
         return t;
-      }, javaFXExecutorService);
+      });
 
-      result = future.thenCombineAsync(result, (thumbnail, thumbnails) -> {
+      result = future.thenCombine(result, (thumbnail, thumbnails) -> {
         thumbnails.add(thumbnail);
         return thumbnails;
-      }, javaFXExecutorService);
+      });
     }
     return result;
   }
 
-  public synchronized CompletableFuture<Collection<Thumbnail>> reserve(int amount) {
+  public synchronized CompletableFuture<List<Thumbnail>> reserve(int amount) {
+//    return load(amount);
     int toLoad = amount - available.size();
     int usedAvailable = amount - Math.max(0, toLoad);
 
     log.debug("For requested amount {}, need to load {} using available {}/{}", amount, toLoad, usedAvailable, available.size());
-    Collection<Thumbnail> initiallyReserved;
+    List<Thumbnail> initiallyReserved;
     if (usedAvailable > 0) {
       initiallyReserved = getAvailablePushToReserved(usedAvailable);
     } else {
       initiallyReserved = Collections.emptyList();
     }
-    Function<Collection<Thumbnail>, Collection<Thumbnail>> combiner = c -> {
+    Function<List<Thumbnail>, List<Thumbnail>> combiner = c -> {
       HashSet<Thumbnail> all = new HashSet<>(c);
       all.addAll(initiallyReserved);
-      return all;
+      return new ArrayList<>(all);
     };
     if (toLoad > 0) {
-      CompletableFuture<ArrayList<Thumbnail>> cf = load(toLoad);
+      CompletableFuture<List<Thumbnail>> cf = load(toLoad);
       return cf.thenApply(combiner);
     } else {
       return CompletableFuture.completedFuture(initiallyReserved);
     }
   }
 
-  protected Collection<Thumbnail> getAvailablePushToReserved(int amount) {
+  protected List<Thumbnail> getAvailablePushToReserved(int amount) {
     HashSet<Thumbnail> retval = new HashSet<>();
     Iterator<Thumbnail> iterator = available.iterator();
     for (int i = 0; i < amount; i++) {
@@ -90,10 +92,11 @@ public class ThumbnailCache {
       reserved.add(next);
       log.debug("Used {} from {} available to {} reserved.", amount, available.size(), reserved.size());
     }
-    return retval;
+    return new ArrayList<>(retval);
   }
 
   public synchronized void release(Collection<Thumbnail> thumbnails) {
+    thumbnails.forEach(t -> t.reset());
     reserved.removeAll(thumbnails);
     available.addAll(thumbnails);
   }

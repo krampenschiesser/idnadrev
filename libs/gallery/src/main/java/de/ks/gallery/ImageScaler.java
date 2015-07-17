@@ -44,18 +44,20 @@ public class ImageScaler {
       IImageMetadata metadata = Sanselan.getMetadata(image);
       if (metadata instanceof JpegImageMetadata) {
         TiffField dateTimeValue = ((JpegImageMetadata) metadata).findEXIFValue(ExifTagConstants.EXIF_TAG_DATE_TIME_ORIGINAL);
-        String stringValue = dateTimeValue.getStringValue().trim();
+        if (dateTimeValue != null) {
+          String stringValue = dateTimeValue.getStringValue().trim();
 
-        String dateString = stringValue.split(" ")[0];
-        String timeString = stringValue.split(" ")[1];
+          String dateString = stringValue.split(" ")[0];
+          String timeString = stringValue.split(" ")[1];
 
-        String[] dateParts = dateString.split(":");
-        String[] timeParts = timeString.split(":");
+          String[] dateParts = dateString.split(":");
+          String[] timeParts = timeString.split(":");
 
-        LocalDate localDate = LocalDate.of(Integer.valueOf(dateParts[0]), Integer.valueOf(dateParts[1]), Integer.valueOf(dateParts[2]));
-        LocalTime localTime = LocalTime.of(Integer.valueOf(timeParts[0]), Integer.valueOf(timeParts[1]), Integer.valueOf(timeParts[2]));
+          LocalDate localDate = LocalDate.of(Integer.valueOf(dateParts[0]), Integer.valueOf(dateParts[1]), Integer.valueOf(dateParts[2]));
+          LocalTime localTime = LocalTime.of(Integer.valueOf(timeParts[0]), Integer.valueOf(timeParts[1]), Integer.valueOf(timeParts[2]));
 
-        return Optional.of(LocalDateTime.of(localDate, localTime));
+          return Optional.of(LocalDateTime.of(localDate, localTime));
+        }
       }
     } catch (Exception e) {
       log.error("Could not get metdata from {}", image, e);
@@ -63,24 +65,28 @@ public class ImageScaler {
     return Optional.empty();
   }
 
+  protected BufferedImage readImage(File src) throws IOException {
+    return ImageIO.read(src);
+  }
+
   public BufferedImage rotateAndScale(File src, int width, int height) throws IOException {
-    BufferedImage image = ImageIO.read(src);
+    BufferedImage image = readImage(src);
     return rotateAndScale(src, width, height, image);
   }
 
   public BufferedImage rotateAndScale(File src, int requestedSize) throws IOException {
-    BufferedImage image = ImageIO.read(src);
+    BufferedImage image = readImage(src);
     return rotateAndScale(src, requestedSize, image);
   }
 
   public BufferedImage rotate(File src) throws IOException {
-    BufferedImage image = ImageIO.read(src);
+    BufferedImage image = readImage(src);
     return rotate(src, image);
   }
 
   public void rotateAndWriteImage(File src, File target, int requestedSize) {
     try {
-      BufferedImage image = ImageIO.read(src);
+      BufferedImage image = readImage(src);
       ImageInfo imageInfo = Sanselan.getImageInfo(src);
 
       image = rotateAndScale(src, requestedSize, image);
@@ -94,8 +100,8 @@ public class ImageScaler {
   }
 
   protected BufferedImage rotateAndScale(File src, int requestedSize, BufferedImage image) throws IOException {
-    image = rotate(src, image);
     image = Scalr.resize(image, requestedSize);
+    image = rotate(src, image);
     return image;
   }
 
@@ -139,8 +145,12 @@ public class ImageScaler {
       if (metadata instanceof JpegImageMetadata) {
         TiffField orientationField = ((JpegImageMetadata) metadata).findEXIFValue(ExifTagConstants.EXIF_TAG_ORIENTATION);
 
-        int orientation = orientationField.getIntValue();
-        return orientation;
+        if (orientationField == null) {
+          return -1;
+        } else {
+          int orientation = orientationField.getIntValue();
+          return orientation;
+        }
       }
     } catch (ImageReadException e) {
       //

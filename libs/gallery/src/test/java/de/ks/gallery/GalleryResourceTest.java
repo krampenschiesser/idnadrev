@@ -27,9 +27,9 @@ public class GalleryResourceTest extends AbstractGalleryTest {
   public void testSimpleImageScanning() throws Exception {
     galleryResource.setFolder(folder, false);
 
-    Condition.waitFor1s(() -> galleryResource.items.size(), Matchers.equalTo(2));
+    Condition.waitFor1s(() -> galleryResource.getItems().size(), Matchers.equalTo(2));
 
-    GalleryItem galleryItem = galleryResource.items.stream().filter(i -> i.getName().contains("1")).findFirst().get();
+    GalleryItem galleryItem = galleryResource.getItems().stream().filter(i -> i.getName().contains("1")).findFirst().get();
     assertNotNull(galleryItem.getFile());
     assertNotNull(galleryItem.getName());
     assertNotNull(galleryItem.getImage());
@@ -43,21 +43,21 @@ public class GalleryResourceTest extends AbstractGalleryTest {
   public void testRecursion() throws Exception {
     galleryResource.setFolder(folder, true);
 
-    Condition.waitFor5s(() -> galleryResource.items.size(), Matchers.equalTo(6));
+    Condition.waitFor5s(() -> galleryResource.getItems().size(), Matchers.equalTo(6));
   }
 
   @Test
   public void testDeleteCreate() throws Exception {
     galleryResource.setFolder(folder, false);
 
-    Condition.waitFor1s(() -> galleryResource.items.size(), Matchers.equalTo(2));
-    GalleryItem galleryItem = galleryResource.items.stream().filter(i -> i.getName().contains("1")).findFirst().get();
+    Condition.waitFor1s(() -> galleryResource.getItems().size(), Matchers.equalTo(2));
+    GalleryItem galleryItem = galleryResource.getItems().stream().filter(i -> i.getName().contains("1")).findFirst().get();
     double oldWidth = galleryItem.getImage().getWidth();
 
     Files.copy(getPortraitPath(), new File(folder, "r1.jpg").toPath(), StandardCopyOption.REPLACE_EXISTING);
 
     Supplier<Double> doubleSupplier = () -> {
-      Optional<GalleryItem> item = galleryResource.items.stream().filter(i -> i.getName().contains("1")).findFirst();
+      Optional<GalleryItem> item = galleryResource.getItems().stream().filter(i -> i.getName().contains("1")).findFirst();
       if (item.isPresent()) {
         return item.get().getImage().getWidth();
       } else {

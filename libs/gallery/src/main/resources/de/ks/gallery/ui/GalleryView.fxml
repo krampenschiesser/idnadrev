@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.*?>
+<SplitPane fx:id="root" dividerPositions="0.2" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="de.ks.gallery.ui.GalleryController">
+    <items>
+        <GridPane>
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="30.0" vgrow="SOMETIMES"/>
+            </rowConstraints>
+            <children>
+                <TreeView fx:id="fileView"/>
+                <VBox fx:id="favoriteContainer" GridPane.rowIndex="1"/>
+            </children>
+        </GridPane>
+        <GridPane>
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" vgrow="NEVER"/>
+            </rowConstraints>
+            <children>
+                <StackPane fx:id="thumbnailContainer"/>
+                <Accordion GridPane.rowIndex="1">
+                    <panes>
+                        <TitledPane animated="false" text="%marked"/>
+                    </panes>
+                </Accordion>
+            </children>
+        </GridPane>
+    </items>
+</SplitPane>
