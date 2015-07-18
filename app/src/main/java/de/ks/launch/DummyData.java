@@ -242,6 +242,7 @@ public class DummyData extends Service {
     PersistentWork.persist(new GalleryFavorite(new File("/home/scar/downloads/images/schottland2011")));
     PersistentWork.persist(new GalleryFavorite(new File("/home/scar/downloads/images/schottland2012")));
     PersistentWork.persist(new GalleryFavorite(new File("/home/scar/downloads/images/schottland2014")));
+    PersistentWork.persist(new GalleryFavorite(new File("/tmp/galleryTest")));
   }
 
   @Override
