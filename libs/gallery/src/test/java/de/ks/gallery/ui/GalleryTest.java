@@ -19,6 +19,7 @@ import de.ks.Condition;
 import de.ks.LauncherRunner;
 import de.ks.activity.ActivityCfg;
 import de.ks.gallery.AbstractGalleryTest;
+import de.ks.gallery.GalleryItem;
 import de.ks.gallery.entity.GalleryFavorite;
 import de.ks.gallery.ui.slideshow.Slideshow;
 import de.ks.persistence.PersistentWork;
@@ -34,6 +35,7 @@ import java.io.File;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 @RunWith(LauncherRunner.class)
 public class GalleryTest extends AbstractGalleryTest {
@@ -96,5 +98,27 @@ public class GalleryTest extends AbstractGalleryTest {
     Condition.waitFor1s(() -> slideshow.getMarkedItems(), Matchers.hasSize(3));
 
     assertEquals(3, controller.markedItemController.markedTable.getItems().size());
+  }
+
+  @Test
+  public void testDeleteMarked() throws Exception {
+    GalleryController controller = activityController.getControllerInstance(GalleryController.class);
+    Slideshow slideshow = controller.thumbnailGallery.getSlideshow();
+
+    FXPlatform.invokeLater(() -> controller.selectPath(subsub));
+
+    Condition.waitFor5s(() -> controller.fileView.getSelectionModel().getSelectedItem(), Matchers.notNullValue());
+    Condition.waitFor5s(() -> controller.thumbnailGallery.getAllThumbNails(), Matchers.hasSize(3));
+
+    FXPlatform.invokeLater(() -> slideshow.getMarkedForDeletion().addAll(controller.thumbnailGallery.getAllThumbNails().stream().map(t -> t.getItem()).limit(2).collect(Collectors.toList())));
+    Condition.waitFor1s(() -> slideshow.getMarkedForDeletion(), Matchers.hasSize(2));
+
+    GalleryItem itemToDelete = slideshow.getMarkedForDeletion().get(0);
+    FXPlatform.invokeLater(() -> controller.markedItemController.onDeleteMarkedForDeletion());
+
+    Condition.waitFor1s(() -> slideshow.getMarkedForDeletion(), Matchers.hasSize(0));
+    assertFalse(itemToDelete.getFile().exists());
+
+    Condition.waitFor5s(() -> controller.thumbnailGallery.getAllThumbNails(), Matchers.hasSize(1));//one remaining
   }
 }
