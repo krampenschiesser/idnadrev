@@ -15,6 +15,8 @@
                 <ColumnConstraints hgrow="NEVER" minWidth="10.0" prefWidth="100.0"/>
                 <ColumnConstraints hgrow="ALWAYS" minWidth="10.0"/>
                 <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
+                <ColumnConstraints hgrow="ALWAYS" minWidth="10.0"/>
+                <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
                 <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
             </columnConstraints>
             <rowConstraints>
@@ -24,12 +26,12 @@
                 <Label text="%gallery.timeout:"/>
                 <ChoiceBox fx:id="speed" prefWidth="150.0" GridPane.columnIndex="1"/>
                 <ToggleButton fx:id="startStop" mnemonicParsing="true" onAction="#onStartStop"
-                              text="%gallery.start.mneominc"
-                              GridPane.columnIndex="2"/>
+                              text="%gallery.start.mneominc" GridPane.columnIndex="2"/>
                 <Button fx:id="markImage" onAction="#onMarkImage" text="%gallery.markimage.mnemonic"
-                        GridPane.columnIndex="4"/>
+                        GridPane.columnIndex="6"/>
                 <Button fx:id="markForDeletion" onAction="#onMarkForDeletion"
-                        text="%gallery.markimage.deletion.mnemonic" GridPane.columnIndex="5"/>
+                        text="%gallery.markimage.deletion.mnemonic" GridPane.columnIndex="7"/>
+                <Label fx:id="imageTitle" styleClass="imageTitle" GridPane.columnIndex="4"/>
             </children>
             <padding>
                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>

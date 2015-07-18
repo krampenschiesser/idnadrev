@@ -17,8 +17,7 @@
             </rowConstraints>
             <children>
                 <TreeView fx:id="fileView" GridPane.rowIndex="1"/>
-                <VBox fx:id="favoriteContainer" maxWidth="-Infinity" spacing="5.0" GridPane.halignment="RIGHT"
-                      GridPane.rowIndex="2">
+                <VBox fx:id="favoriteContainer" spacing="5.0" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
                     <padding>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
                     </padding>
