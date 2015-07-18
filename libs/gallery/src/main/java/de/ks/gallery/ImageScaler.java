@@ -95,7 +95,7 @@ public class ImageScaler {
       String extension = imageInfo.getFormat().extension;
       ImageIO.write(image, extension, target);
     } catch (Exception e) {
-      log.error("Could not add media {}", src, e);
+      log.error("Rotate and write media {}", src, e);
     }
   }
 

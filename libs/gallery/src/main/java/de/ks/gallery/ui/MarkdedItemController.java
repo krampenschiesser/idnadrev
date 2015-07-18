@@ -17,10 +17,15 @@ package de.ks.gallery.ui;
 
 import de.ks.BaseController;
 import de.ks.gallery.GalleryItem;
+import de.ks.gallery.ui.markaction.CopyAllToDir;
+import de.ks.gallery.ui.markaction.CopyAllToDirAndScaleDown;
+import de.ks.gallery.ui.markaction.MarkAction;
 import de.ks.gallery.ui.slideshow.Slideshow;
+import de.ks.i18n.Localized;
 import de.ks.reflection.PropertyPath;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -62,6 +67,7 @@ public class MarkdedItemController extends BaseController<Object> {
 
   protected final ObservableList<GalleryItem> marked = FXCollections.observableArrayList();
   protected final ObservableList<GalleryItem> markedForDeletion = FXCollections.observableArrayList();
+  protected final ObservableList<MarkAction> markActions = FXCollections.observableArrayList();
   private Slideshow slideshow;
 
   @Override
@@ -82,6 +88,24 @@ public class MarkdedItemController extends BaseController<Object> {
     deletionName.setCellFactory(createLinkCallback(markedForDeletion));
 
     deleteMarkedForDeletion.disableProperty().bind(store.loadingProperty());
+
+    markActions.addListener(new ListChangeListener<MarkAction>() {
+      @Override
+      public void onChanged(Change<? extends MarkAction> c) {
+        markedActionContainer.getChildren().clear();
+        markActions.forEach(a -> {
+          Button button = new Button(Localized.get(a.getName()));
+          button.setOnAction(e -> {
+            a.before(markedActionContainer.getScene());
+            store.executeCustomRunnable(() -> marked.forEach(a::execute));
+          });
+          button.disableProperty().bind(store.loadingProperty());
+          markedActionContainer.getChildren().add(button);
+        });
+      }
+    });
+
+    markActions.addAll(new CopyAllToDir(), new CopyAllToDirAndScaleDown());
   }
 
   protected Callback<TableColumn<GalleryItem, String>, TableCell<GalleryItem, String>> createLinkCallback(ObservableList<GalleryItem> collection) {
