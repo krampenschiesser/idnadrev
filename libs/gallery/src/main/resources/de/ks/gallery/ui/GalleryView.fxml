@@ -17,8 +17,12 @@
             </rowConstraints>
             <children>
                 <TreeView fx:id="fileView" GridPane.rowIndex="1"/>
-                <VBox fx:id="favoriteContainer" maxWidth="-Infinity" spacing="5.0" GridPane.halignment="CENTER"
-                      GridPane.rowIndex="2"/>
+                <VBox fx:id="favoriteContainer" maxWidth="-Infinity" spacing="5.0" GridPane.halignment="RIGHT"
+                      GridPane.rowIndex="2">
+                    <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                    </padding>
+                </VBox>
                 <HBox spacing="5.0">
                     <children>
                         <Button fx:id="markFavorite" mnemonicParsing="false" onAction="#onMarkFavorite"
@@ -44,7 +48,11 @@
                 <StackPane fx:id="thumbnailContainer"/>
                 <Accordion GridPane.rowIndex="1">
                     <panes>
-                        <TitledPane animated="false" text="%marked"/>
+                        <TitledPane animated="false" text="%marked">
+                            <content>
+                                <StackPane fx:id="markedContainer"/>
+                            </content>
+                        </TitledPane>
                     </panes>
                 </Accordion>
             </children>

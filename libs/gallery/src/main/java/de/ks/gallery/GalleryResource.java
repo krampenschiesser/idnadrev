@@ -151,16 +151,7 @@ public class GalleryResource {
       }
     }
     if (combined != null) {
-      combined.thenApply(bla -> {
-        List<GalleryItem> values = new ArrayList<>(items.values());
-        if (currentLoad.get().equals(currentLoadIdentifier)) {
-          Collections.sort(values);
-          log.info("Got all");
-          return values;
-        } else {
-          return Collections.<GalleryItem>emptyList();
-        }
-      }).thenApplyAsync((List<GalleryItem> all) -> {
+      combined.thenApply(bla -> getItemsSorted(currentLoadIdentifier)).thenApplyAsync((List<GalleryItem> all) -> {
         if (callback != null) {
           callback.accept(all);
         }
@@ -180,6 +171,17 @@ public class GalleryResource {
         log.error("Could not register {} at watchservice", p, e);
       }
     });
+  }
+
+  protected List<GalleryItem> getItemsSorted(String currentLoadIdentifier) {
+    List<GalleryItem> values = new ArrayList<>(items.values());
+    if (currentLoad.get().equals(currentLoadIdentifier)) {
+      Collections.sort(values);
+      log.info("Got all");
+      return values;
+    } else {
+      return Collections.<GalleryItem>emptyList();
+    }
   }
 
   public synchronized void reset() {
@@ -277,6 +279,12 @@ public class GalleryResource {
       knownDeleted.add(file);
       log.debug("File {} was deleted, removing it.", file);
       items.remove(file);
+      List<GalleryItem> itemsSorted = getItemsSorted(currentLoad.get());
+      javaFXExecutorService.submit(() -> {
+        if (callback != null) {
+          callback.accept(itemsSorted);
+        }
+      });
     }
   }
 

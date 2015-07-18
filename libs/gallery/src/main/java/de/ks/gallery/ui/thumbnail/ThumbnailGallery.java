@@ -79,13 +79,13 @@ public class ThumbnailGallery extends BaseController<Object> {
     resource.setFiles(files);
   }
 
-  protected void showLoader() {
+  public void showLoader() {
     loader.setProgress(-1);
     loader.setVisible(true);
     container.setVisible(false);
   }
 
-  protected void hideLoader() {
+  public void hideLoader() {
     loader.setVisible(false);
     container.setVisible(true);
   }

@@ -16,12 +16,9 @@
 package de.ks.gallery.ui;
 
 import de.ks.BaseController;
-import de.ks.gallery.GalleryItem;
 import de.ks.gallery.entity.GalleryFavorite;
 import de.ks.gallery.ui.thumbnail.ThumbnailGallery;
 import de.ks.persistence.PersistentWork;
-import javafx.beans.binding.Bindings;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
@@ -46,6 +43,8 @@ public class GalleryController extends BaseController<Object> {
   @FXML
   protected StackPane thumbnailContainer;
   @FXML
+  protected StackPane markedContainer;
+  @FXML
   protected SplitPane root;
   @FXML
   protected TreeView<File> fileView;
@@ -56,13 +55,18 @@ public class GalleryController extends BaseController<Object> {
   protected Button markFavorite;
 
   protected ThumbnailGallery thumbnailGallery;
-  protected final ObservableList<GalleryItem> markedItems = FXCollections.observableArrayList();
+  protected MarkdedItemController markedItemController;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     thumbnailGallery = activityInitialization.loadAdditionalController(ThumbnailGallery.class).getController();
     thumbnailContainer.getChildren().add(thumbnailGallery.getRoot());
-    thumbnailGallery.getLoader().setVisible(false);
+    thumbnailGallery.hideLoader();
+
+    markedItemController = activityInitialization.loadAdditionalController(MarkdedItemController.class).getController();
+    markedContainer.getChildren().add(markedItemController.getRoot());
+    markedItemController.bindTo(thumbnailGallery.getSlideshow());
+
 
     TreeItem<File> root = createRoot();
     fileView.setRoot(root);
@@ -90,8 +94,6 @@ public class GalleryController extends BaseController<Object> {
         thumbnailGallery.setFolder(n.getValue(), false);
       }
     });
-    Bindings.bindContent(markedItems, thumbnailGallery.getSlideshow().getMarkedItems());
-
   }
 
   protected TreeItem<File> createRoot() {

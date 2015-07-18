@@ -94,5 +94,7 @@ public class GalleryTest extends AbstractGalleryTest {
 
     FXPlatform.invokeLater(() -> slideshow.getMarkedItems().addAll(controller.thumbnailGallery.getAllThumbNails().stream().map(t -> t.getItem()).collect(Collectors.toList())));
     Condition.waitFor1s(() -> slideshow.getMarkedItems(), Matchers.hasSize(3));
+
+    assertEquals(3, controller.markedItemController.markedTable.getItems().size());
   }
 }

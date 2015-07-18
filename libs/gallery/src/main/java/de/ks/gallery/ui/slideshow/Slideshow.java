@@ -274,15 +274,19 @@ public class Slideshow extends BaseController<Object> {
   @FXML
   void onMarkImage() {
     GalleryItem item = sorted.get(currentIndex.get());
-    log.info("Marked item {}", item.getName());
-    markedItems.add(item);
+    if (!markedForDeletion.contains(item)) {
+      log.info("Marked item {}", item.getName());
+      markedItems.add(item);
+    }
   }
 
   @FXML
   void onMarkForDeletion() {
     GalleryItem item = sorted.get(currentIndex.get());
-    log.info("Marked item {} for deletion", item.getName());
-    markedForDeletion.add(item);
+    if (!markedForDeletion.contains(item)) {
+      log.info("Marked item {} for deletion", item.getName());
+      markedForDeletion.add(item);
+    }
   }
 
   @FXML
