@@ -17,6 +17,7 @@ package de.ks.launch;
 import de.ks.application.FXApplicationExceptionHandler;
 import de.ks.blogging.grav.entity.GravBlog;
 import de.ks.fxcontrols.weekview.WeekHelper;
+import de.ks.gallery.entity.GalleryFavorite;
 import de.ks.idnadrev.entity.*;
 import de.ks.idnadrev.entity.cost.Account;
 import de.ks.idnadrev.entity.cost.Booking;
@@ -29,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.spi.CDI;
+import java.io.File;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -235,6 +237,11 @@ public class DummyData extends Service {
 
     GravBlog gravBlog = new GravBlog("grav-bk", "/home/scar/blog/grav-bk/user/pages");
     PersistentWork.persist(gravBlog);
+
+    PersistentWork.persist(new GalleryFavorite(new File("/home/scar/downloads/images/pct")));
+    PersistentWork.persist(new GalleryFavorite(new File("/home/scar/downloads/images/schottland2011")));
+    PersistentWork.persist(new GalleryFavorite(new File("/home/scar/downloads/images/schottland2012")));
+    PersistentWork.persist(new GalleryFavorite(new File("/home/scar/downloads/images/schottland2014")));
   }
 
   @Override

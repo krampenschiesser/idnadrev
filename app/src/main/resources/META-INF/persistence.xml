@@ -49,6 +49,7 @@
         <class>de.ks.idnadrev.entity.cost.BookingCsvTemplate</class>
 
         <class>de.ks.blogging.grav.entity.GravBlog</class>
+        <class>de.ks.gallery.entity.GalleryFavorite</class>
 
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>

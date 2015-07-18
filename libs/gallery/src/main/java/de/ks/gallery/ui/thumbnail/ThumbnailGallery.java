@@ -56,16 +56,16 @@ public class ThumbnailGallery extends BaseController<Object> {
   protected StackPane container;
 
   protected final Set<Thumbnail> allThumbNails = new HashSet<>();
-  protected Slideshow slideShow;
+  protected Slideshow slideshow;
 
   protected BiFunction<Control, Thumbnail, Node> enhancer;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    slideShow = activityInitialization.loadAdditionalController(Slideshow.class).getController();
+    slideshow = activityInitialization.loadAdditionalController(Slideshow.class).getController();
     resource.setCallback(items -> {
       addItems(items);
-      slideShow.getItems().addAll(items);
+      slideshow.getItems().addAll(items);
     });
     root.widthProperty().addListener((p, o, n) -> {
       int itemsInRoot = Math.max(0, (int) ((Double) n / Thumbnail.DEFAULT_WIDTH));
@@ -110,7 +110,7 @@ public class ThumbnailGallery extends BaseController<Object> {
       hideLoader();
       for (Thumbnail thumbnail : thumbnails) {
         GalleryItem item = items.get(i);
-        thumbnail.setSlideshow(slideShow);
+        thumbnail.setSlideshow(slideshow);
         thumbnail.setItem(item);
         i++;
 
@@ -223,5 +223,9 @@ public class ThumbnailGallery extends BaseController<Object> {
 
   public ProgressIndicator getLoader() {
     return loader;
+  }
+
+  public Slideshow getSlideshow() {
+    return slideshow;
   }
 }

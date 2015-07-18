@@ -25,6 +25,14 @@ public class GalleryFavorite extends NamedPersistentObject<GalleryFavorite> {
 
   protected String folderPath;
 
+  protected GalleryFavorite() {
+  }
+
+  public GalleryFavorite(File path) {
+    super(path.getName());
+    folderPath = path.getAbsolutePath();
+  }
+
   public File getFolderPath() {
     return new File(folderPath);
   }

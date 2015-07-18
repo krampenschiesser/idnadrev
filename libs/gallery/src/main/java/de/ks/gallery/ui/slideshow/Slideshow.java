@@ -42,7 +42,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.ResourceBundle;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -75,8 +78,8 @@ public class Slideshow extends BaseController<Object> {
   protected Stage fullscreenStage;
   protected Scene scene;
 
-  protected final Set<GalleryItem> markedForDeletion = new LinkedHashSet<>();
-  protected final Set<GalleryItem> markedItems = new LinkedHashSet<>();
+  protected final ObservableList<GalleryItem> markedForDeletion = FXCollections.observableArrayList();
+  protected final ObservableList<GalleryItem> markedItems = FXCollections.observableArrayList();
 
   @Inject
   ActivityExecutor executor;
@@ -322,5 +325,13 @@ public class Slideshow extends BaseController<Object> {
 
   public Button getMarkForDeletion() {
     return markForDeletion;
+  }
+
+  public ObservableList<GalleryItem> getMarkedForDeletion() {
+    return markedForDeletion;
+  }
+
+  public ObservableList<GalleryItem> getMarkedItems() {
+    return markedItems;
   }
 }

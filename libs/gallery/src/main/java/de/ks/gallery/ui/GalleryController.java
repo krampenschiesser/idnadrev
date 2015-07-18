@@ -16,15 +16,17 @@
 package de.ks.gallery.ui;
 
 import de.ks.BaseController;
+import de.ks.gallery.GalleryItem;
+import de.ks.gallery.entity.GalleryFavorite;
 import de.ks.gallery.ui.thumbnail.ThumbnailGallery;
+import de.ks.persistence.PersistentWork;
+import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.TreeCell;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.geometry.HPos;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import javafx.util.Callback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,16 +42,21 @@ import java.util.*;
 public class GalleryController extends BaseController<Object> {
   private static final Logger log = LoggerFactory.getLogger(GalleryController.class);
   @FXML
-  private VBox favoriteContainer;
+  protected VBox favoriteContainer;
   @FXML
-  private StackPane thumbnailContainer;
+  protected StackPane thumbnailContainer;
   @FXML
-  private SplitPane root;
+  protected SplitPane root;
   @FXML
-  private TreeView<File> fileView;
+  protected TreeView<File> fileView;
 
-  private ThumbnailGallery thumbnailGallery;
-  private boolean showHidden;
+  @FXML
+  protected ToggleButton showHidden;
+  @FXML
+  protected Button markFavorite;
+
+  protected ThumbnailGallery thumbnailGallery;
+  protected final ObservableList<GalleryItem> markedItems = FXCollections.observableArrayList();
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -83,6 +90,8 @@ public class GalleryController extends BaseController<Object> {
         thumbnailGallery.setFolder(n.getValue(), false);
       }
     });
+    Bindings.bindContent(markedItems, thumbnailGallery.getSlideshow().getMarkedItems());
+
   }
 
   protected TreeItem<File> createRoot() {
@@ -90,7 +99,11 @@ public class GalleryController extends BaseController<Object> {
     TreeItem<File> root = new TreeItem<>(null);
     for (Path rootDirectory : rootDirectories) {
       TreeItem<File> subRoot = new TreeItem<>(rootDirectory.toFile());
-      subRoot.expandedProperty().addListener((p, o, n) -> expand(subRoot, true));
+      subRoot.expandedProperty().addListener((p, o, n) -> {
+        if (n) {
+          expand(subRoot, true);
+        }
+      });
       root.getChildren().add(subRoot);
 
       expand(subRoot, false);
@@ -115,7 +128,7 @@ public class GalleryController extends BaseController<Object> {
         for (File file : files) {
           try {
             boolean hidden = Files.isHidden(file.toPath());
-            boolean add = (hidden && showHidden) || !hidden;
+            boolean add = (hidden && showHidden.isSelected()) || !hidden;
             if (add) {
               TreeItem<File> item = new TreeItem<>(file);
               item.expandedProperty().addListener((p, o, n) -> expand(item, true));
@@ -129,5 +142,105 @@ public class GalleryController extends BaseController<Object> {
         }
       }
     }
+  }
+
+  @Override
+  public void onStart() {
+    onResume();
+  }
+
+  @Override
+  public void onResume() {
+    reloadFavorites();
+  }
+
+  protected void reloadFavorites() {
+    List<GalleryFavorite> favorites = PersistentWork.from(GalleryFavorite.class);
+    Collections.sort(favorites, Comparator.comparing(f -> f.getName()));
+
+    controller.getJavaFXExecutor().submit(() -> {
+      favoriteContainer.getChildren().clear();
+      for (GalleryFavorite favorite : favorites) {
+        GridPane container = new GridPane();
+        container.getColumnConstraints().add(new ColumnConstraints(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE, Priority.ALWAYS, HPos.LEFT, true));
+        container.getColumnConstraints().add(new ColumnConstraints(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE, Priority.NEVER, HPos.LEFT, true));
+
+        Hyperlink link = new Hyperlink(favorite.getName());
+        link.setOnAction(e -> {
+          selectPath(favorite.getFolderPath());
+        });
+        container.add(link, 0, 0);
+
+        Button delete = new Button("(x)");
+        delete.setOnAction(e -> {
+          PersistentWork.run(em -> {
+            GalleryFavorite reloaded = PersistentWork.reload(favorite);
+            em.remove(reloaded);
+          });
+          reloadFavorites();
+        });
+
+        container.add(delete, 1, 0);
+        favoriteContainer.getChildren().add(container);
+      }
+    });
+  }
+
+  protected void selectPath(File folderPath) {
+    collapseAll();
+    Path path = folderPath.toPath();
+    Optional<TreeItem<File>> first = Optional.empty();
+    for (TreeItem<File> root : fileView.getRoot().getChildren()) {
+      for (Path path1 : path) {
+        first = root.getChildren().stream().filter(c -> {
+          String pathName = path1.getFileName().toString();
+          String name = c.getValue().getName();
+          return name.equals(pathName);
+        }).findFirst();
+        if (first.isPresent()) {
+          root.setExpanded(true);
+          TreeItem<File> fileTreeItem = first.get();
+          fileTreeItem.setExpanded(true);
+          root = first.get();
+        }
+      }
+    }
+    if (first.isPresent()) {
+      fileView.getSelectionModel().select(first.get());
+      int index = fileView.getSelectionModel().getSelectedIndex();
+      fileView.getFocusModel().focus(index);
+      fileView.scrollTo(index);
+    }
+  }
+
+  @FXML
+  void onMarkFavorite() {
+    TreeItem<File> selectedItem = fileView.getSelectionModel().getSelectedItem();
+
+    if (selectedItem != null) {
+      PersistentWork.persist(new GalleryFavorite(selectedItem.getValue()));
+      reloadFavorites();
+    }
+  }
+
+  @FXML
+  void onShowHidden() {
+    TreeItem<File> selectedItem = fileView.getSelectionModel().getSelectedItem();
+    TreeItem<File> root = createRoot();
+    fileView.setRoot(root);
+
+    if (selectedItem != null) {
+      selectPath(selectedItem.getValue());
+    }
+  }
+
+  private void collapseAll() {
+    TreeItem<File> root = fileView.getRoot();
+    collapse(root);
+  }
+
+  private void collapse(TreeItem<File> root) {
+    root.setExpanded(false);
+    root.getChildren().forEach(c -> collapse(c));
   }
 }

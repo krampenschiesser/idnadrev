@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Accordion?>
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.TitledPane?>
-<?import javafx.scene.control.TreeView?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <SplitPane fx:id="root" dividerPositions="0.2" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="de.ks.gallery.ui.GalleryController">
@@ -13,12 +11,25 @@
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
             </columnConstraints>
             <rowConstraints>
+                <RowConstraints minHeight="30.0" vgrow="NEVER"/>
                 <RowConstraints vgrow="SOMETIMES"/>
-                <RowConstraints minHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="30.0" vgrow="NEVER"/>
             </rowConstraints>
             <children>
-                <TreeView fx:id="fileView"/>
-                <VBox fx:id="favoriteContainer" GridPane.rowIndex="1"/>
+                <TreeView fx:id="fileView" GridPane.rowIndex="1"/>
+                <VBox fx:id="favoriteContainer" maxWidth="-Infinity" spacing="5.0" GridPane.halignment="CENTER"
+                      GridPane.rowIndex="2"/>
+                <HBox spacing="5.0">
+                    <children>
+                        <Button fx:id="markFavorite" mnemonicParsing="false" onAction="#onMarkFavorite"
+                                text="%mark.as.favorite"/>
+                        <ToggleButton fx:id="showHidden" mnemonicParsing="false" onAction="#onShowHidden"
+                                      text="%show.hidden"/>
+                    </children>
+                    <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                    </padding>
+                </HBox>
             </children>
         </GridPane>
         <GridPane>
