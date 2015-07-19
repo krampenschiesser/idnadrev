@@ -120,7 +120,7 @@ public class WorkUnitControllerTest extends ActivityTest {
 
     FXPlatform.invokeLater(() -> controller.start.setText("bla"));
     FXPlatform.waitForFX();
-    assertTrue(controller.edit.isDisabled());
+    Condition.waitFor1s("should be disabled ", () -> controller.edit.isDisabled());
 
     FXPlatform.invokeLater(() -> {
       controller.start.setText("11:30");
