@@ -15,14 +15,11 @@
  */
 package de.ks.blogging.grav.pages;
 
-import javax.enterprise.inject.Produces;
-import javax.inject.Singleton;
-
 public class GravPagesProducer {
 
-  @Produces
-  @Singleton
-  public GravPages getPages() {
-    return new GravPages(null);
-  }
+//  @Produces
+//  @Singleton
+//  public GravPages getPages() {
+//    return new GravPages(null);
+//  }
 }

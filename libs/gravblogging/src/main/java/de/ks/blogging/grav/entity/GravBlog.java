@@ -35,9 +35,11 @@ public class GravBlog extends NamedPersistentObject<GravBlog> {
   @Enumerated(EnumType.STRING)
   protected PostDateFormat dateFormat;
 
-  protected String ftpUrl;
+  protected String ftpHost;
+  protected int ftpPort = 21;
   protected String ftpUser;
   protected String ftpPass;
+  private String ftpWorkingDir;
 
   protected GravBlog() {
   }
@@ -105,12 +107,12 @@ public class GravBlog extends NamedPersistentObject<GravBlog> {
     return this;
   }
 
-  public String getFtpUrl() {
-    return ftpUrl;
+  public String getFtpHost() {
+    return ftpHost;
   }
 
-  public GravBlog setFtpUrl(String ftpUrl) {
-    this.ftpUrl = ftpUrl;
+  public GravBlog setFtpHost(String ftpHost) {
+    this.ftpHost = ftpHost;
     return this;
   }
 
@@ -121,5 +123,22 @@ public class GravBlog extends NamedPersistentObject<GravBlog> {
   public GravBlog setFtpUser(String ftpUser) {
     this.ftpUser = ftpUser;
     return this;
+  }
+
+  public int getFtpPort() {
+    return ftpPort;
+  }
+
+  public GravBlog setFtpPort(int ftpPort) {
+    this.ftpPort = ftpPort;
+    return this;
+  }
+
+  public String getFtpWorkingDir() {
+    return ftpWorkingDir;
+  }
+
+  public void setFtpWorkingDir(String ftpWorkingDir) {
+    this.ftpWorkingDir = ftpWorkingDir;
   }
 }

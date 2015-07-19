@@ -62,6 +62,9 @@ public class GravPages implements AutoCloseable {
   protected final ExecutorService executorService = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(true).build());
   protected final AtomicReference<Git> git = new AtomicReference<>();
 
+  public GravPages() {
+    this(null);
+  }
   public GravPages(GravBlog blog) {
     this.blog = blog;
   }

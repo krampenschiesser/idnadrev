@@ -74,7 +74,7 @@ public class CreateEditBlogController extends BaseController<GravBlog> {
     pagesDir.textProperty().bindBidirectional(store.getBinding().getStringProperty(GravBlog.class, b -> b.getPagesDirectory()));
     defaultAuthor.textProperty().bindBidirectional(store.getBinding().getStringProperty(GravBlog.class, b -> b.getDefaultAuthor()));
     name.textProperty().bindBidirectional(store.getBinding().getStringProperty(GravBlog.class, b -> b.getName()));
-    ftpUrl.textProperty().bindBidirectional(store.getBinding().getStringProperty(GravBlog.class, b -> b.getFtpUrl()));
+    ftpUrl.textProperty().bindBidirectional(store.getBinding().getStringProperty(GravBlog.class, b -> b.getFtpHost()));
     ftpUser.textProperty().bindBidirectional(store.getBinding().getStringProperty(GravBlog.class, b -> b.getFtpUser()));
 
     imageDimension.textProperty().bindBidirectional(store.getBinding().getIntegerProperty(GravBlog.class, b -> b.getImageDimension()), new StringConverter<Number>() {
