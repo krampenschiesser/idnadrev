@@ -21,7 +21,6 @@ import org.apache.commons.net.ftp.FTPSClient;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
-import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
@@ -99,6 +98,7 @@ public class RepositorySupport {
 
           ftpsClient.deleteFile(path);
           processCallback.accept(1);
+          c.resetToWorkingDir();
         } catch (IOException e) {
           log.error("Could not delete {}", path, e);
         }
@@ -114,7 +114,7 @@ public class RepositorySupport {
             ftpsClient.storeFile(file.getName(), stream);
             processCallback.accept(1);
           }
-          ftpsClient.changeWorkingDirectory("/");
+          c.resetToWorkingDir();
         } catch (IOException e) {
           log.error("Could not create/update {}", path, e);
         }
@@ -139,7 +139,7 @@ public class RepositorySupport {
     }
   }
 
-  private static AbstractTreeIterator prepareTreeParser(Repository repository, String objectId) throws IOException, MissingObjectException, IncorrectObjectTypeException {
+  private static AbstractTreeIterator prepareTreeParser(Repository repository, String objectId) throws IOException, IncorrectObjectTypeException {
     RevWalk walk = new RevWalk(repository);
     ObjectId resolve = repository.resolve(objectId);
     RevCommit commit = walk.parseCommit(resolve);
@@ -153,5 +153,4 @@ public class RepositorySupport {
     walk.dispose();
     return oldTreeParser;
   }
-
 }

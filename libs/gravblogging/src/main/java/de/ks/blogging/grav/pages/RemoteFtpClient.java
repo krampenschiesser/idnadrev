@@ -23,12 +23,14 @@ import java.io.IOException;
 
 public class RemoteFtpClient implements AutoCloseable {
   private final FTPSClient ftpsClient;
+  private final String workingDir;
 
   public RemoteFtpClient(GravBlog blog) throws IOException {
     this(blog.getFtpHost(), blog.getFtpPort(), blog.getFtpUser(), blog.getFtpPass(), blog.getFtpWorkingDir());
   }
 
   public RemoteFtpClient(String ftpHost, int ftpPort, String userName, String pass, String workingDir) throws IOException {
+    this.workingDir = workingDir;
     ftpsClient = new FTPSClient(true);
     ftpsClient.setConnectTimeout(5000);
     ftpsClient.connect(ftpHost, ftpPort);
@@ -40,6 +42,10 @@ public class RemoteFtpClient implements AutoCloseable {
 
   public FTPSClient getFtpsClient() {
     return ftpsClient;
+  }
+
+  public void resetToWorkingDir() throws IOException {
+    ftpsClient.changeWorkingDirectory(workingDir);
   }
 
   @Override

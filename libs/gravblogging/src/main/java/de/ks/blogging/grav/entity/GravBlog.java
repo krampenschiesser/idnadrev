@@ -39,7 +39,7 @@ public class GravBlog extends NamedPersistentObject<GravBlog> {
   protected int ftpPort = 21;
   protected String ftpUser;
   protected String ftpPass;
-  private String ftpWorkingDir;
+  private String ftpWorkingDir = "/";
 
   protected GravBlog() {
   }
