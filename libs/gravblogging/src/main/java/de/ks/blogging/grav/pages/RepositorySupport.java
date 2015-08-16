@@ -56,7 +56,7 @@ public class RepositorySupport {
       FTPSClient ftpsClient = c.getFtpsClient();
       try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
         ftpsClient.retrieveFile("git-rev.txt", byteArrayOutputStream);
-        String revision = new String(byteArrayOutputStream.toString(Charsets.US_ASCII.name()));
+        String revision = byteArrayOutputStream.toString(Charsets.US_ASCII.name());
         return revision.trim();
       }
     } catch (Exception e) {

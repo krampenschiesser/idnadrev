@@ -114,7 +114,7 @@ public class AddThought extends BaseController<Thought> {
 
   protected void processClipboard(Clipboard clipboard) {
     String text = this.description.getText();
-    boolean textFilled = text == null || (text != null && text.isEmpty());
+    boolean textFilled = text == null || text.isEmpty();
     boolean clipBoardFilled = clipboard.hasString() && clipboard.getString() != null;
     if (clipBoardFilled && textFilled) {
       String clipboardString = clipboard.getString();

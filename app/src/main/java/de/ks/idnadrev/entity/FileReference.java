@@ -25,9 +25,10 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 public class FileReference extends NamedPersistentObject<FileReference> {
-  private static final Logger log = LoggerFactory.getLogger(FileReference.class);
-  public static final String FILESTORE_VAR = "$filestore$";
   private static final long serialVersionUID = 1L;
+  private static final Logger log = LoggerFactory.getLogger(FileReference.class);
+
+  public static final String FILESTORE_VAR = "$filestore$";
 
   @NotNull
   @Column(length = 32)

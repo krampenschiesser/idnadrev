@@ -16,9 +16,11 @@ package de.ks.idnadrev.entity;
 
 import javax.persistence.Embeddable;
 import javax.persistence.Lob;
+import java.io.Serializable;
 
 @Embeddable
-public class Outcome {
+public class Outcome implements Serializable {
+  private static final long serialVersionUID = 1L;
   @Lob
   protected String expectedOutcome = "";
   @Lob

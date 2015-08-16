@@ -42,7 +42,7 @@ import java.util.function.Supplier;
  * Usually used as an anonymous class.
  */
 public class PersistentWork {
-  private static CDI cdi;
+  private static volatile CDI cdi;
 
   static <T> CDI<T> getCdi() {
     if (cdi == null) {

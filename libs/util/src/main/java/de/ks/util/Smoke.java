@@ -15,6 +15,8 @@
  */
 package de.ks.util;
 
+import com.google.common.base.Charsets;
+
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -80,10 +82,10 @@ public class Smoke {
 
   public String emerge(String input) {
     try {
-      byte[] utf8 = input.getBytes("UTF8");
+      byte[] utf8 = input.getBytes(Charsets.UTF_8);
       byte[] enc = smokey.doFinal(utf8);
       enc = multiplier.encode(enc);
-      return new String(enc);
+      return new String(enc, Charsets.UTF_8);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -91,9 +93,9 @@ public class Smoke {
 
   public String fadeAway(String input) {
     try {
-      byte[] dec = stringifier.decode(input.getBytes());
+      byte[] dec = stringifier.decode(input.getBytes(Charsets.UTF_8));
       byte[] utf8 = fadey.doFinal(dec);
-      return new String(utf8, "UTF8");
+      return new String(utf8, Charsets.UTF_8);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }

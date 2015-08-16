@@ -24,6 +24,7 @@ import java.io.File;
 
 @Entity
 public class MarkedImage extends NamedPersistentObject<MarkedImage> {
+  private static final long serialVersionUID = 1L;
   public static enum MarkReason {
     DELETE, EXPORT, FAVORITE;
   }

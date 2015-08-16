@@ -22,6 +22,7 @@ import java.io.Serializable;
 @Embeddable
 @Access(AccessType.FIELD)
 public class Effort implements Serializable {
+  private static final long serialVersionUID = 1L;
   public static enum EffortType {
     PHSYICAL, MENTAL, FUN;
   }

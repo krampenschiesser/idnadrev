@@ -35,7 +35,7 @@ import java.util.List;
  */
 public class ControllerFactory implements Callback<Class<?>, Object> {
   private static final Logger log = LoggerFactory.getLogger(ControllerFactory.class);
-  private static CDI cdi;
+  private static volatile CDI cdi;
 
   static <T> CDI<T> getCdi() {
     if (cdi == null) {

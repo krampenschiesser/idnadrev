@@ -68,6 +68,7 @@ public class AsciiDocMetaData {
   public void copyToDir(File newDataDir, boolean needsMathJax) {
     try {
       File[] files = getDataDir().listFiles();
+      files = files == null ? new File[0] : files;
       for (File file : files) {
         if (file.getName().equals(MATHJAX + ".zip")) {
           if (needsMathJax) {

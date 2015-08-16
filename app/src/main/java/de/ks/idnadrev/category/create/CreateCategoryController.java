@@ -88,7 +88,8 @@ public class CreateCategoryController extends BaseController<Category> {
   }
 
   protected void selectImage(File newFile) throws IOException {
-    MediaType mediaType = MediaType.parse(Files.probeContentType(newFile.toPath()));
+    String contentType = Files.probeContentType(newFile.toPath());
+    MediaType mediaType = MediaType.parse(contentType);
     if (mediaType.is(MediaType.ANY_IMAGE_TYPE)) {
       loadImage(newFile);
       fileStoreReference = fileStore.getReference(newFile);

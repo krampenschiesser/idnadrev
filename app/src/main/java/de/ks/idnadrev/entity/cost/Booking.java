@@ -27,6 +27,7 @@ import java.util.UUID;
 
 @Entity
 public class Booking extends AbstractPersistentObject<Booking> {
+  private static final long serialVersionUID = 1L;
   protected double amount;
   protected String internalIdentifier;
   @Column(length = 1000)

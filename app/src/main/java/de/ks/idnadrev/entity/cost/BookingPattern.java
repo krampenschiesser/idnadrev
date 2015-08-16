@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 
 @Entity
 public class BookingPattern extends NamedPersistentObject<BookingPattern> {
+  private static final long serialVersionUID = 1L;
   @NotNull
   @Column(length = 1000)
   protected String regex;

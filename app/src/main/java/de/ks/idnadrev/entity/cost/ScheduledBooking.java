@@ -24,6 +24,7 @@ import javax.persistence.ManyToOne;
 
 @Entity
 public class ScheduledBooking extends NamedPersistentObject<ScheduledBooking> {
+  private static final long serialVersionUID = 1L;
   @ManyToOne(cascade = CascadeType.ALL)
   protected Schedule schedule;
 

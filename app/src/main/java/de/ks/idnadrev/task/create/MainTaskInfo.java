@@ -68,7 +68,6 @@ public class MainTaskInfo extends BaseController<Task> {
 
   protected AsciiDocEditor description;
   protected DurationValidator durationValidator;
-  protected Runnable saveRunnable;
   protected final ObservableList<TaskState> states = FXCollections.observableArrayList();
 
   @Override

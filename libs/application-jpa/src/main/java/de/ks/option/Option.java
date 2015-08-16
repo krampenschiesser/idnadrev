@@ -26,6 +26,7 @@ import java.io.IOException;
 
 @Entity
 public class Option extends NamedPersistentObject<Option> {
+  private static final long serialVersionUID = 1L;
   private static final Logger log = LoggerFactory.getLogger(Option.class);
   private static final ObjectMapper mapper = new ObjectMapper();
 

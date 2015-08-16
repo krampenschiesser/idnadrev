@@ -22,7 +22,7 @@ import java.io.File;
 
 @Entity
 public class GalleryFavorite extends NamedPersistentObject<GalleryFavorite> {
-
+  private static final long serialVersionUID = 1L;
   protected String folderPath;
 
   protected GalleryFavorite() {

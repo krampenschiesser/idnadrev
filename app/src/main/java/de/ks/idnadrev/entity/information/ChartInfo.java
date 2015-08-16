@@ -26,6 +26,7 @@ import java.io.StringWriter;
 @Entity
 @AssociationOverrides(@AssociationOverride(name = "tags", joinTable = @JoinTable(name = "chartinfo_tag")))
 public class ChartInfo extends Information<ChartInfo> {
+  private static final long serialVersionUID = 1L;
   private static final Logger log = LoggerFactory.getLogger(ChartInfo.class);
   private static final ObjectMapper mapper = new ObjectMapper();
 

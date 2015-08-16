@@ -26,6 +26,7 @@ import java.util.List;
 
 @Entity
 public class Account extends NamedPersistentObject<Account> {
+  private static final long serialVersionUID = 1L;
   protected String owner;
 
   @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true, mappedBy = "account")

@@ -21,6 +21,7 @@ import javax.persistence.Entity;
 
 @Entity
 public class Tag extends NamedPersistentObject<Tag> {
+  private static final long serialVersionUID = 1L;
 
   public Tag() {
     //

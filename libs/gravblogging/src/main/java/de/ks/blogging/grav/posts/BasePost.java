@@ -144,7 +144,8 @@ public class BasePost {
       File target = new File(file.getParentFile(), src.getName());
 
       String contentType = Files.probeContentType(src.toPath());
-      boolean isImage = MediaType.parse(contentType).is(MediaType.ANY_IMAGE_TYPE);
+      MediaType parse = MediaType.parse(contentType);
+      boolean isImage = parse == null ? false : parse.is(MediaType.ANY_IMAGE_TYPE);
       if (isImage) {
         ImageScaler imageScaler = new ImageScaler();
         imageScaler.rotateAndWriteImage(src, target, imageDimension);

@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 @Entity
 public class BookingCsvTemplate extends NamedPersistentObject<BookingCsvTemplate> {
+  private static final long serialVersionUID = 1L;
   protected String separator;
   protected String amountColumns;
   protected int descriptionColumn;

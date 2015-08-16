@@ -325,7 +325,7 @@ public class Slideshow extends BaseController<Object> {
       scheduledFuture = null;
     }
     log.info("Starting slideshow with timeout {}s", speed.getValue());
-    Integer delay = Integer.valueOf(speed.getValue());
+    Integer delay = speed.getValue();
     scheduledFuture = controller.getExecutorService().scheduleAtFixedRate(() -> controller.getJavaFXExecutor().submit(this::next), delay, delay, TimeUnit.SECONDS);
   }
 
