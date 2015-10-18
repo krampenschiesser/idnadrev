@@ -90,6 +90,34 @@ public class CreateTaskTest extends ActivityTest {
   }
 
   @Test
+  public void testProjectFromThought() throws Exception {
+    Thought bla = new Thought("Bla").setDescription("description");
+    PersistentWork.persist(bla);
+
+    @SuppressWarnings("unchecked") CreateTaskDS datasource = (CreateTaskDS) store.getDatasource();
+    datasource.fromThought = bla;
+    activityController.reload();
+    activityController.waitForTasks();
+    FXPlatform.waitForFX();
+    assertEquals("Bla", controller.name.getText());
+    assertEquals("description", controller.description.getText());
+    FXPlatform.invokeLater(() -> controller.project.setSelected(true));
+
+    FXPlatform.invokeLater(() -> createTask.save());
+    activityController.waitForTasks();
+
+    assertEquals(CreateTaskActivity.class.getSimpleName(), activityController.getCurrentActivityId());
+    FXPlatform.invokeLater(() -> controller.name.setText("a real action"));
+
+    FXPlatform.invokeLater(() -> createTask.save());
+    activityController.waitForTasks();
+
+    assertNull(datasource.fromThought);
+    assertEquals(0, PersistentWork.from(Thought.class).size());
+    assertEquals(2, PersistentWork.count(Task.class));
+  }
+
+  @Test
   public void testPersist() throws InterruptedException {
     FXPlatform.invokeLater(() -> {
       controller.name.setText("name");
