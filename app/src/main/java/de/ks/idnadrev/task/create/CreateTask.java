@@ -19,6 +19,7 @@ import de.ks.activity.ActivityHint;
 import de.ks.activity.context.ActivityStore;
 import de.ks.file.FileViewController;
 import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.entity.TaskState;
 import de.ks.idnadrev.thought.view.ViewThoughtsActivity;
 import de.ks.validation.ValidationRegistry;
 import javafx.fxml.FXML;
@@ -54,7 +55,8 @@ public class CreateTask implements Initializable {
   @FXML
   public void save() {
     CreateTaskDS datasource = (CreateTaskDS) store.getDatasource();
-    if (datasource.isFromThought() && mainInfoController.isProject()) {
+    TaskState state = mainInfoController.getState();
+    if (datasource.isFromThought() && mainInfoController.isProject() && (state == TaskState.NONE || state == TaskState.ASAP)) {
       controller.save();
       ActivityHint hint = new ActivityHint(CreateTaskActivity.class);
       hint.setReturnToActivity(ViewThoughtsActivity.class.getSimpleName());
