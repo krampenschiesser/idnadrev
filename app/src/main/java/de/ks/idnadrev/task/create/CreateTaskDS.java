@@ -93,4 +93,8 @@ public class CreateTaskDS extends NewInstanceDataSource<Task> {
     fromTask = null;
     fromThought = null;
   }
+
+  public boolean isFromThought() {
+    return fromThought != null;
+  }
 }

@@ -15,7 +15,11 @@
 package de.ks.idnadrev.task.create;
 
 import de.ks.activity.ActivityController;
+import de.ks.activity.ActivityHint;
+import de.ks.activity.context.ActivityStore;
 import de.ks.file.FileViewController;
+import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.thought.view.ViewThoughtsActivity;
 import de.ks.validation.ValidationRegistry;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -24,6 +28,7 @@ import javafx.scene.control.Button;
 import javax.inject.Inject;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.function.Supplier;
 
 public class CreateTask implements Initializable {
   @FXML
@@ -42,12 +47,31 @@ public class CreateTask implements Initializable {
   @Inject
   protected ActivityController controller;
   @Inject
+  protected ActivityStore store;
+  @Inject
   protected ValidationRegistry validationRegistry;
 
   @FXML
   public void save() {
-    controller.save();
-    controller.stopCurrent();
+    CreateTaskDS datasource = (CreateTaskDS) store.getDatasource();
+    if (datasource.isFromThought() && mainInfoController.isProject()) {
+      controller.save();
+      ActivityHint hint = new ActivityHint(CreateTaskActivity.class);
+      hint.setReturnToActivity(ViewThoughtsActivity.class.getSimpleName());
+
+      Task parent = store.getModel();
+      Supplier supplier = () -> {
+        Task child = new Task("");
+        child.setParent(parent);
+        child.setContext(parent.getContext());
+        return child;
+      };
+      hint.setDataSourceHint(supplier);
+      controller.stopCurrentStartNew(hint);
+    } else {
+      controller.save();
+      controller.stopCurrent();
+    }
   }
 
   @Override
