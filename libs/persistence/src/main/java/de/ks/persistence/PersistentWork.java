@@ -326,6 +326,10 @@ public class PersistentWork {
     return null;
   }
 
+  public static <T> long count(Class<T> clazz) {
+    return count(clazz, null);
+  }
+
   public static <T> long count(Class<T> clazz, QueryConsumer<T, Long> consumer) {
     return read(em -> {
       CriteriaQuery<Long> criteriaQuery = em.getCriteriaBuilder().createQuery(Long.class);
