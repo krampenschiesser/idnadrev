@@ -15,13 +15,8 @@
 
 package de.ks.idnadrev.entity;
 
-import de.ks.persistence.converter.LocalDateTimeConverter;
-import de.ks.persistence.entity.AbstractPersistentObject;
+import de.ks.flatadocdb.entity.BaseEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -33,18 +28,14 @@ import java.time.LocalDateTime;
  * b) you are not able to work without interruptions in your environment
  * </pre>
  */
-@Entity
-public class WorkUnit extends AbstractPersistentObject<WorkUnit> implements Comparable<WorkUnit> {
+//@Entity
+public class WorkUnit extends BaseEntity implements Comparable<WorkUnit> {
   private static final long serialVersionUID = 1L;
 
-  @Column(columnDefinition = "TIMESTAMP", unique = true)
-  @Convert(converter = LocalDateTimeConverter.class)
   protected LocalDateTime start;
-  @Column(columnDefinition = "TIMESTAMP")
-  @Convert(converter = LocalDateTimeConverter.class)
   protected LocalDateTime end;
 
-  @ManyToOne(optional = false)
+  //  @ToOne
   protected Task task;
 
   protected WorkUnit() {
@@ -154,13 +145,13 @@ public class WorkUnit extends AbstractPersistentObject<WorkUnit> implements Comp
     return sb.toString();
   }
 
-  @Override
-  public String getIdPropertyName() {
-    return "start";
-  }
-
-  @Override
-  public Object getIdValue() {
-    return getStart();
-  }
+//  @Override
+//  public String getIdPropertyName() {
+//    return "start";
+//  }
+//
+//  @Override
+//  public Object getIdValue() {
+//    return getStart();
+//  }
 }

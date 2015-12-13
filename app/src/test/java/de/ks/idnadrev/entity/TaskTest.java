@@ -15,10 +15,6 @@
 
 package de.ks.idnadrev.entity;
 
-import de.ks.LauncherRunner;
-import de.ks.idnadrev.entity.information.Information;
-import de.ks.idnadrev.entity.information.TextInfo;
-import de.ks.persistence.PersistentWork;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

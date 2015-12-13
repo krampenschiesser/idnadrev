@@ -15,19 +15,12 @@
 
 package de.ks.idnadrev.expimp;
 
-import de.ks.LauncherRunner;
-import de.ks.idnadrev.entity.Thought;
-import de.ks.persistence.PersistentWork;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Root;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;

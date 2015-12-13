@@ -15,16 +15,6 @@
  */
 package de.ks.idnadrev.cost.bookingview;
 
-import de.ks.BaseController;
-import de.ks.executor.group.LastTextChange;
-import de.ks.i18n.Localized;
-import de.ks.idnadrev.cost.pattern.view.BookingPatternParser;
-import de.ks.idnadrev.entity.cost.Account;
-import de.ks.idnadrev.entity.cost.Booking;
-import de.ks.javafx.event.ClearTextOnEscape;
-import de.ks.persistence.PersistentWork;
-import de.ks.validation.validators.DoubleValidator;
-import de.ks.validation.validators.NotNullValidator;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;

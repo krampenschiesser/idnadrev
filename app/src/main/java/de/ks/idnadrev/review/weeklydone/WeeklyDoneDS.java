@@ -14,15 +14,6 @@
  */
 package de.ks.idnadrev.review.weeklydone;
 
-import de.ks.activity.ActivityController;
-import de.ks.datasource.ListDataSource;
-import de.ks.fxcontrols.weekview.WeekHelper;
-import de.ks.fxcontrols.weekview.WeekViewAppointment;
-import de.ks.idnadrev.entity.Task;
-import de.ks.idnadrev.entity.WorkUnit;
-import de.ks.imagecache.Images;
-import de.ks.persistence.PersistentWork;
-import de.ks.reflection.PropertyPath;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.image.Image;
@@ -31,8 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

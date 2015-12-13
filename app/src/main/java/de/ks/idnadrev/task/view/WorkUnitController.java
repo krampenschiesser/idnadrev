@@ -14,14 +14,15 @@
  */
 package de.ks.idnadrev.task.view;
 
-import de.ks.BaseController;
-import de.ks.i18n.Localized;
+import de.ks.flatjsondb.PersistentWork;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.WorkUnit;
-import de.ks.persistence.PersistentWork;
-import de.ks.validation.ValidationMessage;
-import de.ks.validation.validators.NotEmptyValidator;
-import de.ks.validation.validators.TimeHHMMValidator;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.validation.LocalizedValidationMessage;
+import de.ks.standbein.validation.ValidationResult;
+import de.ks.standbein.validation.Validator;
+import de.ks.standbein.validation.validators.NotEmptyValidator;
+import de.ks.standbein.validation.validators.TimeHHMMValidator;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -30,9 +31,8 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-import org.controlsfx.validation.ValidationResult;
-import org.controlsfx.validation.Validator;
 
+import javax.inject.Inject;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -44,6 +44,8 @@ import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
 
 public class WorkUnitController extends BaseController<List<Task>> {
+  @Inject
+  protected PersistentWork persistentWork;
 
   @FXML
   protected TableView<WorkUnit> workUnitTable;
@@ -69,11 +71,14 @@ public class WorkUnitController extends BaseController<List<Task>> {
   protected GridPane root;
   protected final SimpleObjectProperty<Task> task = new SimpleObjectProperty<>();
   protected final SimpleBooleanProperty createNewPossible = new SimpleBooleanProperty();
-  protected final DateTimeFormatter fullDateTimeFormatter = DateTimeFormatter.ofPattern(Localized.get("fullDate"));
-  protected final DateTimeFormatter hoursMinutesFormatter = DateTimeFormatter.ofPattern(Localized.get("duration.format"));
+  protected DateTimeFormatter fullDateTimeFormatter;
+  protected DateTimeFormatter hoursMinutesFormatter;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
+    fullDateTimeFormatter = DateTimeFormatter.ofPattern(localized.get("fullDate"));
+    hoursMinutesFormatter = DateTimeFormatter.ofPattern(localized.get("duration.format"));
+
     startColumn.setCellValueFactory(param -> createTimeStringProperty(param.getValue().getStart()));
     endColumn.setCellValueFactory(param -> createTimeStringProperty(param.getValue().getEnd()));
     duration.setCellValueFactory(param -> {
@@ -102,23 +107,23 @@ public class WorkUnitController extends BaseController<List<Task>> {
         date.setValue(n.getStart().toLocalDate());
       }
     });
-    validationRegistry.registerValidator(start, new TimeHHMMValidator());
-    validationRegistry.registerValidator(end, new TimeHHMMValidator());
-    validationRegistry.registerValidator(start, new NotEmptyValidator());
-    validationRegistry.registerValidator(end, new NotEmptyValidator());
-    Validator<Object> validator = (control, value) -> {
+    validationRegistry.registerValidator(start, new TimeHHMMValidator(localized));
+    validationRegistry.registerValidator(end, new TimeHHMMValidator(localized));
+    validationRegistry.registerValidator(start, new NotEmptyValidator(localized));
+    validationRegistry.registerValidator(end, new NotEmptyValidator(localized));
+    Validator<Control, Object> validator = (control, value) -> {
       try {
         LocalTime startTime = LocalTime.parse(start.getText(), hoursMinutesFormatter);
         LocalTime endTime = LocalTime.parse(end.getText(), hoursMinutesFormatter);
         if (startTime.isAfter(endTime)) {
-          return ValidationResult.fromMessages(new ValidationMessage("validation.time.before", control, startTime, endTime));
+          return new ValidationResult().add(new LocalizedValidationMessage(localized, "validation.time.before", startTime, endTime));
         }
         return null;
       } catch (DateTimeParseException e) {
         return null;
       }
     };
-//    validationRegistry.registerValidator(start, validator);
+    validationRegistry.registerValidator(start, validator);
     validationRegistry.registerValidator(end, validator);
     date.setValue(LocalDate.now());
 
@@ -153,8 +158,8 @@ public class WorkUnitController extends BaseController<List<Task>> {
 
   protected void reload(Task n) {
     workUnitTable.getItems().clear();
-    PersistentWork.wrap(() -> {
-      Task reload = PersistentWork.reload(n);
+    persistentWork.run(session -> {
+      Task reload = persistentWork.reload(n);
       workUnitTable.getItems().addAll(reload.getWorkUnits());
     });
   }
@@ -225,8 +230,8 @@ public class WorkUnitController extends BaseController<List<Task>> {
     LocalDateTime endTime = getEnteredDate(end.getText());
     LocalDateTime startTime = getEnteredDate(start.getText());
     store.executeCustomRunnable(() -> {
-      PersistentWork.wrap(() -> {
-        WorkUnit reload = PersistentWork.reload(selectedItem);
+      persistentWork.run(session -> {
+        WorkUnit reload = persistentWork.reload(selectedItem);
         reload.setStart(startTime);
         reload.setEnd(endTime);
       });
@@ -238,8 +243,8 @@ public class WorkUnitController extends BaseController<List<Task>> {
   public void onDelete() {
     WorkUnit selectedItem = workUnitTable.getSelectionModel().getSelectedItem();
     store.executeCustomRunnable(() -> {
-      PersistentWork.run(em -> {
-        WorkUnit reload = PersistentWork.reload(selectedItem);
+      persistentWork.run(em -> {
+        WorkUnit reload = persistentWork.reload(selectedItem);
         em.remove(reload);
       });
       controller.getJavaFXExecutor().submit(() -> reload(task.get()));
@@ -253,8 +258,8 @@ public class WorkUnitController extends BaseController<List<Task>> {
     LocalDateTime startTime = getEnteredDate(start.getText());
 
     store.executeCustomRunnable(() -> {
-      PersistentWork.wrap(() -> {
-        Task reload = PersistentWork.reload(currentTask);
+      persistentWork.run(session -> {
+        Task reload = persistentWork.reload(currentTask);
 
         WorkUnit workUnit = new WorkUnit(reload);
         workUnit.setStart(startTime);

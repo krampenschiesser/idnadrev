@@ -14,9 +14,6 @@
  */
 package de.ks.idnadrev.tag;
 
-import de.ks.idnadrev.entity.Tag;
-import de.ks.idnadrev.entity.Tagged;
-
 import java.util.HashSet;
 import java.util.Set;
 

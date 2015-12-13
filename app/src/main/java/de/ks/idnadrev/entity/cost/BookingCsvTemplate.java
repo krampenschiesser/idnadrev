@@ -15,10 +15,6 @@
  */
 package de.ks.idnadrev.entity.cost;
 
-import de.ks.persistence.entity.NamedPersistentObject;
-
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 import java.util.List;

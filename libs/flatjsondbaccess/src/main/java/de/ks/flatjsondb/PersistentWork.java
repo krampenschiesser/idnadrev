@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
@@ -86,6 +87,12 @@ public class PersistentWork {
 
   public <E> void persist(E entity) {
     run(session -> session.persist(entity));
+  }
+
+  public void persist(Object... objects) {
+    run(session -> {
+      Arrays.asList(objects).forEach(session::persist);
+    });
   }
 
   public <E extends BaseEntity> void removeAllOf(Class<E> root) {

@@ -1,16 +1,5 @@
 package de.ks.idnadrev.category.create;
 
-import de.ks.LauncherRunner;
-import de.ks.activity.ActivityCfg;
-import de.ks.executor.group.LastTextChange;
-import de.ks.file.FileStore;
-import de.ks.idnadrev.ActivityTest;
-import de.ks.idnadrev.entity.Category;
-import de.ks.idnadrev.entity.FileReference;
-import de.ks.idnadrev.entity.TaskTest;
-import de.ks.idnadrev.review.weeklydone.WeeklyDoneActivity;
-import de.ks.persistence.PersistentWork;
-import de.ks.util.FXPlatform;
 import javafx.scene.paint.Color;
 import org.junit.Before;
 import org.junit.Test;

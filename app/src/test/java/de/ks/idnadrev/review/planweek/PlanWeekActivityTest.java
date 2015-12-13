@@ -15,28 +15,17 @@
 
 package de.ks.idnadrev.review.planweek;
 
-import de.ks.LauncherRunner;
-import de.ks.activity.ActivityCfg;
-import de.ks.fxcontrols.weekview.WeekHelper;
-import de.ks.fxcontrols.weekview.WeekViewAppointment;
-import de.ks.idnadrev.ActivityTest;
-import de.ks.idnadrev.entity.Task;
-import de.ks.persistence.PersistentWork;
-import de.ks.scheduler.Schedule;
-import de.ks.util.FXPlatform;
 import javafx.collections.ObservableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.persistence.EntityManager;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.Year;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
 public class PlanWeekActivityTest extends ActivityTest {

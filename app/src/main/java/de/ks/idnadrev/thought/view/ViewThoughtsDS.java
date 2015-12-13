@@ -14,12 +14,13 @@
  */
 package de.ks.idnadrev.thought.view;
 
-import de.ks.datasource.ListDataSource;
+import de.ks.flatjsondb.PersistentWork;
 import de.ks.idnadrev.entity.Thought;
-import de.ks.persistence.PersistentWork;
+import de.ks.standbein.datasource.ListDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -27,10 +28,13 @@ import java.util.stream.Collectors;
 public class ViewThoughtsDS implements ListDataSource<Thought> {
   private static final Logger log = LoggerFactory.getLogger(ViewThoughtsDS.class);
 
+  @Inject
+  PersistentWork persistentWork;
+
   @Override
   public List<Thought> loadModel(Consumer<List<Thought>> furtherProcessing) {
-    List<Thought> thoughts = PersistentWork.wrap(() -> {
-      List<Thought> loaded = PersistentWork.from(Thought.class);
+    List<Thought> thoughts = persistentWork.read(session -> {
+      List<Thought> loaded = persistentWork.from(Thought.class);
       furtherProcessing.accept(loaded);
       return loaded;
     });

@@ -14,26 +14,25 @@
  */
 package de.ks.idnadrev.entity.information;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.ks.flatadocdb.annotation.Entity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.*;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 
 @Entity
-@AssociationOverrides(@AssociationOverride(name = "tags", joinTable = @JoinTable(name = "chartinfo_tag")))
 public class ChartInfo extends Information<ChartInfo> {
   private static final long serialVersionUID = 1L;
   private static final Logger log = LoggerFactory.getLogger(ChartInfo.class);
   private static final ObjectMapper mapper = new ObjectMapper();
 
-  @Enumerated(EnumType.STRING)
   protected ChartType chartType;
 
-  @Transient
+  @JsonIgnore
   protected transient ChartData data;
 
   protected ChartInfo() {

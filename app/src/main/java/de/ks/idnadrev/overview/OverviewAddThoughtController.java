@@ -15,12 +15,6 @@
  */
 package de.ks.idnadrev.overview;
 
-import de.ks.BaseController;
-import de.ks.idnadrev.entity.Thought;
-import de.ks.persistence.PersistentWork;
-import de.ks.text.AsciiDocEditor;
-import de.ks.validation.validators.NamedEntityMustNotExistValidator;
-import de.ks.validation.validators.NotEmptyValidator;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;

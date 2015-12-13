@@ -14,18 +14,9 @@
  */
 package de.ks.idnadrev.task.choosenext;
 
-import de.ks.idnadrev.entity.Context;
-import de.ks.idnadrev.entity.Task;
-import de.ks.idnadrev.entity.TaskState;
-import de.ks.option.Options;
-import de.ks.persistence.PersistentWork;
-import de.ks.reflection.PropertyPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;

@@ -14,9 +14,6 @@
  */
 package de.ks.idnadrev.context.view;
 
-import de.ks.activity.ActivityCfg;
-import de.ks.menu.MenuItem;
-
 @MenuItem(order = 80, value = "/main/other")
 public class ViewContextActivity extends ActivityCfg {
   public ViewContextActivity() {

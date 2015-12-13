@@ -15,8 +15,6 @@
  */
 package de.ks.idnadrev.cost.csvimport;
 
-import de.ks.idnadrev.cost.csvimport.columnmapping.BookingColumnMapping;
-import de.ks.idnadrev.entity.cost.Booking;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;

@@ -15,16 +15,14 @@
 
 package de.ks.idnadrev.entity;
 
-import de.ks.persistence.entity.NamedPersistentObject;
+import de.ks.flatadocdb.entity.NamedEntity;
 
-import javax.persistence.Entity;
-
-@Entity
-public class Tag extends NamedPersistentObject<Tag> {
+//@Entity
+public class Tag extends NamedEntity {
   private static final long serialVersionUID = 1L;
 
-  public Tag() {
-    //
+  protected Tag() {
+    super(null);
   }
 
   public Tag(String name) {

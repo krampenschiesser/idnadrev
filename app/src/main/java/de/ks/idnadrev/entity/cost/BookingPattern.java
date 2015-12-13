@@ -15,27 +15,21 @@
  */
 package de.ks.idnadrev.entity.cost;
 
-import de.ks.persistence.entity.NamedPersistentObject;
+import de.ks.flatadocdb.entity.NamedEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.validation.constraints.NotNull;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-@Entity
-public class BookingPattern extends NamedPersistentObject<BookingPattern> {
+public class BookingPattern extends NamedEntity {
   private static final long serialVersionUID = 1L;
-  @NotNull
-  @Column(length = 1000)
   protected String regex;
   protected transient Pattern compiledPattern;
-  @NotNull
   protected String category;
   protected boolean simpleContains;
 
   protected BookingPattern() {
+    super(null);
   }
 
   public BookingPattern(String name) {

@@ -15,8 +15,6 @@
  */
 package de.ks.idnadrev.category;
 
-import de.ks.datasource.DataSource;
-
 import java.util.function.Consumer;
 
 public class CategoryBrowseTestDS implements DataSource<Object> {

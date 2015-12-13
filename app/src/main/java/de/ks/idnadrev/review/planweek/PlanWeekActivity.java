@@ -14,11 +14,6 @@
  */
 package de.ks.idnadrev.review.planweek;
 
-import de.ks.activity.ActivityCfg;
-import de.ks.idnadrev.task.view.TaskFilterView;
-import de.ks.idnadrev.task.view.ViewTasksDS;
-import de.ks.menu.MenuItem;
-
 @MenuItem(order = 70, value = "/main/review")
 public class PlanWeekActivity extends ActivityCfg {
   public PlanWeekActivity() {

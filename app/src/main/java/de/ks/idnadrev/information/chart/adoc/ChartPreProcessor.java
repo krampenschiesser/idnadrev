@@ -15,7 +15,6 @@
  */
 package de.ks.idnadrev.information.chart.adoc;
 
-import de.ks.idnadrev.information.BaseInformationPreProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

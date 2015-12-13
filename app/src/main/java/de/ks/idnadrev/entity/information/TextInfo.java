@@ -14,10 +14,6 @@
  */
 package de.ks.idnadrev.entity.information;
 
-import de.ks.idnadrev.entity.FileContainer;
-import de.ks.idnadrev.entity.FileReference;
-
-import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 

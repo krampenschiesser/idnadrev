@@ -15,10 +15,6 @@
  */
 package de.ks.idnadrev.information.uml.adoc;
 
-import de.ks.idnadrev.entity.information.UmlDiagramInfo;
-import de.ks.idnadrev.information.BaseInformationPreProcessor;
-import de.ks.idnadrev.information.uml.UmlDiagramRender;
-import de.ks.persistence.PersistentWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

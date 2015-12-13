@@ -14,11 +14,6 @@
  */
 package de.ks.idnadrev.task.finish;
 
-import de.ks.datasource.DataSource;
-import de.ks.idnadrev.entity.Task;
-import de.ks.idnadrev.entity.WorkUnit;
-import de.ks.persistence.PersistentWork;
-
 import java.util.SortedSet;
 import java.util.function.Consumer;
 

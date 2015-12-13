@@ -15,11 +15,6 @@
  */
 package de.ks.idnadrev.category;
 
-import de.ks.BaseController;
-import de.ks.activity.executor.ActivityExecutor;
-import de.ks.application.fxml.DefaultLoader;
-import de.ks.idnadrev.entity.Category;
-import de.ks.persistence.PersistentWork;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Node;

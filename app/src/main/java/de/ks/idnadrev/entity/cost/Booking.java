@@ -15,10 +15,6 @@
  */
 package de.ks.idnadrev.entity.cost;
 
-import de.ks.persistence.converter.LocalDateTimeConverter;
-import de.ks.persistence.entity.AbstractPersistentObject;
-
-import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

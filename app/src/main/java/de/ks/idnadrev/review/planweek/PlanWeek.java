@@ -14,19 +14,6 @@
  */
 package de.ks.idnadrev.review.planweek;
 
-import de.ks.BaseController;
-import de.ks.activity.ActivityHint;
-import de.ks.fxcontrols.weekview.AppointmentResolver;
-import de.ks.fxcontrols.weekview.WeekHelper;
-import de.ks.fxcontrols.weekview.WeekView;
-import de.ks.fxcontrols.weekview.WeekViewAppointment;
-import de.ks.i18n.Localized;
-import de.ks.idnadrev.entity.Task;
-import de.ks.idnadrev.task.create.CreateTaskActivity;
-import de.ks.idnadrev.task.finish.FinishTaskActivity;
-import de.ks.idnadrev.task.view.ViewTasksMaster;
-import de.ks.persistence.PersistentWork;
-import de.ks.scheduler.Schedule;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;

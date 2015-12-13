@@ -15,9 +15,6 @@
  */
 package de.ks.idnadrev.cost.account;
 
-import de.ks.datasource.CreateEditDS;
-import de.ks.idnadrev.entity.cost.Account;
-
 public class CreateAccountDS extends CreateEditDS<Account> {
   public CreateAccountDS() {
     super(Account.class);

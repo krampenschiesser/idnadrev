@@ -15,7 +15,6 @@
 
 package de.ks.idnadrev.expimp.xls;
 
-import de.ks.LauncherRunner;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.RichTextString;

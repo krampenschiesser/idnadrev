@@ -15,24 +15,11 @@
 
 package de.ks.idnadrev.task.create;
 
-import de.ks.LauncherRunner;
-import de.ks.activity.ActivityCfg;
-import de.ks.file.FileStore;
-import de.ks.file.FileViewController;
-import de.ks.idnadrev.ActivityTest;
-import de.ks.idnadrev.entity.Context;
-import de.ks.idnadrev.entity.FileReference;
-import de.ks.idnadrev.entity.Task;
-import de.ks.idnadrev.entity.Thought;
-import de.ks.persistence.PersistentWork;
-import de.ks.text.AsciiDocEditor;
-import de.ks.util.FXPlatform;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -40,8 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
 public class CreateTaskWithFilesTest extends ActivityTest {

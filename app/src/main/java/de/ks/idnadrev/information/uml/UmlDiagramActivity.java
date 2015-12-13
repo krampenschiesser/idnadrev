@@ -14,9 +14,6 @@
  */
 package de.ks.idnadrev.information.uml;
 
-import de.ks.activity.ActivityCfg;
-import de.ks.menu.MenuItem;
-
 @MenuItem(value = "/main/info", order = 33)
 public class UmlDiagramActivity extends ActivityCfg {
   public UmlDiagramActivity() {

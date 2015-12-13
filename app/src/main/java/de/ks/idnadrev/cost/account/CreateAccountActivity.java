@@ -15,9 +15,6 @@
  */
 package de.ks.idnadrev.cost.account;
 
-import de.ks.activity.ActivityCfg;
-import de.ks.menu.MenuItem;
-
 @MenuItem(value = "/main/cost", order = 35)
 public class CreateAccountActivity extends ActivityCfg {
   public CreateAccountActivity() {

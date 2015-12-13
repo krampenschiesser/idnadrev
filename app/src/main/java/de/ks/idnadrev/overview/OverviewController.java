@@ -15,8 +15,6 @@
  */
 package de.ks.idnadrev.overview;
 
-import de.ks.BaseController;
-
 import java.net.URL;
 import java.util.ResourceBundle;
 

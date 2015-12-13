@@ -15,18 +15,9 @@
  */
 package de.ks.idnadrev.cost.bookingview;
 
-import de.ks.datasource.DataSource;
-import de.ks.i18n.Localized;
-import de.ks.idnadrev.entity.cost.Account;
-import de.ks.idnadrev.entity.cost.Booking;
-import de.ks.persistence.PersistentWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedList;

@@ -14,7 +14,7 @@
  */
 package de.ks.idnadrev.task.work;
 
-import de.ks.activity.ActivityCfg;
+import de.ks.standbein.activity.ActivityCfg;
 
 public class WorkOnTaskActivity extends ActivityCfg {
   public WorkOnTaskActivity() {

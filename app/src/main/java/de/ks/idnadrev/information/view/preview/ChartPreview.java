@@ -15,13 +15,6 @@
  */
 package de.ks.idnadrev.information.view.preview;
 
-import de.ks.BaseController;
-import de.ks.activity.ActivityHint;
-import de.ks.idnadrev.entity.information.ChartInfo;
-import de.ks.idnadrev.information.chart.ChartInfoActivity;
-import de.ks.idnadrev.information.chart.ChartPreviewHelper;
-import de.ks.idnadrev.information.view.InformationPreviewItem;
-import de.ks.persistence.PersistentWork;
 import javafx.fxml.FXML;
 import javafx.scene.chart.Chart;
 import javafx.scene.layout.Pane;

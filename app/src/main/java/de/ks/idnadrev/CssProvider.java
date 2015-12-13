@@ -14,8 +14,6 @@
  */
 package de.ks.idnadrev;
 
-import de.ks.javafx.FxCss;
-
 import javax.enterprise.inject.Produces;
 
 public class CssProvider {

@@ -15,14 +15,9 @@
 
 package de.ks.idnadrev.thought.add;
 
-import de.ks.BaseController;
-import de.ks.file.FileOptions;
-import de.ks.file.FileViewController;
 import de.ks.idnadrev.entity.Thought;
-import de.ks.option.Options;
-import de.ks.reflection.PropertyPath;
+import de.ks.standbein.BaseController;
 import de.ks.text.AsciiDocEditor;
-import de.ks.validation.validators.NamedEntityMustNotExistValidator;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -65,7 +60,7 @@ public class AddThought extends BaseController<Thought> {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    AsciiDocEditor.load(descriptionContainer.getChildren()::add, this::setDescription);
+    AsciiDocEditor.load(activityInitialization, descriptionContainer.getChildren()::add, this::setDescription);
     bindValidation();
     fileViewController.getFiles().addListener((ListChangeListener<File>) change -> {
       ObservableList<? extends File> list = change.getList();
@@ -88,7 +83,7 @@ public class AddThought extends BaseController<Thought> {
 
   private void bindValidation() {
     save.disableProperty().bind(validationRegistry.invalidProperty());
-    validationRegistry.registerBeanValidationValidator(name, Thought.class, PropertyPath.of(Thought.class, t -> t.getName()).getPropertyPath());
+//    validationRegistry.registerBeanValidationValidator(name, Thought.class, PropertyPath.of(Thought.class, t -> t.getName()).getPropertyPath());
     validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(Thought.class, t -> t.getId() == store.<Thought>getModel().getId()));
   }
 

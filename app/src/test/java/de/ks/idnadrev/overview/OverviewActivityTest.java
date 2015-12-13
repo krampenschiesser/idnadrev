@@ -1,19 +1,10 @@
 package de.ks.idnadrev.overview;
 
-import de.ks.LauncherRunner;
-import de.ks.activity.ActivityCfg;
-import de.ks.idnadrev.ActivityTest;
-import de.ks.idnadrev.entity.Context;
-import de.ks.idnadrev.entity.Task;
-import de.ks.idnadrev.entity.Thought;
-import de.ks.persistence.PersistentWork;
-import de.ks.util.FXPlatform;
 import javafx.collections.ObservableList;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.persistence.EntityManager;
 import java.time.Duration;
 import java.util.List;
 

@@ -14,21 +14,11 @@
  */
 package de.ks.idnadrev.task.create;
 
-import de.ks.LauncherRunner;
-import de.ks.activity.ActivityCfg;
-import de.ks.activity.ActivityController;
-import de.ks.activity.context.ActivityStore;
-import de.ks.idnadrev.ActivityTest;
-import de.ks.idnadrev.entity.*;
-import de.ks.persistence.PersistentWork;
-import de.ks.text.AsciiDocEditor;
-import de.ks.util.FXPlatform;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;

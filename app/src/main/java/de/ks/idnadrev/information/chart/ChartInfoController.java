@@ -15,12 +15,6 @@
 
 package de.ks.idnadrev.information.chart;
 
-import de.ks.BaseController;
-import de.ks.activity.initialization.LoadInFXThread;
-import de.ks.i18n.Localized;
-import de.ks.idnadrev.entity.information.*;
-import de.ks.validation.validators.NamedEntityMustNotExistValidator;
-import de.ks.validation.validators.NotEmptyValidator;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

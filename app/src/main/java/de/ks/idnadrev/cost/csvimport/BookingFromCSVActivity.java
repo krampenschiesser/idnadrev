@@ -15,9 +15,6 @@
  */
 package de.ks.idnadrev.cost.csvimport;
 
-import de.ks.activity.ActivityCfg;
-import de.ks.menu.MenuItem;
-
 @MenuItem(value = "/main/cost", order = 33)
 public class BookingFromCSVActivity extends ActivityCfg {
   public BookingFromCSVActivity() {

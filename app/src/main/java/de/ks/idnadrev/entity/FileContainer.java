@@ -24,7 +24,7 @@ public interface FileContainer<T> {
     getFiles().add(ref);
   }
 
-  long getId();
+  String getId();
 
   String getDescription();
 

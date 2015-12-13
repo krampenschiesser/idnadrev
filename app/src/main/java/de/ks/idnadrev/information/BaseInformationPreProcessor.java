@@ -15,11 +15,6 @@
  */
 package de.ks.idnadrev.information;
 
-import de.ks.file.FileDeletionRunnable;
-import de.ks.idnadrev.information.chart.adoc.ChartFileRendering;
-import de.ks.idnadrev.information.uml.adoc.DiagramPreProcessor;
-import de.ks.text.process.AsciiDocPreProcessor;
-import de.ks.text.view.AsciiDocViewer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

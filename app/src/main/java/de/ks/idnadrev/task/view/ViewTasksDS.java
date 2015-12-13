@@ -14,18 +14,13 @@
  */
 package de.ks.idnadrev.task.view;
 
-import de.ks.activity.initialization.ActivityInitialization;
-import de.ks.datasource.ListDataSource;
+import de.ks.flatjsondb.PersistentWork;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.WorkUnit;
-import de.ks.persistence.PersistentWork;
-import de.ks.persistence.QueryConsumer;
-import de.ks.persistence.entity.NamedPersistentObject;
+import de.ks.standbein.activity.initialization.ActivityInitialization;
+import de.ks.standbein.datasource.ListDataSource;
 
 import javax.inject.Inject;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -36,13 +31,15 @@ public class ViewTasksDS implements ListDataSource<Task> {
 
   @Inject
   ActivityInitialization initialization;
+  @Inject
+  PersistentWork persistentWork;
 
   @Override
   public List<Task> loadModel(Consumer<List<Task>> furtherProcessing) {
     TaskFilterView taskFilterView = initialization.getControllerInstance(TaskFilterView.class);
     taskFilterView.applyFilterOnDS(this);
 
-    return PersistentWork.wrap(() -> {
+    return persistentWork.run(session -> {
       List<Task> from = PersistentWork.read((em) -> {
         CriteriaBuilder builder = em.getCriteriaBuilder();
         CriteriaQuery<Task> query = builder.createQuery(Task.class);

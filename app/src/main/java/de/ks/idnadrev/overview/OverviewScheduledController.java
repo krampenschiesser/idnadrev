@@ -15,11 +15,6 @@
  */
 package de.ks.idnadrev.overview;
 
-import de.ks.BaseController;
-import de.ks.activity.ActivityHint;
-import de.ks.fxcontrols.cell.ConvertingListCell;
-import de.ks.idnadrev.entity.Task;
-import de.ks.idnadrev.task.work.WorkOnTaskActivity;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;

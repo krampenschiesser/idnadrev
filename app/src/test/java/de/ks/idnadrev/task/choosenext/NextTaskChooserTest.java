@@ -15,15 +15,11 @@
 
 package de.ks.idnadrev.task.choosenext;
 
-import de.ks.LauncherRunner;
-import de.ks.idnadrev.entity.*;
-import de.ks.persistence.PersistentWork;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Arrays;

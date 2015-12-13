@@ -1,16 +1,8 @@
 package de.ks.idnadrev.cost.createbooking;
 
-import de.ks.LauncherRunner;
-import de.ks.activity.ActivityCfg;
-import de.ks.idnadrev.ActivityTest;
-import de.ks.idnadrev.entity.cost.Account;
-import de.ks.idnadrev.entity.cost.Booking;
-import de.ks.persistence.PersistentWork;
-import de.ks.util.FXPlatform;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.List;
 

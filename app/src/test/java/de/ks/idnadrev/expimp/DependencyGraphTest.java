@@ -15,15 +15,10 @@
 
 package de.ks.idnadrev.expimp;
 
-import de.ks.LauncherRunner;
-import de.ks.idnadrev.entity.Task;
-import de.ks.idnadrev.entity.WorkUnit;
-import de.ks.idnadrev.entity.information.Information;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
-import javax.persistence.metamodel.EntityType;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;

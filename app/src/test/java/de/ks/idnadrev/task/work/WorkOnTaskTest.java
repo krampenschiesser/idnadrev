@@ -15,16 +15,6 @@
 
 package de.ks.idnadrev.task.work;
 
-import de.ks.LauncherRunner;
-import de.ks.activity.ActivityController;
-import de.ks.activity.ActivityHint;
-import de.ks.idnadrev.IdnadrevWindow;
-import de.ks.idnadrev.entity.*;
-import de.ks.idnadrev.task.view.ViewTasksActvity;
-import de.ks.idnadrev.thought.add.AddThought;
-import de.ks.idnadrev.thought.add.AddThoughtActivity;
-import de.ks.persistence.PersistentWork;
-import de.ks.util.FXPlatform;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;

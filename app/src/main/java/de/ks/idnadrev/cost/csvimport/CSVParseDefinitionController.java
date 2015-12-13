@@ -15,16 +15,6 @@
  */
 package de.ks.idnadrev.cost.csvimport;
 
-import de.ks.BaseController;
-import de.ks.i18n.Localized;
-import de.ks.idnadrev.cost.csvimport.columnmapping.*;
-import de.ks.idnadrev.entity.cost.Account;
-import de.ks.idnadrev.entity.cost.BookingCsvTemplate;
-import de.ks.persistence.PersistentWork;
-import de.ks.validation.validators.DateTimeFormatterPatternValidator;
-import de.ks.validation.validators.IntegerRangeValidator;
-import de.ks.validation.validators.NotEmptyValidator;
-import de.ks.validation.validators.StringLengthValidator;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Modality;

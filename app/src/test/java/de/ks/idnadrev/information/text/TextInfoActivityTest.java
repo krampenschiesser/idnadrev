@@ -15,19 +15,10 @@
 
 package de.ks.idnadrev.information.text;
 
-import de.ks.LauncherRunner;
-import de.ks.activity.ActivityCfg;
-import de.ks.idnadrev.ActivityTest;
-import de.ks.idnadrev.entity.Category;
-import de.ks.idnadrev.entity.Tag;
-import de.ks.idnadrev.entity.information.TextInfo;
-import de.ks.persistence.PersistentWork;
-import de.ks.util.FXPlatform;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Set;
 

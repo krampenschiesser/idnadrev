@@ -14,14 +14,6 @@
  */
 package de.ks.idnadrev.context.view;
 
-import de.ks.BaseController;
-import de.ks.activity.ActivityHint;
-import de.ks.fxcontrols.cell.ConvertingListCell;
-import de.ks.idnadrev.context.CreateContextActivity;
-import de.ks.idnadrev.entity.Context;
-import de.ks.idnadrev.entity.Task;
-import de.ks.persistence.PersistentWork;
-import de.ks.reflection.PropertyPath;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.collections.FXCollections;
@@ -32,10 +24,6 @@ import javafx.scene.input.KeyCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Root;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;

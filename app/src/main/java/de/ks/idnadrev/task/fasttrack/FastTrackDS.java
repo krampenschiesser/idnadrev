@@ -14,9 +14,6 @@
  */
 package de.ks.idnadrev.task.fasttrack;
 
-import de.ks.datasource.NewInstanceDataSource;
-import de.ks.idnadrev.entity.Task;
-import de.ks.persistence.PersistentWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

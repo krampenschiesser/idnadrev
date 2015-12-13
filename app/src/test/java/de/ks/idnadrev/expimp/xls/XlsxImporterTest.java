@@ -16,10 +16,6 @@
 package de.ks.idnadrev.expimp.xls;
 
 import com.google.common.util.concurrent.MoreExecutors;
-import de.ks.LauncherRunner;
-import de.ks.idnadrev.entity.Thought;
-import de.ks.idnadrev.expimp.xls.result.XlsxImportResultCollector;
-import de.ks.persistence.PersistentWork;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

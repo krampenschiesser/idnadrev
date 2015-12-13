@@ -15,19 +15,6 @@
  */
 package de.ks.idnadrev.category.view;
 
-import de.ks.BaseController;
-import de.ks.activity.ActivityHint;
-import de.ks.application.fxml.DefaultLoader;
-import de.ks.idnadrev.category.CategoryBrowser;
-import de.ks.idnadrev.category.CategoryItemController;
-import de.ks.idnadrev.category.create.CreateCategoryActivity;
-import de.ks.idnadrev.entity.Category;
-import de.ks.idnadrev.entity.information.ChartInfo;
-import de.ks.idnadrev.entity.information.Information;
-import de.ks.idnadrev.entity.information.TextInfo;
-import de.ks.idnadrev.entity.information.UmlDiagramInfo;
-import de.ks.persistence.PersistentWork;
-import de.ks.reflection.PropertyPath;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.fxml.FXML;
@@ -39,11 +26,6 @@ import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Root;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,18 +15,22 @@
  */
 package de.ks.idnadrev.entity.cost;
 
-import de.ks.persistence.entity.NamedPersistentObject;
-import de.ks.scheduler.Schedule;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import de.ks.flatadocdb.annotation.Entity;
+import de.ks.flatadocdb.entity.NamedEntity;
 
 @Entity
-public class ScheduledBooking extends NamedPersistentObject<ScheduledBooking> {
+public class ScheduledBooking extends NamedEntity {
   private static final long serialVersionUID = 1L;
-  @ManyToOne(cascade = CascadeType.ALL)
-  protected Schedule schedule;
+//  @ManyToOne(cascade = CascadeType.ALL)
+//  protected Schedule schedule;
 
   protected double amount;
+
+  protected ScheduledBooking() {
+    super(null);
+  }
+
+  public ScheduledBooking(String name) {
+    super(name);
+  }
 }

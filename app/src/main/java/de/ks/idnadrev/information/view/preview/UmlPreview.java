@@ -15,13 +15,6 @@
  */
 package de.ks.idnadrev.information.view.preview;
 
-import de.ks.BaseController;
-import de.ks.activity.ActivityHint;
-import de.ks.idnadrev.entity.information.UmlDiagramInfo;
-import de.ks.idnadrev.information.uml.UmlDiagramActivity;
-import de.ks.idnadrev.information.uml.UmlDiagramRender;
-import de.ks.idnadrev.information.view.InformationPreviewItem;
-import de.ks.persistence.PersistentWork;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;

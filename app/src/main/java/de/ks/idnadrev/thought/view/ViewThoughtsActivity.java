@@ -14,10 +14,9 @@
  */
 package de.ks.idnadrev.thought.view;
 
-import de.ks.activity.ActivityCfg;
-import de.ks.menu.MenuItem;
+import de.ks.standbein.activity.ActivityCfg;
 
-@MenuItem(order = 11, value = "/main/thought")
+//@MenuItem(order = 11, value = "/main/thought")
 public class ViewThoughtsActivity extends ActivityCfg {
 
   public ViewThoughtsActivity() {

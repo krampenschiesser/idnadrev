@@ -14,17 +14,6 @@
  */
 package de.ks.idnadrev.task.view;
 
-import de.ks.LauncherRunner;
-import de.ks.activity.ActivityCfg;
-import de.ks.activity.ActivityController;
-import de.ks.i18n.Localized;
-import de.ks.idnadrev.ActivityTest;
-import de.ks.idnadrev.entity.*;
-import de.ks.idnadrev.task.create.CreateTaskActivity;
-import de.ks.idnadrev.task.create.MainTaskInfo;
-import de.ks.persistence.PersistentWork;
-import de.ks.persistence.entity.Sequence;
-import de.ks.util.FXPlatform;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableView;
@@ -35,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 import java.util.List;
 
 import static de.ks.JunitMatchers.withRetry;

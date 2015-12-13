@@ -14,14 +14,13 @@
  */
 package de.ks.idnadrev.thought.view;
 
-import de.ks.BaseController;
-import de.ks.activity.ActivityHint;
-import de.ks.file.FileStore;
+import de.ks.flatjsondb.PersistentWork;
 import de.ks.idnadrev.entity.Thought;
 import de.ks.idnadrev.information.text.TextInfoActivity;
 import de.ks.idnadrev.task.create.CreateTaskActivity;
 import de.ks.idnadrev.thought.add.AddThoughtActivity;
-import de.ks.persistence.PersistentWork;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.activity.ActivityHint;
 import de.ks.text.view.AsciiDocContent;
 import de.ks.text.view.AsciiDocViewer;
 import javafx.beans.binding.BooleanBinding;
@@ -38,6 +37,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.net.URL;
+import java.nio.file.FileStore;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;

@@ -15,11 +15,11 @@
 
 package de.ks.idnadrev.entity;
 
+import de.ks.flatadocdb.annotation.Entity;
+import de.ks.flatadocdb.entity.NamedEntity;
 import de.ks.idnadrev.thought.ThoughtOptions;
-import de.ks.option.Options;
-import de.ks.persistence.entity.NamedPersistentObject;
+import de.ks.standbein.option.Options;
 
-import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -30,19 +30,17 @@ import java.util.Set;
  * All rights reserved by now, license may come later.
  */
 @Entity
-public class Thought extends NamedPersistentObject<Thought> implements FileContainer<Thought> {
+public class Thought extends NamedEntity implements FileContainer<Thought> {
   private static final long serialVersionUID = 1L;
   public static final String THOUGHT_FILE_JOINTABLE = "thought_file";
 
-  @Lob
   protected String description;
   protected LocalDate postponedDate;
 
-  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-  @JoinTable(name = THOUGHT_FILE_JOINTABLE)
   protected Set<FileReference> files = new HashSet<>();
 
-  public Thought() {
+  protected Thought() {
+    super(null);
   }
 
   public Thought(String name) {
@@ -70,8 +68,8 @@ public class Thought extends NamedPersistentObject<Thought> implements FileConta
     return files;
   }
 
-  public void postPone() {
-    ThoughtOptions thoughtOptions = Options.get(ThoughtOptions.class);
+  public void postPone(Options options) {
+    ThoughtOptions thoughtOptions = options.get(ThoughtOptions.class);
     int daysToPostpone = thoughtOptions.getDaysToPostpone();
     postPone(daysToPostpone);
   }

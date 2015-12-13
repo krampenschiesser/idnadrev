@@ -14,9 +14,6 @@
  */
 package de.ks.idnadrev.review.weeklydone;
 
-import de.ks.activity.ActivityCfg;
-import de.ks.menu.MenuItem;
-
 @MenuItem(order = 71, value = "/main/review")
 public class WeeklyDoneActivity extends ActivityCfg {
   public WeeklyDoneActivity() {

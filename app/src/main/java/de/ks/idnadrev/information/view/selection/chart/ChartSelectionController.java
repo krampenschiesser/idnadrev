@@ -15,9 +15,6 @@
  */
 package de.ks.idnadrev.information.view.selection.chart;
 
-import de.ks.idnadrev.entity.information.ChartInfo;
-import de.ks.idnadrev.information.view.selection.BaseInfoSelectionController;
-
 public class ChartSelectionController extends BaseInfoSelectionController<ChartInfo> {
   public ChartSelectionController() {
     super(ChartInfo.class);

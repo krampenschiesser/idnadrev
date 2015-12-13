@@ -15,17 +15,6 @@
 
 package de.ks.idnadrev.thought.view;
 
-import de.ks.LauncherRunner;
-import de.ks.TempFileRule;
-import de.ks.activity.ActivityCfg;
-import de.ks.idnadrev.ActivityTest;
-import de.ks.idnadrev.entity.FileReference;
-import de.ks.idnadrev.entity.Thought;
-import de.ks.idnadrev.entity.information.TextInfo;
-import de.ks.idnadrev.information.text.TextInfoActivity;
-import de.ks.idnadrev.information.text.TextInfoController;
-import de.ks.persistence.PersistentWork;
-import de.ks.util.FXPlatform;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -33,7 +22,6 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.EntityManager;
 import java.util.List;
 
 import static de.ks.JunitMatchers.withRetry;

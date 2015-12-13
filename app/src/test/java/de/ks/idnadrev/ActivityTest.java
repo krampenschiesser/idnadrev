@@ -14,18 +14,10 @@
  */
 package de.ks.idnadrev;
 
-import de.ks.activity.ActivityCfg;
-import de.ks.activity.ActivityController;
-import de.ks.activity.ActivityHint;
-import de.ks.activity.context.ActivityStore;
-import de.ks.idnadrev.entity.Cleanup;
-import de.ks.persistence.PersistentWork;
-import de.ks.util.FXPlatform;
 import org.junit.After;
 import org.junit.Before;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 
 public abstract class ActivityTest {
   @Inject

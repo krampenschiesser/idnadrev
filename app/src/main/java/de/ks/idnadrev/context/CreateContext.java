@@ -14,12 +14,6 @@
  */
 package de.ks.idnadrev.context;
 
-import de.ks.activity.ActivityController;
-import de.ks.activity.context.ActivityStore;
-import de.ks.idnadrev.entity.Context;
-import de.ks.reflection.PropertyPath;
-import de.ks.validation.ValidationRegistry;
-import de.ks.validation.validators.NamedEntityMustNotExistValidator;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

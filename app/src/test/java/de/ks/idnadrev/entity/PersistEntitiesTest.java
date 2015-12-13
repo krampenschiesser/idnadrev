@@ -15,12 +15,6 @@
 
 package de.ks.idnadrev.entity;
 
-import de.ks.LauncherRunner;
-import de.ks.idnadrev.entity.information.Information;
-import de.ks.idnadrev.entity.information.TextInfo;
-import de.ks.persistence.PersistentWork;
-import de.ks.persistence.entity.NamedPersistentObject;
-import de.ks.reflection.PropertyPath;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,9 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceException;
-import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

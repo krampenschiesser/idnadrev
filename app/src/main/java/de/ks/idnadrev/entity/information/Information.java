@@ -15,35 +15,30 @@
 
 package de.ks.idnadrev.entity.information;
 
-import de.ks.idnadrev.entity.*;
-import de.ks.persistence.entity.NamedPersistentObject;
+import de.ks.flatadocdb.annotation.ToMany;
+import de.ks.flatadocdb.entity.NamedEntity;
+import de.ks.idnadrev.entity.Tag;
+import de.ks.idnadrev.entity.Tagged;
+import de.ks.idnadrev.entity.Task;
 
-import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
-@MappedSuperclass
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public abstract class Information<E extends Information<E>> extends NamedPersistentObject<E> implements Tagged, Categorized {
+public abstract class Information<E extends Information<E>> extends NamedEntity implements Tagged {
   public static final String INFORMATION_TAG_JOINTABLE = "information_tag";
 
   private static final long serialVersionUID = 1L;
 
-  @Basic(fetch = FetchType.LAZY)
-  @Lob
   protected String content;
 
-  @ManyToOne
-  protected Task task;
+  @ToMany
+  protected Set<Task> task;
 
-  @ManyToMany(cascade = CascadeType.PERSIST)
+  //  @ToMany
   protected Set<Tag> tags = new HashSet<>();
 
-  @ManyToOne
-  protected Category category;
-
   protected Information() {
-    //
+    super(null);
   }
 
   public Information(String name) {
@@ -63,21 +58,5 @@ public abstract class Information<E extends Information<E>> extends NamedPersist
   @Override
   public Set<Tag> getTags() {
     return tags;
-  }
-
-  public Category getCategory() {
-    return category;
-  }
-
-  public void setCategory(Category category) {
-    this.category = category;
-  }
-
-  public Task getTask() {
-    return task;
-  }
-
-  public void setTask(Task task) {
-    this.task = task;
   }
 }

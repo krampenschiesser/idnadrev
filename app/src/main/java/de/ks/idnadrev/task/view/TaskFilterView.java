@@ -14,22 +14,19 @@
  */
 package de.ks.idnadrev.task.view;
 
-import de.ks.BaseController;
+import de.ks.flatjsondb.PersistentWork;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.TaskState;
-import de.ks.javafx.event.ChainedEventHandler;
-import de.ks.javafx.event.ClearTextOnEscape;
-import de.ks.persistence.PersistentWork;
-import de.ks.reflection.PropertyPath;
-import de.ks.selection.NamedPersistentObjectSelection;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.javafx.event.ChainedEventHandler;
+import de.ks.standbein.javafx.event.ClearTextOnEscape;
+import de.ks.standbein.reflection.PropertyPath;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;

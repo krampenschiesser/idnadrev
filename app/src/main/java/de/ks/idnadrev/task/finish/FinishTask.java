@@ -14,11 +14,6 @@
  */
 package de.ks.idnadrev.task.finish;
 
-import de.ks.BaseController;
-import de.ks.idnadrev.entity.Task;
-import de.ks.text.AsciiDocEditor;
-import de.ks.text.view.AsciiDocContent;
-import de.ks.text.view.AsciiDocViewer;
 import javafx.fxml.FXML;
 import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;

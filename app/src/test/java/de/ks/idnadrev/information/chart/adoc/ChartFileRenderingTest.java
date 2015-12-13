@@ -1,21 +1,11 @@
 package de.ks.idnadrev.information.chart.adoc;
 
-import de.ks.LauncherRunner;
-import de.ks.activity.ActivityCfg;
-import de.ks.idnadrev.ActivityTest;
-import de.ks.idnadrev.entity.information.ChartData;
-import de.ks.idnadrev.entity.information.ChartInfo;
-import de.ks.idnadrev.entity.information.ChartType;
-import de.ks.idnadrev.information.chart.ChartInfoActivity;
-import de.ks.idnadrev.information.chart.ChartInfoController;
-import de.ks.persistence.PersistentWork;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;

@@ -1,18 +1,9 @@
 package de.ks.idnadrev.cost.csvimport;
 
-import de.ks.LauncherRunner;
-import de.ks.activity.ActivityCfg;
-import de.ks.idnadrev.ActivityTest;
-import de.ks.idnadrev.entity.cost.Account;
-import de.ks.idnadrev.entity.cost.Booking;
-import de.ks.idnadrev.entity.cost.BookingCsvTemplate;
-import de.ks.persistence.PersistentWork;
-import de.ks.util.FXPlatform;
 import javafx.collections.ObservableList;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.persistence.EntityManager;
 import java.io.File;
 import java.net.URL;
 import java.util.Arrays;

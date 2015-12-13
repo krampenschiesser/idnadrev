@@ -15,9 +15,6 @@
  */
 package de.ks.idnadrev.category.view;
 
-import de.ks.activity.ActivityCfg;
-import de.ks.menu.MenuItem;
-
 @MenuItem(order = 81, value = "/main/other")
 public class ViewCategoryActivity extends ActivityCfg {
   public ViewCategoryActivity() {

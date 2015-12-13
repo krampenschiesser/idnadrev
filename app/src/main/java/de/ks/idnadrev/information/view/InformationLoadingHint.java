@@ -15,9 +15,6 @@
  */
 package de.ks.idnadrev.information.view;
 
-import de.ks.idnadrev.entity.Category;
-import de.ks.idnadrev.entity.information.Information;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;

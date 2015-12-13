@@ -15,9 +15,6 @@
  */
 package de.ks.idnadrev.cost.createbooking;
 
-import de.ks.datasource.CreateEditDS;
-import de.ks.idnadrev.entity.cost.Booking;
-
 public class CreateBookingDS extends CreateEditDS<Booking> {
   public CreateBookingDS() {
     super(Booking.class);

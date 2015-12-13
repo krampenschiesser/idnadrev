@@ -14,18 +14,16 @@
  */
 package de.ks.idnadrev.task.create;
 
-import de.ks.BaseController;
+import de.ks.flatadocdb.entity.NamedEntity;
+import de.ks.flatjsondb.PersistentWork;
 import de.ks.idnadrev.entity.Context;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.TaskState;
 import de.ks.idnadrev.tag.TagContainer;
-import de.ks.persistence.PersistentWork;
-import de.ks.persistence.entity.NamedPersistentObject;
-import de.ks.reflection.PropertyPath;
-import de.ks.selection.NamedPersistentObjectSelection;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.reflection.PropertyPath;
+import de.ks.standbein.validation.validators.DurationValidator;
 import de.ks.text.AsciiDocEditor;
-import de.ks.validation.validators.DurationValidator;
-import de.ks.validation.validators.NamedEntityMustNotExistValidator;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -36,9 +34,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.util.Callback;
-import org.controlsfx.control.textfield.AutoCompletionBinding;
-import org.controlsfx.control.textfield.TextFields;
 
+import javax.inject.Inject;
 import java.net.URL;
 import java.time.Duration;
 import java.util.Arrays;
@@ -66,13 +63,16 @@ public class MainTaskInfo extends BaseController<Task> {
   @FXML
   protected ComboBox<TaskState> state;
 
+  @Inject
+  protected PersistentWork persistentWork;
+
   protected AsciiDocEditor description;
   protected DurationValidator durationValidator;
   protected final ObservableList<TaskState> states = FXCollections.observableArrayList();
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    AsciiDocEditor.load(descriptionContainer.getChildren()::add, ade -> this.description = ade);
+    AsciiDocEditor.load(activityInitialization, descriptionContainer.getChildren()::add, ade -> this.description = ade);
 
     validationRegistry.registerBeanValidationValidator(name, Task.class, PropertyPath.of(Task.class, t -> t.getName()).getPropertyPath());
     validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(Task.class, t -> t.getId() == store.<Task>getModel().getId()));
@@ -173,9 +173,9 @@ public class MainTaskInfo extends BaseController<Task> {
     task.setState(state.getValue());
   }
 
-  private <T extends NamedPersistentObject<T>> void setToOne(Task model, Class<T> clazz, String name, Consumer<T> consumer) {
+  private <T extends NamedEntity> void setToOne(Task model, Class<T> clazz, String name, Consumer<T> consumer) {
     if (!name.isEmpty()) {
-      T found = PersistentWork.forName(clazz, name);
+      T found = persistentWork.forName(clazz, name);
       if (found != null) {
         consumer.accept(found);
       } else {

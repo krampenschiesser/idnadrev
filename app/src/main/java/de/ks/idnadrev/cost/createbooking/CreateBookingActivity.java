@@ -15,9 +15,6 @@
  */
 package de.ks.idnadrev.cost.createbooking;
 
-import de.ks.activity.ActivityCfg;
-import de.ks.menu.MenuItem;
-
 @MenuItem(value = "/main/cost", order = 32)
 public class CreateBookingActivity extends ActivityCfg {
   public CreateBookingActivity() {

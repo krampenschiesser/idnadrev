@@ -15,9 +15,9 @@
 
 package de.ks.idnadrev;
 
-import de.ks.launch.ApplicationService;
-import de.ks.launch.Launcher;
-import de.ks.version.Versioning;
+import de.ks.standbein.application.ApplicationService;
+import de.ks.standbein.launch.Launcher;
+import de.ks.standbein.version.Versioning;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -15,16 +15,6 @@
  */
 package de.ks.idnadrev.overview;
 
-import de.ks.datasource.DataSource;
-import de.ks.fxcontrols.weekview.WeekHelper;
-import de.ks.idnadrev.entity.Context;
-import de.ks.idnadrev.entity.Task;
-import de.ks.persistence.PersistentWork;
-import de.ks.reflection.PropertyPath;
-import de.ks.scheduler.Schedule;
-
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.*;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Collections;

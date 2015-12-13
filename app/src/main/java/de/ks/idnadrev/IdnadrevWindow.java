@@ -15,17 +15,6 @@
 
 package de.ks.idnadrev;
 
-import de.ks.activity.ActivityCfg;
-import de.ks.activity.ActivityController;
-import de.ks.activity.ActivityHint;
-import de.ks.application.MainWindow;
-import de.ks.application.fxml.DefaultLoader;
-import de.ks.idnadrev.overview.OverviewActivity;
-import de.ks.idnadrev.task.work.WorkingOnTaskLink;
-import de.ks.javafx.NodeLookup;
-import de.ks.menu.presenter.MenuBarPresenter;
-import de.ks.menu.sink.ContentSink;
-import de.ks.menu.sink.PopupSink;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Parent;

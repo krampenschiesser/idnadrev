@@ -15,12 +15,6 @@
  */
 package de.ks.idnadrev.information.chart.adoc;
 
-import de.ks.activity.ActivityController;
-import de.ks.activity.ActivityHint;
-import de.ks.idnadrev.entity.information.ChartInfo;
-import de.ks.idnadrev.information.view.selection.chart.ChartSelectionActivity;
-import de.ks.idnadrev.information.view.selection.chart.ChartSelectionController;
-import de.ks.text.command.AsciiDocEditorCommand;
 import javafx.scene.control.TextArea;
 
 import javax.inject.Inject;

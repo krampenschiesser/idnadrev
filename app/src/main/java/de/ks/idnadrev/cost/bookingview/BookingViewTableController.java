@@ -15,12 +15,6 @@
  */
 package de.ks.idnadrev.cost.bookingview;
 
-import de.ks.BaseController;
-import de.ks.i18n.Localized;
-import de.ks.idnadrev.entity.cost.Booking;
-import de.ks.persistence.PersistentWork;
-import de.ks.validation.cell.ValidatingTableCell;
-import de.ks.validation.validators.DoubleValidator;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;

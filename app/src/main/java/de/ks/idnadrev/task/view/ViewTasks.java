@@ -15,16 +15,15 @@
 
 package de.ks.idnadrev.task.view;
 
-import de.ks.BaseController;
-import de.ks.activity.ActivityHint;
-import de.ks.file.FileStore;
-import de.ks.i18n.Localized;
+import de.ks.flatjsondb.PersistentWork;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.TaskState;
 import de.ks.idnadrev.task.create.CreateTaskActivity;
 import de.ks.idnadrev.task.finish.FinishTaskActivity;
 import de.ks.idnadrev.task.work.WorkOnTaskActivity;
-import de.ks.persistence.PersistentWork;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.activity.ActivityHint;
+import de.ks.standbein.i18n.Localized;
 import de.ks.text.view.AsciiDocContent;
 import de.ks.text.view.AsciiDocViewer;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -45,6 +44,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.net.URL;
+import java.nio.file.FileStore;
 import java.time.Duration;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -100,6 +100,8 @@ public class ViewTasks extends BaseController<List<Task>> {
 
   @Inject
   FileStore fileStore;
+  @Inject
+  PersistentWork persistentWork;
 
   private AsciiDocViewer asciiDocViewer;
   private final SimpleBooleanProperty disable = new SimpleBooleanProperty(false);
@@ -293,9 +295,9 @@ public class ViewTasks extends BaseController<List<Task>> {
   @FXML
   void deleteTask() {
     TreeTableView<Task> tasksView = viewController.getTasksView();
-    PersistentWork.run(em -> {
+    persistentWork.run(em -> {
       Task task = tasksView.getSelectionModel().getSelectedItem().getValue();
-      em.remove(PersistentWork.reload(task));
+      em.remove(persistentWork.reload(task));
     });
     controller.reload();
   }
@@ -303,9 +305,9 @@ public class ViewTasks extends BaseController<List<Task>> {
   @FXML
   public void scheduleAsap() {
     TreeTableView<Task> tasksView = viewController.getTasksView();
-    PersistentWork.run(em -> {
+    persistentWork.run(em -> {
       Task task = tasksView.getSelectionModel().getSelectedItem().getValue();
-      PersistentWork.reload(task).setState(TaskState.ASAP);
+      persistentWork.reload(task).setState(TaskState.ASAP);
     });
     controller.reload();
   }
@@ -313,9 +315,9 @@ public class ViewTasks extends BaseController<List<Task>> {
   @FXML
   public void scheduleLater() {
     TreeTableView<Task> tasksView = viewController.getTasksView();
-    PersistentWork.run(em -> {
+    persistentWork.run(em -> {
       Task task = tasksView.getSelectionModel().getSelectedItem().getValue();
-      PersistentWork.reload(task).setState(TaskState.LATER);
+      persistentWork.reload(task).setState(TaskState.LATER);
     });
     controller.reload();
   }

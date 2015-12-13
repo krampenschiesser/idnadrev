@@ -15,9 +15,6 @@
  */
 package de.ks.idnadrev.overview;
 
-import de.ks.idnadrev.entity.Context;
-import de.ks.idnadrev.entity.Task;
-
 import java.util.ArrayList;
 import java.util.List;
 

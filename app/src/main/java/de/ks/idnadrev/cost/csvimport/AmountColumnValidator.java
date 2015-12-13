@@ -15,7 +15,6 @@
  */
 package de.ks.idnadrev.cost.csvimport;
 
-import de.ks.i18n.Localized;
 import javafx.scene.control.Control;
 import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.Validator;

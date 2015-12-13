@@ -15,13 +15,6 @@
 
 package de.ks.idnadrev.information.text;
 
-import de.ks.datasource.CreateEditDS;
-import de.ks.idnadrev.entity.Thought;
-import de.ks.idnadrev.entity.information.TextInfo;
-import de.ks.persistence.PersistentWork;
-
-import javax.persistence.EntityManager;
-
 public class TextInfoDS extends CreateEditDS<TextInfo> {
   protected Thought fromThought = null;
 

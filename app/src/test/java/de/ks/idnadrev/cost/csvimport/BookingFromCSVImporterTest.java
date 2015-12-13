@@ -1,10 +1,5 @@
 package de.ks.idnadrev.cost.csvimport;
 
-import de.ks.idnadrev.cost.csvimport.columnmapping.AmountColumnMapping;
-import de.ks.idnadrev.cost.csvimport.columnmapping.BookingColumnMapping;
-import de.ks.idnadrev.cost.csvimport.columnmapping.BookingDateColumnMapping;
-import de.ks.idnadrev.cost.csvimport.columnmapping.DescriptionColumnMapping;
-import de.ks.idnadrev.entity.cost.Booking;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
@@ -16,8 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class BookingFromCSVImporterTest {
   private BookingFromCSVImporter importer;

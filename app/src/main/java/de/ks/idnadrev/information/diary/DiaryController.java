@@ -14,11 +14,6 @@
  */
 package de.ks.idnadrev.information.diary;
 
-import de.ks.BaseController;
-import de.ks.datasource.DataSource;
-import de.ks.idnadrev.entity.information.DiaryInfo;
-import de.ks.idnadrev.entity.information.TextInfo;
-import de.ks.text.AsciiDocEditor;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.DateCell;

@@ -14,9 +14,6 @@
  */
 package de.ks.idnadrev.information.uml;
 
-import de.ks.datasource.CreateEditDS;
-import de.ks.idnadrev.entity.information.UmlDiagramInfo;
-
 public class UmlDiagramDS extends CreateEditDS<UmlDiagramInfo> {
   public UmlDiagramDS() {
     super(UmlDiagramInfo.class);

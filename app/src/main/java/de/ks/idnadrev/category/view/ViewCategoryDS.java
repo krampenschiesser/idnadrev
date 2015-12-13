@@ -15,10 +15,6 @@
  */
 package de.ks.idnadrev.category.view;
 
-import de.ks.datasource.ListDataSource;
-import de.ks.idnadrev.entity.Category;
-import de.ks.persistence.PersistentWork;
-
 import java.util.List;
 import java.util.function.Consumer;
 

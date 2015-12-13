@@ -15,20 +15,11 @@
 
 package de.ks.idnadrev.review.weeklydone;
 
-import de.ks.LauncherRunner;
-import de.ks.activity.ActivityCfg;
-import de.ks.fxcontrols.weekview.WeekHelper;
-import de.ks.fxcontrols.weekview.WeekViewAppointment;
-import de.ks.idnadrev.ActivityTest;
-import de.ks.idnadrev.entity.Task;
-import de.ks.idnadrev.entity.WorkUnit;
-import de.ks.util.FXPlatform;
 import javafx.collections.ObservableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;

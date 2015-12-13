@@ -16,18 +16,10 @@
 package de.ks.idnadrev.cost.csvimport;
 
 import com.google.common.base.Charsets;
-import de.ks.activity.ActivityController;
-import de.ks.datasource.DataSource;
-import de.ks.idnadrev.cost.pattern.view.BookingPatternParser;
-import de.ks.idnadrev.entity.cost.Account;
-import de.ks.idnadrev.entity.cost.Booking;
-import de.ks.persistence.PersistentWork;
-import de.ks.reflection.PropertyPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.persistence.criteria.Predicate;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;

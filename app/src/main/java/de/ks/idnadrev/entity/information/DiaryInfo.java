@@ -14,9 +14,6 @@
  */
 package de.ks.idnadrev.entity.information;
 
-import de.ks.persistence.converter.LocalDateConverter;
-
-import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity

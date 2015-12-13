@@ -16,13 +16,6 @@
 package de.ks.idnadrev.category.create;
 
 import com.google.common.net.MediaType;
-import de.ks.BaseController;
-import de.ks.file.FileStore;
-import de.ks.idnadrev.entity.Category;
-import de.ks.idnadrev.entity.FileReference;
-import de.ks.imagecache.Images;
-import de.ks.validation.validators.NamedEntityMustNotExistValidator;
-import de.ks.validation.validators.NotEmptyValidator;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;

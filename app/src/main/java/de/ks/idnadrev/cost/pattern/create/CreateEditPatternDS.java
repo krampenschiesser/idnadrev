@@ -15,9 +15,6 @@
  */
 package de.ks.idnadrev.cost.pattern.create;
 
-import de.ks.datasource.CreateEditDS;
-import de.ks.idnadrev.entity.cost.BookingPattern;
-
 public class CreateEditPatternDS extends CreateEditDS<BookingPattern> {
   public CreateEditPatternDS() {
     super(BookingPattern.class);

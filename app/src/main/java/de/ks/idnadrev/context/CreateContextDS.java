@@ -14,9 +14,6 @@
  */
 package de.ks.idnadrev.context;
 
-import de.ks.datasource.CreateEditDS;
-import de.ks.idnadrev.entity.Context;
-
 public class CreateContextDS extends CreateEditDS<Context> {
   public CreateContextDS() {
     super(Context.class);

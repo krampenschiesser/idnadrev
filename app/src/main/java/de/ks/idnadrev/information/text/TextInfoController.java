@@ -14,16 +14,6 @@
  */
 package de.ks.idnadrev.information.text;
 
-import de.ks.BaseController;
-import de.ks.file.FileOptions;
-import de.ks.file.FileViewController;
-import de.ks.idnadrev.category.CategorySelection;
-import de.ks.idnadrev.entity.information.TextInfo;
-import de.ks.idnadrev.tag.TagContainer;
-import de.ks.option.Options;
-import de.ks.text.AsciiDocEditor;
-import de.ks.validation.validators.NamedEntityMustNotExistValidator;
-import de.ks.validation.validators.NotEmptyValidator;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;

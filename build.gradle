@@ -60,11 +60,6 @@ allprojects {
 
         compile "de.ks:standbein:$standbein";
         compile "de.ks:flatjsondb:$flatjsondb";
-//
-//        compile "org.slf4j:slf4j-api:$slf4j"
-//        compile("org.slf4j:slf4j-ext:$slf4j") {
-//            exclude module: "cal10n-api"
-//        }
 
         testCompile "junit:junit:$junit"
         testCompile("org.mockito:mockito-core:$mockito") {

@@ -15,8 +15,6 @@
 
 package de.ks.idnadrev.expimp.xls;
 
-import de.ks.idnadrev.entity.Thought;
-import de.ks.reflection.ReflectionUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.junit.Test;
 

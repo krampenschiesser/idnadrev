@@ -15,9 +15,6 @@
  */
 package de.ks.idnadrev.overview;
 
-import de.ks.activity.ActivityCfg;
-import de.ks.menu.MenuItem;
-
 @MenuItem(value = "/main/overview", order = 0)
 public class OverviewActivity extends ActivityCfg {
   public OverviewActivity() {

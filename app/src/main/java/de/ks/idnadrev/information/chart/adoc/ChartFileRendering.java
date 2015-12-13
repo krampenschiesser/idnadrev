@@ -15,10 +15,6 @@
  */
 package de.ks.idnadrev.information.chart.adoc;
 
-import de.ks.executor.JavaFXExecutorService;
-import de.ks.idnadrev.entity.information.ChartInfo;
-import de.ks.idnadrev.information.chart.ChartPreviewHelper;
-import de.ks.persistence.PersistentWork;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.chart.Chart;
 import javafx.scene.image.WritableImage;

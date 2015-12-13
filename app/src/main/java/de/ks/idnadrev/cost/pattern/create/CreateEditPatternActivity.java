@@ -15,8 +15,6 @@
  */
 package de.ks.idnadrev.cost.pattern.create;
 
-import de.ks.activity.ActivityCfg;
-
 public class CreateEditPatternActivity extends ActivityCfg {
   public CreateEditPatternActivity() {
     super(CreateEditPatternDS.class, CreateEditPatternController.class);

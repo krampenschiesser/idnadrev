@@ -14,7 +14,6 @@
  */
 package de.ks.idnadrev;
 
-import de.ks.preload.LaunchListener;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;

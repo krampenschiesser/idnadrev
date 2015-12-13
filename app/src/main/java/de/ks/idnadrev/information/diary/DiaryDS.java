@@ -14,15 +14,6 @@
  */
 package de.ks.idnadrev.information.diary;
 
-import de.ks.datasource.DataSource;
-import de.ks.idnadrev.entity.information.DiaryInfo;
-import de.ks.persistence.PersistentWork;
-import de.ks.reflection.PropertyPath;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Root;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;

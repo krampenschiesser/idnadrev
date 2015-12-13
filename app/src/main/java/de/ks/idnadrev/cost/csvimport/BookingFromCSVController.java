@@ -16,10 +16,6 @@
 package de.ks.idnadrev.cost.csvimport;
 
 import com.google.common.base.StandardSystemProperty;
-import de.ks.BaseController;
-import de.ks.i18n.Localized;
-import de.ks.idnadrev.cost.bookingview.BookingViewTableController;
-import de.ks.idnadrev.entity.cost.Booking;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;

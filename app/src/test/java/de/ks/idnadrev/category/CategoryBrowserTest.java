@@ -1,15 +1,7 @@
 package de.ks.idnadrev.category;
 
-import de.ks.LauncherRunner;
-import de.ks.activity.ActivityCfg;
-import de.ks.idnadrev.ActivityTest;
-import de.ks.idnadrev.entity.Category;
-import de.ks.persistence.PersistentWork;
-import de.ks.util.FXPlatform;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import javax.persistence.EntityManager;
 
 import static org.junit.Assert.*;
 

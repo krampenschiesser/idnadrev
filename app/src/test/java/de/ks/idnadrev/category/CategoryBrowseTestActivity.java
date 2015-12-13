@@ -15,8 +15,6 @@
  */
 package de.ks.idnadrev.category;
 
-import de.ks.activity.ActivityCfg;
-
 public class CategoryBrowseTestActivity extends ActivityCfg {
   public CategoryBrowseTestActivity() {
     super(CategoryBrowseTestDS.class, CategoryBrowser.class);

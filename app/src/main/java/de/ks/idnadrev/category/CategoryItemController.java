@@ -15,10 +15,6 @@
  */
 package de.ks.idnadrev.category;
 
-import de.ks.activity.ActivityController;
-import de.ks.file.FileStore;
-import de.ks.idnadrev.entity.Category;
-import de.ks.imagecache.Images;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

@@ -15,12 +15,6 @@
 
 package de.ks.idnadrev.information.diary;
 
-import de.ks.LauncherRunner;
-import de.ks.activity.ActivityCfg;
-import de.ks.idnadrev.ActivityTest;
-import de.ks.idnadrev.entity.information.DiaryInfo;
-import de.ks.persistence.PersistentWork;
-import de.ks.util.FXPlatform;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,8 +23,7 @@ import org.junit.runner.RunWith;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
 public class DiaryActivityTest extends ActivityTest {

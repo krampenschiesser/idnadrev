@@ -15,19 +15,6 @@
  */
 package de.ks.idnadrev.cost.createbooking;
 
-import de.ks.BaseController;
-import de.ks.executor.group.LastTextChange;
-import de.ks.idnadrev.cost.bookingview.BookingLoadingHint;
-import de.ks.idnadrev.cost.pattern.view.BookingPatternParser;
-import de.ks.idnadrev.entity.cost.Account;
-import de.ks.idnadrev.entity.cost.Booking;
-import de.ks.option.Options;
-import de.ks.persistence.PersistentWork;
-import de.ks.selection.CustomAutoCompletionBinding;
-import de.ks.validation.validators.DoubleValidator;
-import de.ks.validation.validators.NotEmptyValidator;
-import de.ks.validation.validators.NotNullValidator;
-import de.ks.validation.validators.TimeHHMMValidator;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -36,8 +23,6 @@ import javafx.scene.control.TextField;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 
 import javax.inject.Inject;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Path;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

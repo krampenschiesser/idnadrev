@@ -15,8 +15,6 @@
  */
 package de.ks.idnadrev.category.create;
 
-import de.ks.activity.ActivityCfg;
-
 public class CreateCategoryActivity extends ActivityCfg {
   public CreateCategoryActivity() {
     super(CreateCategoryDS.class, CreateCategoryController.class);

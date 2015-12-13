@@ -14,16 +14,6 @@
  */
 package de.ks.idnadrev.thought.add;
 
-import de.ks.LauncherRunner;
-import de.ks.TempFileRule;
-import de.ks.activity.ActivityCfg;
-import de.ks.datasource.DataSource;
-import de.ks.idnadrev.ActivityTest;
-import de.ks.idnadrev.entity.FileReference;
-import de.ks.idnadrev.entity.Thought;
-import de.ks.persistence.PersistentWork;
-import de.ks.text.command.InsertImage;
-import de.ks.util.FXPlatform;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -38,7 +28,6 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.EntityManager;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.Arrays;
@@ -46,8 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Future;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)

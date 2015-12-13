@@ -14,8 +14,6 @@
  */
 package de.ks.idnadrev.entity.information;
 
-import javax.persistence.*;
-
 @Entity
 @AssociationOverrides(@AssociationOverride(name = "tags", joinTable = @JoinTable(name = "umldiagraminfo_tag")))
 public class UmlDiagramInfo extends Information<UmlDiagramInfo> {

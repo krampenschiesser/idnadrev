@@ -14,24 +14,6 @@
  */
 package de.ks.idnadrev;
 
-import de.ks.activity.ActivityController;
-import de.ks.activity.ActivityHint;
-import de.ks.idnadrev.cost.account.CreateAccountActivity;
-import de.ks.idnadrev.cost.bookingview.BookingViewActivity;
-import de.ks.idnadrev.cost.createbooking.CreateBookingActivity;
-import de.ks.idnadrev.information.diary.DiaryActivity;
-import de.ks.idnadrev.information.text.TextInfoActivity;
-import de.ks.idnadrev.information.uml.UmlDiagramActivity;
-import de.ks.idnadrev.information.view.InformationOverviewActivity;
-import de.ks.idnadrev.overview.OverviewActivity;
-import de.ks.idnadrev.review.planweek.PlanWeekActivity;
-import de.ks.idnadrev.review.weeklydone.WeeklyDoneActivity;
-import de.ks.idnadrev.task.choosenext.ChooseNextTaskActivity;
-import de.ks.idnadrev.task.create.CreateTaskActivity;
-import de.ks.idnadrev.task.fasttrack.FastTrackActivity;
-import de.ks.idnadrev.task.view.ViewTasksActvity;
-import de.ks.idnadrev.thought.add.AddThoughtActivity;
-import de.ks.idnadrev.thought.view.ViewThoughtsActivity;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.input.KeyCode;

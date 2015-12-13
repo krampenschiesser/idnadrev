@@ -14,17 +14,6 @@
  */
 package de.ks.idnadrev.information.uml;
 
-import de.ks.BaseController;
-import de.ks.executor.group.LastTextChange;
-import de.ks.file.FileOptions;
-import de.ks.i18n.Localized;
-import de.ks.idnadrev.category.CategorySelection;
-import de.ks.idnadrev.entity.information.UmlDiagramInfo;
-import de.ks.idnadrev.tag.TagContainer;
-import de.ks.option.Options;
-import de.ks.text.PersistentStoreBack;
-import de.ks.validation.validators.NamedEntityMustNotExistValidator;
-import de.ks.validation.validators.NotEmptyValidator;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
@@ -37,7 +26,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Popup;
 import javafx.stage.Screen;
 import net.sourceforge.plantuml.cucadiagram.dot.GraphvizUtils;
-import org.controlsfx.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

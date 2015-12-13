@@ -15,22 +15,20 @@
 
 package de.ks.idnadrev.entity;
 
-import de.ks.persistence.entity.NamedPersistentObject;
+import de.ks.flatadocdb.annotation.ToMany;
+import de.ks.flatadocdb.entity.NamedEntity;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
 import java.util.HashSet;
 import java.util.Set;
 
-@Entity
-public class Context extends NamedPersistentObject<Context> {
+public class Context extends NamedEntity {
   private static final long serialVersionUID = 1L;
 
-  @OneToMany(mappedBy = "context", fetch = FetchType.LAZY)
+  @ToMany
   protected Set<Task> tasks = new HashSet<>();
 
-  public Context() {
+  protected Context() {
+    super(null);
   }
 
   public Context(String name) {

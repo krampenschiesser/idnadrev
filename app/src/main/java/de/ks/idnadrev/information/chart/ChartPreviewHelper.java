@@ -15,9 +15,6 @@
  */
 package de.ks.idnadrev.information.chart;
 
-import de.ks.idnadrev.entity.information.ChartData;
-import de.ks.idnadrev.entity.information.ChartInfo;
-import de.ks.idnadrev.entity.information.ChartType;
 import javafx.collections.FXCollections;
 import javafx.scene.chart.*;
 

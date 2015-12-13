@@ -15,13 +15,13 @@
 
 package de.ks.idnadrev.task.view;
 
-import de.ks.BaseController;
-import de.ks.datasource.DataSource;
-import de.ks.i18n.Localized;
+import de.ks.flatjsondb.PersistentWork;
 import de.ks.idnadrev.entity.Context;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.TaskState;
-import de.ks.persistence.PersistentWork;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.datasource.DataSource;
+import de.ks.standbein.i18n.Localized;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -34,10 +34,10 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import org.controlsfx.control.PopOver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.net.URL;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -64,6 +64,9 @@ public class ViewTasksMaster extends BaseController<List<Task>> {
   protected TextField searchField;
   @FXML
   protected ComboBox<String> contextSelection;
+
+  @Inject
+  PersistentWork persistentWork;
 
   protected final ObservableList<Task> tasks = FXCollections.observableArrayList();
   private Map<Task, TreeItem<Task>> task2TreeItem = new HashMap<>();
@@ -223,7 +226,7 @@ public class ViewTasksMaster extends BaseController<List<Task>> {
     } else {
       long hours = duration.toHours();
       if (hours == 0 && useShortFormat) {
-        return duration.toMinutes() + Localized.get("duration.minutes");
+        return duration.toMinutes() + localized.get("duration.minutes");
       } else {
         long remainingMinutes = duration.minus(Duration.ofHours(hours)).toMinutes();
         return String.format("%02d", hours) + ":" + String.format("%02d", remainingMinutes) + Localized.get("duration.hours.short");
@@ -288,9 +291,9 @@ public class ViewTasksMaster extends BaseController<List<Task>> {
   }
 
   protected TreeItem<Task> buildTreeStructure(List<Task> loaded) {
-    TreeItem<Task> root = new TreeItem<>(new Task(Localized.get("all")) {
+    TreeItem<Task> root = new TreeItem<>(new Task(localized.get("all")) {
       {
-        id = -1L;
+        id = null;
       }
     });
     task2TreeItem = new HashMap<>(loaded.size());

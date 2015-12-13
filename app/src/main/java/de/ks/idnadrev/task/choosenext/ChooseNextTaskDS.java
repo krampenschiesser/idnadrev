@@ -14,9 +14,6 @@
  */
 package de.ks.idnadrev.task.choosenext;
 
-import de.ks.datasource.ListDataSource;
-import de.ks.idnadrev.entity.Task;
-
 import java.util.List;
 import java.util.function.Consumer;
 

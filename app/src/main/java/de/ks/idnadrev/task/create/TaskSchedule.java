@@ -14,12 +14,6 @@
  */
 package de.ks.idnadrev.task.create;
 
-import de.ks.BaseController;
-import de.ks.fxcontrols.weekview.WeekHelper;
-import de.ks.idnadrev.entity.Task;
-import de.ks.persistence.PersistentWork;
-import de.ks.scheduler.Schedule;
-import de.ks.validation.validators.TimeHHMMValidator;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.DatePicker;

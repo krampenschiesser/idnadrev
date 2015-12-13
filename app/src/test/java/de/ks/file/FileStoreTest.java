@@ -16,15 +16,6 @@ package de.ks.file;
 
 import com.google.common.base.Charsets;
 import com.google.common.net.MediaType;
-import de.ks.LauncherRunner;
-import de.ks.activity.ActivityController;
-import de.ks.activity.ActivityHint;
-import de.ks.idnadrev.entity.Cleanup;
-import de.ks.idnadrev.entity.FileReference;
-import de.ks.idnadrev.entity.Thought;
-import de.ks.idnadrev.thought.add.AddThoughtActivity;
-import de.ks.option.Options;
-import de.ks.persistence.PersistentWork;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.After;
 import org.junit.Before;

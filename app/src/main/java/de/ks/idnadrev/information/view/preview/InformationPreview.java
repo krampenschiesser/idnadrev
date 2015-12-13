@@ -15,8 +15,6 @@
  */
 package de.ks.idnadrev.information.view.preview;
 
-import de.ks.idnadrev.entity.information.Information;
-import de.ks.idnadrev.information.view.InformationPreviewItem;
 import javafx.scene.layout.Pane;
 
 public interface InformationPreview<T extends Information<T>> {

@@ -1,10 +1,5 @@
 package de.ks.idnadrev.cost.bookingview;
 
-import de.ks.LauncherRunner;
-import de.ks.idnadrev.entity.Cleanup;
-import de.ks.idnadrev.entity.cost.Account;
-import de.ks.idnadrev.entity.cost.Booking;
-import de.ks.persistence.PersistentWork;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

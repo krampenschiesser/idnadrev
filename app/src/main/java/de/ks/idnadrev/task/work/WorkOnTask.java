@@ -14,16 +14,16 @@
  */
 package de.ks.idnadrev.task.work;
 
-import de.ks.BaseController;
-import de.ks.activity.ActivityHint;
-import de.ks.activity.executor.ActivityExecutor;
-import de.ks.i18n.Localized;
+import de.ks.flatjsondb.PersistentWork;
 import de.ks.idnadrev.IdnadrevWindow;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.WorkUnit;
 import de.ks.idnadrev.task.finish.FinishTaskActivity;
 import de.ks.idnadrev.thought.add.AddThoughtActivity;
-import de.ks.persistence.PersistentWork;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.activity.ActivityHint;
+import de.ks.standbein.activity.executor.ActivityExecutor;
+import de.ks.standbein.i18n.Localized;
 import de.ks.text.AsciiDocEditor;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -58,12 +58,14 @@ public class WorkOnTask extends BaseController<Task> {
 
   @Inject
   IdnadrevWindow window;
+  @Inject
+  PersistentWork persistentWork;
 
   protected final SimpleStringProperty tookString = new SimpleStringProperty("");
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    AsciiDocEditor.load(descriptionView.getChildren()::add, ade -> this.description = ade);
+    AsciiDocEditor.load(activityInitialization, descriptionView.getChildren()::add, ade -> this.description = ade);
 
     StringProperty nameBinding = store.getBinding().getStringProperty(Task.class, t -> t.getName());
     name.textProperty().bind(nameBinding);
@@ -103,8 +105,8 @@ public class WorkOnTask extends BaseController<Task> {
   }
 
   protected void finishWorkUnit() {
-    PersistentWork.wrap(() -> {
-      Task reload = PersistentWork.reload(store.getModel());
+    persistentWork.run(session -> {
+      Task reload = persistentWork.reload(store.getModel());
       WorkUnit last = reload.getWorkUnits().last();
       last.stop();
     });
@@ -197,8 +199,8 @@ public class WorkOnTask extends BaseController<Task> {
     if (estimatedTime == null || estimatedTime.toMillis() == 0) {
       controller.getJavaFXExecutor().submit(() -> estimatedTimeBar.setProgress(-0.1D));
     } else {
-      Task reloaded = PersistentWork.wrap(() -> {
-        Task reload = PersistentWork.reload(task);
+      Task reloaded = persistentWork.read(session -> {
+        Task reload = persistentWork.reload(task);
         reload.getWorkUnits().forEach(u -> u.getDuration());
         return reload;
       });

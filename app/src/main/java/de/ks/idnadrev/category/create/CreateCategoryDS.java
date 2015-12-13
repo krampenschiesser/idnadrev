@@ -14,9 +14,6 @@
  */
 package de.ks.idnadrev.category.create;
 
-import de.ks.datasource.CreateEditDS;
-import de.ks.idnadrev.entity.Category;
-
 public class CreateCategoryDS extends CreateEditDS<Category> {
   public CreateCategoryDS() {
     super(Category.class);

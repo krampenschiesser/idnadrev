@@ -1,14 +1,5 @@
 package de.ks.idnadrev.information.chart;
 
-import de.ks.LauncherRunner;
-import de.ks.activity.ActivityCfg;
-import de.ks.i18n.Localized;
-import de.ks.idnadrev.ActivityTest;
-import de.ks.idnadrev.entity.information.ChartData;
-import de.ks.idnadrev.entity.information.ChartInfo;
-import de.ks.idnadrev.entity.information.ChartType;
-import de.ks.persistence.PersistentWork;
-import de.ks.util.FXPlatform;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.LineChart;
 import org.junit.Before;
@@ -20,8 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
 public class ChartInfoActivityTest extends ActivityTest {

@@ -15,9 +15,6 @@
  */
 package de.ks.idnadrev.information.view.selection.uml;
 
-import de.ks.idnadrev.entity.information.UmlDiagramInfo;
-import de.ks.idnadrev.information.view.selection.BaseInfoSelectionController;
-
 public class UmlSelectionController extends BaseInfoSelectionController<UmlDiagramInfo> {
 
   public UmlSelectionController() {

@@ -14,12 +14,6 @@
  */
 package de.ks.idnadrev.review.weeklydone;
 
-import de.ks.BaseController;
-import de.ks.application.fxml.DefaultLoader;
-import de.ks.fxcontrols.weekview.WeekViewAppointment;
-import de.ks.idnadrev.entity.Task;
-import de.ks.text.view.AsciiDocContent;
-import de.ks.text.view.AsciiDocViewer;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Node;

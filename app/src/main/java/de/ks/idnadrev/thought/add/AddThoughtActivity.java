@@ -15,8 +15,6 @@
 
 package de.ks.idnadrev.thought.add;
 
-import de.ks.activity.ActivityCfg;
-import de.ks.menu.MenuItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

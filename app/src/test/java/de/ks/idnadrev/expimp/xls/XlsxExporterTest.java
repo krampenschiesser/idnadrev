@@ -15,14 +15,6 @@
 
 package de.ks.idnadrev.expimp.xls;
 
-import de.ks.LauncherRunner;
-import de.ks.idnadrev.entity.Cleanup;
-import de.ks.idnadrev.entity.Tag;
-import de.ks.idnadrev.entity.Task;
-import de.ks.idnadrev.entity.Thought;
-import de.ks.idnadrev.expimp.EntityExportSource;
-import de.ks.persistence.PersistentWork;
-import de.ks.reflection.PropertyPath;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.junit.Before;
@@ -32,9 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Root;
 import java.io.File;
 import java.sql.Timestamp;
 import java.util.*;

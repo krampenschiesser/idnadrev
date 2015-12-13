@@ -14,8 +14,6 @@
  */
 package de.ks.idnadrev.tag;
 
-import de.ks.activity.ActivityCfg;
-
 public class TestTagActivity extends ActivityCfg {
   public TestTagActivity() {
     super(TestTagDS.class, TagContainer.class);

@@ -15,21 +15,8 @@
  */
 package de.ks.idnadrev.information.view;
 
-import de.ks.datasource.ListDataSource;
-import de.ks.idnadrev.entity.Category;
-import de.ks.idnadrev.entity.Tag;
-import de.ks.idnadrev.entity.information.ChartInfo;
-import de.ks.idnadrev.entity.information.Information;
-import de.ks.idnadrev.entity.information.TextInfo;
-import de.ks.idnadrev.entity.information.UmlDiagramInfo;
-import de.ks.persistence.PersistentWork;
-import de.ks.persistence.entity.AbstractPersistentObject;
-import de.ks.persistence.entity.NamedPersistentObject;
-import de.ks.reflection.PropertyPath;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

@@ -14,14 +14,6 @@
  */
 package de.ks.idnadrev.task.create;
 
-import de.ks.activity.ActivityController;
-import de.ks.activity.ActivityHint;
-import de.ks.activity.context.ActivityStore;
-import de.ks.file.FileViewController;
-import de.ks.idnadrev.entity.Task;
-import de.ks.idnadrev.entity.TaskState;
-import de.ks.idnadrev.thought.view.ViewThoughtsActivity;
-import de.ks.validation.ValidationRegistry;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;

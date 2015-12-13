@@ -15,11 +15,6 @@
  */
 package de.ks.idnadrev.cost.bookingview;
 
-import de.ks.idnadrev.entity.cost.Account;
-import de.ks.idnadrev.entity.cost.Booking;
-import de.ks.reflection.PropertyPath;
-
-import javax.persistence.criteria.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;

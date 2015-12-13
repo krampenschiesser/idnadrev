@@ -15,9 +15,6 @@
 
 package de.ks.idnadrev;
 
-import de.ks.NodeProvider;
-import de.ks.application.fxml.DefaultLoader;
-import de.ks.menu.MenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;

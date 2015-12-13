@@ -14,13 +14,12 @@
  */
 package de.ks.idnadrev.tag;
 
-import de.ks.BaseController;
-import de.ks.activity.ActivityLoadFinishedEvent;
-import de.ks.application.fxml.DefaultLoader;
+import de.ks.flatjsondb.PersistentWork;
 import de.ks.idnadrev.entity.Tag;
 import de.ks.idnadrev.entity.Tagged;
-import de.ks.persistence.PersistentWork;
-import de.ks.selection.NamedPersistentObjectSelection;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.activity.ActivityLoadFinishedEvent;
+import de.ks.standbein.application.fxml.DefaultLoader;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
@@ -33,6 +32,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 
+import javax.inject.Inject;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -45,6 +45,9 @@ public class TagContainer extends BaseController<Tagged> {
   protected StackPane tagSelectionContainer;
   @FXML
   protected FlowPane tagPane;
+
+  @Inject
+  protected PersistentWork persistentWork;
 
   protected final ObservableSet<String> currentTags = FXCollections.observableSet(new TreeSet<String>());
   protected boolean readOnly = false;
@@ -103,7 +106,7 @@ public class TagContainer extends BaseController<Tagged> {
   public void duringSave(Tagged model) {
     if (!readOnly) {
       tagPane.getChildren().stream().filter(c -> c.getId() != null).map(c -> new Tag(c.getId())).forEach(tag -> {
-        Tag readTag = PersistentWork.forName(Tag.class, tag.getName());
+        Tag readTag = persistentWork.forName(Tag.class, tag.getName());
         readTag = readTag == null ? tag : readTag;
         model.addTag(readTag);
       });

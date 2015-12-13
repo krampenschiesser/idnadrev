@@ -15,22 +15,12 @@
 
 package de.ks.idnadrev.task.fasttrack;
 
-import de.ks.LauncherRunner;
-import de.ks.activity.ActivityCfg;
-import de.ks.executor.group.LastTextChange;
-import de.ks.idnadrev.ActivityTest;
-import de.ks.idnadrev.entity.Task;
-import de.ks.idnadrev.entity.WorkUnit;
-import de.ks.persistence.PersistentWork;
-import de.ks.text.AsciiDocEditor;
-import de.ks.util.FXPlatform;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;

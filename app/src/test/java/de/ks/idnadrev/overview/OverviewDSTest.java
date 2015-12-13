@@ -1,25 +1,17 @@
 package de.ks.idnadrev.overview;
 
-import de.ks.LauncherRunner;
-import de.ks.fxcontrols.weekview.WeekHelper;
-import de.ks.idnadrev.entity.Cleanup;
-import de.ks.idnadrev.entity.Task;
-import de.ks.persistence.PersistentWork;
-import de.ks.scheduler.Schedule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
 public class OverviewDSTest {

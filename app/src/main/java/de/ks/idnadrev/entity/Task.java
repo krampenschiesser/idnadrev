@@ -15,100 +15,69 @@
 
 package de.ks.idnadrev.entity;
 
-import de.ks.idnadrev.entity.information.ChartInfo;
+import de.ks.flatadocdb.annotation.*;
+import de.ks.flatadocdb.entity.NamedEntity;
 import de.ks.idnadrev.entity.information.Information;
-import de.ks.idnadrev.entity.information.TextInfo;
-import de.ks.idnadrev.entity.information.UmlDiagramInfo;
-import de.ks.persistence.converter.DurationConverter;
-import de.ks.persistence.converter.LocalDateConverter;
-import de.ks.persistence.converter.LocalDateTimeConverter;
-import de.ks.persistence.converter.LocalTimeConverter;
-import de.ks.persistence.entity.NamedPersistentObject;
-import de.ks.scheduler.Schedule;
 
-import javax.persistence.*;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
-
+import java.util.HashSet;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 @Entity
-public class Task extends NamedPersistentObject<Task> implements FileContainer<Task>, Tagged {
+public class Task extends NamedEntity implements FileContainer<Task>, Tagged {
   private static final long serialVersionUID = 1L;
   private static final String TASK_TAG_JOINTABLE = "task_tag";
 
-  @Lob
   protected String description;
 
-  @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true, mappedBy = "task")
-  @OrderBy("start ASC")
+  //  @ToMany
   protected SortedSet<WorkUnit> workUnits = new TreeSet<>();
 
-  //tracking
-  @Column(columnDefinition = "TIMESTAMP")
-  @Convert(converter = LocalDateTimeConverter.class)
   protected LocalDateTime finishTime;
 
-  @Column(columnDefinition = "BIGINT(19)")
-  @Convert(converter = DurationConverter.class)
   protected Duration estimatedTime;
 
-  @Column(columnDefinition = "DATE")
-  @Convert(converter = LocalDateConverter.class)
   protected LocalDate dueDate;//must be done before this date (and time)
-  @Column(columnDefinition = "TIME")
-  @Convert(converter = LocalTimeConverter.class)
   protected LocalTime dueTime;//if null, only date relevant
 
-  @ManyToOne(cascade = CascadeType.ALL)
+  @Child
   protected Schedule schedule;
 
-  @ManyToOne
+  @ToOne
   protected Task parent;
 
-  @OneToMany(mappedBy = "parent", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+  @Children
   protected Set<Task> children = new HashSet<>();
 
-  @Enumerated(EnumType.STRING)
   protected TaskState state = TaskState.NONE;
   protected String delegationReason;
 
-  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+  @ToOne
   protected Context context;
 
-  @Embedded
   protected final Effort physicalEffort = new Effort(Effort.EffortType.PHSYICAL);
-  @Embedded
   protected final Effort mentalEffort = new Effort(Effort.EffortType.MENTAL);
-  @Embedded
   protected final Effort funFactor = new Effort(Effort.EffortType.FUN);
 
   protected boolean project;
 
-  @Embedded
   protected Outcome outcome = new Outcome();
 
-  @ManyToMany(cascade = CascadeType.PERSIST)
-  @JoinTable(name = TASK_TAG_JOINTABLE)
   protected Set<Tag> tags = new HashSet<>();
 
-  @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.DETACH}, orphanRemoval = true)
-  @JoinTable(name = "task_file")
+  @Children
   protected Set<FileReference> files = new HashSet<>();
 
-  @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.DETACH}, mappedBy = "task")
-  protected Set<ChartInfo> chartInfos = new HashSet<>();
-
-  @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.DETACH}, mappedBy = "task")
-  protected Set<TextInfo> textInfos = new HashSet<>();
-
-  @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.DETACH}, mappedBy = "task")
-  protected Set<UmlDiagramInfo> umlInfos = new HashSet<>();
+  @ToMany
+  protected Set<Information> informations = new HashSet<>();
 
   protected Task() {
-    //
+    super(null);
   }
 
   public Task(String name) {
@@ -338,26 +307,8 @@ public class Task extends NamedPersistentObject<Task> implements FileContainer<T
     return this;
   }
 
-  public List<Information<?>> getInformation() {
-    List<Information<?>> retval = new ArrayList<>();
-
-    retval.addAll(getUmlInfos());
-    retval.addAll(getTextInfos());
-    retval.addAll(getChartInfos());
-
-    return retval;
-  }
-
-  public Set<UmlDiagramInfo> getUmlInfos() {
-    return umlInfos;
-  }
-
-  public Set<TextInfo> getTextInfos() {
-    return textInfos;
-  }
-
-  public Set<ChartInfo> getChartInfos() {
-    return chartInfos;
+  public Set<Information> getInformations() {
+    return informations;
   }
 
   @Override

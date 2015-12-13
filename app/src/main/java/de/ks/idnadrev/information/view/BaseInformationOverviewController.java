@@ -15,14 +15,6 @@
  */
 package de.ks.idnadrev.information.view;
 
-import de.ks.BaseController;
-import de.ks.idnadrev.entity.information.ChartInfo;
-import de.ks.idnadrev.entity.information.TextInfo;
-import de.ks.idnadrev.entity.information.UmlDiagramInfo;
-import de.ks.idnadrev.information.view.preview.ChartPreview;
-import de.ks.idnadrev.information.view.preview.InformationPreview;
-import de.ks.idnadrev.information.view.preview.TextInfoPreview;
-import de.ks.idnadrev.information.view.preview.UmlPreview;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableView;

@@ -15,29 +15,24 @@
 
 package de.ks.idnadrev.entity;
 
-import de.ks.persistence.entity.NamedPersistentObject;
+import de.ks.flatadocdb.annotation.Entity;
+import de.ks.flatadocdb.entity.NamedEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.validation.constraints.NotNull;
-
 @Entity
-public class FileReference extends NamedPersistentObject<FileReference> {
+public class FileReference extends NamedEntity {
   private static final long serialVersionUID = 1L;
   private static final Logger log = LoggerFactory.getLogger(FileReference.class);
 
   public static final String FILESTORE_VAR = "$filestore$";
 
-  @NotNull
-  @Column(length = 32)
   protected String md5Sum;
   protected String mimeType;
   protected long sizeInBytes;
 
-  public FileReference() {
-    //
+  protected FileReference() {
+    super(null);
   }
 
   public FileReference(String name, String md5) {

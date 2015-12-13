@@ -15,11 +15,6 @@
  */
 package de.ks.idnadrev.cost.pattern.create;
 
-import de.ks.BaseController;
-import de.ks.binding.Binding;
-import de.ks.idnadrev.entity.cost.BookingPattern;
-import de.ks.validation.validators.NotEmptyValidator;
-import de.ks.validation.validators.RegexPatternValidator;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;

@@ -15,16 +15,6 @@
 package de.ks.idnadrev.category;
 
 import com.google.common.eventbus.Subscribe;
-import de.ks.activity.ActivityLoadFinishedEvent;
-import de.ks.activity.initialization.ActivityInitialization;
-import de.ks.activity.initialization.DatasourceCallback;
-import de.ks.application.fxml.DefaultLoader;
-import de.ks.eventsystem.bus.HandlingThread;
-import de.ks.eventsystem.bus.Threading;
-import de.ks.idnadrev.entity.Categorized;
-import de.ks.idnadrev.entity.Category;
-import de.ks.persistence.PersistentWork;
-import de.ks.selection.BaseNamedPersistentObjectSelection;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.FlowPane;

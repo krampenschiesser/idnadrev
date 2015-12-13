@@ -15,12 +15,6 @@
  */
 package de.ks.idnadrev.information.view;
 
-import de.ks.activity.ActivityCfg;
-import de.ks.idnadrev.information.view.preview.ChartPreview;
-import de.ks.idnadrev.information.view.preview.TextInfoPreview;
-import de.ks.idnadrev.information.view.preview.UmlPreview;
-import de.ks.menu.MenuItem;
-
 @MenuItem(value = "/main/info", order = 30)
 public class InformationOverviewActivity extends ActivityCfg {
   public InformationOverviewActivity() {

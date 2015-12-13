@@ -14,14 +14,6 @@
  */
 package de.ks.idnadrev.task.choosenext;
 
-import de.ks.BaseController;
-import de.ks.activity.ActivityHint;
-import de.ks.idnadrev.entity.Context;
-import de.ks.idnadrev.entity.Task;
-import de.ks.idnadrev.task.work.WorkOnTaskActivity;
-import de.ks.persistence.PersistentWork;
-import de.ks.validation.validators.IntegerRangeValidator;
-import de.ks.validation.validators.NotEmptyValidator;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;

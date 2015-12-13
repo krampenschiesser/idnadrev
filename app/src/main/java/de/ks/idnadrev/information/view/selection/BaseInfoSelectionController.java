@@ -15,9 +15,6 @@
  */
 package de.ks.idnadrev.information.view.selection;
 
-import de.ks.idnadrev.entity.information.Information;
-import de.ks.idnadrev.information.view.BaseInformationOverviewController;
-import de.ks.idnadrev.information.view.InformationPreviewItem;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableView;

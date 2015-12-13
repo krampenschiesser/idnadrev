@@ -14,8 +14,6 @@
  */
 package de.ks.idnadrev;
 
-import de.ks.launch.Launcher;
-import de.ks.preload.PreloaderApplication;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;

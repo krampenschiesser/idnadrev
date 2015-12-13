@@ -15,12 +15,6 @@
  */
 package de.ks.idnadrev.entity.cost;
 
-import de.ks.persistence.entity.NamedPersistentObject;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 import java.util.LinkedList;
 import java.util.List;
 

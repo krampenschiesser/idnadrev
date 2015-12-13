@@ -14,8 +14,8 @@
  */
 package de.ks.launch;
 
-import de.ks.application.FXApplicationExceptionHandler;
 import de.ks.blogging.grav.entity.GravBlog;
+import de.ks.flatjsondb.PersistentWork;
 import de.ks.fxcontrols.weekview.WeekHelper;
 import de.ks.gallery.entity.GalleryFavorite;
 import de.ks.idnadrev.entity.*;
@@ -24,12 +24,12 @@ import de.ks.idnadrev.entity.cost.Booking;
 import de.ks.idnadrev.entity.cost.BookingCsvTemplate;
 import de.ks.idnadrev.entity.cost.BookingPattern;
 import de.ks.idnadrev.entity.information.*;
-import de.ks.persistence.PersistentWork;
-import de.ks.scheduler.Schedule;
+import de.ks.standbein.application.FXApplicationExceptionHandler;
+import de.ks.standbein.launch.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.inject.spi.CDI;
+import javax.inject.Inject;
 import java.io.File;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -39,8 +39,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
-
-import static de.ks.persistence.PersistentWork.persist;
 
 public class DummyData extends Service {
   private static final Logger log = LoggerFactory.getLogger(DummyData.class);
@@ -53,6 +51,9 @@ public class DummyData extends Service {
   public static final String UML_ACTIVITY_DIAGRAM = "(*) --> \"First Activity\"\n" +
     "-->[You can put also labels] \"Second Activity\"\n" +
     "--> (*)";
+
+  @Inject
+  PersistentWork persistentWork;
 
   @Override
   public int getPriority() {
@@ -68,12 +69,14 @@ public class DummyData extends Service {
   }
 
   public void createData() {
-    CDI.current().select(Cleanup.class).get().cleanup();
+//    CDI.current().select(Cleanup.class).get().cleanup();
+
+
     ArrayList<Task> tasks = new ArrayList<>();
 
     log.info("Creating dummy data.");
-    persist(new Thought("Go fishing").setDescription("on a nice lake"));
-    persist(new Thought("Go hiking").setDescription("maybe the CDT"));
+    persistentWork.persist(new Thought("Go fishing").setDescription("on a nice lake"));
+    persistentWork.persist(new Thought("Go hiking").setDescription("maybe the CDT"));
 
     Context hiking = new Context("Hiking");
 
@@ -106,24 +109,24 @@ public class DummyData extends Service {
     tasks.forEach((t) -> t.getMentalEffort().setAmount(ThreadLocalRandom.current().nextInt(0, 10)));
     tasks.forEach((t) -> t.getFunFactor().setAmount(ThreadLocalRandom.current().nextInt(-5, 5)));
 
-    persist(hiking, work, backpack, sketch, sew, task, workUnit, asciiDocSample);
+    persistentWork.persist(hiking, work, backpack, sketch, sew, task, workUnit, asciiDocSample);
 
-    persist(new Context("Studying"), new Context("Music"));
+    persistentWork.persist(new Context("Studying"), new Context("Music"));
 
     Task effort = new Task("effort");
     effort.getMentalEffort().setAmount(-3);
     effort.getPhysicalEffort().setAmount(4);
     effort.getFunFactor().setAmount(4);
 
-    persist(effort);
+    persistentWork.persist(effort);
 
-    persist(new Task("finished task").setDescription("yes it is done").setFinished(true));
+    persistentWork.persist(new Task("finished task").setDescription("yes it is done").setFinished(true));
 
 
-    PersistentWork.wrap(() -> {
+    persistentWork.run(session -> {
       Task longRunner = new Task("long runner");
       longRunner.setDescription("= title\n\n== bla\n\nhello");
-      persist(longRunner);
+      session.persist(longRunner);
       LocalDateTime start = null;
       for (int i = 0; i < 7; i++) {
         WorkUnit unit = new WorkUnit(longRunner);
@@ -131,7 +134,7 @@ public class DummyData extends Service {
         start = LocalDateTime.of(startDate, LocalTime.of(12, 15));
         unit.setStart(start);
         unit.setEnd(start.plusHours(1));
-        persist(unit);
+        session.persist(unit);
       }
       longRunner.setFinishTime(start);
     });
@@ -139,7 +142,7 @@ public class DummyData extends Service {
 
     Task proposed = new Task("proposed");
     proposed.setSchedule(new Schedule().setProposedWeek(new WeekHelper().getWeek(LocalDate.now())));
-    persist(proposed);
+    persistentWork.persist(proposed);
 
     Task scheduled = new Task("scheduled");
     Schedule schedule = new Schedule();
@@ -147,31 +150,25 @@ public class DummyData extends Service {
     schedule.setScheduledTime(LocalTime.of(12, 0));
 
     scheduled.setSchedule(schedule);
-    persist(scheduled);
+    persistentWork.persist(scheduled);
 
 
-    PersistentWork.persist(new DiaryInfo(LocalDate.now().minusDays(1)).setContent("wuza!"));
+    persistentWork.persist(new DiaryInfo(LocalDate.now().minusDays(1)).setContent("wuza!"));
 
     for (int i = 0; i < 5; i++) {
       Tag tag = new Tag("tag" + i);
-      Category category = new Category("category" + i);
       TextInfo info = new TextInfo("info" + i);
       info.setDescription(asciiDocString);
       info.addTag(tag);
-      info.setCategory(category);
-      PersistentWork.persist(tag, category, info);
+      persistentWork.persist(tag, info);
     }
-    Category diagrams = new Category("Diagrams");
-    PersistentWork.persist(diagrams);
     UmlDiagramInfo classDiagram = new UmlDiagramInfo("example class diagram");
     classDiagram.setContent(UML_CLASS_DIAGRAM);
-    classDiagram.setCategory(diagrams);
-    PersistentWork.persist(classDiagram);
+    persistentWork.persist(classDiagram);
 
     UmlDiagramInfo activityDiagram = new UmlDiagramInfo("example activity diagram");
     activityDiagram.setContent(UML_ACTIVITY_DIAGRAM);
-    activityDiagram.setCategory(diagrams);
-    PersistentWork.persist(activityDiagram);
+    persistentWork.persist(activityDiagram);
 
     ChartData chartData = new ChartData();
     chartData.setXAxisTitle("xtitle");
@@ -185,21 +182,21 @@ public class DummyData extends Service {
 
     ChartInfo chart = new ChartInfo("chart", ChartType.LINE);
     chart.setChartData(chartData);
-    PersistentWork.persist(chart);
+    persistentWork.persist(chart);
 
 
     Account account1 = new Account("testAccount1");
-    PersistentWork.persist(account1);
+    persistentWork.persist(account1);
     LocalDateTime dateTime = LocalDateTime.now().minusDays(30);
     for (int i = 0; i < 15; i++) {
       Booking booking = new Booking(account1, (i + 1) * 10);
       booking.setDescription("createbooking #" + i);
       booking.setCategory("Categtory" + i % 5);
       booking.setBookingTime(dateTime.plusDays(i));
-      PersistentWork.persist(booking);
+      persistentWork.persist(booking);
     }
     Account account2 = new Account("testAccount2");
-    PersistentWork.persist(account2);
+    persistentWork.persist(account2);
     for (int i = 0; i < 10; i++) {
       int subAdd = i % 2 == 0 ? 1 : -1;
       int amount = i * 10 * subAdd;
@@ -207,7 +204,7 @@ public class DummyData extends Service {
       booking.setDescription("createbooking #" + i);
       booking.setCategory("Category" + i % 5);
       booking.setBookingTime(dateTime.plusDays(i));
-      PersistentWork.persist(booking);
+      persistentWork.persist(booking);
     }
 
     BookingCsvTemplate template = new BookingCsvTemplate("template1");
@@ -217,7 +214,7 @@ public class DummyData extends Service {
     template.setDateColumn(0);
     template.setDescriptionColumn(4);
     template.setAmountColumns(Arrays.asList(13, 14));
-    PersistentWork.persist(template);
+    persistentWork.persist(template);
 
     BookingPattern pattern1 = new BookingPattern("Gehalt");
     pattern1.setRegex("Lohn,Gehalt");
@@ -233,16 +230,16 @@ public class DummyData extends Service {
     pattern3.setRegex("^GA .*");
     pattern3.setCategory("Bargeldabhebung");
 
-    PersistentWork.persist(pattern1, pattern2, pattern3);
+    persistentWork.persist(pattern1, pattern2, pattern3);
 
     GravBlog gravBlog = new GravBlog("grav-bk", "/home/scar/blog/grav-bk/user/pages");
-    PersistentWork.persist(gravBlog);
+    persistentWork.persist(gravBlog);
 
-    PersistentWork.persist(new GalleryFavorite(new File("/home/scar/downloads/images/pct")));
-    PersistentWork.persist(new GalleryFavorite(new File("/home/scar/downloads/images/schottland2011")));
-    PersistentWork.persist(new GalleryFavorite(new File("/home/scar/downloads/images/schottland2012")));
-    PersistentWork.persist(new GalleryFavorite(new File("/home/scar/downloads/images/schottland2014")));
-    PersistentWork.persist(new GalleryFavorite(new File("/tmp/galleryTest")));
+    persistentWork.persist(new GalleryFavorite(new File("/home/scar/downloads/images/pct")));
+    persistentWork.persist(new GalleryFavorite(new File("/home/scar/downloads/images/schottland2011")));
+    persistentWork.persist(new GalleryFavorite(new File("/home/scar/downloads/images/schottland2012")));
+    persistentWork.persist(new GalleryFavorite(new File("/home/scar/downloads/images/schottland2014")));
+    persistentWork.persist(new GalleryFavorite(new File("/tmp/galleryTest")));
   }
 
   @Override

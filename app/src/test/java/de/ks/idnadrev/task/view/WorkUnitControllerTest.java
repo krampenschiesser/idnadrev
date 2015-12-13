@@ -1,14 +1,5 @@
 package de.ks.idnadrev.task.view;
 
-import de.ks.Condition;
-import de.ks.LauncherRunner;
-import de.ks.activity.ActivityCfg;
-import de.ks.idnadrev.ActivityTest;
-import de.ks.idnadrev.entity.Task;
-import de.ks.idnadrev.entity.WorkUnit;
-import de.ks.persistence.PersistentWork;
-import de.ks.util.FXPlatform;
-import de.ks.validation.ValidationRegistry;
 import javafx.collections.ObservableList;
 import org.hamcrest.Matchers;
 import org.junit.Before;
@@ -16,7 +7,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Comparator;

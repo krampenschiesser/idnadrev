@@ -15,11 +15,10 @@
 
 package de.ks.idnadrev.task.create;
 
-import de.ks.activity.ActivityController;
-import de.ks.datasource.NewInstanceDataSource;
+import de.ks.flatjsondb.PersistentWork;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.Thought;
-import de.ks.persistence.PersistentWork;
+import de.ks.standbein.datasource.NewInstanceDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +32,7 @@ public class CreateTaskDS extends NewInstanceDataSource<Task> {
   Task fromTask;
 
   @Inject
-  ActivityController controller;
+  PersistentWork persistentWork;
 
   public CreateTaskDS() {
     super(Task.class);
@@ -41,15 +40,15 @@ public class CreateTaskDS extends NewInstanceDataSource<Task> {
 
   @Override
   public Task loadModel(Consumer<Task> furtherProcessing) {
-    return PersistentWork.wrap(() -> {
+    return persistentWork.read(session -> {
       if (fromTask != null) {
-        Task task = PersistentWork.reload(fromTask);
+        Task task = persistentWork.reload(fromTask);
         furtherProcessing.accept(task);
         return task;
       } else {
         Task task = super.loadModel(furtherProcessing);
         if (fromThought != null) {
-          Thought reloaded = PersistentWork.reload(fromThought);
+          Thought reloaded = persistentWork.reload(fromThought);
           task.setName(reloaded.getName());
           task.setDescription(reloaded.getDescription());
           task.getFiles().addAll(reloaded.getFiles());
@@ -63,13 +62,13 @@ public class CreateTaskDS extends NewInstanceDataSource<Task> {
 
   @Override
   public void saveModel(Task model, Consumer<Task> beforeSaving) {
-    PersistentWork.run((em) -> {
-      Task task = PersistentWork.reload(model);
+    persistentWork.run(session -> {
+      Task task = persistentWork.reload(model);
       task.setFinished(false);
       beforeSaving.accept(task);
-      em.persist(task);
-      if (fromThought != null && fromThought.getId() > 0) {
-        em.remove(PersistentWork.reload(fromThought));
+      session.persist(task);
+      if (fromThought != null && fromThought.getId() != null) {
+        persistentWork.remove(fromThought);
       }
     });
     resetFrom();

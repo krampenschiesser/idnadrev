@@ -15,8 +15,6 @@
  */
 package de.ks.idnadrev.cost.pattern.view;
 
-import de.ks.idnadrev.entity.cost.BookingPattern;
-import de.ks.persistence.PersistentWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

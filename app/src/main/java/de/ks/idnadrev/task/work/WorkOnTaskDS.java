@@ -14,19 +14,23 @@
  */
 package de.ks.idnadrev.task.work;
 
-import de.ks.datasource.DataSource;
+import de.ks.flatjsondb.PersistentWork;
 import de.ks.idnadrev.entity.Task;
-import de.ks.persistence.PersistentWork;
+import de.ks.standbein.datasource.DataSource;
 
+import javax.inject.Inject;
 import java.util.function.Consumer;
 
 public class WorkOnTaskDS implements DataSource<Task> {
   private Task task;
 
+  @Inject
+  PersistentWork persistentWork;
+
   @Override
   public Task loadModel(Consumer<Task> furtherProcessing) {
-    PersistentWork.run(em -> {
-      Task reloaded = PersistentWork.reload(task);
+    persistentWork.run(session -> {
+      Task reloaded = persistentWork.reload(task);
       furtherProcessing.accept(reloaded);
       task = reloaded;
     });
@@ -35,8 +39,8 @@ public class WorkOnTaskDS implements DataSource<Task> {
 
   @Override
   public void saveModel(Task model, Consumer<Task> beforeSaving) {
-    PersistentWork.run(em -> {
-      Task reloaded = PersistentWork.reload(model);
+    persistentWork.run(session -> {
+      Task reloaded = persistentWork.reload(model);
       beforeSaving.accept(reloaded);
 //      reloaded.getWorkUnits().last().stop();
     });

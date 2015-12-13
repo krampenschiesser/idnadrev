@@ -14,8 +14,6 @@
  */
 package de.ks.idnadrev.context;
 
-import de.ks.activity.ActivityCfg;
-
 public class CreateContextActivity extends ActivityCfg {
   public CreateContextActivity() {
     super(CreateContextDS.class, CreateContext.class);

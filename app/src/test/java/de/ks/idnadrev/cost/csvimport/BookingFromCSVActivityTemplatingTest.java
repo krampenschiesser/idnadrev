@@ -1,23 +1,13 @@
 package de.ks.idnadrev.cost.csvimport;
 
-import de.ks.Condition;
-import de.ks.LauncherRunner;
-import de.ks.activity.ActivityCfg;
-import de.ks.idnadrev.ActivityTest;
-import de.ks.idnadrev.entity.cost.Account;
-import de.ks.idnadrev.entity.cost.BookingCsvTemplate;
-import de.ks.persistence.PersistentWork;
-import de.ks.util.FXPlatform;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.persistence.EntityManager;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
 public class BookingFromCSVActivityTemplatingTest extends ActivityTest {

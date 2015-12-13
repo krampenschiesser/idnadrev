@@ -15,11 +15,6 @@
  */
 package de.ks.idnadrev.cost.pattern.view;
 
-import de.ks.BaseController;
-import de.ks.activity.ActivityHint;
-import de.ks.idnadrev.cost.pattern.create.CreateEditPatternActivity;
-import de.ks.idnadrev.entity.cost.BookingPattern;
-import de.ks.persistence.PersistentWork;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;

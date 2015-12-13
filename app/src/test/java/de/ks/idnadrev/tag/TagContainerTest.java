@@ -15,21 +15,12 @@
 
 package de.ks.idnadrev.tag;
 
-import de.ks.LauncherRunner;
-import de.ks.activity.ActivityCfg;
-import de.ks.executor.group.LastTextChange;
-import de.ks.idnadrev.ActivityTest;
-import de.ks.idnadrev.entity.Tag;
-import de.ks.util.FXPlatform;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.persistence.EntityManager;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
 public class TagContainerTest extends ActivityTest {

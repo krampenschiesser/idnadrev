@@ -15,14 +15,6 @@
  */
 package de.ks.idnadrev.information.view.preview;
 
-import de.ks.BaseController;
-import de.ks.activity.ActivityHint;
-import de.ks.idnadrev.entity.information.TextInfo;
-import de.ks.idnadrev.information.text.TextInfoActivity;
-import de.ks.idnadrev.information.view.InformationPreviewItem;
-import de.ks.persistence.PersistentWork;
-import de.ks.text.view.AsciiDocContent;
-import de.ks.text.view.AsciiDocViewer;
 import javafx.fxml.FXML;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
