@@ -15,17 +15,18 @@
  */
 package de.ks.gallery.entity;
 
-import de.ks.persistence.entity.NamedPersistentObject;
+import de.ks.flatadocdb.annotation.Entity;
+import de.ks.flatadocdb.entity.NamedEntity;
 
-import javax.persistence.Entity;
 import java.io.File;
 
 @Entity
-public class GalleryFavorite extends NamedPersistentObject<GalleryFavorite> {
+public class GalleryFavorite extends NamedEntity {
   private static final long serialVersionUID = 1L;
   protected String folderPath;
 
   protected GalleryFavorite() {
+    super(null);
   }
 
   public GalleryFavorite(File path) {

@@ -16,13 +16,11 @@
 package de.ks.gallery;
 
 import com.google.common.net.MediaType;
-import de.ks.activity.executor.ActivityExecutor;
-import de.ks.executor.JavaFXExecutorService;
-import de.ks.option.Options;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
@@ -32,7 +30,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class GalleryResource {
   private static final Logger log = LoggerFactory.getLogger(GalleryResource.class);
@@ -41,7 +38,6 @@ public class GalleryResource {
   private final ConcurrentHashMap<File, GalleryItem> items = new ConcurrentHashMap<>();
   private Consumer<List<GalleryItem>> callback;
 
-  protected Supplier<GallerySettings> settingsSupplier = () -> Options.get(GallerySettings.class);
   protected final Set<File> parents = new HashSet<>();
   protected final Map<WatchKey, File> key2Dir = new ConcurrentHashMap<>();
   protected final Set<File> knownDeleted = Collections.synchronizedSet(new HashSet<>());
@@ -50,6 +46,8 @@ public class GalleryResource {
   ActivityExecutor executor;
   @Inject
   JavaFXExecutorService javaFXExecutorService;
+  @Inject
+  Provider<GallerySettings> settingsProvider;
 
   private WatchService watchService;
   private Thread watchThread;
@@ -271,7 +269,7 @@ public class GalleryResource {
   }
 
   public int getThumbnailSize() {
-    return settingsSupplier.get().getThumbNailSize();
+    return settingsProvider.get().getThumbNailSize();
   }
 
   private void handleItemDeleted(File file) {

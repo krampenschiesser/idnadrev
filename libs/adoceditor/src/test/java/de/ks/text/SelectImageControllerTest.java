@@ -15,15 +15,6 @@
 
 package de.ks.text;
 
-import de.ks.LauncherRunner;
-import de.ks.activity.ActivityCfg;
-import de.ks.activity.ActivityController;
-import de.ks.activity.ActivityHint;
-import de.ks.application.Navigator;
-import de.ks.launch.ApplicationService;
-import de.ks.launch.Launcher;
-import de.ks.text.image.SelectImageController;
-import de.ks.util.FXPlatform;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import org.junit.After;

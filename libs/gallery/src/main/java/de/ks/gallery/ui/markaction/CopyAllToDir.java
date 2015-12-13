@@ -16,19 +16,26 @@
 package de.ks.gallery.ui.markaction;
 
 import de.ks.gallery.GalleryItem;
-import de.ks.i18n.Localized;
+import de.ks.standbein.i18n.Localized;
 import javafx.scene.Scene;
 import javafx.stage.DirectoryChooser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
 public class CopyAllToDir implements MarkAction {
   private static final Logger log = LoggerFactory.getLogger(CopyAllToDir.class);
+  protected final Localized localized;
   protected File file;
+
+  @Inject
+  public CopyAllToDir(Localized localized) {
+    this.localized = localized;
+  }
 
   @Override
   public String getName() {
@@ -38,7 +45,7 @@ public class CopyAllToDir implements MarkAction {
   @Override
   public void before(Scene scene) {
     DirectoryChooser chooser = new DirectoryChooser();
-    chooser.setTitle(Localized.get("choose.target.directory"));
+    chooser.setTitle(localized.get("choose.target.directory"));
     this.file = chooser.showDialog(scene.getWindow());
   }
 

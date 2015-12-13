@@ -18,30 +18,35 @@ package de.ks.gallery.ui.markaction;
 import de.ks.gallery.GalleryItem;
 import de.ks.gallery.GallerySettings;
 import de.ks.gallery.ImageScaler;
-import de.ks.i18n.Localized;
-import de.ks.option.Options;
+import de.ks.standbein.i18n.Localized;
+import de.ks.standbein.option.Options;
 import javafx.scene.Scene;
 import javafx.scene.control.TextInputDialog;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.util.Optional;
 
 public class CopyAllToDirAndScaleDown extends CopyAllToDir {
   private final ImageScaler imageScaler;
+  private final Options options;
   private int targetWidth;
 
-  public CopyAllToDirAndScaleDown() {
+  @Inject
+  public CopyAllToDirAndScaleDown(Localized localized, Options options) {
+    super(localized);
+    this.options = options;
     imageScaler = new ImageScaler();
   }
 
   @Override
   public void before(Scene scene) {
     super.before(scene);
-    int scaleDownSize = Options.get(GallerySettings.class).getScaleDownSize();
+    int scaleDownSize = options.get(GallerySettings.class).getScaleDownSize();
     TextInputDialog dialog = new TextInputDialog(String.valueOf(scaleDownSize));
-    dialog.setTitle(Localized.get("enter.targetResolution"));
+    dialog.setTitle(localized.get("enter.targetResolution"));
     dialog.setHeaderText(null);
-    dialog.setContentText(Localized.get("targetResolution:"));
+    dialog.setContentText(localized.get("targetResolution:"));
     Optional<String> s = dialog.showAndWait();
     if (s.isPresent()) {
       try {

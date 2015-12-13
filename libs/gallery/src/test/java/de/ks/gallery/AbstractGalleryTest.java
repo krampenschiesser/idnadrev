@@ -16,8 +16,6 @@
 package de.ks.gallery;
 
 import com.google.common.base.StandardSystemProperty;
-import de.ks.DummyActivityTest;
-import de.ks.FileUtil;
 import org.junit.Before;
 
 import java.io.File;

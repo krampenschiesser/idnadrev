@@ -15,10 +15,10 @@
  */
 package de.ks.gallery.ui.thumbnail;
 
-import de.ks.BaseController;
 import de.ks.gallery.GalleryItem;
 import de.ks.gallery.GalleryResource;
 import de.ks.gallery.ui.slideshow.Slideshow;
+import de.ks.standbein.BaseController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;

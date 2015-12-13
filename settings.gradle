@@ -15,17 +15,10 @@
 include "doc"
 
 include "libs:fxcontrols"
-
-include "libs:testutil", "libs:util", "libs:reflection"
-include "libs:launch"
+include "libs:flatjsondbaccess"
 //PC stuff
-include "libs:validation", "libs:hibernate-pool", "libs:persistence", "libs:eventsystem", "libs:i18n", "libs:scheduler"
-include "libs:executor"
 include "libs:gravblogging", "libs:gallery"
 //javaFX stuff
-include "libs:images", "libs:application"
-include "libs:application-test-util"
-include "libs:application-jpa"
 include "libs:adoceditor"
 include "libs:googleintegration"
 include "libs:markdowneditor"

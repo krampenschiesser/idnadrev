@@ -15,8 +15,6 @@
 
 
 dependencies {
-    testCompile project(":libs:testutil")
-
     runtime "ch.qos.logback:logback-core:$logback"
     runtime "ch.qos.logback:logback-classic:$logback"
 }

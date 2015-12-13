@@ -15,14 +15,14 @@
  */
 package de.ks.gallery.ui;
 
-import de.ks.BaseController;
 import de.ks.gallery.GalleryItem;
 import de.ks.gallery.ui.markaction.CopyAllToDir;
 import de.ks.gallery.ui.markaction.CopyAllToDirAndScaleDown;
 import de.ks.gallery.ui.markaction.MarkAction;
 import de.ks.gallery.ui.slideshow.Slideshow;
-import de.ks.i18n.Localized;
-import de.ks.reflection.PropertyPath;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.i18n.Localized;
+import de.ks.standbein.reflection.PropertyPath;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -35,6 +35,8 @@ import javafx.util.Callback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
+import javax.inject.Provider;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -44,6 +46,14 @@ import java.util.ResourceBundle;
 
 public class MarkdedItemController extends BaseController<Object> {
   private static final Logger log = LoggerFactory.getLogger(MarkdedItemController.class);
+
+  @Inject
+  Localized localized;
+  @Inject
+  Provider<CopyAllToDirAndScaleDown> copyAllToDirAndScaleDownProvider;
+  @Inject
+  Provider<CopyAllToDir> copyAllToDirProvider;
+
   @FXML
   protected TabPane root;
   @FXML
@@ -94,7 +104,7 @@ public class MarkdedItemController extends BaseController<Object> {
       public void onChanged(Change<? extends MarkAction> c) {
         markedActionContainer.getChildren().clear();
         markActions.forEach(a -> {
-          Button button = new Button(Localized.get(a.getName()));
+          Button button = new Button(localized.get(a.getName()));
           button.setOnAction(e -> {
             a.before(markedActionContainer.getScene());
             store.executeCustomRunnable(() -> marked.forEach(a::execute));
@@ -105,7 +115,7 @@ public class MarkdedItemController extends BaseController<Object> {
       }
     });
 
-    markActions.addAll(new CopyAllToDir(), new CopyAllToDirAndScaleDown());
+    markActions.addAll(copyAllToDirProvider.get(), copyAllToDirAndScaleDownProvider.get());
   }
 
   protected Callback<TableColumn<GalleryItem, String>, TableCell<GalleryItem, String>> createLinkCallback(ObservableList<GalleryItem> collection) {

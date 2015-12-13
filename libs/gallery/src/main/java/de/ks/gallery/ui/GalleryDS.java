@@ -15,7 +15,7 @@
  */
 package de.ks.gallery.ui;
 
-import de.ks.datasource.DataSource;
+import de.ks.standbein.datasource.DataSource;
 
 import java.util.function.Consumer;
 

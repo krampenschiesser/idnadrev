@@ -15,11 +15,11 @@
  */
 package de.ks.gallery.ui.slideshow;
 
-import de.ks.BaseController;
-import de.ks.activity.executor.ActivityExecutor;
 import de.ks.gallery.GalleryItem;
-import de.ks.i18n.Localized;
-import de.ks.javafx.ScreenResolver;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.activity.executor.ActivityExecutor;
+import de.ks.standbein.i18n.Localized;
+import de.ks.standbein.javafx.ScreenResolver;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -86,6 +86,8 @@ public class Slideshow extends BaseController<Object> {
 
   @Inject
   ActivityExecutor executor;
+  @Inject
+  Localized localized;
   private ScheduledFuture<?> scheduledFuture;
 
   @Override
@@ -305,7 +307,7 @@ public class Slideshow extends BaseController<Object> {
   }
 
   private void start() {
-    startStop.setText(Localized.get("gallery.stop.mneominc"));
+    startStop.setText(localized.get("gallery.stop.mneominc"));
     restartWithTimeout();
   }
 
@@ -315,7 +317,7 @@ public class Slideshow extends BaseController<Object> {
       scheduledFuture.cancel(true);
       scheduledFuture = null;
     }
-    startStop.setText(Localized.get("gallery.start.mneominc"));
+    startStop.setText(localized.get("gallery.start.mneominc"));
     startStop.setSelected(false);
   }
 

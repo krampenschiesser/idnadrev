@@ -20,22 +20,17 @@ mainClassName = "de.ks.idnadrev.Application"
 
 dependencies {
     compile project(":libs:fxcontrols")
-    compile project(":libs:application-jpa")
     compile project(":libs:adoceditor")
-    compile project(":libs:scheduler")
     compile project(":libs:gravblogging")
     compile "commons-codec:commons-codec:$commonscodec"
-    compile "$jpa2api"
     compile "org.apache.poi:poi:$poi"
     compile "org.apache.poi:poi-ooxml:$poi"
     compile "net.sourceforge.plantuml:plantuml:$plantuml"
 
-    runtime "org.hibernate:hibernate-validator:$hibernateValidation"
     runtime "com.sun.el:el-ri:1.0"
     runtime "ch.qos.logback:logback-core:$logback"
     runtime "ch.qos.logback:logback-classic:$logback"
 
-    testCompile project(":libs:testutil")
 //    testCompile "org.testfx:testfx-core:$testfx"
 }
 

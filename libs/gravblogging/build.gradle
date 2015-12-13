@@ -1,5 +1,4 @@
 dependencies {
-    compile project(":libs:application-jpa")
     compile project(":libs:gallery")
     compile project(":libs:fxcontrols")
     compile project(":libs:markdowneditor")
@@ -10,7 +9,6 @@ dependencies {
     compile "org.eclipse.jgit:org.eclipse.jgit:$jgit"
     compile "commons-net:commons-net:$commonsNet"
 
-    testCompile project(":libs:testutil")
     testCompile('org.apache.ftpserver:ftpserver:1.0.6') {
         exclude module: "slf4j-log4j12"
         exclude module: "log4j"

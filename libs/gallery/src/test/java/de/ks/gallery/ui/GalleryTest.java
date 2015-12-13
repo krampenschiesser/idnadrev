@@ -15,15 +15,6 @@
  */
 package de.ks.gallery.ui;
 
-import de.ks.Condition;
-import de.ks.LauncherRunner;
-import de.ks.activity.ActivityCfg;
-import de.ks.gallery.AbstractGalleryTest;
-import de.ks.gallery.GalleryItem;
-import de.ks.gallery.entity.GalleryFavorite;
-import de.ks.gallery.ui.slideshow.Slideshow;
-import de.ks.persistence.PersistentWork;
-import de.ks.util.FXPlatform;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.GridPane;
@@ -34,8 +25,7 @@ import org.junit.runner.RunWith;
 import java.io.File;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
 public class GalleryTest extends AbstractGalleryTest {

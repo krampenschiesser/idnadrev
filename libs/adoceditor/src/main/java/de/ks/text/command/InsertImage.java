@@ -14,9 +14,9 @@
  */
 package de.ks.text.command;
 
-import de.ks.activity.initialization.ActivityInitialization;
-import de.ks.i18n.Localized;
-import de.ks.javafx.FxCss;
+import de.ks.standbein.activity.initialization.ActivityInitialization;
+import de.ks.standbein.i18n.Localized;
+import de.ks.standbein.javafx.FxCss;
 import de.ks.text.AsciiDocEditor;
 import de.ks.text.image.ImageData;
 import de.ks.text.image.ImageProvider;
@@ -32,19 +32,21 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.Comparator;
+import java.util.Set;
 import java.util.TreeSet;
 
 public class InsertImage implements AsciiDocEditorCommand {
   @Inject
   ActivityInitialization initialization;
   @Inject
-  Instance<ImageProvider> imageProviders;
+  Set<ImageProvider> imageProviders;
   @Inject
   @FxCss
-  Instance<String> cssSheets;
+  Set<String> cssSheets;
+  @Inject
+  Localized localized;
 
   protected final ObservableSet<ImageData> images = FXCollections.observableSet(new TreeSet<ImageData>(Comparator.comparing(id -> id.getName())));
   protected SelectImageController selectImageController;
@@ -86,7 +88,7 @@ public class InsertImage implements AsciiDocEditorCommand {
       dialog = new Stage();
       dialog.initModality(Modality.APPLICATION_MODAL);
       dialog.initOwner(button.getScene().getWindow());
-      dialog.setTitle(Localized.get("select.image"));
+      dialog.setTitle(localized.get("select.image"));
     }
 
     StackPane container = new StackPane();

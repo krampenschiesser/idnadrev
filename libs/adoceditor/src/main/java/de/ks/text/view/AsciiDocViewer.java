@@ -14,12 +14,12 @@
  */
 package de.ks.text.view;
 
-import de.ks.activity.ActivityController;
-import de.ks.activity.executor.ActivityExecutor;
-import de.ks.activity.initialization.ActivityCallback;
-import de.ks.activity.initialization.ActivityInitialization;
-import de.ks.application.fxml.DefaultLoader;
 import de.ks.executor.JavaFXExecutorService;
+import de.ks.standbein.activity.ActivityController;
+import de.ks.standbein.activity.executor.ActivityExecutor;
+import de.ks.standbein.activity.initialization.ActivityCallback;
+import de.ks.standbein.activity.initialization.ActivityInitialization;
+import de.ks.standbein.application.fxml.DefaultLoader;
 import de.ks.text.AsciiDocParser;
 import de.ks.text.process.AsciiDocPreProcessor;
 import javafx.beans.property.SimpleStringProperty;
@@ -33,8 +33,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import java.net.URL;
 import java.util.*;
@@ -46,8 +44,7 @@ public class AsciiDocViewer implements Initializable, ActivityCallback {
 
   public static final String DEFAULT = "default";
 
-  public static CompletableFuture<DefaultLoader<Node, AsciiDocViewer>> load(Consumer<StackPane> viewConsumer, Consumer<AsciiDocViewer> controllerConsumer) {
-    ActivityInitialization initialization = CDI.current().select(ActivityInitialization.class).get();
+  public static CompletableFuture<DefaultLoader<Node, AsciiDocViewer>> load(ActivityInitialization initialization, Consumer<StackPane> viewConsumer, Consumer<AsciiDocViewer> controllerConsumer) {
     return initialization.loadAdditionalControllerWithFuture(AsciiDocViewer.class)//
       .thenApply(loader -> {
         viewConsumer.accept((StackPane) loader.getView());
@@ -65,7 +62,7 @@ public class AsciiDocViewer implements Initializable, ActivityCallback {
   @Inject
   AsciiDocParser parser;
   @Inject
-  Instance<AsciiDocPreProcessor> preProcessorProvider;
+  Set<AsciiDocPreProcessor> preProcessorProvider;
 
   @FXML
   protected StackPane root;

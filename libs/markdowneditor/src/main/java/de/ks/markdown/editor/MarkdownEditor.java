@@ -15,15 +15,15 @@
  */
 package de.ks.markdown.editor;
 
-import de.ks.activity.ActivityController;
-import de.ks.activity.initialization.ActivityCallback;
-import de.ks.activity.initialization.ActivityInitialization;
-import de.ks.application.fxml.DefaultLoader;
 import de.ks.executor.group.LastExecutionGroup;
-import de.ks.i18n.Localized;
-import de.ks.javafx.ScreenResolver;
 import de.ks.markdown.viewer.MarkdownContent;
 import de.ks.markdown.viewer.MarkdownViewer;
+import de.ks.standbein.activity.ActivityController;
+import de.ks.standbein.activity.initialization.ActivityCallback;
+import de.ks.standbein.activity.initialization.ActivityInitialization;
+import de.ks.standbein.application.fxml.DefaultLoader;
+import de.ks.standbein.i18n.Localized;
+import de.ks.standbein.javafx.ScreenResolver;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
@@ -46,7 +46,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import java.awt.*;
 import java.io.File;
@@ -59,8 +58,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public class MarkdownEditor implements Initializable, ActivityCallback {
-  public static CompletableFuture<DefaultLoader<Node, MarkdownEditor>> load(Consumer<StackPane> viewConsumer, Consumer<MarkdownEditor> controllerConsumer) {
-    ActivityInitialization initialization = CDI.current().select(ActivityInitialization.class).get();
+  public static CompletableFuture<DefaultLoader<Node, MarkdownEditor>> load(ActivityInitialization initialization, Consumer<StackPane> viewConsumer, Consumer<MarkdownEditor> controllerConsumer) {
     return initialization.loadAdditionalControllerWithFuture(MarkdownEditor.class)//
       .thenApply(loader -> {
         viewConsumer.accept((StackPane) loader.getView());
@@ -75,6 +73,8 @@ public class MarkdownEditor implements Initializable, ActivityCallback {
   ActivityController controller;
   @Inject
   ActivityInitialization initialization;
+  @Inject
+  Localized localized;
   @FXML
   protected TextArea editor;
   @FXML
@@ -193,7 +193,7 @@ public class MarkdownEditor implements Initializable, ActivityCallback {
 
   @FXML
   void showHelp() {
-    String title = Localized.get("help");
+    String title = localized.get("help");
     title = StringUtils.remove(title, "_");
 
     new Thread(() -> {
@@ -210,7 +210,7 @@ public class MarkdownEditor implements Initializable, ActivityCallback {
   @FXML
   void showPreviewPopup() {
     if (previewPopupStage == null) {
-      String title = Localized.get("markdown.preview");
+      String title = localized.get("markdown.preview");
 
       previewPopupStage = new Stage();
       previewPopupStage.setTitle(title);

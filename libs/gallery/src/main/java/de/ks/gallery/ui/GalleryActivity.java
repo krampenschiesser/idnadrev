@@ -15,10 +15,9 @@
  */
 package de.ks.gallery.ui;
 
-import de.ks.activity.ActivityCfg;
-import de.ks.menu.MenuItem;
+import de.ks.standbein.activity.ActivityCfg;
 
-@MenuItem(value = "/main/gallery", order = 81)
+//@MenuItem(value = "/main/gallery", order = 81)
 public class GalleryActivity extends ActivityCfg {
   public GalleryActivity() {
     super(GalleryDS.class, GalleryController.class);

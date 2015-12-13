@@ -1,9 +1,7 @@
 dependencies {
-    compile project(":libs:application-jpa")
-
+    compile project(":libs:flatjsondbaccess")
     compile "org.apache.sanselan:sanselan:$commonsImage"
     compile "org.imgscalr:imgscalr-lib:$imgScaler"
 
-    testCompile project(":libs:application-test-util")
     testCompile "org.hamcrest:hamcrest-all:$hamcrest"
 }

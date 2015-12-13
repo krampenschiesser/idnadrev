@@ -1,8 +1,5 @@
 package de.ks.gallery;
 
-import de.ks.Condition;
-import de.ks.LauncherRunner;
-import de.ks.activity.ActivityController;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,8 +11,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
 public class GalleryResourceTest extends AbstractGalleryTest {

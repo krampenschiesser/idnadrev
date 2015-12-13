@@ -15,10 +15,6 @@
  */
 package de.ks.gallery.ui.thumbnail;
 
-import de.ks.Condition;
-import de.ks.LauncherRunner;
-import de.ks.activity.initialization.ActivityInitialization;
-import de.ks.gallery.AbstractGalleryTest;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;

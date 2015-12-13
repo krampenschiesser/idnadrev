@@ -26,6 +26,7 @@ allprojects {
     targetCompatibility = 1.8
 
     repositories {
+        mavenLocal()
         mavenCentral()
         maven {
             url = "http://repository.jboss.org/nexus/content/groups/public"
@@ -57,20 +58,20 @@ allprojects {
     dependencies {
         asciidoclet "org.asciidoctor:asciidoclet:$asciidocJavaIntegration"
 
-        compile "org.slf4j:slf4j-api:$slf4j"
-        compile("org.slf4j:slf4j-ext:$slf4j") {
-            exclude module: "cal10n-api"
-        }
-        compile "com.google.guava:guava:$guava"
-        compile "org.apache.commons:commons-lang3:$lang3"
-        compile "javax.validation:validation-api:$javaxValidation"
-        compile "javax.enterprise:cdi-api:$cdiapi"
+        compile "de.ks:standbein:$standbein";
+        compile "de.ks:flatjsondb:$flatjsondb";
+//
+//        compile "org.slf4j:slf4j-api:$slf4j"
+//        compile("org.slf4j:slf4j-ext:$slf4j") {
+//            exclude module: "cal10n-api"
+//        }
 
         testCompile "junit:junit:$junit"
         testCompile("org.mockito:mockito-core:$mockito") {
             exclude module: "objenesis"
         }
         testCompile "org.hamcrest:hamcrest-all:$hamcrest"
+        testCompile "de.ks:standbein-testutil:$standbein";
 
         testRuntime "ch.qos.logback:logback-core:$logback"
         testRuntime "ch.qos.logback:logback-classic:$logback"

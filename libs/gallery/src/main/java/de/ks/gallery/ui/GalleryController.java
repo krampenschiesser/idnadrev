@@ -15,10 +15,10 @@
  */
 package de.ks.gallery.ui;
 
-import de.ks.BaseController;
+import de.ks.flatjsondb.PersistentWork;
 import de.ks.gallery.entity.GalleryFavorite;
 import de.ks.gallery.ui.thumbnail.ThumbnailGallery;
-import de.ks.persistence.PersistentWork;
+import de.ks.standbein.BaseController;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
@@ -28,6 +28,7 @@ import javafx.util.Callback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -56,6 +57,9 @@ public class GalleryController extends BaseController<Object> {
 
   protected ThumbnailGallery thumbnailGallery;
   protected MarkdedItemController markedItemController;
+
+  @Inject
+  PersistentWork persistentWork;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -126,21 +130,19 @@ public class GalleryController extends BaseController<Object> {
       files.remove(null);
       Collections.sort(files);
 
-      if (files != null) {
-        for (File file : files) {
-          try {
-            boolean hidden = Files.isHidden(file.toPath());
-            boolean add = (hidden && showHidden.isSelected()) || !hidden;
-            if (add) {
-              TreeItem<File> item = new TreeItem<>(file);
-              item.expandedProperty().addListener((p, o, n) -> expand(item, true));
-              ObservableList<TreeItem<File>> children = root.getChildren();
-              children.add(item);
-              log.trace("Adding {} to {}", item.getValue().getName(), root.getValue().getName());
-            }
-          } catch (IOException e) {
-            log.error("Could not check file {}", file, e);
+      for (File file : files) {
+        try {
+          boolean hidden = Files.isHidden(file.toPath());
+          boolean add = (hidden && showHidden.isSelected()) || !hidden;
+          if (add) {
+            TreeItem<File> item = new TreeItem<>(file);
+            item.expandedProperty().addListener((p, o, n) -> expand(item, true));
+            ObservableList<TreeItem<File>> children = root.getChildren();
+            children.add(item);
+            log.trace("Adding {} to {}", item.getValue().getName(), root.getValue().getName());
           }
+        } catch (IOException e) {
+          log.error("Could not check file {}", file, e);
         }
       }
     }
@@ -157,7 +159,7 @@ public class GalleryController extends BaseController<Object> {
   }
 
   protected void reloadFavorites() {
-    List<GalleryFavorite> favorites = PersistentWork.from(GalleryFavorite.class);
+    List<GalleryFavorite> favorites = persistentWork.from(GalleryFavorite.class);
     Collections.sort(favorites, Comparator.comparing(f -> f.getName()));
 
     controller.getJavaFXExecutor().submit(() -> {
@@ -175,10 +177,7 @@ public class GalleryController extends BaseController<Object> {
 
         Button delete = new Button("(x)");
         delete.setOnAction(e -> {
-          PersistentWork.run(em -> {
-            GalleryFavorite reloaded = PersistentWork.reload(favorite);
-            em.remove(reloaded);
-          });
+          persistentWork.remove(favorite);
           reloadFavorites();
         });
 
@@ -220,7 +219,7 @@ public class GalleryController extends BaseController<Object> {
     TreeItem<File> selectedItem = fileView.getSelectionModel().getSelectedItem();
 
     if (selectedItem != null) {
-      PersistentWork.persist(new GalleryFavorite(selectedItem.getValue()));
+      persistentWork.persist(new GalleryFavorite(selectedItem.getValue()));
       reloadFavorites();
     }
   }

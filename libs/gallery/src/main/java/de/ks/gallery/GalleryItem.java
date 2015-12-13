@@ -15,8 +15,8 @@
  */
 package de.ks.gallery;
 
-import de.ks.activity.executor.ActivityExecutor;
-import de.ks.javafx.ScreenResolver;
+import de.ks.standbein.activity.executor.ActivityExecutor;
+import de.ks.standbein.javafx.ScreenResolver;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;

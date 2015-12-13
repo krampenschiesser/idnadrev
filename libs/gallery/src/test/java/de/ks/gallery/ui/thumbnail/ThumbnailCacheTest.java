@@ -15,8 +15,6 @@
  */
 package de.ks.gallery.ui.thumbnail;
 
-import de.ks.DummyActivityTest;
-import de.ks.LauncherRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

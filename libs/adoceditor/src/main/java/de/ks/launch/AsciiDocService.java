@@ -16,6 +16,7 @@
 package de.ks.launch;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import de.ks.standbein.launch.Service;
 import de.ks.text.AsciiDocMetaData;
 import de.ks.text.AsciiDocParser;
 import org.slf4j.Logger;

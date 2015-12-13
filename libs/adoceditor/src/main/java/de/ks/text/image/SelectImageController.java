@@ -14,8 +14,8 @@
  */
 package de.ks.text.image;
 
-import de.ks.activity.ActivityController;
-import de.ks.imagecache.Images;
+import de.ks.standbein.activity.ActivityController;
+import de.ks.standbein.imagecache.Images;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

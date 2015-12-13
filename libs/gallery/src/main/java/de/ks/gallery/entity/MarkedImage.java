@@ -15,24 +15,23 @@
  */
 package de.ks.gallery.entity;
 
-import de.ks.persistence.entity.NamedPersistentObject;
+import de.ks.flatadocdb.annotation.Entity;
+import de.ks.flatadocdb.entity.NamedEntity;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import java.io.File;
 
 @Entity
-public class MarkedImage extends NamedPersistentObject<MarkedImage> {
+public class MarkedImage extends NamedEntity {
   private static final long serialVersionUID = 1L;
+
   public static enum MarkReason {
     DELETE, EXPORT, FAVORITE;
   }
 
-  @Enumerated(EnumType.STRING)
   protected MarkReason markReason;
 
-  public MarkedImage() {
+  protected MarkedImage() {
+    super(null);
   }
 
   public MarkedImage(File file) {

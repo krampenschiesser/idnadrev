@@ -17,7 +17,6 @@ package de.ks.text;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
-import de.ks.util.DeleteDir;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;

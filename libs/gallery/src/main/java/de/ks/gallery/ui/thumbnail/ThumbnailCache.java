@@ -15,7 +15,7 @@
  */
 package de.ks.gallery.ui.thumbnail;
 
-import de.ks.activity.executor.ActivityExecutor;
+import de.ks.standbein.activity.executor.ActivityExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

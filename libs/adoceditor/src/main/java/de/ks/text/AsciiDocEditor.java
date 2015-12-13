@@ -17,18 +17,18 @@ package de.ks.text;
 import com.google.common.base.Charsets;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.io.Files;
-import de.ks.activity.ActivityController;
-import de.ks.activity.ActivityLoadFinishedEvent;
-import de.ks.activity.initialization.ActivityCallback;
-import de.ks.activity.initialization.ActivityInitialization;
-import de.ks.activity.initialization.DatasourceCallback;
-import de.ks.application.fxml.DefaultLoader;
+import de.ks.eventsystem.bus.HandleInThread;
 import de.ks.eventsystem.bus.HandlingThread;
-import de.ks.eventsystem.bus.Threading;
 import de.ks.executor.group.LastExecutionGroup;
-import de.ks.i18n.Localized;
-import de.ks.javafx.FxCss;
-import de.ks.javafx.ScreenResolver;
+import de.ks.standbein.activity.ActivityController;
+import de.ks.standbein.activity.ActivityLoadFinishedEvent;
+import de.ks.standbein.activity.initialization.ActivityCallback;
+import de.ks.standbein.activity.initialization.ActivityInitialization;
+import de.ks.standbein.activity.initialization.DatasourceCallback;
+import de.ks.standbein.application.fxml.DefaultLoader;
+import de.ks.standbein.i18n.Localized;
+import de.ks.standbein.javafx.FxCss;
+import de.ks.standbein.javafx.ScreenResolver;
 import de.ks.text.command.AsciiDocEditorCommand;
 import de.ks.text.view.AsciiDocContent;
 import de.ks.text.view.AsciiDocViewer;
@@ -55,8 +55,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import java.awt.*;
 import java.io.File;
@@ -68,8 +66,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>, ActivityCallback {
-  public static CompletableFuture<DefaultLoader<Node, AsciiDocEditor>> load(Consumer<StackPane> viewConsumer, Consumer<AsciiDocEditor> controllerConsumer) {
-    ActivityInitialization initialization = CDI.current().select(ActivityInitialization.class).get();
+  public static CompletableFuture<DefaultLoader<Node, AsciiDocEditor>> load(ActivityInitialization initialization, Consumer<StackPane> viewConsumer, Consumer<AsciiDocEditor> controllerConsumer) {
     return initialization.loadAdditionalControllerWithFuture(AsciiDocEditor.class)//
       .thenApply(loader -> {
         viewConsumer.accept((StackPane) loader.getView());
@@ -82,7 +79,7 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
 
   @Inject
   @FxCss
-  Instance<String> stylesheets;
+  Set<String> stylesheets;
   @Inject
   AsciiDocParser parser;
   @Inject
@@ -90,10 +87,9 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
   @Inject
   ActivityInitialization initialization;
   @Inject
-  Instance<AsciiDocEditorCommand> editorCommands;
+  Set<AsciiDocEditorCommand> editorCommands;
   @Inject
-  @FxCss
-  Instance<String> cssSheets;
+  Localized localized;
   @FXML
   protected TextArea editor;
   @FXML
@@ -299,7 +295,7 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
       });
       c.initialize(this, button);
       this.commands.put(c.getClass(), c);
-      button.setText(Localized.get(c.getName()));
+      button.setText(localized.get(c.getName()));
       button.setOnAction(e -> c.execute(editor));
       editorCommandPane.getChildren().add(button);
     });
@@ -355,7 +351,7 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
 
   @FXML
   void showHelp() {
-    String title = Localized.get("help");
+    String title = localized.get("help");
     title = StringUtils.remove(title, "_");
 
     new Thread(() -> {
@@ -372,7 +368,7 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
   @FXML
   void showPreviewPopup() {
     if (previewPopupStage == null) {
-      String title = Localized.get("adoc.preview");
+      String title = localized.get("adoc.preview");
 
       previewPopupStage = new Stage();
       previewPopupStage.setTitle(title);
@@ -454,7 +450,7 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
   }
 
   @Subscribe
-  @Threading(HandlingThread.JavaFX)
+  @HandleInThread(HandlingThread.JavaFX)
   public void onRefresh(ActivityLoadFinishedEvent e) {
     controller.getJavaFXExecutor().submit(() -> {
       if (editor.textProperty().getValueSafe().trim().isEmpty()) {

@@ -1,19 +1,12 @@
 package de.ks.gallery.ui.slideshow;
 
-import de.ks.Condition;
-import de.ks.LauncherRunner;
-import de.ks.activity.initialization.ActivityInitialization;
-import de.ks.gallery.AbstractGalleryTest;
-import de.ks.gallery.GalleryResource;
-import de.ks.util.FXPlatform;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @RunWith(LauncherRunner.class)
 public class SlideshowTest extends AbstractGalleryTest {

@@ -14,8 +14,6 @@
  */
 package de.ks.text;
 
-import de.ks.activity.ActivityCfg;
-
 public class AscidoctTestActivity extends ActivityCfg {
   public AscidoctTestActivity() {
     super(DummyTestDataSource.class, AsciiDocEditor.class);
