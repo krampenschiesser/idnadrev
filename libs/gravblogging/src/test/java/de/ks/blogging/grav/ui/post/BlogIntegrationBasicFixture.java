@@ -16,7 +16,7 @@
 package de.ks.blogging.grav.ui.post;
 
 import com.google.common.base.StandardSystemProperty;
-import de.ks.FileUtil;
+import de.ks.standbein.FileUtil;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.revwalk.RevCommit;
 

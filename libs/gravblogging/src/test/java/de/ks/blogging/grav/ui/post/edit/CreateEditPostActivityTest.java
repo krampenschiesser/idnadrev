@@ -1,17 +1,18 @@
 package de.ks.blogging.grav.ui.post.edit;
 
 import com.google.common.base.StandardSystemProperty;
-import de.ks.LauncherRunner;
-import de.ks.activity.ActivityCfg;
 import de.ks.blogging.grav.entity.GravBlog;
 import de.ks.blogging.grav.pages.GravPages;
 import de.ks.blogging.grav.posts.BasePost;
 import de.ks.blogging.grav.ui.post.AbstractBlogIntegrationTest;
-import de.ks.persistence.PersistentWork;
+import de.ks.flatjsondb.PersistentWork;
+import de.ks.standbein.IntegrationTestModule;
+import de.ks.standbein.LoggingGuiceTestSupport;
+import de.ks.standbein.activity.ActivityCfg;
 import de.ks.util.FXPlatform;
 import org.hamcrest.Matchers;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -21,11 +22,15 @@ import java.time.LocalTime;
 
 import static org.junit.Assert.*;
 
-@RunWith(LauncherRunner.class)
 public class CreateEditPostActivityTest extends AbstractBlogIntegrationTest {
+
+  @Rule
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule()).launchServices();
 
   @Inject
   GravPages gravPages;
+  @Inject
+  PersistentWork persistentWork;
 
   @Override
   protected Class<? extends ActivityCfg> getActivityClass() {
@@ -34,7 +39,7 @@ public class CreateEditPostActivityTest extends AbstractBlogIntegrationTest {
 
   @Override
   protected void beforeActivityStart() throws Exception {
-    GravBlog blog1 = PersistentWork.forName(GravBlog.class, "blog1");
+    GravBlog blog1 = persistentWork.forName(GravBlog.class, "blog1");
     gravPages.setBlog(blog1);
     gravPages.scan();
   }

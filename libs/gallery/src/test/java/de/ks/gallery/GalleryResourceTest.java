@@ -1,8 +1,11 @@
 package de.ks.gallery;
 
+import de.ks.standbein.Condition;
+import de.ks.standbein.IntegrationTestModule;
+import de.ks.standbein.LoggingGuiceTestSupport;
 import org.hamcrest.Matchers;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -13,12 +16,12 @@ import java.util.function.Supplier;
 
 import static org.junit.Assert.*;
 
-@RunWith(LauncherRunner.class)
 public class GalleryResourceTest extends AbstractGalleryTest {
+  @Rule
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule()).launchServices();
   @Inject
   GalleryResource galleryResource;
-  @Inject
-  ActivityController controller;
+
   @Test
   public void testSimpleImageScanning() throws Exception {
     galleryResource.setFolder(folder, false);

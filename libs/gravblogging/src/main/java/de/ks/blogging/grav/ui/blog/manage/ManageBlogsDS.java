@@ -16,16 +16,19 @@
 package de.ks.blogging.grav.ui.blog.manage;
 
 import de.ks.blogging.grav.entity.GravBlog;
-import de.ks.datasource.ListDataSource;
-import de.ks.persistence.PersistentWork;
+import de.ks.flatjsondb.PersistentWork;
+import de.ks.standbein.datasource.ListDataSource;
 
+import javax.inject.Inject;
 import java.util.List;
 import java.util.function.Consumer;
 
 public class ManageBlogsDS implements ListDataSource<GravBlog> {
+  @Inject
+  PersistentWork persistentWork;
   @Override
   public List<GravBlog> loadModel(Consumer<List<GravBlog>> furtherProcessing) {
-    return PersistentWork.from(GravBlog.class);
+    return persistentWork.from(GravBlog.class);
   }
 
   @Override

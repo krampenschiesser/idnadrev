@@ -18,7 +18,7 @@ package de.ks.blogging.grav.ui.post.manage;
 import de.ks.blogging.grav.entity.GravBlog;
 import de.ks.blogging.grav.pages.GravPages;
 import de.ks.blogging.grav.posts.BasePost;
-import de.ks.datasource.ListDataSource;
+import de.ks.standbein.datasource.ListDataSource;
 
 import javax.inject.Inject;
 import java.time.LocalDateTime;

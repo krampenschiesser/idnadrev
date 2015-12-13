@@ -15,12 +15,12 @@
  */
 package de.ks.blogging.grav.ui.post.edit;
 
-import de.ks.BaseController;
 import de.ks.blogging.grav.posts.BasePost;
 import de.ks.blogging.grav.posts.Header;
 import de.ks.blogging.grav.posts.HeaderContainer;
 import de.ks.blogging.grav.posts.HeaderElement;
-import de.ks.reflection.PropertyPath;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.reflection.PropertyPath;
 import javafx.fxml.FXML;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;

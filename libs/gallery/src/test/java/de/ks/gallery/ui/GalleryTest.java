@@ -15,20 +15,34 @@
  */
 package de.ks.gallery.ui;
 
+import de.ks.flatjsondb.PersistentWork;
+import de.ks.gallery.AbstractGalleryTest;
+import de.ks.gallery.GalleryItem;
+import de.ks.gallery.entity.GalleryFavorite;
+import de.ks.gallery.ui.slideshow.Slideshow;
+import de.ks.standbein.Condition;
+import de.ks.standbein.IntegrationTestModule;
+import de.ks.standbein.LoggingGuiceTestSupport;
+import de.ks.standbein.activity.ActivityCfg;
+import de.ks.util.FXPlatform;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.GridPane;
 import org.hamcrest.Matchers;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
-@RunWith(LauncherRunner.class)
 public class GalleryTest extends AbstractGalleryTest {
+  @Rule
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule()).launchServices();
+  @Inject
+  PersistentWork work;
 
   @Override
   protected Class<? extends ActivityCfg> getActivityClass() {
@@ -54,8 +68,8 @@ public class GalleryTest extends AbstractGalleryTest {
   public void testFavorites() throws Exception {
     GalleryController controller = activityController.getControllerInstance(GalleryController.class);
 
-    PersistentWork.deleteAllOf(GalleryFavorite.class);
-    PersistentWork.persist(new GalleryFavorite(sub));
+    work.removeAllOf(GalleryFavorite.class);
+    work.persist(new GalleryFavorite(sub));
     controller.reloadFavorites();
 
     Condition.waitFor5s(() -> controller.favoriteContainer.getChildren(), Matchers.hasSize(1));

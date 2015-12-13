@@ -15,31 +15,33 @@
  */
 package de.ks.blogging.grav;
 
-import de.ks.activity.ActivityCfg;
-import de.ks.activity.ActivityController;
-import de.ks.activity.ActivityHint;
-import de.ks.activity.context.ActivityStore;
 import de.ks.blogging.grav.entity.GravBlog;
-import de.ks.persistence.PersistentWork;
+import de.ks.flatadocdb.session.Session;
+import de.ks.flatjsondb.PersistentWork;
+import de.ks.standbein.activity.ActivityCfg;
+import de.ks.standbein.activity.ActivityController;
+import de.ks.standbein.activity.ActivityHint;
+import de.ks.standbein.activity.context.ActivityStore;
 import de.ks.util.FXPlatform;
 import org.junit.After;
 import org.junit.Before;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 
 public abstract class ActivityTest {
   @Inject
   protected ActivityController activityController;
   @Inject
   protected ActivityStore store;
+  @Inject
+  protected PersistentWork persistentWork;
 
   @Before
   public void startActivity() throws Exception {
     cleanup();
-    PersistentWork.run(em -> {
+    persistentWork.run(session -> {
       try {
-        createTestData(em);
+        createTestData(session);
       } catch (Exception e) {
         throw new RuntimeException(e);
       }
@@ -63,10 +65,10 @@ public abstract class ActivityTest {
   }
 
   protected void cleanup() {
-    PersistentWork.deleteAllOf(GravBlog.class);
+    persistentWork.removeAllOf(GravBlog.class);
   }
 
-  protected void createTestData(EntityManager em) throws Exception {
+  protected void createTestData(Session session) throws Exception {
 
   }
 }

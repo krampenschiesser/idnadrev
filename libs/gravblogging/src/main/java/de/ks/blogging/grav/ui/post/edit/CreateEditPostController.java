@@ -15,16 +15,17 @@
  */
 package de.ks.blogging.grav.ui.post.edit;
 
-import de.ks.BaseController;
 import de.ks.blogging.grav.pages.GravPages;
 import de.ks.blogging.grav.posts.BasePost;
 import de.ks.gallery.ui.thumbnail.Thumbnail;
 import de.ks.gallery.ui.thumbnail.ThumbnailGallery;
-import de.ks.i18n.Localized;
 import de.ks.markdown.editor.MarkdownEditor;
-import de.ks.validation.validators.IntegerRangeValidator;
-import de.ks.validation.validators.NotEmptyValidator;
-import de.ks.validation.validators.TimeHHMMValidator;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.i18n.Localized;
+import de.ks.standbein.validation.ValidationResult;
+import de.ks.standbein.validation.validators.IntegerRangeValidator;
+import de.ks.standbein.validation.validators.NotEmptyValidator;
+import de.ks.standbein.validation.validators.TimeHHMMValidator;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
@@ -36,7 +37,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
-import org.controlsfx.validation.ValidationResult;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -89,6 +89,8 @@ public class CreateEditPostController extends BaseController<BasePost> {
 
   @Inject
   GravPages gravPages;
+  @Inject
+  Localized localized;
   private ThumbnailGallery thumbnailGallery;
 
   @Override
@@ -100,17 +102,17 @@ public class CreateEditPostController extends BaseController<BasePost> {
     mediaContainer.getChildren().add(thumbnailGallery.getRoot());
     thumbnailGallery.setEnhancer(this::enhanceThumbnail);
 
-    MarkdownEditor.load(pane -> contentContainer.getChildren().addAll(pane), ctrl -> editor = ctrl);
+    MarkdownEditor.load(activityInitialization, pane -> contentContainer.getChildren().addAll(pane), ctrl -> editor = ctrl);
 
     editor.textProperty().bindBidirectional(store.getBinding().getStringProperty(BasePost.class, b -> b.getContent()));
     title.textProperty().bindBidirectional(store.getBinding().getStringProperty(BasePost.class, b -> b.getHeader().getTitle()));
     tags.textProperty().bindBidirectional(store.getBinding().getStringProperty(BasePost.class, b -> b.getHeader().getTagString()));
 
-    validator = new TimeHHMMValidator();
+    validator = new TimeHHMMValidator(localized);
     validationRegistry.registerValidator(time, validator);
-    validationRegistry.registerValidator(title, new NotEmptyValidator());
-    validationRegistry.registerValidator(pageIndex, new IntegerRangeValidator(0, Integer.MAX_VALUE));
-    validationRegistry.registerValidator(pageIndex, new NotEmptyValidator() {
+    validationRegistry.registerValidator(title, new NotEmptyValidator(localized));
+    validationRegistry.registerValidator(pageIndex, new IntegerRangeValidator(localized, 0, Integer.MAX_VALUE));
+    validationRegistry.registerValidator(pageIndex, new NotEmptyValidator(localized) {
       @Override
       public ValidationResult apply(Control control, String s) {
         if (type.getValue() == PostType.PAGE) {
@@ -120,7 +122,7 @@ public class CreateEditPostController extends BaseController<BasePost> {
         }
       }
     });
-    validationRegistry.registerValidator(filePath, new NotEmptyValidator() {
+    validationRegistry.registerValidator(filePath, new NotEmptyValidator(localized) {
       @Override
       public ValidationResult apply(Control control, String s) {
         if (type.getValue() == PostType.UNKNOWN) {
@@ -171,7 +173,7 @@ public class CreateEditPostController extends BaseController<BasePost> {
     box.getChildren().add(node);
     String name = thumbnail.getItem().getName();
 
-    Button insertAtCursor = new Button(Localized.get("grav.post.insertAtCursor", name));
+    Button insertAtCursor = new Button(localized.get("grav.post.insertAtCursor", name));
     insertAtCursor.setOnAction(e -> {
       TextArea textArea = this.editor.getEditor();
       int pos = textArea.getCaretPosition();
@@ -193,9 +195,9 @@ public class CreateEditPostController extends BaseController<BasePost> {
     Optional<String> result = Optional.empty();
     if (gravPages.hasGitRepository()) {
       TextInputDialog dialog = new TextInputDialog();
-      dialog.setTitle(Localized.get("grav.post.enter.commitMsg"));
-      dialog.setHeaderText(Localized.get("grav.post.enter.commitMsg"));
-      dialog.setContentText(Localized.get("grav.post.git.commitMsg:"));
+      dialog.setTitle(localized.get("grav.post.enter.commitMsg"));
+      dialog.setHeaderText(localized.get("grav.post.enter.commitMsg"));
+      dialog.setContentText(localized.get("grav.post.git.commitMsg:"));
 
       result = dialog.showAndWait();
     }
@@ -258,7 +260,7 @@ public class CreateEditPostController extends BaseController<BasePost> {
   public void onFilePathSelection() {
     FileChooser chooser = new FileChooser();
     chooser.setInitialDirectory(new File(gravPages.getBlog().getPagesDirectory()));
-    chooser.setTitle(Localized.get("choose.dir"));
+    chooser.setTitle(localized.get("choose.dir"));
     File file = chooser.showSaveDialog(contentContainer.getScene().getWindow());
     if (file != null) {
       filePath.setText(file.getAbsolutePath());

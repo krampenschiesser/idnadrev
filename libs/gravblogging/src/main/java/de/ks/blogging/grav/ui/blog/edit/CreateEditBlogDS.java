@@ -18,7 +18,7 @@ package de.ks.blogging.grav.ui.blog.edit;
 import com.google.common.base.StandardSystemProperty;
 import de.ks.blogging.grav.PostDateFormat;
 import de.ks.blogging.grav.entity.GravBlog;
-import de.ks.datasource.CreateEditDS;
+import de.ks.flatjsondb.datasource.CreateEditDS;
 
 public class CreateEditBlogDS extends CreateEditDS<GravBlog> {
   public CreateEditBlogDS() {

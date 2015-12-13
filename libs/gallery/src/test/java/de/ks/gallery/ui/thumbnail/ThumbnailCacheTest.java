@@ -15,9 +15,12 @@
  */
 package de.ks.gallery.ui.thumbnail;
 
+import de.ks.standbein.DummyActivityTest;
+import de.ks.standbein.IntegrationTestModule;
+import de.ks.standbein.LoggingGuiceTestSupport;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -30,9 +33,9 @@ import java.util.concurrent.Future;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(LauncherRunner.class)
 public class ThumbnailCacheTest extends DummyActivityTest {
-
+  @Rule
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule()).launchServices();
   @Inject
   ThumbnailCache cache;
 

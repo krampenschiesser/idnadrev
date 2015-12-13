@@ -15,19 +15,27 @@
 
 package de.ks.text;
 
+import de.ks.standbein.LoggingGuiceTestSupport;
+import de.ks.standbein.activity.ActivityCfg;
+import de.ks.standbein.activity.ActivityController;
+import de.ks.standbein.activity.ActivityHint;
+import de.ks.text.image.SelectImageController;
+import de.ks.util.FXPlatform;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(LauncherRunner.class)
 public class SelectImageControllerTest {
+  @Rule
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new AdocTestModule()).launchServices();
+
   @Inject
   ActivityController activityController;
   private ActivityCfg wrapper;
@@ -37,9 +45,6 @@ public class SelectImageControllerTest {
 
   @Before
   public void setUp() throws Exception {
-    ApplicationService service = Launcher.instance.getService(ApplicationService.class);
-    Navigator.registerWithBorderPane(service.getStage());
-
     activityController.startOrResume(new ActivityHint(SelectImageActivity.class));
 
     controller = activityController.getControllerInstance(SelectImageController.class);

@@ -1,16 +1,24 @@
 package de.ks.gallery.ui.slideshow;
 
+import de.ks.gallery.AbstractGalleryTest;
+import de.ks.gallery.GalleryResource;
+import de.ks.standbein.Condition;
+import de.ks.standbein.IntegrationTestModule;
+import de.ks.standbein.LoggingGuiceTestSupport;
+import de.ks.standbein.activity.initialization.ActivityInitialization;
+import de.ks.util.FXPlatform;
 import org.hamcrest.Matchers;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 
 import static org.junit.Assert.*;
 
-@RunWith(LauncherRunner.class)
 public class SlideshowTest extends AbstractGalleryTest {
 
+  @Rule
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule()).launchServices();
   Slideshow slideshow;
 
   @Inject

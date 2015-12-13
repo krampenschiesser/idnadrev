@@ -15,12 +15,16 @@
  */
 package de.ks.blogging.grav.entity;
 
-import de.ks.persistence.PersistentWork;
+import de.ks.flatjsondb.PersistentWork;
 
+import javax.inject.Inject;
 import java.util.List;
 
 public class GravBlogProvider {
+  @Inject
+  PersistentWork persistentWork;
+
   public List<GravBlog> getBlogs() {
-    return PersistentWork.from(GravBlog.class);
+    return persistentWork.from(GravBlog.class);
   }
 }

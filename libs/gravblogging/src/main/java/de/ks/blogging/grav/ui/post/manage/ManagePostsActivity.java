@@ -15,10 +15,9 @@
  */
 package de.ks.blogging.grav.ui.post.manage;
 
-import de.ks.activity.ActivityCfg;
-import de.ks.menu.MenuItem;
+import de.ks.standbein.activity.ActivityCfg;
 
-@MenuItem(order = 71, value = "/main/blogging")
+//@MenuItem(order = 71, value = "/main/blogging")
 public class ManagePostsActivity extends ActivityCfg {
   public ManagePostsActivity() {
     super(ManagePostsDS.class, ManagePostsController.class);

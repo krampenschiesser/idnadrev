@@ -15,12 +15,12 @@
  */
 package de.ks.blogging.grav.ui.blog.manage;
 
-import de.ks.BaseController;
-import de.ks.activity.ActivityHint;
 import de.ks.blogging.grav.entity.GravBlog;
 import de.ks.blogging.grav.ui.blog.edit.CreateEditBlogActivity;
+import de.ks.flatjsondb.PersistentWork;
 import de.ks.fxcontrols.cell.ConvertingListCell;
-import de.ks.persistence.PersistentWork;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.activity.ActivityHint;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.collections.FXCollections;
@@ -29,6 +29,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.input.KeyCode;
 
+import javax.inject.Inject;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -43,6 +44,9 @@ public class ManageBlogsController extends BaseController<List<GravBlog>> {
   protected Button create;
   @FXML
   protected Button delete;
+
+  @Inject
+  PersistentWork persistentWork;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -103,10 +107,7 @@ public class ManageBlogsController extends BaseController<List<GravBlog>> {
   public void onDelete() {
     GravBlog item = blogList.getSelectionModel().getSelectedItem();
     store.executeCustomRunnable(() -> {
-      PersistentWork.run(em -> {
-        GravBlog reload = PersistentWork.reload(item);
-        em.remove(reload);
-      });
+      persistentWork.remove(item);
     });
     store.reload();
   }

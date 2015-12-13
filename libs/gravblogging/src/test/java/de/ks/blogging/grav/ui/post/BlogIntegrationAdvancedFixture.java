@@ -16,7 +16,7 @@
 package de.ks.blogging.grav.ui.post;
 
 import com.google.common.base.StandardSystemProperty;
-import de.ks.FileUtil;
+import de.ks.flatadocdb.util.DeleteDir;
 import org.eclipse.jgit.api.Git;
 
 import java.io.File;
@@ -67,7 +67,7 @@ public class BlogIntegrationAdvancedFixture {
       makeBlogEntry("entry3", "post 3", "Hungry!");
     });
     withGit("delete entry 1", () -> {
-      FileUtil.deleteDir(new File(pagesDir, "entry1"));
+      new DeleteDir(new File(pagesDir, "entry1")).delete();
     });
 
     git.close();
@@ -95,7 +95,7 @@ public class BlogIntegrationAdvancedFixture {
   }
 
   public void cleanup() throws IOException {
-    FileUtil.deleteDir(blogFolder);
+    new DeleteDir(blogFolder).delete();
   }
 
   protected String getBlog(String title, String content) {

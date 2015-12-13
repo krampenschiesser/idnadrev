@@ -16,6 +16,8 @@
 package de.ks.gallery;
 
 import com.google.common.net.MediaType;
+import de.ks.executor.JavaFXExecutorService;
+import de.ks.standbein.activity.executor.ActivityExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

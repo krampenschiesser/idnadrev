@@ -15,7 +15,7 @@
  */
 package de.ks.blogging.grav.ui.post.edit;
 
-import de.ks.activity.ActivityCfg;
+import de.ks.standbein.activity.ActivityCfg;
 
 public class CreateEditPostActivity extends ActivityCfg {
   public CreateEditPostActivity() {

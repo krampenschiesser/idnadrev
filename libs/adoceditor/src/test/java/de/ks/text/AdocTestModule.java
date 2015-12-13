@@ -1,5 +1,6 @@
 /*
- * Copyright [2014] [Christian Loehnert, krampenschiesser@gmail.com]
+ * Copyright [2015] [Christian Loehnert]
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,10 +15,14 @@
  */
 package de.ks.text;
 
-import de.ks.standbein.activity.ActivityCfg;
+import com.google.inject.AbstractModule;
+import de.ks.AsciiDoctorModule;
+import de.ks.standbein.IntegrationTestModule;
 
-public class AscidoctTestActivity extends ActivityCfg {
-  public AscidoctTestActivity() {
-    super(DummyTestDataSource.class, AsciiDocEditor.class);
+public class AdocTestModule extends AbstractModule {
+  @Override
+  protected void configure() {
+    install(new IntegrationTestModule());
+    install(new AsciiDoctorModule());
   }
 }

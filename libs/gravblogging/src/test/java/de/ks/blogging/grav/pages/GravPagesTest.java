@@ -1,12 +1,12 @@
 package de.ks.blogging.grav.pages;
 
 import com.google.common.base.StandardSystemProperty;
-import de.ks.FileUtil;
 import de.ks.blogging.grav.entity.GravBlog;
 import de.ks.blogging.grav.posts.BasePost;
 import de.ks.blogging.grav.posts.BlogItem;
 import de.ks.blogging.grav.posts.HeaderContainer;
 import de.ks.blogging.grav.posts.Page;
+import de.ks.flatadocdb.util.DeleteDir;
 import org.apache.sanselan.ImageInfo;
 import org.apache.sanselan.Sanselan;
 import org.eclipse.jgit.api.Git;
@@ -88,7 +88,7 @@ public class GravPagesTest {
 
       assertTrue(gravPages.hasGitRepository());
     } finally {
-      FileUtil.deleteDir(tmpDir);
+      new DeleteDir(tmpDir).delete();
     }
   }
 
@@ -116,7 +116,7 @@ public class GravPagesTest {
       GravPages gravPages = new GravPages(blog);
       assertTrue(gravPages.hasGitRepository());
     } finally {
-      FileUtil.deleteDir(tmpDir);
+      new DeleteDir(tmpDir).delete();
     }
   }
 
@@ -150,7 +150,7 @@ public class GravPagesTest {
       assertEquals(0, call.getUntracked().size());
       git.close();
     } finally {
-      FileUtil.deleteDir(tmpDir);
+      new DeleteDir(tmpDir).delete();
     }
   }
 

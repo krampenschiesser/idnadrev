@@ -1,22 +1,25 @@
 package de.ks.blogging.grav.ui.post.manage;
 
-import de.ks.LauncherRunner;
-import de.ks.activity.ActivityCfg;
 import de.ks.blogging.grav.ui.post.AbstractBlogIntegrationTest;
+import de.ks.standbein.IntegrationTestModule;
+import de.ks.standbein.LoggingGuiceTestSupport;
+import de.ks.standbein.activity.ActivityCfg;
 import de.ks.util.FXPlatform;
 import javafx.collections.ObservableList;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(LauncherRunner.class)
 public class ManagePostsActivityTest extends AbstractBlogIntegrationTest {
+  @Rule
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule()).launchServices();
 
   @Override
   protected Class<? extends ActivityCfg> getActivityClass() {
     return ManagePostsActivity.class;
   }
+
   @Test
   public void testSelectBlogAndScan() throws Exception {
     ManagePostsController managePosts = activityController.getControllerInstance(ManagePostsController.class);

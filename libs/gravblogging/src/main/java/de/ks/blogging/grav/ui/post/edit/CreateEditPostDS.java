@@ -17,7 +17,7 @@ package de.ks.blogging.grav.ui.post.edit;
 
 import de.ks.blogging.grav.pages.GravPages;
 import de.ks.blogging.grav.posts.BasePost;
-import de.ks.datasource.DataSource;
+import de.ks.standbein.datasource.DataSource;
 
 import javax.inject.Inject;
 import java.util.function.Consumer;

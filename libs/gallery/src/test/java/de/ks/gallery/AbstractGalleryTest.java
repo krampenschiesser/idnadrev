@@ -16,6 +16,8 @@
 package de.ks.gallery;
 
 import com.google.common.base.StandardSystemProperty;
+import de.ks.standbein.DummyActivityTest;
+import de.ks.standbein.FileUtil;
 import org.junit.Before;
 
 import java.io.File;

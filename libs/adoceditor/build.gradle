@@ -21,6 +21,7 @@ dependencies {
         transitive = false;
     }
 
+    testCompile "de.ks:standbein-testutil:$standbein"
     //asciidoc:
     runtime "org.jruby:jruby-complete:$jruby"
     runtime "com.beust:jcommander:$jcommander"

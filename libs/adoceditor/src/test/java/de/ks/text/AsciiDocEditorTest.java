@@ -17,14 +17,26 @@ package de.ks.text;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
+import de.ks.executor.group.LastTextChange;
+import de.ks.standbein.Condition;
+import de.ks.standbein.JunitMatchers;
+import de.ks.standbein.LoggingGuiceTestSupport;
+import de.ks.standbein.activity.ActivityCfg;
+import de.ks.standbein.activity.ActivityController;
+import de.ks.standbein.activity.ActivityHint;
+import de.ks.text.command.InsertImage;
+import de.ks.text.image.GlobalImageProvider;
+import de.ks.text.image.ImageData;
+import de.ks.text.image.SelectImageController;
+import de.ks.util.FXPlatform;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import javafx.scene.web.WebEngine;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -33,8 +45,10 @@ import java.util.concurrent.Future;
 
 import static org.junit.Assert.*;
 
-@RunWith(LauncherRunner.class)
 public class AsciiDocEditorTest {
+  @Rule
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new AdocTestModule()).launchServices();
+
   @Inject
   ActivityController activityController;
   @Inject
@@ -44,11 +58,6 @@ public class AsciiDocEditorTest {
 
   @Before
   public void setUp() throws Exception {
-
-    ApplicationService service = Launcher.instance.getService(ApplicationService.class);
-    Navigator.registerWithBorderPane(service.getStage());
-
-
     activityController.startOrResume(new ActivityHint(AscidoctTestActivity.class));
     adocEditor = activityController.getControllerInstance(AsciiDocEditor.class);
   }

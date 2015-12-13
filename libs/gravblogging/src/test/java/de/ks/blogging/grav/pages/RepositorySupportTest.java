@@ -1,10 +1,10 @@
 package de.ks.blogging.grav.pages;
 
 import com.google.common.base.StandardSystemProperty;
-import de.ks.FileUtil;
 import de.ks.blogging.grav.entity.GravBlog;
 import de.ks.blogging.grav.ui.post.BlogIntegrationAdvancedFixture;
 import de.ks.blogging.grav.ui.post.BlogIntegrationBasicFixture;
+import de.ks.flatadocdb.util.DeleteDir;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPSClient;
@@ -49,7 +49,7 @@ public class RepositorySupportTest {
     tmpDir = new File(StandardSystemProperty.JAVA_IO_TMPDIR.value());
     ftpDir = new File(tmpDir, "ftpserver");
     if (ftpDir.exists()) {
-      FileUtil.deleteDir(ftpDir);
+      new DeleteDir(ftpDir).delete();
     }
     ftpDir.mkdir();
     fillDirectory(ftpDir);

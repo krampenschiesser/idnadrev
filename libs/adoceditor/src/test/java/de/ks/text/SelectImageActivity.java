@@ -15,6 +15,9 @@
 
 package de.ks.text;
 
+import de.ks.standbein.activity.ActivityCfg;
+import de.ks.text.image.SelectImageController;
+
 public class SelectImageActivity extends ActivityCfg {
   public SelectImageActivity() {
     super(DummyTestDataSource.class, SelectImageController.class);

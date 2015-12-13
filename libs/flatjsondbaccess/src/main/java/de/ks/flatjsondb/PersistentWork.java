@@ -18,6 +18,7 @@ package de.ks.flatjsondb;
 
 import de.ks.flatadocdb.Repository;
 import de.ks.flatadocdb.entity.BaseEntity;
+import de.ks.flatadocdb.entity.NamedEntity;
 import de.ks.flatadocdb.index.IndexElement;
 import de.ks.flatadocdb.session.Session;
 import de.ks.flatadocdb.session.SessionFactory;
@@ -54,10 +55,14 @@ public class PersistentWork {
     if (localSession.get() != null) {
       return function.apply(localSession.get());
     } else {
-      return factory.transactedSessionRead(repository, session -> {
-        localSession.set(session);
-        return function.apply(session);
-      });
+      try {
+        return factory.transactedSessionRead(repository, session -> {
+          localSession.set(session);
+          return function.apply(session);
+        });
+      } finally {
+        localSession.set(null);
+      }
     }
   }
 
@@ -81,5 +86,28 @@ public class PersistentWork {
 
   public <E> void persist(E entity) {
     run(session -> session.persist(entity));
+  }
+
+  public <E extends BaseEntity> void removeAllOf(Class<E> root) {
+    run(session -> {
+      List<E> items = from(root);
+      for (E item : items) {
+        remove(item);
+      }
+    });
+  }
+
+  public <E extends BaseEntity> E reload(E entity) {
+    return read(session -> {
+      if (entity.getId() == null) {
+        return entity;
+      } else {
+        return session.findById(entity.getId());
+      }
+    });
+  }
+
+  public <E extends NamedEntity> E forName(Class<E> clazz, String name) {
+    return read(session -> session.findByNaturalId(clazz, name));
   }
 }

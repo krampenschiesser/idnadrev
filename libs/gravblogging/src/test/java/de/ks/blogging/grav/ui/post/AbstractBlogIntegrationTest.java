@@ -18,10 +18,10 @@ package de.ks.blogging.grav.ui.post;
 import de.ks.blogging.grav.ActivityTest;
 import de.ks.blogging.grav.entity.GravBlog;
 import de.ks.blogging.grav.pages.GravPages;
+import de.ks.flatadocdb.session.Session;
 import org.junit.After;
 
-import javax.enterprise.inject.spi.CDI;
-import javax.persistence.EntityManager;
+import javax.inject.Inject;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -33,14 +33,17 @@ public abstract class AbstractBlogIntegrationTest extends ActivityTest {
   protected File fileBlog2;
   protected LocalDateTime dateTime;
 
+  @Inject
+  GravPages pages;
+
   @After
   public void tearDown() throws Exception {
-    CDI.current().select(GravPages.class).get().close();
+    pages.close();
     fixture.cleanup();
   }
 
   @Override
-  protected void createTestData(EntityManager em) throws Exception {
+  protected void createTestData(Session session) throws Exception {
     fixture = new BlogIntegrationBasicFixture();
     fixture.createBlogFolders(false);
 
@@ -48,7 +51,7 @@ public abstract class AbstractBlogIntegrationTest extends ActivityTest {
     fileBlog2 = fixture.fileBlog2;
     dateTime = fixture.dateTime;
 
-    em.persist(new GravBlog("blog1", fixture.fileBlog1.getPath()));
-    em.persist(new GravBlog("blog2", fixture.fileBlog2.getPath()));
+    session.persist(new GravBlog("blog1", fixture.fileBlog1.getPath()));
+    session.persist(new GravBlog("blog2", fixture.fileBlog2.getPath()));
   }
 }

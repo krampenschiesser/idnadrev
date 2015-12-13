@@ -17,22 +17,18 @@ package de.ks.blogging.grav.entity;
 
 import com.google.common.base.StandardSystemProperty;
 import de.ks.blogging.grav.PostDateFormat;
-import de.ks.persistence.entity.NamedPersistentObject;
+import de.ks.flatadocdb.annotation.Entity;
+import de.ks.flatadocdb.entity.NamedEntity;
 import de.ks.util.Smoke;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-
 @Entity
-public class GravBlog extends NamedPersistentObject<GravBlog> {
+public class GravBlog extends NamedEntity {
   private static final long serialVersionUID = 1L;
   protected String pagesDirectory;
   protected String blogSubPath;
 
   protected String defaultAuthor;
   protected int imageDimension;
-  @Enumerated(EnumType.STRING)
   protected PostDateFormat dateFormat;
 
   protected String ftpHost;
@@ -42,6 +38,7 @@ public class GravBlog extends NamedPersistentObject<GravBlog> {
   private String ftpWorkingDir = "/";
 
   protected GravBlog() {
+    super(null);
   }
 
   public GravBlog(String name, String pagesDirectory) {

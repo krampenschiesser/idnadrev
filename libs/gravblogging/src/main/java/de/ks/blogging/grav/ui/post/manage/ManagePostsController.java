@@ -15,17 +15,17 @@
  */
 package de.ks.blogging.grav.ui.post.manage;
 
-import de.ks.BaseController;
-import de.ks.activity.ActivityHint;
 import de.ks.blogging.grav.entity.GravBlog;
 import de.ks.blogging.grav.posts.BasePost;
 import de.ks.blogging.grav.ui.post.edit.CreateEditPostActivity;
 import de.ks.executor.group.LastTextChange;
-import de.ks.i18n.Localized;
-import de.ks.javafx.event.ClearTextOnEscape;
+import de.ks.flatjsondb.PersistentWork;
 import de.ks.markdown.viewer.MarkdownContent;
 import de.ks.markdown.viewer.MarkdownViewer;
-import de.ks.persistence.PersistentWork;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.activity.ActivityHint;
+import de.ks.standbein.i18n.Localized;
+import de.ks.standbein.javafx.event.ClearTextOnEscape;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -39,6 +39,7 @@ import javafx.util.StringConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -73,7 +74,12 @@ public class ManagePostsController extends BaseController<List<BasePost>> {
   @FXML
   protected TextField titleSearch;
 
-  protected final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(Localized.get("fullDate"));
+  @Inject
+  protected PersistentWork persistentWork;
+  @Inject
+  protected Localized localized;
+
+  protected DateTimeFormatter formatter;
   protected final java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
   protected LastTextChange lastTextChange;
   protected ObservableList<BasePost> items;
@@ -82,7 +88,8 @@ public class ManagePostsController extends BaseController<List<BasePost>> {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    MarkdownViewer.load(node -> previewContainer.getChildren().add(node), ctrl -> markdownViewer = ctrl);
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(localized.get("fullDate"));
+    MarkdownViewer.load(activityInitialization, node -> previewContainer.getChildren().add(node), ctrl -> markdownViewer = ctrl);
 
     titleColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getHeader().getTitle()));
     dateColumn.setCellValueFactory(param -> new SimpleObjectProperty<LocalDateTime>(param.getValue().getHeader().getLocalDateTime().orElse(LocalDateTime.of(1970, 1, 1, 12, 42, 0))));
@@ -155,7 +162,7 @@ public class ManagePostsController extends BaseController<List<BasePost>> {
   @FXML
   public void onCreate() {
     ActivityHint hint = new ActivityHint(CreateEditPostActivity.class);
-    hint.returnToCurrent();
+    hint.setReturnToActivity(controller.getCurrentActivityId());
     hint.setDataSourceHint(() -> null);
 
     controller.startOrResume(hint);
@@ -164,7 +171,7 @@ public class ManagePostsController extends BaseController<List<BasePost>> {
   @FXML
   public void onEdit() {
     ActivityHint hint = new ActivityHint(CreateEditPostActivity.class);
-    hint.returnToCurrent();
+    hint.setReturnToActivity(controller.getCurrentActivityId());
 
     Supplier supplier = () -> postTable.getSelectionModel().getSelectedItem();
     hint.setReturnToDatasourceHint(supplier);
@@ -199,7 +206,7 @@ public class ManagePostsController extends BaseController<List<BasePost>> {
 
   @Override
   public void onResume() {
-    List<GravBlog> blogs = PersistentWork.from(GravBlog.class);
+    List<GravBlog> blogs = persistentWork.from(GravBlog.class);
     controller.getJavaFXExecutor().submit(() -> {
       SingleSelectionModel<GravBlog> selectionModel = blogSelection.getSelectionModel();
       GravBlog selectedItem = selectionModel.getSelectedItem();
