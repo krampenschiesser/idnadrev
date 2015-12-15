@@ -14,6 +14,12 @@
  */
 package de.ks.idnadrev.review.weeklydone;
 
+import de.ks.fxcontrols.weekview.AppointmentResolver;
+import de.ks.fxcontrols.weekview.WeekView;
+import de.ks.fxcontrols.weekview.WeekViewAppointment;
+import de.ks.idnadrev.entity.Task;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.application.fxml.DefaultLoader;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
@@ -41,7 +47,7 @@ public class WeeklyDone extends BaseController<List<WeekViewAppointment<Task>>> 
     CompletableFuture<DefaultLoader<Node, WeeklyDoneAppointmentView>> future = activityInitialization.loadAdditionalControllerWithFuture(WeeklyDoneAppointmentView.class);
     future.thenAcceptAsync(loader -> viewContainer.getChildren().add(loader.getView()), controller.getJavaFXExecutor());
 
-    weekView = new WeekView<>(Localized.get("today"));
+    weekView = new WeekView<>(localized.get("today"));
     weekContainer.getChildren().add(weekView);
     controller.getJavaFXExecutor().execute(() -> weekView.setAppointmentResolver(this));
   }

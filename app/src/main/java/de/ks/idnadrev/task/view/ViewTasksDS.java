@@ -21,13 +21,13 @@ import de.ks.standbein.activity.initialization.ActivityInitialization;
 import de.ks.standbein.datasource.ListDataSource;
 
 import javax.inject.Inject;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public class ViewTasksDS implements ListDataSource<Task> {
   private Task taskToSelect;
-  private QueryConsumer<Task, Task> filter;
+//  private QueryConsumer<Task, Task> filter;
 
   @Inject
   ActivityInitialization initialization;
@@ -39,32 +39,34 @@ public class ViewTasksDS implements ListDataSource<Task> {
     TaskFilterView taskFilterView = initialization.getControllerInstance(TaskFilterView.class);
     taskFilterView.applyFilterOnDS(this);
 
-    return persistentWork.run(session -> {
-      List<Task> from = PersistentWork.read((em) -> {
-        CriteriaBuilder builder = em.getCriteriaBuilder();
-        CriteriaQuery<Task> query = builder.createQuery(Task.class);
-
-        Root<Task> root = query.from(Task.class);
-        query.select(root);
-
-        if (filter != null) {
-          filter.accept(root, query, builder);
-        }
-
-        List<Task> resultList = em.createQuery(query).getResultList();
-        Task parentTask = PersistentWork.reload(taskFilterView.getParentTask());
-        if (parentTask != null) {
-          resultList = resultList.stream().filter(t -> t.hasParent(parentTask)).collect(Collectors.toList());
-          if (!resultList.contains(parentTask)) {
-            resultList.add(parentTask);
-          }
-        }
-        resultList.forEach(this::loadChildren);
-        return resultList;
-      });
-      furtherProcessing.accept(from);
-      return from;
-    });
+    return Collections.emptyList();
+    // FIXME: 12/15/15 
+//    return persistentWork.run(session -> {
+//      List<Task> from = PersistentWork.read((em) -> {
+//        CriteriaBuilder builder = em.getCriteriaBuilder();
+//        CriteriaQuery<Task> query = builder.createQuery(Task.class);
+//
+//        Root<Task> root = query.from(Task.class);
+//        query.select(root);
+//
+//        if (filter != null) {
+//          filter.accept(root, query, builder);
+//        }
+//
+//        List<Task> resultList = em.createQuery(query).getResultList();
+//        Task parentTask = PersistentWork.reload(taskFilterView.getParentTask());
+//        if (parentTask != null) {
+//          resultList = resultList.stream().filter(t -> t.hasParent(parentTask)).collect(Collectors.toList());
+//          if (!resultList.contains(parentTask)) {
+//            resultList.add(parentTask);
+//          }
+//        }
+//        resultList.forEach(this::loadChildren);
+//        return resultList;
+//      });
+//      furtherProcessing.accept(from);
+//      return from;
+//    });
   }
 
   protected void loadChildren(Task task) {
@@ -76,7 +78,7 @@ public class ViewTasksDS implements ListDataSource<Task> {
       task.getContext().getName();
     }
     task.getChildren().forEach(this::loadChildren);
-    task.getTags().forEach(NamedPersistentObject::getName);
+//    task.getTags().forEach(NamedPersistentObject::getName);// FIXME: 12/15/15 
     task.getWorkUnits().forEach(WorkUnit::getDuration);
   }
 
@@ -96,7 +98,8 @@ public class ViewTasksDS implements ListDataSource<Task> {
     return taskToSelect;
   }
 
-  public void setFilter(QueryConsumer<Task, Task> filter) {
-    this.filter = filter;
-  }
+  // FIXME: 12/15/15 
+//  public void setFilter(QueryConsumer<Task, Task> filter) {
+//    this.filter = filter;
+//  }
 }

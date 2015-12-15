@@ -16,9 +16,8 @@ include "doc"
 
 include "libs:fxcontrols"
 include "libs:flatjsondbaccess"
-//PC stuff
 include "libs:gravblogging", "libs:gallery"
-//javaFX stuff
+include "libs:costs"
 include "libs:adoceditor"
 include "libs:googleintegration"
 include "libs:markdowneditor"

@@ -14,14 +14,26 @@
  */
 package de.ks.idnadrev.review.planweek;
 
+import de.ks.flatjsondb.PersistentWork;
+import de.ks.fxcontrols.weekview.AppointmentResolver;
+import de.ks.fxcontrols.weekview.WeekHelper;
+import de.ks.fxcontrols.weekview.WeekView;
+import de.ks.fxcontrols.weekview.WeekViewAppointment;
+import de.ks.idnadrev.entity.Schedule;
+import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.task.create.CreateTaskActivity;
+import de.ks.idnadrev.task.finish.FinishTaskActivity;
+import de.ks.idnadrev.task.view.ViewTasksMaster;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.activity.ActivityHint;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
-import org.controlsfx.dialog.Dialogs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.net.URL;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -33,6 +45,10 @@ import java.util.stream.Collectors;
 
 public class PlanWeek extends BaseController<List<Task>> implements AppointmentResolver<Task> {
   private static final Logger log = LoggerFactory.getLogger(PlanWeek.class);
+
+  @Inject
+  protected PersistentWork persistentWork;
+
   @FXML
   protected ViewTasksMaster viewController;
   @FXML
@@ -51,7 +67,7 @@ public class PlanWeek extends BaseController<List<Task>> implements AppointmentR
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    weekView = new WeekView<>(Localized.get("today"));
+    weekView = new WeekView<>(localized.get("today"));
     weekView.setPrefSize(300, 300);
     weekViewContainer.getChildren().add(weekView);
     weekView.setAppointmentResolver(this);
@@ -84,7 +100,7 @@ public class PlanWeek extends BaseController<List<Task>> implements AppointmentR
     });
 
     viewController.getTasksView().getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
-      if (n != null && n.getValue() != null && n.getValue().getId() >= 0) {
+      if (n != null && n.getValue() != null && n.getValue().getId() != null) {
         disable.set(false);
       } else {
         disable.set(true);
@@ -118,7 +134,7 @@ public class PlanWeek extends BaseController<List<Task>> implements AppointmentR
     });
     appointment.setNewTimePossiblePredicate((date, time) -> true);
     appointment.setEnhancer(btn -> {
-      MenuItem item = new MenuItem(Localized.get("change.duration"));
+      MenuItem item = new MenuItem(localized.get("change.duration"));
       item.setOnAction(e -> changeDuration(appointment, task));
       ContextMenu menu = new ContextMenu(item);
       btn.setContextMenu(menu);
@@ -130,15 +146,20 @@ public class PlanWeek extends BaseController<List<Task>> implements AppointmentR
   }
 
   protected void changeDuration(WeekViewAppointment<Task> appointment, Task task) {
-    Optional<String> optional = Dialogs.create().title(Localized.get("enter.time.minutes")).showTextInput(String.valueOf(appointment.getDuration().toMinutes()));
+
+    TextInputDialog dialog = new TextInputDialog(String.valueOf(appointment.getDuration().toMinutes()));
+    dialog.setTitle(localized.get("enter.time.minutes"));
+    dialog.setContentText(localized.get("duration.in.minutes:"));
+
+    Optional<String> optional = dialog.showAndWait();
     if (optional.isPresent()) {
       String input = optional.get();
       try {
         long duration = Long.parseLong(input);
         Duration minutes = Duration.ofMinutes(duration);
         appointment.setDuration(minutes);
-        PersistentWork.wrap(() -> {
-          Task reloaded = PersistentWork.reload(appointment.getUserData());
+        persistentWork.run(session -> {
+          Task reloaded = persistentWork.reload(appointment.getUserData());
           reloaded.getSchedule().setDuration(minutes);
         });
         weekView.recreateEntries();
@@ -149,8 +170,8 @@ public class PlanWeek extends BaseController<List<Task>> implements AppointmentR
   }
 
   protected void changeSchedule(WeekViewAppointment<Task> appointment, LocalDate date, LocalTime time) {
-    PersistentWork.wrap(() -> {
-      Task reloaded = PersistentWork.reload(appointment.getUserData());
+    persistentWork.run(session -> {
+      Task reloaded = persistentWork.reload(appointment.getUserData());
       Schedule schedule = reloaded.getSchedule();
       if (schedule == null) {
         schedule = new Schedule();
@@ -177,7 +198,9 @@ public class PlanWeek extends BaseController<List<Task>> implements AppointmentR
   public void resolve(LocalDate begin, LocalDate end, Consumer<List<WeekViewAppointment<Task>>> callback) {
     WeekHelper weekHelper = new WeekHelper();
 
-    List<Task> reloaded = PersistentWork.read(em -> tasks.stream().map(t -> PersistentWork.reload(t)).collect(Collectors.toList()));
+    List<Task> reloaded = persistentWork.read(em -> {
+      return tasks.stream().map(t -> persistentWork.reload(t)).collect(Collectors.toList());
+    });
 
     List<Task> tasksWithScheduledDate = reloaded.stream().filter(t -> t.getSchedule() != null)//
       .filter(t -> t.getSchedule().getScheduledDate() != null)//
@@ -236,9 +259,9 @@ public class PlanWeek extends BaseController<List<Task>> implements AppointmentR
   @FXML
   protected void onDelete() {
     TreeTableView<Task> tasksView = viewController.getTasksView();
-    PersistentWork.run(em -> {
+    persistentWork.run(session -> {
       Task task = tasksView.getSelectionModel().getSelectedItem().getValue();
-      em.remove(PersistentWork.reload(task));
+      session.remove(persistentWork.reload(task));
     });
     controller.reload();
   }

@@ -14,16 +14,25 @@
  */
 package de.ks.idnadrev.task.finish;
 
+import de.ks.flatjsondb.PersistentWork;
+import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.entity.WorkUnit;
+import de.ks.standbein.datasource.DataSource;
+
+import javax.inject.Inject;
 import java.util.SortedSet;
 import java.util.function.Consumer;
 
 public class FinishTaskDS implements DataSource<Task> {
   private Task task;
 
+  @Inject
+  PersistentWork persistentWork;
+
   @Override
   public Task loadModel(Consumer<Task> furtherProcessing) {
-    return PersistentWork.wrap(() -> {
-      Task reload = PersistentWork.reload(task, t -> t.getWorkUnits().forEach(u -> u.getStart()));
+    return persistentWork.read(session -> {
+      Task reload = persistentWork.reload(task);
 
       SortedSet<WorkUnit> workUnits = reload.getWorkUnits();
       if (!workUnits.isEmpty()) {
@@ -37,8 +46,8 @@ public class FinishTaskDS implements DataSource<Task> {
 
   @Override
   public void saveModel(Task model, Consumer<Task> beforeSaving) {
-    PersistentWork.wrap(() -> {
-      Task reload = PersistentWork.reload(model);
+    persistentWork.run(session -> {
+      Task reload = persistentWork.reload(model);
       beforeSaving.accept(reload);
     });
   }

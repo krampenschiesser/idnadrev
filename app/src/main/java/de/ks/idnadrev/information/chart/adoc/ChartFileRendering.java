@@ -15,21 +15,12 @@
  */
 package de.ks.idnadrev.information.chart.adoc;
 
-import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.chart.Chart;
-import javafx.scene.image.WritableImage;
-import javafx.scene.layout.StackPane;
-import javafx.stage.Popup;
+import de.ks.executor.JavaFXExecutorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.imageio.ImageIO;
 import javax.inject.Inject;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.nio.file.Path;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 public class ChartFileRendering {
   private static final Logger log = LoggerFactory.getLogger(ChartFileRendering.class);
@@ -39,39 +30,39 @@ public class ChartFileRendering {
   JavaFXExecutorService fxExecutorService;
 
   public void renderToFile(Long id, Path tempFilePath) {
-    ChartInfo chartInfo = PersistentWork.byId(ChartInfo.class, id);
-    if (chartInfo != null) {
-      log.debug("Rendering chart {} to file {}", id, tempFilePath);
-
-      Future<WritableImage> future = fxExecutorService.submit(() -> {
-        ChartPreviewHelper helper = new ChartPreviewHelper(null);
-        Chart chart = helper.createNewChart(chartInfo);
-        chart.setPrefWidth(RENDERED_WIDTH);
-
-        StackPane pane = new StackPane(chart);
-        Popup popup = new Popup();
-        popup.getContent().add(pane);
-
-        return pane.snapshot(null, null);
-      });
-
-      try {
-        WritableImage image = future.get();
-
-        BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
-        try {
-          ImageIO.write(bufferedImage, IMAGE_FORMAT, tempFilePath.toFile());
-        } catch (IOException e) {
-          log.error("Could not write image {}", tempFilePath, e);
-        }
-      } catch (InterruptedException e) {
-        //
-      } catch (ExecutionException e) {
-        throw new RuntimeException(e.getCause());
-      }
-    } else {
-      log.warn("No chart found for ID {}", id);
-    }
+//    ChartInfo chartInfo = PersistentWork.byId(ChartInfo.class, id);
+//    if (chartInfo != null) {
+//      log.debug("Rendering chart {} to file {}", id, tempFilePath);
+//
+//      Future<WritableImage> future = fxExecutorService.submit(() -> {
+//        ChartPreviewHelper helper = new ChartPreviewHelper(null);
+//        Chart chart = helper.createNewChart(chartInfo);
+//        chart.setPrefWidth(RENDERED_WIDTH);
+//
+//        StackPane pane = new StackPane(chart);
+//        Popup popup = new Popup();
+//        popup.getContent().add(pane);
+//
+//        return pane.snapshot(null, null);
+//      });
+//
+//      try {
+//        WritableImage image = future.get();
+//
+//        BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
+//        try {
+//          ImageIO.write(bufferedImage, IMAGE_FORMAT, tempFilePath.toFile());
+//        } catch (IOException e) {
+//          log.error("Could not write image {}", tempFilePath, e);
+//        }
+//      } catch (InterruptedException e) {
+//        //
+//      } catch (ExecutionException e) {
+//        throw new RuntimeException(e.getCause());
+//      }
+//    } else {
+//      log.warn("No chart found for ID {}", id);
+//    }
   }
 
 }

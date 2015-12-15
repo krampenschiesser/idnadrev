@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,6 +15,11 @@
  */
 package de.ks.idnadrev.overview;
 
+import de.ks.flatjsondb.PersistentWork;
+import de.ks.idnadrev.entity.Thought;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.validation.validators.NotEmptyValidator;
+import de.ks.text.AsciiDocEditor;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -22,12 +27,16 @@ import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 
 public class OverviewAddThoughtController extends BaseController<OverviewModel> {
   private static final Logger log = LoggerFactory.getLogger(OverviewAddThoughtController.class);
+
+  @Inject
+  PersistentWork persistentWork;
 
   @FXML
   protected TextField name;
@@ -40,11 +49,11 @@ public class OverviewAddThoughtController extends BaseController<OverviewModel> 
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    AsciiDocEditor.load(descriptionContainer.getChildren()::add, this::setDescription);
+    AsciiDocEditor.load(activityInitialization, descriptionContainer.getChildren()::add, this::setDescription);
 
-    validationRegistry.registerValidator(name, new NotEmptyValidator());
-    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator(Thought.class));
-
+    validationRegistry.registerValidator(name, new NotEmptyValidator(localized));
+//    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator(Thought.class));
+//FIXME
     save.disableProperty().bind(validationRegistry.invalidProperty());
 
   }
@@ -61,7 +70,7 @@ public class OverviewAddThoughtController extends BaseController<OverviewModel> 
 
     CompletableFuture.runAsync(() -> {
       Thought thought = new Thought(nameText);
-      PersistentWork.persist(thought.setDescription(descriptionText));
+      persistentWork.persist(thought.setDescription(descriptionText));
     }, controller.getExecutorService())//
       .thenRunAsync(() -> {
         name.setText("");

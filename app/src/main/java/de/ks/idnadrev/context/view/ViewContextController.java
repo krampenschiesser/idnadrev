@@ -14,6 +14,13 @@
  */
 package de.ks.idnadrev.context.view;
 
+import de.ks.fxcontrols.cell.ConvertingListCell;
+import de.ks.idnadrev.context.create.CreateContextActivity;
+import de.ks.idnadrev.entity.Context;
+import de.ks.idnadrev.entity.Task;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.activity.ActivityHint;
+import de.ks.standbein.reflection.PropertyPath;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.collections.FXCollections;
@@ -30,7 +37,7 @@ import java.util.ResourceBundle;
 
 public class ViewContextController extends BaseController<List<Context>> {
   private static final Logger log = LoggerFactory.getLogger(ViewContextController.class);
-  private static final String key_context = PropertyPath.property(Task.class, t -> t.getContext());
+  private static final String key_context = PropertyPath.property(Task.class, Task::getContext);
   @FXML
   protected ListView<Context> contextList;
   @FXML
@@ -98,19 +105,19 @@ public class ViewContextController extends BaseController<List<Context>> {
   void onDelete() {
     Context item = contextList.getSelectionModel().getSelectedItem();
     store.executeCustomRunnable(() -> {
-      PersistentWork.run(em -> {
-        Context reload = PersistentWork.reload(item);
-
-        CriteriaBuilder builder = em.getCriteriaBuilder();
-        CriteriaUpdate<Task> update = builder.createCriteriaUpdate(Task.class);
-        Root<Task> root = update.from(Task.class);
-        Path<Context> contextPath = root.get(key_context);
-        update.set(contextPath, builder.nullLiteral(Context.class));
-        update.where(builder.equal(contextPath, reload));
-
-        em.createQuery(update).executeUpdate();
-        em.remove(reload);
-      });
+//      PersistentWork.run(em -> {FIXME
+//        Context reload = PersistentWork.reload(item);
+//
+//        CriteriaBuilder builder = em.getCriteriaBuilder();
+//        CriteriaUpdate<Task> update = builder.createCriteriaUpdate(Task.class);
+//        Root<Task> root = update.from(Task.class);
+//        Path<Context> contextPath = root.get(key_context);
+//        update.set(contextPath, builder.nullLiteral(Context.class));
+//        update.where(builder.equal(contextPath, reload));
+//
+//        em.createQuery(update).executeUpdate();
+//        em.remove(reload);
+//      });
     });
     store.reload();
   }

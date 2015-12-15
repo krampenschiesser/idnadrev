@@ -14,6 +14,15 @@
  */
 package de.ks.idnadrev.task.choosenext;
 
+import de.ks.flatadocdb.entity.NamedEntity;
+import de.ks.flatjsondb.PersistentWork;
+import de.ks.idnadrev.entity.Context;
+import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.task.work.WorkOnTaskActivity;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.activity.ActivityHint;
+import de.ks.standbein.validation.validators.IntegerRangeValidator;
+import de.ks.standbein.validation.validators.NotEmptyValidator;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -42,6 +51,8 @@ public class ChooseNextTaskController extends BaseController<List<Task>> {
 
   @Inject
   NextTaskChooser chooser;
+  @Inject
+  PersistentWork persistentWork;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -74,14 +85,14 @@ public class ChooseNextTaskController extends BaseController<List<Task>> {
       }
     });
 
-    validationRegistry.registerValidator(availableTime, new IntegerRangeValidator(3, 60 * 12));
-    validationRegistry.registerValidator(availableTime, new NotEmptyValidator());
+    validationRegistry.registerValidator(availableTime, new IntegerRangeValidator(localized, 3, 60 * 12));
+    validationRegistry.registerValidator(availableTime, new NotEmptyValidator(localized));
 
   }
 
   @Override
   public void onResume() {
-    List<String> names = PersistentWork.projection(Context.class, false, c -> c.getName());
+    List<String> names = persistentWork.projection(Context.class, NamedEntity::getName);
     contextSelection.setItems(FXCollections.observableArrayList(names));
 
     onChooseTask();

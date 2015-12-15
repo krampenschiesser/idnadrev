@@ -117,4 +117,8 @@ public class PersistentWork {
   public <E extends NamedEntity> E forName(Class<E> clazz, String name) {
     return read(session -> session.findByNaturalId(clazz, name));
   }
+
+  public <E, V> List<V> projection(Class<E> clazz, Function<E, V> projection) {
+    return read(session -> from(clazz).stream().map(projection).collect(Collectors.toList()));
+  }
 }

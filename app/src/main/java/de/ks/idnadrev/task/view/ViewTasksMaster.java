@@ -21,9 +21,7 @@ import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.TaskState;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.datasource.DataSource;
-import de.ks.standbein.i18n.Localized;
 import javafx.application.Platform;
-import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
@@ -70,10 +68,11 @@ public class ViewTasksMaster extends BaseController<List<Task>> {
 
   protected final ObservableList<Task> tasks = FXCollections.observableArrayList();
   private Map<Task, TreeItem<Task>> task2TreeItem = new HashMap<>();
-  private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern(Localized.get("fullDate"));
+  private DateTimeFormatter dateFormat;
 
   private Predicate<Task> filter = t -> true;
-  private PopOver popOver;
+  // FIXME: 12/15/15
+//  private PopOver popOver;
   private ChangeListener<Boolean> hideOnFocusLeave;
 
   @Override
@@ -83,6 +82,7 @@ public class ViewTasksMaster extends BaseController<List<Task>> {
     };
     searchField.textProperty().addListener(listener);
     contextSelection.getSelectionModel().selectedItemProperty().addListener(listener);
+    dateFormat = DateTimeFormatter.ofPattern(localized.get("fullDate"));
 
     taskViewNameColumn.setCellFactory(param -> {
       TreeTableCell<Task, Task> cell = new TreeTableCell<Task, Task>() {
@@ -122,11 +122,11 @@ public class ViewTasksMaster extends BaseController<List<Task>> {
       return new SimpleStringProperty(formatted);
     });
 
-    CompletableFuture.supplyAsync(() -> PersistentWork.from(Context.class).stream().map(c -> c.getName()).collect(Collectors.toList()), controller.getExecutorService())//
+    CompletableFuture.supplyAsync(() -> persistentWork.from(Context.class).stream().map(c -> c.getName()).collect(Collectors.toList()), controller.getExecutorService())//
       .thenAcceptAsync(contextNames -> {
         ObservableList<String> items = FXCollections.observableArrayList(contextNames);
         items.add(0, "");
-        items.add(1, Localized.get("all"));
+        items.add(1, localized.get("all"));
         contextSelection.setItems(items);
         contextSelection.getSelectionModel().select(1);
       }, controller.getJavaFXExecutor());
@@ -138,30 +138,31 @@ public class ViewTasksMaster extends BaseController<List<Task>> {
       }
     });
 
-    this.hideOnFocusLeave = (fp, fo, fn) -> {
-      if (!fn && popOver != null) {
-        boolean needsToKeepFocus = activityInitialization.getControllerInstance(TaskFilterView.class).needsToKeepFocus();
-        if (!needsToKeepFocus) {
-          popOver.hide();
-        }
-      }
-    };
-
-    moreBtn.sceneProperty().addListener((p, o, n) -> {
-      if (n == null && popOver != null) {
-        popOver.hide();
-        if (o != null) {
-          o.getWindow().focusedProperty().removeListener(this.hideOnFocusLeave);
-        }
-      } else if (n != null) {
-        ReadOnlyBooleanProperty focused = moreBtn.getScene().getWindow().focusedProperty();
-        log.info("Hiding popover because focus left scene");
-        focused.removeListener(this.hideOnFocusLeave);
-        focused.addListener(this.hideOnFocusLeave);
-      } else if (n == null && o != null) {
-        o.getWindow().focusedProperty().removeListener(this.hideOnFocusLeave);
-      }
-    });
+    // FIXME: 12/15/15
+//    this.hideOnFocusLeave = (fp, fo, fn) -> {
+//      if (!fn && popOver != null) {
+//        boolean needsToKeepFocus = activityInitialization.getControllerInstance(TaskFilterView.class).needsToKeepFocus();
+//        if (!needsToKeepFocus) {
+//          popOver.hide();
+//        }
+//      }
+//    };
+//
+//    moreBtn.sceneProperty().addListener((p, o, n) -> {
+//      if (n == null && popOver != null) {
+//        popOver.hide();
+//        if (o != null) {
+//          o.getWindow().focusedProperty().removeListener(this.hideOnFocusLeave);
+//        }
+//      } else if (n != null) {
+//        ReadOnlyBooleanProperty focused = moreBtn.getScene().getWindow().focusedProperty();
+//        log.info("Hiding popover because focus left scene");
+//        focused.removeListener(this.hideOnFocusLeave);
+//        focused.addListener(this.hideOnFocusLeave);
+//      } else if (n == null && o != null) {
+//        o.getWindow().focusedProperty().removeListener(this.hideOnFocusLeave);
+//      }
+//    });
   }
 
   protected void refreshFilter() {
@@ -175,7 +176,7 @@ public class ViewTasksMaster extends BaseController<List<Task>> {
     return task -> {
       boolean forceNullFilter = contextSelection.getValue() != null && contextSelection.getValue().trim().isEmpty();
       Predicate<Context> filter;
-      if (contextSelection.getValue() == null || contextSelection.getValue().trim().equals(Localized.get("all"))) {
+      if (contextSelection.getValue() == null || contextSelection.getValue().trim().equals(localized.get("all"))) {
         filter = null;
       } else {
         filter = ctx -> {
@@ -229,7 +230,7 @@ public class ViewTasksMaster extends BaseController<List<Task>> {
         return duration.toMinutes() + localized.get("duration.minutes");
       } else {
         long remainingMinutes = duration.minus(Duration.ofHours(hours)).toMinutes();
-        return String.format("%02d", hours) + ":" + String.format("%02d", remainingMinutes) + Localized.get("duration.hours.short");
+        return String.format("%02d", hours) + ":" + String.format("%02d", remainingMinutes) + localized.get("duration.hours.short");
       }
     }
   }
@@ -245,11 +246,12 @@ public class ViewTasksMaster extends BaseController<List<Task>> {
   public void showMoreFilters() {
     TaskFilterView filter = activityInitialization.getControllerInstance(TaskFilterView.class);
     Node filterView = activityInitialization.getViewForController(TaskFilterView.class);
-    popOver = new PopOver(filterView);
-    popOver.setDetachable(true);
-    popOver.setDetached(true);
-    popOver.setCornerRadius(4);
-    popOver.show(moreBtn);
+    // FIXME: 12/15/15
+//    popOver = new PopOver(filterView);
+//    popOver.setDetachable(true);
+//    popOver.setDetached(true);
+//    popOver.setCornerRadius(4);
+//    popOver.show(moreBtn);
   }
 
   @Override

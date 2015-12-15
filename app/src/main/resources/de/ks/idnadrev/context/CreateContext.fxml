@@ -21,7 +21,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.*?>
 <GridPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="de.ks.idnadrev.context.CreateContext">
+          fx:controller="de.ks.idnadrev.context.create.CreateContext">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="5.0"/>
         <ColumnConstraints halignment="CENTER" hgrow="NEVER" minWidth="10.0"/>

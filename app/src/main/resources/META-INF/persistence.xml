@@ -42,11 +42,11 @@
         <class>de.ks.idnadrev.entity.information.DiaryInfo</class>
         <class>de.ks.idnadrev.entity.information.UmlDiagramInfo</class>
 
-        <class>de.ks.idnadrev.entity.cost.Booking</class>
-        <class>de.ks.idnadrev.entity.cost.BookingPattern</class>
-        <class>de.ks.idnadrev.entity.cost.ScheduledBooking</class>
-        <class>de.ks.idnadrev.entity.cost.Account</class>
-        <class>de.ks.idnadrev.entity.cost.BookingCsvTemplate</class>
+        <class>de.ks.idnadrev.entity.cost.cost.Booking</class>
+        <class>de.ks.idnadrev.entity.cost.cost.BookingPattern</class>
+        <class>de.ks.idnadrev.entity.cost.cost.ScheduledBooking</class>
+        <class>de.ks.idnadrev.entity.cost.cost.Account</class>
+        <class>de.ks.idnadrev.entity.cost.cost.BookingCsvTemplate</class>
 
         <class>de.ks.blogging.grav.entity.GravBlog</class>
         <class>de.ks.gallery.entity.GalleryFavorite</class>

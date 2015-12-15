@@ -14,7 +14,9 @@
  */
 package de.ks.idnadrev.task.choosenext;
 
-@MenuItem(order = 25, value = "/main/task")
+import de.ks.standbein.activity.ActivityCfg;
+
+//@MenuItem(order = 25, value = "/main/task")
 public class ChooseNextTaskActivity extends ActivityCfg {
   public ChooseNextTaskActivity() {
     super(ChooseNextTaskDS.class, ChooseNextTaskController.class);

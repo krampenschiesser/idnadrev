@@ -15,6 +15,11 @@
  */
 package de.ks.idnadrev.overview;
 
+import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.task.choosenext.NextTaskChooser;
+import de.ks.idnadrev.task.work.WorkOnTaskActivity;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.activity.ActivityHint;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;

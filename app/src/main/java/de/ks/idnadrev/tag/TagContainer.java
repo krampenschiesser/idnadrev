@@ -23,24 +23,23 @@ import de.ks.standbein.application.fxml.DefaultLoader;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class TagContainer extends BaseController<Tagged> {
-  @FXML
-  protected NamedPersistentObjectSelection<Tag> tagAddController;
+  // FIXME: 12/15/15 
+//  @FXML
+//  protected NamedPersistentObjectSelection<Tag> tagAddController;
   @FXML
   protected StackPane tagSelectionContainer;
   @FXML
@@ -48,19 +47,22 @@ public class TagContainer extends BaseController<Tagged> {
 
   @Inject
   protected PersistentWork persistentWork;
+  @Inject
+  protected Provider<DefaultLoader> loaderProvider;
 
   protected final ObservableSet<String> currentTags = FXCollections.observableSet(new TreeSet<String>());
   protected boolean readOnly = false;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    tagAddController.from(Tag.class);
-    tagAddController.setHideOnSingleClick(true);
-    tagAddController.setOnAction(e -> {
-      TextField input = tagAddController.getInput();
-      addTag(input.getText());
-      input.clear();
-    });
+//    tagAddController.from(Tag.class);
+//    tagAddController.setHideOnSingleClick(true);
+//    tagAddController.setOnAction(e -> {
+//      TextField input = tagAddController.getInput();
+//      addTag(input.getText());
+//      input.clear();
+//    });
+    // FIXME: 12/15/15 
     currentTags.addListener(this::onTagsChanged);
   }
 
@@ -68,8 +70,7 @@ public class TagContainer extends BaseController<Tagged> {
     String addedTag = change.getElementAdded();
     if (addedTag != null) {
       CompletableFuture.supplyAsync(() -> {
-        DefaultLoader<GridPane, TagInfo> loader = new DefaultLoader<>(TagInfo.class);
-        loader.load();
+        DefaultLoader<GridPane, TagInfo> loader = loaderProvider.get().load(TagInfo.class);
         return loader;
       }, controller.getExecutorService()).thenAcceptAsync((loader) -> {
 //        currentTags.add(addedTag);
@@ -141,14 +142,14 @@ public class TagContainer extends BaseController<Tagged> {
       return super.extractFromEvent(e);
     }
   }
-
-  public TextField getInput() {
-    return tagAddController.getInput();
-  }
-
-  public EventHandler<ActionEvent> getOnAction() {
-    return tagAddController.getOnAction();
-  }
+// FIXME: 12/15/15 
+//  public TextField getInput() {
+//    return tagAddController.getInput();
+//  }
+//
+//  public EventHandler<ActionEvent> getOnAction() {
+//    return tagAddController.getOnAction();
+//  }
 
   public boolean isReadOnly() {
     return readOnly;

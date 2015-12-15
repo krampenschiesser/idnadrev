@@ -14,13 +14,10 @@
  */
 package de.ks.idnadrev.task.view;
 
-import de.ks.flatjsondb.PersistentWork;
 import de.ks.idnadrev.entity.Task;
-import de.ks.idnadrev.entity.TaskState;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.javafx.event.ChainedEventHandler;
 import de.ks.standbein.javafx.event.ClearTextOnEscape;
-import de.ks.standbein.reflection.PropertyPath;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
@@ -28,14 +25,14 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class TaskFilterView extends BaseController<Void> {
   @FXML
   protected TextField description;
-  @FXML
-  protected NamedPersistentObjectSelection<Task> parentProjectController;
+  // FIXME: 12/15/15 
+//  @FXML
+//  protected NamedPersistentObjectSelection<Task> parentProjectController;
   @FXML
   protected CheckBox showAsap;
   @FXML
@@ -55,17 +52,18 @@ public class TaskFilterView extends BaseController<Void> {
       }
     });
     description.setOnKeyReleased(clearOrHide);
-    parentProjectController.getInput().setOnKeyReleased(clearOrHide);
-
-    String projectKey = PropertyPath.property(Task.class, (t) -> t.isProject());
-    parentProjectController.from(Task.class, (root, query, builder) -> {
-      query.where(builder.isTrue(root.get(projectKey)));
-    }).enableValidation();
-    parentProjectController.hideBrowserBtn();
-
-
-    parentProjectController.selectedValueProperty().addListener((p, o, n) -> triggerFilter());
-    parentProjectController.getInput().textProperty().addListener((p, o, n) -> triggerFilter());
+    // FIXME: 12/15/15 
+//    parentProjectController.getInput().setOnKeyReleased(clearOrHide);
+//
+//    String projectKey = PropertyPath.property(Task.class, (t) -> t.isProject());
+//    parentProjectController.from(Task.class, (root, query, builder) -> {
+//      query.where(builder.isTrue(root.get(projectKey)));
+//    }).enableValidation();
+//    parentProjectController.hideBrowserBtn();
+//
+//
+//    parentProjectController.selectedValueProperty().addListener((p, o, n) -> triggerFilter());
+//    parentProjectController.getInput().textProperty().addListener((p, o, n) -> triggerFilter());
     description.textProperty().addListener((p, o, n) -> triggerFilter());
     showAsap.selectedProperty().addListener((p, o, n) -> triggerFilter());
     showLater.selectedProperty().addListener((p, o, n) -> triggerFilter());
@@ -74,63 +72,67 @@ public class TaskFilterView extends BaseController<Void> {
     showDefault.selectedProperty().addListener((p, o, n) -> triggerFilter());
   }
 
-  public boolean needsToKeepFocus() {
-    return parentProjectController.isSelectingProject();
-  }
+  // FIXME: 12/15/15 
+//  public boolean needsToKeepFocus() {
+//    return parentProjectController.isSelectingProject();
+//  }
 
   private void triggerFilter() {
     controller.reload();
   }
 
   public void applyFilterOnDS(ViewTasksDS datasource) {
-    datasource.setFilter((root, query, builder) -> {
-      ArrayList<Predicate> predicates = new ArrayList<>();
-
-      String descriptionText = description.textProperty().getValueSafe().trim();
-      if (!descriptionText.isEmpty()) {
-        Path<String> desc = root.get(PropertyPath.property(Task.class, t -> t.getDescription()));
-        Predicate like = builder.like(builder.lower(desc), "%" + descriptionText + "%");
-        predicates.add(like);
-      }
-
-      Path<String> statePath = root.get(PropertyPath.property(Task.class, t -> t.getState()));
-      ArrayList<Predicate> stateOrCombination = new ArrayList<>();
-
-      if (showDefault.isSelected()) {
-        stateOrCombination.add(builder.equal(statePath, TaskState.NONE));
-      }
-      if (showAsap.isSelected()) {
-        stateOrCombination.add(builder.equal(statePath, TaskState.ASAP));
-      }
-      if (showLater.isSelected()) {
-        stateOrCombination.add(builder.equal(statePath, TaskState.LATER));
-      }
-      if (showDelegated.isSelected()) {
-        stateOrCombination.add(builder.equal(statePath, TaskState.DELEGATED));
-      }
-      Predicate or = builder.or(stateOrCombination.toArray(new Predicate[stateOrCombination.size()]));
-      predicates.add(or);
-
-      String finishTime = PropertyPath.property(Task.class, (t) -> t.getFinishTime());
-      if (!showFinished.isSelected()) {
-        predicates.add(root.get(finishTime).isNull());
-      }
-
-      if (parentProjectController.getSelectedValue() != null) {
-        Predicate parentNotNull = root.get(PropertyPath.property(Task.class, t -> t.getParent())).isNotNull();
-        Predicate isParent = builder.equal(root.get("id"), parentProjectController.getSelectedValue().getId());
-        predicates.add(builder.or(parentNotNull, isParent));
-      }
-      query.where(predicates.toArray(new Predicate[predicates.size()]));
-    });
+    // FIXME: 12/15/15 
+//    datasource.setFilter((root, query, builder) -> {
+//      ArrayList<Predicate> predicates = new ArrayList<>();
+//
+//      String descriptionText = description.textProperty().getValueSafe().trim();
+//      if (!descriptionText.isEmpty()) {
+//        Path<String> desc = root.get(PropertyPath.property(Task.class, t -> t.getDescription()));
+//        Predicate like = builder.like(builder.lower(desc), "%" + descriptionText + "%");
+//        predicates.add(like);
+//      }
+//
+//      Path<String> statePath = root.get(PropertyPath.property(Task.class, t -> t.getState()));
+//      ArrayList<Predicate> stateOrCombination = new ArrayList<>();
+//
+//      if (showDefault.isSelected()) {
+//        stateOrCombination.add(builder.equal(statePath, TaskState.NONE));
+//      }
+//      if (showAsap.isSelected()) {
+//        stateOrCombination.add(builder.equal(statePath, TaskState.ASAP));
+//      }
+//      if (showLater.isSelected()) {
+//        stateOrCombination.add(builder.equal(statePath, TaskState.LATER));
+//      }
+//      if (showDelegated.isSelected()) {
+//        stateOrCombination.add(builder.equal(statePath, TaskState.DELEGATED));
+//      }
+//      Predicate or = builder.or(stateOrCombination.toArray(new Predicate[stateOrCombination.size()]));
+//      predicates.add(or);
+//
+//      String finishTime = PropertyPath.property(Task.class, (t) -> t.getFinishTime());
+//      if (!showFinished.isSelected()) {
+//        predicates.add(root.get(finishTime).isNull());
+//      }
+//
+//      if (parentProjectController.getSelectedValue() != null) {
+//        Predicate parentNotNull = root.get(PropertyPath.property(Task.class, t -> t.getParent())).isNotNull();
+//        Predicate isParent = builder.equal(root.get("id"), parentProjectController.getSelectedValue().getId());
+//        predicates.add(builder.or(parentNotNull, isParent));
+//      }
+//      query.where(predicates.toArray(new Predicate[predicates.size()]));
+//    });
   }
 
   public Task getParentTask() {
-    String parentProjectName = parentProjectController.getInput().textProperty().getValueSafe().trim();
-    if (parentProjectController.getSelectedValue() == null && !parentProjectName.isEmpty()) {
-      return PersistentWork.forName(Task.class, parentProjectName);
-    }
-    return parentProjectController.getSelectedValue();
+    // FIXME: 12/15/15 
+//    String parentProjectName = parentProjectController.getInput().textProperty().getValueSafe().trim();
+//    if (parentProjectController.getSelectedValue() == null && !parentProjectName.isEmpty()) {
+//      return PersistentWork.forName(Task.class, parentProjectName);
+//    }
+//    return parentProjectController.getSelectedValue();
+    return null;
   }
 
 }

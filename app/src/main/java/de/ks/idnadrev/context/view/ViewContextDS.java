@@ -14,13 +14,21 @@
  */
 package de.ks.idnadrev.context.view;
 
+import de.ks.flatjsondb.PersistentWork;
+import de.ks.idnadrev.entity.Context;
+import de.ks.standbein.datasource.ListDataSource;
+
+import javax.inject.Inject;
 import java.util.List;
 import java.util.function.Consumer;
 
 public class ViewContextDS implements ListDataSource<Context> {
+  @Inject
+  PersistentWork persistentWork;
+
   @Override
   public List<Context> loadModel(Consumer<List<Context>> furtherProcessing) {
-    return PersistentWork.from(Context.class);
+    return persistentWork.from(Context.class);
   }
 
   @Override

@@ -15,7 +15,9 @@
  */
 package de.ks.idnadrev.overview;
 
-@MenuItem(value = "/main/overview", order = 0)
+import de.ks.standbein.activity.ActivityCfg;
+
+//@MenuItem(value = "/main/overview", order = 0)
 public class OverviewActivity extends ActivityCfg {
   public OverviewActivity() {
     super(OverviewDS.class, OverviewController.class);

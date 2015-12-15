@@ -14,35 +14,32 @@
  */
 package de.ks.idnadrev.task.create;
 
+import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.entity.TaskState;
+import de.ks.idnadrev.thought.view.ViewThoughtsActivity;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.activity.ActivityHint;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 
-import javax.inject.Inject;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.function.Supplier;
 
-public class CreateTask implements Initializable {
+public class CreateTask extends BaseController<Task> {
   @FXML
   MainTaskInfo mainInfoController;
   @FXML
   TaskOutcome expectedOutcomeController;
   @FXML
   EffortInfo effortInfoController;
-  @FXML
-  FileViewController fileViewController;
+  // FIXME: 12/15/15 
+//  @FXML
+//  FileViewController fileViewController;
   @FXML
   TaskSchedule scheduleController;
   @FXML
   Button saveBtn;
-
-  @Inject
-  protected ActivityController controller;
-  @Inject
-  protected ActivityStore store;
-  @Inject
-  protected ValidationRegistry validationRegistry;
 
   @FXML
   public void save() {

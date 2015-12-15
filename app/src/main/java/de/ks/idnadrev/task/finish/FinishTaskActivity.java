@@ -14,6 +14,8 @@
  */
 package de.ks.idnadrev.task.finish;
 
+import de.ks.standbein.activity.ActivityCfg;
+
 public class FinishTaskActivity extends ActivityCfg {
   public FinishTaskActivity() {
     super(FinishTaskDS.class, FinishTask.class);

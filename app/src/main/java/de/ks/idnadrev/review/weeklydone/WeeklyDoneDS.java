@@ -14,6 +14,13 @@
  */
 package de.ks.idnadrev.review.weeklydone;
 
+import de.ks.fxcontrols.weekview.WeekHelper;
+import de.ks.fxcontrols.weekview.WeekViewAppointment;
+import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.entity.WorkUnit;
+import de.ks.standbein.activity.ActivityController;
+import de.ks.standbein.datasource.ListDataSource;
+import de.ks.standbein.imagecache.Images;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.image.Image;
@@ -26,6 +33,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -57,16 +65,21 @@ public class WeeklyDoneDS implements ListDataSource<WeekViewAppointment<Task>> {
 
   protected List<WeekViewAppointment<Task>> getWorkUnits() {
     WeeklyDoneAppointmentView doneView = controller.getControllerInstance(WeeklyDoneAppointmentView.class);
-    List<WorkUnit> workUnits = PersistentWork.from(WorkUnit.class, (root, query, builder) -> {
-      Path start = root.get(PropertyPath.property(WorkUnit.class, unit -> unit.getStart()));
-      Path end = root.get(PropertyPath.property(WorkUnit.class, unit -> unit.getEnd()));
 
-      @SuppressWarnings("unchecked") Predicate greaterThan = builder.greaterThan(start, beginDate);
-      @SuppressWarnings("unchecked") Predicate lessThan = builder.lessThan(end, endDate);
-      Predicate workUnitEnded = builder.isNotNull(end);
-
-      query.where(greaterThan, lessThan, workUnitEnded);
-    }, unit -> unit.getTask().getName());
+    List<WorkUnit> workUnits = Collections.emptyList();
+    // FIXME: 12/15/15
+//    List<WorkUnit> workUnits = PersistentWork.from(WorkUnit.class, (root, query, builder) -> {
+//      Path start = root.get(PropertyPath.property(WorkUnit.class, unit -> unit.getStart()));
+//      Path end = root.get(PropertyPath.property(WorkUnit.class, unit -> unit.getEnd()));
+//
+//      @SuppressWarnings("unchecked")
+//      Predicate greaterThan = builder.greaterThan(start, beginDate);
+//      @SuppressWarnings("unchecked")
+//      Predicate lessThan = builder.lessThan(end, endDate);
+//      Predicate workUnitEnded = builder.isNotNull(end);
+//
+//      query.where(greaterThan, lessThan, workUnitEnded);
+//    }, unit -> unit.getTask().getName());
     log.debug("Found {} workunits for the given range {} - {}", workUnits.size(), beginDate, endDate);
 
     return workUnits.stream().map(unit -> {
@@ -81,14 +94,15 @@ public class WeeklyDoneDS implements ListDataSource<WeekViewAppointment<Task>> {
 
   protected List<WeekViewAppointment<Task>> getFinshedTaskAppointments(List<WeekViewAppointment<Task>> appointments) {
     WeeklyDoneAppointmentView doneView = controller.getControllerInstance(WeeklyDoneAppointmentView.class);
-
-    List<Task> finishedTasks = PersistentWork.from(Task.class, (root, query, builder) -> {
-      Path finishTime = root.get(PropertyPath.property(Task.class, task -> task.getFinishTime()));
-      Predicate finished = builder.isNotNull(finishTime);
-      @SuppressWarnings("unchecked") Predicate greaterThan = builder.greaterThan(finishTime, beginDate);
-      @SuppressWarnings("unchecked") Predicate lessThan = builder.lessThan(finishTime, endDate);
-      query.where(greaterThan, lessThan, finished);
-    }, null);
+    List<Task> finishedTasks = Collections.emptyList();
+// FIXME: 12/15/15
+//    List<Task> finishedTasks = PersistentWork.from(Task.class, (root, query, builder) -> {
+//      Path finishTime = root.get(PropertyPath.property(Task.class, task -> task.getFinishTime()));
+//      Predicate finished = builder.isNotNull(finishTime);
+//      @SuppressWarnings("unchecked") Predicate greaterThan = builder.greaterThan(finishTime, beginDate);
+//      @SuppressWarnings("unchecked") Predicate lessThan = builder.lessThan(finishTime, endDate);
+//      query.where(greaterThan, lessThan, finished);
+//    }, null);
     log.debug("Found {} finished tasks for the given range {} - {}", finishedTasks.size(), beginDate, endDate);
 
 

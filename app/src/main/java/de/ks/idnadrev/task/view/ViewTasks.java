@@ -23,7 +23,6 @@ import de.ks.idnadrev.task.finish.FinishTaskActivity;
 import de.ks.idnadrev.task.work.WorkOnTaskActivity;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.activity.ActivityHint;
-import de.ks.standbein.i18n.Localized;
 import de.ks.text.view.AsciiDocContent;
 import de.ks.text.view.AsciiDocViewer;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -147,7 +146,7 @@ public class ViewTasks extends BaseController<List<Task>> {
     if (taskTreeItem != null) {
       Task task = taskTreeItem.getValue();
       log.info("Applying task {}", task);
-      if (task.getId() >= 0) {
+      if (task.getId() != null) {
         disable.set(false);
       }
       name.setText(task.getName());
@@ -184,10 +183,10 @@ public class ViewTasks extends BaseController<List<Task>> {
     } else {
       long hours = duration.toHours();
       if (hours == 0 && useShortFormat) {
-        return duration.toMinutes() + Localized.get("duration.minutes");
+        return duration.toMinutes() + localized.get("duration.minutes");
       } else {
         long remainingMinutes = duration.minus(Duration.ofHours(hours)).toMinutes();
-        return String.format("%02d", hours) + ":" + String.format("%02d", remainingMinutes) + Localized.get("duration.hours.short");
+        return String.format("%02d", hours) + ":" + String.format("%02d", remainingMinutes) + localized.get("duration.hours.short");
       }
     }
   }
@@ -224,7 +223,7 @@ public class ViewTasks extends BaseController<List<Task>> {
     Stage stage = new Stage();
     stage.initModality(Modality.APPLICATION_MODAL);
     stage.initOwner(this.show.getScene().getWindow());
-    stage.setTitle(Localized.get("workunits"));
+    stage.setTitle(localized.get("workunits"));
 
     WorkUnitController workUnitController = controller.getControllerInstance(WorkUnitController.class);
     Task value = viewController.getTasksView().getSelectionModel().getSelectedItem().getValue();

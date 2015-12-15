@@ -16,6 +16,13 @@ package de.ks.idnadrev.information.chart;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import de.ks.idnadrev.entity.information.ChartData;
+import de.ks.idnadrev.entity.information.ChartInfo;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.i18n.Localized;
+import de.ks.standbein.validation.ValidationMessage;
+import de.ks.standbein.validation.validators.DoubleValidator;
+import de.ks.standbein.validation.validators.NotEmptyValidator;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
