@@ -16,7 +16,6 @@ package de.ks.idnadrev.task.create;
 
 import de.ks.flatadocdb.entity.NamedEntity;
 import de.ks.flatjsondb.PersistentWork;
-import de.ks.idnadrev.entity.Context;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.TaskState;
 import de.ks.idnadrev.tag.TagContainer;
@@ -24,7 +23,6 @@ import de.ks.standbein.BaseController;
 import de.ks.standbein.reflection.PropertyPath;
 import de.ks.standbein.validation.validators.DurationValidator;
 import de.ks.text.AsciiDocEditor;
-import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -33,22 +31,19 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
-import javafx.util.Callback;
 
 import javax.inject.Inject;
 import java.net.URL;
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
 public class MainTaskInfo extends BaseController<Task> {
-  @FXML
-  protected NamedPersistentObjectSelection<Task> parentProjectController;
-  @FXML
-  protected NamedPersistentObjectSelection<Context> contextController;
+  //  @FXML
+//  protected NamedPersistentObjectSelection<Task> parentProjectController;
+//  @FXML
+//  protected NamedPersistentObjectSelection<Context> contextController;
+// FIXME: 12/17/15 
   @FXML
   protected TagContainer tagAddController;
 
@@ -74,8 +69,9 @@ public class MainTaskInfo extends BaseController<Task> {
   public void initialize(URL location, ResourceBundle resources) {
     AsciiDocEditor.load(activityInitialization, descriptionContainer.getChildren()::add, ade -> this.description = ade);
 
-    validationRegistry.registerBeanValidationValidator(name, Task.class, PropertyPath.of(Task.class, t -> t.getName()).getPropertyPath());
-    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(Task.class, t -> t.getId() == store.<Task>getModel().getId()));
+    // FIXME: 12/17/15 
+//    validationRegistry.registerBeanValidationValidator(name, Task.class, PropertyPath.of(Task.class, t -> t.getName()).getPropertyPath());
+//    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(Task.class, t -> t.getId() == store.<Task>getModel().getId()));
     description.hideActionBar();
     StringProperty nameBinding = store.getBinding().getStringProperty(Task.class, t -> t.getName());
     name.textProperty().bindBidirectional(nameBinding);
@@ -83,18 +79,19 @@ public class MainTaskInfo extends BaseController<Task> {
     descriptionBinding.bindBidirectional(description.textProperty());
 
     String projectKey = PropertyPath.property(Task.class, (t) -> t.isProject());
-    parentProjectController.from(Task.class, (root, query, builder) -> {
-      query.where(builder.isTrue(root.get(projectKey)));
-    }).enableValidation();
+    // FIXME: 12/17/15 
+//    parentProjectController.from(Task.class, (root, query, builder) -> {
+//      query.where(builder.isTrue(root.get(projectKey)));
+//    }).enableValidation();
+//
+//    contextController.from(Context.class).enableValidation();
 
-    contextController.from(Context.class).enableValidation();
-
-    durationValidator = new DurationValidator();
-
-    Platform.runLater(() -> {
-      Callback<AutoCompletionBinding.ISuggestionRequest, Collection<String>> estimatedTimeAutoCompletion = getEstimatedTimeAutoCompletion();
-      TextFields.bindAutoCompletion(estimatedTimeDuration, estimatedTimeAutoCompletion);
-    });
+    durationValidator = new DurationValidator(localized);
+// FIXME: 12/17/15 
+//    Platform.runLater(() -> {
+//      Callback<AutoCompletionBinding.ISuggestionRequest, Collection<String>> estimatedTimeAutoCompletion = getEstimatedTimeAutoCompletion();
+//      TextFields.bindAutoCompletion(estimatedTimeDuration, estimatedTimeAutoCompletion);
+//    });
     validationRegistry.registerValidator(estimatedTimeDuration, durationValidator);
 
     project.setText("");
@@ -109,17 +106,18 @@ public class MainTaskInfo extends BaseController<Task> {
 
   }
 
-  private Callback<AutoCompletionBinding.ISuggestionRequest, Collection<String>> getEstimatedTimeAutoCompletion() {
-    return param -> {
-      try {
-        String userText = param.getUserText().trim();
-        Integer.parseInt(userText);
-        return Arrays.asList(userText + "min", userText + "hours");
-      } catch (NumberFormatException e) {
-        return Collections.emptyList();
-      }
-    };
-  }
+  // FIXME: 12/17/15 
+//  private Callback<AutoCompletionBinding.ISuggestionRequest, Collection<String>> getEstimatedTimeAutoCompletion() {
+//    return param -> {
+//      try {
+//        String userText = param.getUserText().trim();
+//        Integer.parseInt(userText);
+//        return Arrays.asList(userText + "min", userText + "hours");
+//      } catch (NumberFormatException e) {
+//        return Collections.emptyList();
+//      }
+//    };
+//  }
 
   @Override
   protected void onRefresh(Task model) {
@@ -135,16 +133,17 @@ public class MainTaskInfo extends BaseController<Task> {
       long minutes = estimatedTime.toMinutes() % 60;
       estimatedTimeDuration.setText(hours + ":" + String.format("%02d", minutes));
     }
-    if (model.getContext() != null) {
-      contextController.getInput().setText(model.getContext().getName());
-    } else {
-      contextController.getInput().setText("");
-    }
-    if (model.getParent() != null) {
-      parentProjectController.getInput().setText(model.getParent().getName());
-    } else {
-      parentProjectController.getInput().setText("");
-    }
+    // FIXME: 12/17/15 
+//    if (model.getContext() != null) {
+//      contextController.getInput().setText(model.getContext().getName());
+//    } else {
+//      contextController.getInput().setText("");
+//    }
+//    if (model.getParent() != null) {
+//      parentProjectController.getInput().setText(model.getParent().getName());
+//    } else {
+//      parentProjectController.getInput().setText("");
+//    }
   }
 
   public Duration getEstimatedDuration() {
@@ -163,11 +162,12 @@ public class MainTaskInfo extends BaseController<Task> {
 
   @Override
   public void duringSave(Task task) {
-    String contextName = contextController.getInput().textProperty().getValueSafe().trim();
-    setToOne(task, Context.class, contextName, task::setContext);
-
-    String parentProject = parentProjectController.getInput().textProperty().getValueSafe().trim();
-    setToOne(task, Task.class, parentProject, task::setParent);
+//    String contextName = contextController.getInput().textProperty().getValueSafe().trim();
+//    setToOne(task, Context.class, contextName, task::setContext);
+//
+//    String parentProject = parentProjectController.getInput().textProperty().getValueSafe().trim();
+//    setToOne(task, Task.class, parentProject, task::setParent);
+    // FIXME: 12/17/15
 
     task.setEstimatedTime(getEstimatedDuration());
     task.setState(state.getValue());

@@ -14,6 +14,21 @@
  */
 package de.ks.idnadrev;
 
+import de.ks.idnadrev.information.diary.DiaryActivity;
+import de.ks.idnadrev.information.text.TextInfoActivity;
+import de.ks.idnadrev.information.uml.UmlDiagramActivity;
+import de.ks.idnadrev.information.view.InformationOverviewActivity;
+import de.ks.idnadrev.overview.OverviewActivity;
+import de.ks.idnadrev.review.planweek.PlanWeekActivity;
+import de.ks.idnadrev.review.weeklydone.WeeklyDoneActivity;
+import de.ks.idnadrev.task.choosenext.ChooseNextTaskActivity;
+import de.ks.idnadrev.task.create.CreateTaskActivity;
+import de.ks.idnadrev.task.fasttrack.FastTrackActivity;
+import de.ks.idnadrev.task.view.ViewTasksActvity;
+import de.ks.idnadrev.thought.add.AddThoughtActivity;
+import de.ks.idnadrev.thought.view.ViewThoughtsActivity;
+import de.ks.standbein.activity.ActivityController;
+import de.ks.standbein.activity.ActivityHint;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.input.KeyCode;
@@ -119,24 +134,25 @@ public class ButtonBar implements Initializable {
     controller.startOrResume(new ActivityHint(UmlDiagramActivity.class));
     hide();
   }
-
-  @FXML
-  public void bookingView() {
-    controller.startOrResume(new ActivityHint(BookingViewActivity.class));
-    hide();
-  }
-
-  @FXML
-  public void createAccount() {
-    controller.startOrResume(new ActivityHint(CreateAccountActivity.class));
-    hide();
-  }
-
-  @FXML
-  public void createBooking() {
-    controller.startOrResume(new ActivityHint(CreateBookingActivity.class));
-    hide();
-  }
+//
+//  @FXML
+//  public void bookingView() {
+//    controller.startOrResume(new ActivityHint(BookingViewActivity.class));
+//    hide();
+//  }
+//
+//  @FXML
+//  public void createAccount() {
+//    controller.startOrResume(new ActivityHint(CreateAccountActivity.class));
+//    hide();
+//  }
+//
+//  @FXML
+//  public void createBooking() {
+//    controller.startOrResume(new ActivityHint(CreateBookingActivity.class));
+//    hide();
+//  }
+  // FIXME: 12/17/15 
 
   public void show(Pane contentPane) {
     contentPane.getStyleClass().add("fadingContent");

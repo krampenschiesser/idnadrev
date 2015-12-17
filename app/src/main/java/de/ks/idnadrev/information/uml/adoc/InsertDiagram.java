@@ -15,6 +15,12 @@
  */
 package de.ks.idnadrev.information.uml.adoc;
 
+import de.ks.idnadrev.entity.information.UmlDiagramInfo;
+import de.ks.idnadrev.information.view.selection.uml.UmlSelectionActivity;
+import de.ks.idnadrev.information.view.selection.uml.UmlSelectionController;
+import de.ks.standbein.activity.ActivityController;
+import de.ks.standbein.activity.ActivityHint;
+import de.ks.text.command.AsciiDocEditorCommand;
 import javafx.scene.control.TextArea;
 
 import javax.inject.Inject;

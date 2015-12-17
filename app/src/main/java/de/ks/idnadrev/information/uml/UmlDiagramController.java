@@ -14,6 +14,12 @@
  */
 package de.ks.idnadrev.information.uml;
 
+import de.ks.executor.group.LastTextChange;
+import de.ks.idnadrev.entity.information.UmlDiagramInfo;
+import de.ks.idnadrev.tag.TagContainer;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.validation.validators.NotEmptyValidator;
+import de.ks.text.PersistentStoreBack;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
@@ -60,8 +66,8 @@ public class UmlDiagramController extends BaseController<UmlDiagramInfo> {
 
   @FXML
   protected TagContainer tagContainerController;
-  @FXML
-  protected CategorySelection categorySelectionController;
+//  @FXML
+//  protected CategorySelection categorySelectionController;
 
   protected WebView webView;
   protected WebView fullScreenWebView;
@@ -95,9 +101,9 @@ public class UmlDiagramController extends BaseController<UmlDiagramInfo> {
     StringProperty contentProperty = store.getBinding().getStringProperty(UmlDiagramInfo.class, t -> t.getContent());
     content.textProperty().bindBidirectional(contentProperty);
 
-    validationRegistry.registerValidator(name, new NotEmptyValidator());
-    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(UmlDiagramInfo.class, t -> t.getId() == store.<UmlDiagramInfo>getModel().getId()));
-
+    validationRegistry.registerValidator(name, new NotEmptyValidator(localized));
+//    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(UmlDiagramInfo.class, t -> t.getId() == store.<UmlDiagramInfo>getModel().getId()));
+// FIXME: 12/17/15 
     saveBtn.disableProperty().bind(validationRegistry.invalidProperty());
 
     lastTextChange = new LastTextChange(content, 750, controller.getExecutorService());
@@ -114,8 +120,8 @@ public class UmlDiagramController extends BaseController<UmlDiagramInfo> {
         .thenAcceptAsync(file -> showRenderedFile(file, webView), controller.getJavaFXExecutor());
     });
 
-
-    persistentStoreBack = new PersistentStoreBack(getClass().getSimpleName(), new File(Options.get(FileOptions.class).getFileStoreDir()));
+// FIXME: 12/17/15 
+//    persistentStoreBack = new PersistentStoreBack(getClass().getSimpleName(), new File(Options.get(FileOptions.class).getFileStoreDir()));
   }
 
   private void showRenderedFile(File file, WebView view) {
@@ -144,19 +150,20 @@ public class UmlDiagramController extends BaseController<UmlDiagramInfo> {
     super.onRefresh(model);
     File s = GraphvizUtils.getDotExe();
     if (s == null) {
-      Dialog dialog = new Dialog(saveBtn.getScene().getRoot(), Localized.get("install.graphviz"), true);
-
+      // FIXME: 12/17/15 
+//      Dialog dialog = new Dialog(saveBtn.getScene().getRoot(), localized.get("install.graphviz"), true);
+      Dialog dialog = new Dialog();
       GridPane gridPane = new GridPane();
       gridPane.setVgap(10);
-      Label label = new Label(Localized.get("install.graphviz.detailed"));
+      Label label = new Label(localized.get("install.graphviz.detailed"));
       Hyperlink link = new Hyperlink("http://www.graphviz.org/Download.php");
       link.setOnAction(e -> openGraphvizUrl());
 
       gridPane.add(label, 0, 0);
       gridPane.add(link, 0, 1);
       GridPane.setHalignment(link, HPos.CENTER);
-      dialog.setContent(gridPane);
-
+//      dialog.setContent(gridPane);
+// FIXME: 12/17/15 
       dialog.show();
     }
     if (content.textProperty().getValueSafe().trim().isEmpty()) {

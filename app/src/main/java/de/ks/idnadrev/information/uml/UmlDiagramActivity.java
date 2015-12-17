@@ -14,7 +14,9 @@
  */
 package de.ks.idnadrev.information.uml;
 
-@MenuItem(value = "/main/info", order = 33)
+import de.ks.standbein.activity.ActivityCfg;
+
+//@MenuItem(value = "/main/info", order = 33)
 public class UmlDiagramActivity extends ActivityCfg {
   public UmlDiagramActivity() {
     super(UmlDiagramDS.class, UmlDiagramController.class);

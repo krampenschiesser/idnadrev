@@ -15,11 +15,19 @@
  */
 package de.ks.idnadrev.information.view.preview;
 
+import de.ks.flatjsondb.PersistentWork;
+import de.ks.idnadrev.entity.information.ChartInfo;
+import de.ks.idnadrev.information.chart.ChartInfoActivity;
+import de.ks.idnadrev.information.chart.ChartPreviewHelper;
+import de.ks.idnadrev.information.view.InformationPreviewItem;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.activity.ActivityHint;
 import javafx.fxml.FXML;
 import javafx.scene.chart.Chart;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 
+import javax.inject.Inject;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -28,12 +36,15 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ChartPreview extends BaseController<List<InformationPreviewItem>> implements InformationPreview<ChartInfo> {
-  protected volatile InformationPreviewItem selectedItem;
   @FXML
   protected StackPane chartContainer;
+  protected volatile InformationPreviewItem selectedItem;
 
   protected final Map<String, ChartInfo> infos = new ConcurrentHashMap<>();
   protected final ChartPreviewHelper previewHelper = new ChartPreviewHelper();
+
+  @Inject
+  protected PersistentWork persistentWork;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -72,7 +83,7 @@ public class ChartPreview extends BaseController<List<InformationPreviewItem>> i
 
   private void load(InformationPreviewItem informationPreviewItem) {
     CompletableFuture.supplyAsync(() -> {
-      ChartInfo chartInfo = (ChartInfo) PersistentWork.forName(informationPreviewItem.getType(), informationPreviewItem.getName());
+      ChartInfo chartInfo = (ChartInfo) persistentWork.forName(informationPreviewItem.getType(), informationPreviewItem.getName());
       chartInfo.getChartData();//deserialize
       infos.put(chartInfo.getName(), chartInfo);
       return chartInfo;

@@ -19,8 +19,8 @@ import com.google.common.collect.Table;
 import de.ks.idnadrev.entity.information.ChartData;
 import de.ks.idnadrev.entity.information.ChartInfo;
 import de.ks.standbein.BaseController;
-import de.ks.standbein.i18n.Localized;
 import de.ks.standbein.validation.ValidationMessage;
+import de.ks.standbein.validation.ValidationResult;
 import de.ks.standbein.validation.validators.DoubleValidator;
 import de.ks.standbein.validation.validators.NotEmptyValidator;
 import javafx.beans.property.SimpleStringProperty;
@@ -45,7 +45,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import org.apache.commons.lang3.StringUtils;
-import org.controlsfx.validation.ValidationResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +83,7 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
     rows.addListener((ListChangeListener<ChartRow>) c -> onRowsChanged(c));
 
     reset();
-    validationRegistry.registerValidator(xaxisTitle, new NotEmptyValidator());
+    validationRegistry.registerValidator(xaxisTitle, new NotEmptyValidator(localized));
   }
 
   protected void onRowsChanged(ListChangeListener.Change<? extends ChartRow> c) {
@@ -150,8 +149,8 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
           .filter(v -> !v.isEmpty())//
           .collect(Collectors.toSet());
         if (values.contains(value)) {
-          ValidationMessage message = new ValidationMessage("validation.noDuplicates", control, value);
-          return ValidationResult.fromMessages(message);
+          ValidationMessage message = new ValidationMessage(localized.get("validation.noDuplicates"));
+          return new ValidationResult().add(message);
         }
       }
       return null;
@@ -173,7 +172,7 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
         title.textProperty().bindBidirectional(column);
         title.getStyleClass().add("editorViewLabel");
 
-        MenuItem deleteColumnItem = new MenuItem(Localized.get("column.delete"));
+        MenuItem deleteColumnItem = new MenuItem(localized.get("column.delete"));
         deleteColumnItem.setOnAction(e -> {
           columnHeaders.remove(column);
         });
@@ -232,7 +231,7 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
   protected TextField createValueEditor(ChartRow chartRow, int rowNum, int column) {
     TextField editor = new TextField();
     valueEditors.put(rowNum, column, editor);
-    validationRegistry.registerValidator(editor, new DoubleValidator());
+    validationRegistry.registerValidator(editor, new DoubleValidator(localized));
     dataContainer.add(editor, column + COLUMN_OFFSET, rowNum + ROW_OFFSET);
 
     editor.focusedProperty().addListener(getEditorFocusListener(rowNum, editor));
@@ -412,8 +411,8 @@ public class ChartDataEditor extends BaseController<ChartInfo> {
     headers.clear();
 
     rows.add(new ChartRow());
-    columnHeaders.add(new SimpleStringProperty(Localized.get("col", 1)));
-    columnHeaders.add(new SimpleStringProperty(Localized.get("col", 2)));
+    columnHeaders.add(new SimpleStringProperty(localized.get("col", 1)));
+    columnHeaders.add(new SimpleStringProperty(localized.get("col", 2)));
     if (callback != null) {
       callback.accept(getData());
     }

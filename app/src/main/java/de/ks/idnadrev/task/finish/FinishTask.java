@@ -14,6 +14,11 @@
  */
 package de.ks.idnadrev.task.finish;
 
+import de.ks.idnadrev.entity.Task;
+import de.ks.standbein.BaseController;
+import de.ks.text.AsciiDocEditor;
+import de.ks.text.view.AsciiDocContent;
+import de.ks.text.view.AsciiDocViewer;
 import javafx.fxml.FXML;
 import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
@@ -35,11 +40,11 @@ public class FinishTask extends BaseController<Task> {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    AsciiDocEditor.load(pane -> finalOutcomeContainer.getChildren().add(pane), editor -> {
+    AsciiDocEditor.load(this.activityInitialization, pane -> finalOutcomeContainer.getChildren().add(pane), editor -> {
       finalOutcome = editor;
       finalOutcome.hideActionBar();
     });
-    AsciiDocViewer.load(pane -> expectedOutcomeContainer.getChildren().add(pane), viewer -> expectedOutcome = viewer);
+    AsciiDocViewer.load(this.activityInitialization, pane -> expectedOutcomeContainer.getChildren().add(pane), viewer -> expectedOutcome = viewer);
   }
 
   @Override

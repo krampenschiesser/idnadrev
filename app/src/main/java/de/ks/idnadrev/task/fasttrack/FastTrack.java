@@ -14,6 +14,11 @@
  */
 package de.ks.idnadrev.task.fasttrack;
 
+import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.entity.WorkUnit;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.activity.executor.ActivityExecutor;
+import de.ks.text.AsciiDocEditor;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
@@ -32,8 +37,9 @@ public class FastTrack extends BaseController<Task> {
   private static final Logger log = LoggerFactory.getLogger(FastTrack.class);
   @FXML
   protected StackPane descriptionView;
-  @FXML
-  protected NamedPersistentObjectSelection<Task> nameController;
+  //  @FXML
+//  protected NamedPersistentObjectSelection<Task> nameController;
+// FIXME: 12/17/15
   @FXML
   protected Label spentTime;
   protected AsciiDocEditor description;
@@ -42,21 +48,22 @@ public class FastTrack extends BaseController<Task> {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    AsciiDocEditor.load(descriptionView.getChildren()::add, ade -> this.description = ade);
+    AsciiDocEditor.load(this.activityInitialization, descriptionView.getChildren()::add, ade -> this.description = ade);
 
-    nameController.from(Task.class);
-
-    nameController.selectedValueProperty().addListener((p, o, n) -> {
-      if (n != null) {
-        store.setModel(n);
-      } else {
-        String text = nameController.getInput().getText();
-        Task model = new Task(text);
-        store.setModel(model);
-      }
-    });
-    StringProperty nameBinding = store.getBinding().getStringProperty(Task.class, t -> t.getName());
-    nameBinding.bindBidirectional(nameController.getInput().textProperty());
+    // FIXME: 12/17/15
+//    nameController.from(Task.class);
+//
+//    nameController.selectedValueProperty().addListener((p, o, n) -> {
+//      if (n != null) {
+//        store.setModel(n);
+//      } else {
+//        String text = nameController.getInput().getText();
+//        Task model = new Task(text);
+//        store.setModel(model);
+//      }
+//    });
+//    StringProperty nameBinding = store.getBinding().getStringProperty(Task.class, t -> t.getName());
+//    nameBinding.bindBidirectional(nameController.getInput().textProperty());
 
     description.hideActionBar();
     StringProperty descriptionBinding = store.getBinding().getStringProperty(Task.class, t -> t.getDescription());
@@ -64,7 +71,9 @@ public class FastTrack extends BaseController<Task> {
   }
 
   private boolean isNameSet() {
-    return nameController.getInput().textProperty().getValueSafe().trim().length() > 0;
+    // FIXME: 12/17/15
+//    return nameController.getInput().textProperty().getValueSafe().trim().length() > 0;
+    return false;
   }
 
   private void showSpentTime() {
@@ -118,7 +127,7 @@ public class FastTrack extends BaseController<Task> {
     WorkUnit workUnit = new WorkUnit(model);
     workUnit.setStart(start.get());
     workUnit.setEnd(LocalDateTime.now());
-    if (model.isFinished() || model.getId() == 0) {
+    if (model.isFinished() || model.getId() == null) {
       model.setFinished(true);
     }
 //    PersistentWork.persist(workUnit);

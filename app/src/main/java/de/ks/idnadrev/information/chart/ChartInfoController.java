@@ -15,6 +15,13 @@
 
 package de.ks.idnadrev.information.chart;
 
+import de.ks.idnadrev.entity.information.ChartData;
+import de.ks.idnadrev.entity.information.ChartInfo;
+import de.ks.idnadrev.entity.information.ChartType;
+import de.ks.idnadrev.entity.information.UmlDiagramInfo;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.activity.initialization.LoadInFXThread;
+import de.ks.standbein.validation.validators.NotEmptyValidator;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -29,7 +36,6 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Popup;
 import javafx.stage.Screen;
-import org.controlsfx.dialog.Dialogs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,8 +94,9 @@ public class ChartInfoController extends BaseController<ChartInfo> {
       }
     });
 
-    validationRegistry.registerValidator(name, new NotEmptyValidator());
-    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(UmlDiagramInfo.class, t -> t.getId() == store.<TextInfo>getModel().getId()));
+    validationRegistry.registerValidator(name, new NotEmptyValidator(localized));
+    // FIXME: 12/17/15 
+//    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(UmlDiagramInfo.class, t -> t.getId() == store.<TextInfo>getModel().getId()));
 
     saveBtn.disableProperty().bind(validationRegistry.invalidProperty());
     editorController.setCallback(previewHelper::recompute);
@@ -179,10 +186,11 @@ public class ChartInfoController extends BaseController<ChartInfo> {
 
   @FXML
   void onAddColumn() {
-    Optional<String> input = Dialogs.create().message(Localized.get("column.title")).showTextInput();
-    if (input.isPresent()) {
-      editorController.addColumnHeader(input.get());
-    }
+    // FIXME: 12/17/15
+//    Optional<String> input = Dialogs.create().message(Localized.get("column.title")).showTextInput();
+//    if (input.isPresent()) {
+//      editorController.addColumnHeader(input.get());
+//    }
   }
 
   @Override

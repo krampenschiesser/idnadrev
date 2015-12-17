@@ -14,6 +14,11 @@
  */
 package de.ks.idnadrev.task.create;
 
+import de.ks.fxcontrols.weekview.WeekHelper;
+import de.ks.idnadrev.entity.Schedule;
+import de.ks.idnadrev.entity.Task;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.validation.validators.TimeHHMMValidator;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.DatePicker;
@@ -49,7 +54,7 @@ public class TaskSchedule extends BaseController<Task> {
     dueDate.disableProperty().bind(proposedWeek.valueProperty().isNotNull());
     dueTime.disableProperty().bind(proposedWeek.valueProperty().isNotNull());
 
-    validationRegistry.registerValidator(dueTime, new TimeHHMMValidator());
+    validationRegistry.registerValidator(dueTime, new TimeHHMMValidator(localized));
   }
 
   @Override
@@ -78,13 +83,10 @@ public class TaskSchedule extends BaseController<Task> {
 
   @Override
   public void duringSave(Task model) {
-    PersistentWork.run(em -> em.flush());
     if (model.getSchedule() == null) {
       model.setSchedule(new Schedule());
     }
-    PersistentWork.run(em -> em.flush());
     Schedule schedule = model.getSchedule();
-    PersistentWork.run(em -> em.flush());
 
     LocalDate date = this.dueDate.getValue();
     if (date != null) {

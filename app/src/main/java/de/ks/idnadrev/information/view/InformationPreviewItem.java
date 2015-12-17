@@ -15,6 +15,8 @@
  */
 package de.ks.idnadrev.information.view;
 
+import de.ks.idnadrev.entity.information.Information;
+
 import java.time.LocalDateTime;
 
 public class InformationPreviewItem {

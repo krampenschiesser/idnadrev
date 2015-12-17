@@ -14,6 +14,8 @@
  */
 package de.ks.idnadrev.thought.add;
 
+import de.ks.flatjsondb.datasource.CreateEditDS;
+import de.ks.idnadrev.entity.Thought;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

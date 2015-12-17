@@ -14,7 +14,9 @@
  */
 package de.ks.idnadrev.task.fasttrack;
 
-@MenuItem(order = 23, value = "/main/task")
+import de.ks.standbein.activity.ActivityCfg;
+
+//@MenuItem(order = 23, value = "/main/task")
 public class FastTrackActivity extends ActivityCfg {
   public FastTrackActivity() {
     super(FastTrackDS.class, FastTrack.class);

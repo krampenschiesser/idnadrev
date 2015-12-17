@@ -15,6 +15,12 @@
  */
 package de.ks.idnadrev.information.view.selection.uml;
 
+import de.ks.idnadrev.information.view.InformationOverviewDS;
+import de.ks.idnadrev.information.view.preview.ChartPreview;
+import de.ks.idnadrev.information.view.preview.TextInfoPreview;
+import de.ks.idnadrev.information.view.preview.UmlPreview;
+import de.ks.standbein.activity.ActivityCfg;
+
 public class UmlSelectionActivity extends ActivityCfg {
   public UmlSelectionActivity() {
     super(InformationOverviewDS.class, UmlSelectionController.class);

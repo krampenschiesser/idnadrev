@@ -14,13 +14,20 @@
  */
 package de.ks.idnadrev.task.fasttrack;
 
+import de.ks.flatjsondb.PersistentWork;
+import de.ks.idnadrev.entity.Task;
+import de.ks.standbein.datasource.NewInstanceDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.util.function.Consumer;
 
 public class FastTrackDS extends NewInstanceDataSource<Task> {
   private static final Logger log = LoggerFactory.getLogger(FastTrackDS.class);
+
+  @Inject
+  PersistentWork persistentWork;
 
   public FastTrackDS() {
     super(Task.class);
@@ -35,19 +42,17 @@ public class FastTrackDS extends NewInstanceDataSource<Task> {
 
   @Override
   public void saveModel(Task model, Consumer<Task> beforeSaving) {
-    PersistentWork.run(em -> {
+    persistentWork.run(em -> {
       String name = model.getName();
-      Task task = name == null ? null : PersistentWork.forName(Task.class, name);
+      Task task = name == null ? null : persistentWork.forName(Task.class, name);
       if (task != null) {
         log.debug("Found existing task {}", task);
         beforeSaving.accept(task);
       } else {
-        if (model != null) {
-          beforeSaving.accept(model);
-          if (model.getName() != null && model.getName().length() > 0) {
-            em.persist(model);
-            log.debug("Creating new task {}", model);
-          }
+        beforeSaving.accept(model);
+        if (model.getName() != null && model.getName().length() > 0) {
+          em.persist(model);
+          log.debug("Creating new task {}", model);
         }
       }
     });

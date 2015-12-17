@@ -14,6 +14,8 @@
  */
 package de.ks.idnadrev.task.create;
 
+import de.ks.idnadrev.entity.Task;
+import de.ks.standbein.BaseController;
 import javafx.fxml.FXML;
 import javafx.scene.control.Slider;
 

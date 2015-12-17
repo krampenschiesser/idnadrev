@@ -21,6 +21,7 @@ import de.ks.idnadrev.task.create.CreateTaskActivity;
 import de.ks.idnadrev.thought.add.AddThoughtActivity;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.activity.ActivityHint;
+import de.ks.standbein.activity.executor.ActivityExecutor;
 import de.ks.text.view.AsciiDocContent;
 import de.ks.text.view.AsciiDocViewer;
 import javafx.beans.binding.BooleanBinding;
@@ -46,6 +47,10 @@ public class ViewThoughts extends BaseController<List<Thought>> {
   private static final Logger log = LoggerFactory.getLogger(ViewThoughts.class);
   @Inject
   FileStore fileStore;
+  @Inject
+  ActivityExecutor executor;
+  @Inject
+  PersistentWork persistentWork;
 
   @FXML
   protected TableView<Thought> thoughtTable;
@@ -82,7 +87,8 @@ public class ViewThoughts extends BaseController<List<Thought>> {
       description.getChildren().add(l.getView());
     }, controller.getJavaFXExecutor());
 
-    @SuppressWarnings("unchecked") TableColumn<Thought, String> nameColumn = (TableColumn<Thought, String>) thoughtTable.getColumns().get(0);
+    @SuppressWarnings("unchecked")
+    TableColumn<Thought, String> nameColumn = (TableColumn<Thought, String>) thoughtTable.getColumns().get(0);
 
     DoubleBinding width100 = thoughtTable.widthProperty().multiply(1D);
     nameColumn.prefWidthProperty().bind(width100);
@@ -110,11 +116,12 @@ public class ViewThoughts extends BaseController<List<Thought>> {
     Thought selectedItem = thoughtTable.getSelectionModel().getSelectedItem();
     if (selectedItem != null) {
 
-      PersistentWork.runAsync((em) -> em.find(Thought.class, selectedItem.getId()).postPone(), controller.getExecutorService())//
-        .thenRun(() -> {
-          log.info("Postponing {}", selectedItem);
-          controller.reload();
-        });
+      executor.submit(() -> persistentWork.run(session -> {
+        Thought thought = session.findById(selectedItem.getId());
+        thought.postPone(1);//FIXME use option definition here
+        log.info("Postponing {}", selectedItem);
+        executor.submit(() -> controller.reload());
+      }));
     }
   }
 
@@ -161,9 +168,9 @@ public class ViewThoughts extends BaseController<List<Thought>> {
 
   @FXML
   void delete() {
-    PersistentWork.run(em -> {
+    persistentWork.run(em -> {
       Thought thought = thoughtTable.getSelectionModel().getSelectedItem();
-      em.remove(PersistentWork.reload(thought));
+      em.remove(persistentWork.reload(thought));
     });
     controller.reload();
   }

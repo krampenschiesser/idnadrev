@@ -14,6 +14,11 @@
  */
 package de.ks.idnadrev.information.diary;
 
+import de.ks.idnadrev.entity.information.DiaryInfo;
+import de.ks.idnadrev.entity.information.TextInfo;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.datasource.DataSource;
+import de.ks.text.AsciiDocEditor;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.DateCell;
@@ -38,7 +43,7 @@ public class DiaryController extends BaseController<DiaryInfo> {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    AsciiDocEditor.load(pane -> adocContainer.getChildren().add(pane), editor -> {
+    AsciiDocEditor.load(activityInitialization, pane -> adocContainer.getChildren().add(pane), editor -> {
       this.content = editor;
       editor.hideActionBar();
     });
@@ -75,7 +80,7 @@ public class DiaryController extends BaseController<DiaryInfo> {
 
   @Override
   protected void onRefresh(DiaryInfo model) {
-    if (model.getId() == 0) {
+    if (model.getId() == null) {
       String date = dateEditor.getValue().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL));
       baseText = "= " + date + "\n\n";
       content.setText(baseText);

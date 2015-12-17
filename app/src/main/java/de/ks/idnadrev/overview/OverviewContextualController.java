@@ -31,6 +31,7 @@ import javafx.scene.input.KeyCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -41,6 +42,9 @@ import java.util.stream.Collectors;
 
 public class OverviewContextualController extends BaseController<OverviewModel> {
   private static final Logger log = LoggerFactory.getLogger(OverviewContextualController.class);
+
+  @Inject
+  NextTaskChooser nextTaskChooser;
 
   @FXML
   protected TableView<Task> contextTasks;
@@ -111,7 +115,7 @@ public class OverviewContextualController extends BaseController<OverviewModel> 
     if (context != null && context.trim().isEmpty()) {
       context = null;
     }
-    List<Task> tasks = new NextTaskChooser().getTasksSorted(60 * 24, context);
+    List<Task> tasks = nextTaskChooser.getTasksSorted(60 * 24, context);
     tasks.sort(Comparator.comparing(t -> t.getRemainingTime()));
     return tasks;
   }

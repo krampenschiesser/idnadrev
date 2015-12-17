@@ -15,10 +15,19 @@
  */
 package de.ks.idnadrev.information.view.preview;
 
+import de.ks.flatjsondb.PersistentWork;
+import de.ks.idnadrev.entity.information.TextInfo;
+import de.ks.idnadrev.information.text.TextInfoActivity;
+import de.ks.idnadrev.information.view.InformationPreviewItem;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.activity.ActivityHint;
+import de.ks.text.view.AsciiDocContent;
+import de.ks.text.view.AsciiDocViewer;
 import javafx.fxml.FXML;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 
+import javax.inject.Inject;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
@@ -28,9 +37,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class TextInfoPreview extends BaseController<List<InformationPreviewItem>> implements InformationPreview<TextInfo> {
-
   @FXML
   protected StackPane adocContainer;
+  @Inject
+  PersistentWork persistentWork;
 
   protected AsciiDocViewer asciiDocViewer;
   protected final Map<String, TextInfo> infos = new ConcurrentHashMap<>();
@@ -38,7 +48,7 @@ public class TextInfoPreview extends BaseController<List<InformationPreviewItem>
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    AsciiDocViewer.load(root -> adocContainer.getChildren().add(root), viewer -> asciiDocViewer = viewer);
+    AsciiDocViewer.load(activityInitialization, root -> adocContainer.getChildren().add(root), viewer -> asciiDocViewer = viewer);
   }
 
   @Override
@@ -64,7 +74,7 @@ public class TextInfoPreview extends BaseController<List<InformationPreviewItem>
   }
 
   protected CompletableFuture<TextInfo> load(InformationPreviewItem preview) {
-    return CompletableFuture.supplyAsync(() -> PersistentWork.forName(TextInfo.class, preview.getName()), controller.getExecutorService());
+    return CompletableFuture.supplyAsync(() -> persistentWork.forName(TextInfo.class, preview.getName()), controller.getExecutorService());
   }
 
   public Pane show(InformationPreviewItem item) {

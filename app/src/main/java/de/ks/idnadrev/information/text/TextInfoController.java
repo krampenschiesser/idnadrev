@@ -14,13 +14,18 @@
  */
 package de.ks.idnadrev.information.text;
 
+import de.ks.idnadrev.entity.information.TextInfo;
+import de.ks.idnadrev.file.FileViewController;
+import de.ks.idnadrev.tag.TagContainer;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.validation.validators.NotEmptyValidator;
+import de.ks.text.AsciiDocEditor;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 
-import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -35,19 +40,19 @@ public class TextInfoController extends BaseController<TextInfo> {
   protected FileViewController filesController;
   @FXML
   protected TagContainer tagContainerController;
-  @FXML
-  protected CategorySelection categorySelectionController;
+//  @FXML
+//  protected CategorySelection categorySelectionController;
 
   protected AsciiDocEditor content;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    AsciiDocEditor.load(pane -> adocContainer.getChildren().add(pane), editor -> {
+    AsciiDocEditor.load(activityInitialization, pane -> adocContainer.getChildren().add(pane), editor -> {
       this.content = editor;
       editor.hideActionBar();
-
-      FileOptions fileOptions = Options.get(FileOptions.class);
-      editor.setPersistentStoreBack(getClass().getSimpleName(), new File(fileOptions.getFileStoreDir()));
+// FIXME: 12/17/15 
+//      FileOptions fileOptions = Options.get(FileOptions.class);
+//      editor.setPersistentStoreBack(getClass().getSimpleName(), new File(fileOptions.getFileStoreDir()));
     });
 
     StringProperty nameProperty = store.getBinding().getStringProperty(TextInfo.class, t -> t.getName());
@@ -56,8 +61,9 @@ public class TextInfoController extends BaseController<TextInfo> {
     StringProperty contentProperty = store.getBinding().getStringProperty(TextInfo.class, t -> t.getContent());
     content.textProperty().bindBidirectional(contentProperty);
 
-    validationRegistry.registerValidator(name, new NotEmptyValidator());
-    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(TextInfo.class, t -> t.getId() == store.<TextInfo>getModel().getId()));
+    validationRegistry.registerValidator(name, new NotEmptyValidator(localized));
+    // FIXME: 12/17/15 
+//    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(TextInfo.class, t -> t.getId() == store.<TextInfo>getModel().getId()));
 
     save.disableProperty().bind(validationRegistry.invalidProperty());
   }

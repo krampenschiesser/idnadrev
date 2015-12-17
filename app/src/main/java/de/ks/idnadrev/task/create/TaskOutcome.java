@@ -14,6 +14,9 @@
  */
 package de.ks.idnadrev.task.create;
 
+import de.ks.idnadrev.entity.Task;
+import de.ks.standbein.BaseController;
+import de.ks.text.AsciiDocEditor;
 import javafx.fxml.FXML;
 import javafx.scene.layout.StackPane;
 

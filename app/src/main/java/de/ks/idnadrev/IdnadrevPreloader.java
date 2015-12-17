@@ -14,6 +14,7 @@
  */
 package de.ks.idnadrev;
 
+import de.ks.standbein.preload.PreloaderApplication;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
@@ -26,15 +27,17 @@ public class IdnadrevPreloader extends PreloaderApplication {
     StackPane pane = loader.load();
     Preloader preloader = loader.getController();
 
-    String versionString = Application.versioning.getVersionInfo().getVersionString();
-    preloader.getVersion().setText(versionString);
+    // FIXME: 12/17/15
+//    String versionString = Application.versioning.getVersionInfo().getVersionString();
+//    preloader.getVersion().setText(versionString);
 
-    stage.setTitle("Idnadrev Version " + versionString);
+//    stage.setTitle("Idnadrev Version " + versionString);
 
     Scene scene = new Scene(pane);
     scene.getStylesheets().add("/de/ks/idnadrev/preloader.css");
 
-    Launcher.instance.setLaunchListener(preloader);
+    // FIXME: 12/17/15
+//    Launcher.instance.setLaunchListener(preloader);
 
     stage.setScene(scene);
     stage.show();

@@ -121,4 +121,8 @@ public class PersistentWork {
   public <E, V> List<V> projection(Class<E> clazz, Function<E, V> projection) {
     return read(session -> from(clazz).stream().map(projection).collect(Collectors.toList()));
   }
+
+  public <E> E byId(String id) {
+    return read(session -> session.findById(id));
+  }
 }

@@ -14,6 +14,7 @@
  */
 package de.ks.idnadrev.task.work;
 
+import de.ks.flatadocdb.entity.BaseEntity;
 import de.ks.flatjsondb.PersistentWork;
 import de.ks.idnadrev.IdnadrevWindow;
 import de.ks.idnadrev.entity.Task;
@@ -23,7 +24,6 @@ import de.ks.idnadrev.thought.add.AddThoughtActivity;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.activity.ActivityHint;
 import de.ks.standbein.activity.executor.ActivityExecutor;
-import de.ks.standbein.i18n.Localized;
 import de.ks.text.AsciiDocEditor;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -130,7 +130,9 @@ public class WorkOnTask extends BaseController<Task> {
       returnToActivity = currentHint.getReturnToActivity();
     }
     ActivityHint nextHint = new ActivityHint(FinishTaskActivity.class, returnToActivity);
-    nextHint.setModelHint(PersistentWork::reload);
+
+    BaseEntity model = store.getModel();
+    nextHint.setDataSourceHint(() -> persistentWork.reload(model));
     controller.startOrResume(nextHint);
   }
 
@@ -140,14 +142,16 @@ public class WorkOnTask extends BaseController<Task> {
     description.setText(descriptionContent);
 
     ActivityExecutor executorService = controller.getExecutorService();
-    PersistentWork.runAsync(em -> {
-      Task reloaded = PersistentWork.reload(task);
-      WorkUnit last = reloaded.getWorkUnits().isEmpty() ? null : reloaded.getWorkUnits().last();
-      if (last == null || last.isFinished()) {
-        WorkUnit workUnit = new WorkUnit(reloaded);
-        em.persist(workUnit);
-      }
-    }, executorService);
+    executorService.submit(() -> {
+      persistentWork.run(session -> {
+        Task reloaded = persistentWork.reload(task);
+        WorkUnit last = reloaded.getWorkUnits().isEmpty() ? null : reloaded.getWorkUnits().last();
+        if (last == null || last.isFinished()) {
+          WorkUnit workUnit = new WorkUnit(reloaded);
+          persistentWork.persist(workUnit);
+        }
+      });
+    });
 
     Duration time = task.getEstimatedTime();
     if (time == null || time.toMillis() == 0) {
@@ -168,12 +172,14 @@ public class WorkOnTask extends BaseController<Task> {
 
     Task lastWorkedOnTask = window.getWorkingOnTaskLink().getCurrentTask();
     if (lastWorkedOnTask != null && !lastWorkedOnTask.equals(task)) {
-      PersistentWork.runAsync(em -> {
-        Task old = PersistentWork.reload(lastWorkedOnTask);
-        if (old.getWorkUnits().size() > 0 && !old.getWorkUnits().last().isFinished()) {
-          old.getWorkUnits().last().stop();
-        }
-      }, executorService);
+      executorService.submit(() -> {
+        persistentWork.run(session -> {
+          Task old = persistentWork.reload(lastWorkedOnTask);
+          if (old.getWorkUnits().size() > 0 && !old.getWorkUnits().last().isFinished()) {
+            old.getWorkUnits().last().stop();
+          }
+        });
+      });
     }
     window.getWorkingOnTaskLink().setCurrentTask(task);
   }
@@ -186,10 +192,10 @@ public class WorkOnTask extends BaseController<Task> {
   public String getHourMinutesString(Duration duration) {
     long hours = duration.toHours();
     if (hours == 0) {
-      return duration.toMinutes() + Localized.get("duration.minutes");
+      return duration.toMinutes() + localized.get("duration.minutes");
     } else {
       long remainingMinutes = duration.minus(Duration.ofHours(hours)).toMinutes();
-      return hours + ":" + String.format("%02d", remainingMinutes) + Localized.get("duration.hours.short");
+      return hours + ":" + String.format("%02d", remainingMinutes) + localized.get("duration.hours.short");
     }
   }
 

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,6 +15,13 @@
  */
 package de.ks.idnadrev.information.view.preview;
 
+import de.ks.flatjsondb.PersistentWork;
+import de.ks.idnadrev.entity.information.UmlDiagramInfo;
+import de.ks.idnadrev.information.uml.UmlDiagramActivity;
+import de.ks.idnadrev.information.uml.UmlDiagramRender;
+import de.ks.idnadrev.information.view.InformationPreviewItem;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.activity.ActivityHint;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -23,6 +30,7 @@ import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -47,6 +55,9 @@ public class UmlPreview extends BaseController<List<InformationPreviewItem>> imp
   protected final Map<String, UmlDiagramInfo> infos = new ConcurrentHashMap<>();
   protected final Map<String, Image> previews = new ConcurrentHashMap<>();
   protected final UmlDiagramRender render = new UmlDiagramRender();
+
+  @Inject
+  PersistentWork persistentWork;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -100,7 +111,7 @@ public class UmlPreview extends BaseController<List<InformationPreviewItem>> imp
   }
 
   private CompletableFuture<Void> load(InformationPreviewItem preview) {
-    return CompletableFuture.supplyAsync(() -> PersistentWork.forName(UmlDiagramInfo.class, preview.getName()), controller.getExecutorService())//
+    return CompletableFuture.supplyAsync(() -> persistentWork.forName(UmlDiagramInfo.class, preview.getName()), controller.getExecutorService())//
       .thenApply(diagram -> {
         infos.put(diagram.getName(), diagram);
         Path imagePath = getImagePath(diagram.getName());

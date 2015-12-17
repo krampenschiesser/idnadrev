@@ -15,10 +15,11 @@
 
 package de.ks.idnadrev.thought.add;
 
+import de.ks.standbein.activity.ActivityCfg;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@MenuItem(order = 10, value = "/main/thought")
+//@MenuItem(order = 10, value = "/main/thought")
 public class AddThoughtActivity extends ActivityCfg {
   private static final Logger log = LoggerFactory.getLogger(AddThoughtActivity.class);
 

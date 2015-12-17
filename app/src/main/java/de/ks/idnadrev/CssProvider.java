@@ -14,10 +14,9 @@
  */
 package de.ks.idnadrev;
 
-import javax.enterprise.inject.Produces;
-
 public class CssProvider {
-  @FxCss
-  @Produces
-  public final String idnadrevStyle = "/de/ks/idnadrev/idnadrev.css";
+//  @FxCss
+//  @Produces
+//  public final String idnadrevStyle = "/de/ks/idnadrev/idnadrev.css";
+  // FIXME: 12/17/15 
 }

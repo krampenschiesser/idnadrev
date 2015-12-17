@@ -15,9 +15,13 @@
  */
 package de.ks.idnadrev.information.uml.adoc;
 
+import de.ks.flatjsondb.PersistentWork;
+import de.ks.idnadrev.information.BaseInformationPreProcessor;
+import de.ks.idnadrev.information.uml.UmlDiagramRender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.nio.file.Path;
 import java.util.Map;
 
@@ -26,19 +30,23 @@ public class DiagramPreProcessor extends BaseInformationPreProcessor {
   private static final Logger log = LoggerFactory.getLogger(DiagramPreProcessor.class);
 
   protected final UmlDiagramRender render = new UmlDiagramRender();
+  private final PersistentWork persistentWork;
 
-  public DiagramPreProcessor() {
+  @Inject
+  public DiagramPreProcessor(PersistentWork persistentWork) {
     super("umldiagram");
+    this.persistentWork = persistentWork;
   }
 
   @Override
   protected void handleIds(Map<Long, Path> tasks) {
 
     tasks.forEach((id, path) -> {
-      UmlDiagramInfo diagramInfo = PersistentWork.byId(UmlDiagramInfo.class, id);
-      if (diagramInfo != null) {
-        render.generatePng(diagramInfo.getContent(), RENDERED_WIDTH, path);
-      }
+      // FIXME: 12/17/15
+//      UmlDiagramInfo diagramInfo = persistentWork.byId(UmlDiagramInfo.class, id);
+//      if (diagramInfo != null) {
+//        render.generatePng(diagramInfo.getContent(), RENDERED_WIDTH, path);
+//      }
     });
   }
 }

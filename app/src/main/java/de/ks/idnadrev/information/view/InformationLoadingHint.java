@@ -15,6 +15,8 @@
  */
 package de.ks.idnadrev.information.view;
 
+import de.ks.idnadrev.entity.information.Information;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -23,12 +25,12 @@ public class InformationLoadingHint {
   protected final List<String> tags = new ArrayList<>();
   protected final Class<? extends Information<?>> type;
   protected final String name;
-  protected final Category category;
+//  protected final Category category;
 
-  public InformationLoadingHint(Class<? extends Information<?>> type, String name, Category category) {
+  public InformationLoadingHint(Class<? extends Information<?>> type, String name) {
     this.type = type;
     this.name = name;
-    this.category = category;
+//    this.category = category;
   }
 
   public List<String> getTags() {
@@ -43,9 +45,9 @@ public class InformationLoadingHint {
     return name;
   }
 
-  public Category getCategory() {
-    return category;
-  }
+//  public Category getCategory() {
+//    return category;
+//  }
 
   public void setTags(Set<String> tags) {
     this.tags.addAll(tags);

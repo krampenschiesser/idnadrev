@@ -15,6 +15,14 @@
  */
 package de.ks.idnadrev.information.view;
 
+import de.ks.executor.group.LastTextChange;
+import de.ks.idnadrev.entity.information.ChartInfo;
+import de.ks.idnadrev.entity.information.Information;
+import de.ks.idnadrev.entity.information.TextInfo;
+import de.ks.idnadrev.entity.information.UmlDiagramInfo;
+import de.ks.idnadrev.tag.TagContainer;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.reflection.PropertyPath;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -42,8 +50,8 @@ public class InformationListView extends BaseController<List<InformationPreviewI
   protected TextField nameSearch;
   @FXML
   protected TagContainer tagContainerController;
-  @FXML
-  protected CategorySelection categorySelectionController;
+  //  @FXML
+//  protected CategorySelection categorySelectionController;
   @FXML
   protected Label typeLabel;
   @FXML
@@ -73,7 +81,7 @@ public class InformationListView extends BaseController<List<InformationPreviewI
         if (c.equals(NoInfo.class)) {
           return "";
         } else {
-          String translation = Localized.get(c.getSimpleName());
+          String translation = localized.get(c.getSimpleName());
           return translation;
         }
       }
@@ -86,12 +94,12 @@ public class InformationListView extends BaseController<List<InformationPreviewI
     typeCombo.getSelectionModel().select(0);
     typeCombo.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> triggerReload());
     tagContainerController.getCurrentTags().addListener((SetChangeListener<String>) change -> triggerReload());
-    categorySelectionController.selectedValueProperty().addListener((observable, oldValue, newValue) -> triggerReload());
+//    categorySelectionController.selectedValueProperty().addListener((observable, oldValue, newValue) -> triggerReload());
 
     nameColumn.setCellValueFactory(new PropertyValueFactory<>(PropertyPath.property(InformationPreviewItem.class, i -> i.getName())));
     typeColumn.setCellValueFactory(cd -> {
       InformationPreviewItem value = cd.getValue();
-      String translation = Localized.get(value.getType().getSimpleName());
+      String translation = localized.get(value.getType().getSimpleName());
       return new SimpleStringProperty(translation);
     });
     creationDateColumn.setCellValueFactory(cd -> {
@@ -99,8 +107,8 @@ public class InformationListView extends BaseController<List<InformationPreviewI
       String format = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(date);
       return new SimpleStringProperty(format);
     });
-
-    validationRegistry.registerValidator(tagContainerController.getInput(), new NamedEntityValidator(Tag.class));
+// FIXME: 12/17/15
+//    validationRegistry.registerValidator(tagContainerController.getInput(), new NamedEntityValidator(Tag.class));
     tagContainerController.setReadOnly(true);
   }
 
@@ -124,7 +132,7 @@ public class InformationListView extends BaseController<List<InformationPreviewI
     infoClass = infoClass.equals(NoInfo.class) ? null : infoClass;
     String name = nameSearch.textProperty().getValueSafe().toLowerCase(Locale.ROOT).trim();
 
-    InformationLoadingHint loadingHint = new InformationLoadingHint(infoClass, name, categorySelectionController.getSelectedValue());
+    InformationLoadingHint loadingHint = new InformationLoadingHint(infoClass, name);
     Set<String> tags = tagContainerController.getCurrentTags();
     loadingHint.setTags(tags);
     return loadingHint;

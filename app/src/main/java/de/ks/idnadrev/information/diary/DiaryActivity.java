@@ -14,7 +14,9 @@
  */
 package de.ks.idnadrev.information.diary;
 
-@MenuItem(value = "/main/info", order = 39)
+import de.ks.standbein.activity.ActivityCfg;
+
+//@MenuItem(value = "/main/info", order = 39)
 public class DiaryActivity extends ActivityCfg {
   public DiaryActivity() {
     super(DiaryDS.class, DiaryController.class);

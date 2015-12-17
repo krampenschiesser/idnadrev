@@ -15,7 +15,7 @@
 
 package de.ks.idnadrev;
 
-import javafx.scene.control.Label;
+import de.ks.standbein.NodeProvider;
 import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,18 +23,19 @@ import org.slf4j.LoggerFactory;
 /**
  *
  */
-@MenuItem("/main/help")
+//@MenuItem("/main/help")
 public class About implements NodeProvider<StackPane> {
   private static final Logger log = LoggerFactory.getLogger(About.class);
 
   @Override
   public StackPane getNode() {
     String javaVersion = System.getProperty("java.version");
-    StackPane view = new DefaultLoader<StackPane, Object>(getClass().getResource("about.fxml")).getView();
-    Label versionLabel = (Label) view.lookup("#idnadrevVersion");
-    versionLabel.setText(Application.versioning.getVersionInfo().getVersionString());
-    Label lookup = (Label) view.lookup("#javaVersion");
-    lookup.setText(javaVersion);
-    return view;
+//    StackPane view = new DefaultLoader<StackPane, Object>(getClass().getResource("about.fxml")).getView();
+//    Label versionLabel = (Label) view.lookup("#idnadrevVersion");
+//    versionLabel.setText(Application.versioning.getVersionInfo().getVersionString());
+//    Label lookup = (Label) view.lookup("#javaVersion");
+//    lookup.setText(javaVersion);
+//    return view;
+    return null;
   }
 }

@@ -16,6 +16,7 @@
 package de.ks.idnadrev.thought.add;
 
 import de.ks.idnadrev.entity.Thought;
+import de.ks.idnadrev.file.FileViewController;
 import de.ks.standbein.BaseController;
 import de.ks.text.AsciiDocEditor;
 import javafx.beans.property.StringProperty;
@@ -83,14 +84,16 @@ public class AddThought extends BaseController<Thought> {
 
   private void bindValidation() {
     save.disableProperty().bind(validationRegistry.invalidProperty());
+    // FIXME: 12/17/15 
 //    validationRegistry.registerBeanValidationValidator(name, Thought.class, PropertyPath.of(Thought.class, t -> t.getName()).getPropertyPath());
-    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(Thought.class, t -> t.getId() == store.<Thought>getModel().getId()));
+//    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(Thought.class, t -> t.getId() == store.<Thought>getModel().getId()));
   }
 
   private void setDescription(AsciiDocEditor description) {
     this.description = description;
-    FileOptions fileOptions = Options.get(FileOptions.class);
-    description.setPersistentStoreBack(getClass().getSimpleName(), new File(fileOptions.getFileStoreDir()));
+    // FIXME: 12/17/15
+//    FileOptions fileOptions = Options.get(FileOptions.class);
+//    description.setPersistentStoreBack(getClass().getSimpleName(), new File(fileOptions.getFileStoreDir()));
   }
 
   @FXML

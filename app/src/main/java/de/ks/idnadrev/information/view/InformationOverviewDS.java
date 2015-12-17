@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,20 +15,29 @@
  */
 package de.ks.idnadrev.information.view;
 
+import de.ks.flatadocdb.entity.BaseEntity;
+import de.ks.flatadocdb.entity.NamedEntity;
+import de.ks.idnadrev.entity.information.ChartInfo;
+import de.ks.idnadrev.entity.information.Information;
+import de.ks.idnadrev.entity.information.TextInfo;
+import de.ks.idnadrev.entity.information.UmlDiagramInfo;
+import de.ks.standbein.datasource.ListDataSource;
+import de.ks.standbein.reflection.PropertyPath;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
 public class InformationOverviewDS implements ListDataSource<InformationPreviewItem> {
-  private static final String KEY_NAME = PropertyPath.property(Information.class, NamedPersistentObject::getName);
-  private static final String KEY_CREATIONTIME = PropertyPath.property(Information.class, AbstractPersistentObject::getCreationTime);
+  private static final String KEY_NAME = PropertyPath.property(Information.class, NamedEntity::getName);
+  private static final String KEY_CREATIONTIME = PropertyPath.property(Information.class, BaseEntity::getCreationTime);
   private static final String KEY_TAGS = PropertyPath.property(Information.class, Information::getTags);
-  private static final String KEY_CATEGORY = PropertyPath.property(Information.class, Information::getCategory);
+//  private static final String KEY_CATEGORY = PropertyPath.property(Information.class, Information::getCategory);
 
-  protected volatile InformationLoadingHint loadingHint = new InformationLoadingHint(null, "", null);
+  protected volatile InformationLoadingHint loadingHint = new InformationLoadingHint(null, "");
 
   @Override
   public List<InformationPreviewItem> loadModel(Consumer<List<InformationPreviewItem>> furtherProcessing) {
@@ -39,59 +48,61 @@ public class InformationOverviewDS implements ListDataSource<InformationPreviewI
     }
     String name = "%" + StringUtils.replace(loadingHint.getName(), "*", "%") + "%";
     List<String> tags = loadingHint.getTags();
-    Category category = loadingHint.getCategory();
+//    Category category = loadingHint.getCategory();
+// FIXME: 12/17/15 
+//    List<InformationPreviewItem> retval = PersistentWork.read(em -> {
+//      CriteriaBuilder builder = em.getCriteriaBuilder();
+//
+//      List<InformationPreviewItem> items = new ArrayList<>();
+//
+//      for (Class<? extends Information<?>> clazz : classes) {
+//        List<InformationPreviewItem> results = getResults(name, tags, category, em, builder, clazz);
+//        results.forEach(r -> r.setType(clazz));
+//        items.addAll(results);
+//      }
+//      furtherProcessing.accept(items);
+//      return items;
+//    });
 
-    List<InformationPreviewItem> retval = PersistentWork.read(em -> {
-      CriteriaBuilder builder = em.getCriteriaBuilder();
-
-      List<InformationPreviewItem> items = new ArrayList<>();
-
-      for (Class<? extends Information<?>> clazz : classes) {
-        List<InformationPreviewItem> results = getResults(name, tags, category, em, builder, clazz);
-        results.forEach(r -> r.setType(clazz));
-        items.addAll(results);
-      }
-      furtherProcessing.accept(items);
-      return items;
-    });
-
-    return retval;
+//    return retval;
+    return Collections.emptyList();
   }
 
-  private List<InformationPreviewItem> getResults(String name, List<String> tagNames, Category category, EntityManager em, CriteriaBuilder builder, Class<? extends Information<?>> clazz) {
-    CriteriaQuery<InformationPreviewItem> query = builder.createQuery(InformationPreviewItem.class);
-    Root<? extends Information<?>> root = query.from(clazz);
-
-    ArrayList<Predicate> filters = new ArrayList<>();
-    if (!name.isEmpty()) {
-      filters.add(builder.like(builder.lower(root.<String>get(KEY_NAME)), name));
-    }
-    if (!tagNames.isEmpty()) {
-      List<Tag> tags = getTags(tagNames, em);
-      SetJoin<TextInfo, Tag> tagJoin = root.joinSet(KEY_TAGS);
-      filters.add(tagJoin.in(tags));
-    }
-    if (category != null) {
-      filters.add(builder.equal(root.get(KEY_CATEGORY), category));
-    }
-    query.distinct(true);
-
-    query.where(filters.toArray(new Predicate[filters.size()]));
-    query.select(builder.construct(InformationPreviewItem.class, root.get(KEY_NAME), root.get(KEY_CREATIONTIME)));
-    List<InformationPreviewItem> resultList = em.createQuery(query).getResultList();
-    return resultList;
-  }
-
-  protected List<Tag> getTags(List<String> tagNames, EntityManager em) {
-    CriteriaBuilder builder = em.getCriteriaBuilder();
-    CriteriaQuery<Tag> query = builder.createQuery(Tag.class);
-    Root<Tag> root = query.from(Tag.class);
-    Path<String> namePath = root.get(KEY_NAME);
-    query.select(root);
-    query.where(namePath.in(tagNames));
-
-    return em.createQuery(query).getResultList();
-  }
+  // FIXME: 12/17/15 
+//  private List<InformationPreviewItem> getResults(String name, List<String> tagNames, Category category, EntityManager em, CriteriaBuilder builder, Class<? extends Information<?>> clazz) {
+//    CriteriaQuery<InformationPreviewItem> query = builder.createQuery(InformationPreviewItem.class);
+//    Root<? extends Information<?>> root = query.from(clazz);
+//
+//    ArrayList<Predicate> filters = new ArrayList<>();
+//    if (!name.isEmpty()) {
+//      filters.add(builder.like(builder.lower(root.<String>get(KEY_NAME)), name));
+//    }
+//    if (!tagNames.isEmpty()) {
+//      List<Tag> tags = getTags(tagNames, em);
+//      SetJoin<TextInfo, Tag> tagJoin = root.joinSet(KEY_TAGS);
+//      filters.add(tagJoin.in(tags));
+//    }
+//    if (category != null) {
+//      filters.add(builder.equal(root.get(KEY_CATEGORY), category));
+//    }
+//    query.distinct(true);
+//
+//    query.where(filters.toArray(new Predicate[filters.size()]));
+//    query.select(builder.construct(InformationPreviewItem.class, root.get(KEY_NAME), root.get(KEY_CREATIONTIME)));
+//    List<InformationPreviewItem> resultList = em.createQuery(query).getResultList();
+//    return resultList;
+//  }
+//
+//  protected List<Tag> getTags(List<String> tagNames, EntityManager em) {
+//    CriteriaBuilder builder = em.getCriteriaBuilder();
+//    CriteriaQuery<Tag> query = builder.createQuery(Tag.class);
+//    Root<Tag> root = query.from(Tag.class);
+//    Path<String> namePath = root.get(KEY_NAME);
+//    query.select(root);
+//    query.where(namePath.in(tagNames));
+//
+//    return em.createQuery(query).getResultList();
+//  }
 
   @Override
   public void setLoadingHint(Object dataSourceHint) {
