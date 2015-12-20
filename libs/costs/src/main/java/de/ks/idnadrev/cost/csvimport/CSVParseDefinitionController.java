@@ -16,11 +16,21 @@
 
 package de.ks.idnadrev.cost.csvimport;
 
+import de.ks.flatjsondb.PersistentWork;
+import de.ks.idnadrev.cost.csvimport.columnmapping.*;
+import de.ks.idnadrev.cost.entity.Account;
+import de.ks.idnadrev.cost.entity.BookingCsvTemplate;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.validation.validators.DateTimeFormatterPatternValidator;
+import de.ks.standbein.validation.validators.IntegerRangeValidator;
+import de.ks.standbein.validation.validators.NotEmptyValidator;
+import de.ks.standbein.validation.validators.StringLengthValidator;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.util.StringConverter;
 
+import javax.inject.Inject;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,6 +63,9 @@ public class CSVParseDefinitionController extends BaseController<Object> {
   @FXML
   protected TextField descriptionColumn;
 
+  @Inject
+  PersistentWork persistentWork;
+
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     templates.setConverter(new StringConverter<BookingCsvTemplate>() {
@@ -63,7 +76,7 @@ public class CSVParseDefinitionController extends BaseController<Object> {
 
       @Override
       public BookingCsvTemplate fromString(String string) {
-        return PersistentWork.forName(BookingCsvTemplate.class, string);
+        return persistentWork.forName(BookingCsvTemplate.class, string);
       }
     });
 
@@ -85,18 +98,18 @@ public class CSVParseDefinitionController extends BaseController<Object> {
       }
     });
 
-    validationRegistry.registerValidator(timePattern, new DateTimeFormatterPatternValidator());
-    validationRegistry.registerValidator(datePattern, new DateTimeFormatterPatternValidator());
+    validationRegistry.registerValidator(timePattern, new DateTimeFormatterPatternValidator(localized));
+    validationRegistry.registerValidator(datePattern, new DateTimeFormatterPatternValidator(localized));
 
-    validationRegistry.registerValidator(descriptionColumn, new IntegerRangeValidator(0, 100));
-    validationRegistry.registerValidator(timeColumn, new IntegerRangeValidator(0, 100));
-    validationRegistry.registerValidator(dateColumn, new IntegerRangeValidator(0, 100));
-    validationRegistry.registerValidator(amountColumn, new AmountColumnValidator());
+    validationRegistry.registerValidator(descriptionColumn, new IntegerRangeValidator(localized, 0, 100));
+    validationRegistry.registerValidator(timeColumn, new IntegerRangeValidator(localized, 0, 100));
+    validationRegistry.registerValidator(dateColumn, new IntegerRangeValidator(localized, 0, 100));
+    validationRegistry.registerValidator(amountColumn, new AmountColumnValidator(localized));
 
-    validationRegistry.registerValidator(separator, new StringLengthValidator(1));
+    validationRegistry.registerValidator(separator, new StringLengthValidator(localized, 1));
 
     Arrays.asList(datePattern, dateColumn, descriptionColumn, amountColumn)//
-      .forEach(t -> validationRegistry.registerValidator(t, new NotEmptyValidator()));
+      .forEach(t -> validationRegistry.registerValidator(t, new NotEmptyValidator(localized)));
 
     saveTemplate.disableProperty().bind(validationRegistry.invalidProperty());
   }
@@ -125,16 +138,16 @@ public class CSVParseDefinitionController extends BaseController<Object> {
   protected void onSaveTemplate() {
     TextInputDialog dialog = new TextInputDialog();
     dialog.initModality(Modality.APPLICATION_MODAL);
-    dialog.setContentText(Localized.get("import.template.name"));
-    dialog.setTitle(Localized.get("enter.input"));
+    dialog.setContentText(localized.get("import.template.name"));
+    dialog.setTitle(localized.get("enter.input"));
     dialog.setOnCloseRequest(r -> dialog.close());
 
     dialog.showAndWait().ifPresent(s -> onSaveTemplate(s));
   }
 
   protected void onSaveTemplate(String templateName) {
-    BookingCsvTemplate readTemplate = PersistentWork.read(em -> {
-      BookingCsvTemplate template = PersistentWork.forName(BookingCsvTemplate.class, templateName);
+    BookingCsvTemplate readTemplate = persistentWork.read(em -> {
+      BookingCsvTemplate template = persistentWork.forName(BookingCsvTemplate.class, templateName);
       template = template != null ? template : new BookingCsvTemplate(templateName);
       if (timeColumn.textProperty().getValueSafe().trim().isEmpty()) {
         template.setTimeColumn(-1);
@@ -148,9 +161,9 @@ public class CSVParseDefinitionController extends BaseController<Object> {
       template.setTimePattern(timePattern.textProperty().getValueSafe());
       template.setSeparator(separator.getText());
       template.setUseComma(useComma.isSelected());
-      Account account = PersistentWork.forName(Account.class, this.account.getValue());
+      Account account = persistentWork.forName(Account.class, this.account.getValue());
       template.setAccount(account);
-      PersistentWork.persist(template);
+      persistentWork.persist(template);
       return template;
     });
     templates.getItems().remove(readTemplate);
@@ -165,7 +178,7 @@ public class CSVParseDefinitionController extends BaseController<Object> {
 
   @Override
   public void onResume() {
-    CompletableFuture.supplyAsync(() -> PersistentWork.from(BookingCsvTemplate.class), controller.getExecutorService())//
+    CompletableFuture.supplyAsync(() -> persistentWork.from(BookingCsvTemplate.class), controller.getExecutorService())//
       .thenAcceptAsync(loaded -> {
         templates.getItems().clear();
         templates.getItems().addAll(loaded);
@@ -178,7 +191,7 @@ public class CSVParseDefinitionController extends BaseController<Object> {
         }
       }, controller.getJavaFXExecutor());
 
-    CompletableFuture.supplyAsync(() -> PersistentWork.from(Account.class), controller.getExecutorService())//
+    CompletableFuture.supplyAsync(() -> persistentWork.from(Account.class), controller.getExecutorService())//
       .thenAcceptAsync(accounts -> {
         List<String> accountNames = accounts.stream().map(a -> a.getName()).collect(Collectors.toList());
         account.getItems().clear();

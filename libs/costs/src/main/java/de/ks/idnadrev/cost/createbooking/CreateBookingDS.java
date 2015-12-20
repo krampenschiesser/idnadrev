@@ -16,6 +16,9 @@
 
 package de.ks.idnadrev.cost.createbooking;
 
+import de.ks.flatjsondb.datasource.CreateEditDS;
+import de.ks.idnadrev.cost.entity.Booking;
+
 public class CreateBookingDS extends CreateEditDS<Booking> {
   public CreateBookingDS() {
     super(Booking.class);

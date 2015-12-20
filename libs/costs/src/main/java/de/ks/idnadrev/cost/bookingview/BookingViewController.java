@@ -16,6 +16,15 @@
 
 package de.ks.idnadrev.cost.bookingview;
 
+import de.ks.executor.group.LastTextChange;
+import de.ks.flatjsondb.PersistentWork;
+import de.ks.idnadrev.cost.entity.Account;
+import de.ks.idnadrev.cost.entity.Booking;
+import de.ks.idnadrev.cost.pattern.view.BookingPatternParser;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.javafx.event.ClearTextOnEscape;
+import de.ks.standbein.validation.validators.DoubleValidator;
+import de.ks.standbein.validation.validators.NotNullValidator;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -56,15 +65,17 @@ public class BookingViewController extends BaseController<BookingViewModel> {
 
   @Inject
   BookingPatternParser patternParser;
+  @Inject
+  PersistentWork persistentWork;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     startTime.setValue(LocalDate.now().minusMonths(3));
     endTime.setValue(LocalDate.now().plusDays(1));
 
-    validationRegistry.registerValidator(startTime, new NotNullValidator());
-    validationRegistry.registerValidator(endTime, new NotNullValidator());
-    validationRegistry.registerValidator(amount, new DoubleValidator());
+    validationRegistry.registerValidator(startTime, new NotNullValidator(localized));
+    validationRegistry.registerValidator(endTime, new NotNullValidator(localized));
+    validationRegistry.registerValidator(amount, new DoubleValidator(localized));
 
     account.valueProperty().addListener((p, o, n) -> applyLoadingHintAndReload());
     startTime.valueProperty().addListener((p, o, n) -> applyLoadingHintAndReload());
@@ -118,7 +129,7 @@ public class BookingViewController extends BaseController<BookingViewModel> {
   public void onResume() {
     startTime.setValue(LocalDate.now().minusMonths(3));
     endTime.setValue(LocalDate.now().plusDays(1));
-    CompletableFuture.supplyAsync(() -> PersistentWork.from(Account.class), controller.getExecutorService())//
+    CompletableFuture.supplyAsync(() -> persistentWork.from(Account.class), controller.getExecutorService())//
       .thenAcceptAsync(accounts -> {
         List<String> accountNames = accounts.stream().map(a -> a.getName()).collect(Collectors.toList());
         account.getItems().clear();
@@ -142,11 +153,11 @@ public class BookingViewController extends BaseController<BookingViewModel> {
     if (interactive) {
       Dialog dialog = new Dialog();
       dialog.initModality(Modality.APPLICATION_MODAL);
-      dialog.setContentText(Localized.get("bookings.delete", bookingsToDelete.size()));
-      dialog.setTitle(Localized.get("delete"));
+      dialog.setContentText(localized.get("bookings.delete", bookingsToDelete.size()));
+      dialog.setTitle(localized.get("delete"));
       dialog.setOnCloseRequest(r -> dialog.close());
-      ButtonType yes = new ButtonType(Localized.get("yes"), ButtonBar.ButtonData.YES);
-      ButtonType no = new ButtonType(Localized.get("no"), ButtonBar.ButtonData.NO);
+      ButtonType yes = new ButtonType(localized.get("yes"), ButtonBar.ButtonData.YES);
+      ButtonType no = new ButtonType(localized.get("no"), ButtonBar.ButtonData.NO);
       dialog.getDialogPane().getButtonTypes().addAll(yes, no);
 
       optional = dialog.showAndWait().filter(response -> {
@@ -157,10 +168,10 @@ public class BookingViewController extends BaseController<BookingViewModel> {
       optional = Optional.of(true);
     }
     optional.ifPresent(o -> {
-      PersistentWork.run(em -> {
+      persistentWork.run(session -> {
         for (Booking booking : bookingsToDelete) {
-          Booking reload = PersistentWork.reload(booking);
-          em.remove(reload);
+          Booking reload = persistentWork.reload(booking);
+          session.remove(reload);
         }
       });
       controller.reload();
@@ -172,8 +183,8 @@ public class BookingViewController extends BaseController<BookingViewModel> {
     ObservableList<Booking> items = bookingTableController.getBookingTable().getItems();
     store.executeCustomRunnable(() -> {
       items.forEach(i -> {
-        PersistentWork.wrap(() -> {
-          Booking reload = PersistentWork.reload(i);
+        persistentWork.run(session -> {
+          Booking reload = persistentWork.reload(i);
           String result = patternParser.parseLine(reload.getDescription());
           if (result != null) {
             reload.setCategory(result);

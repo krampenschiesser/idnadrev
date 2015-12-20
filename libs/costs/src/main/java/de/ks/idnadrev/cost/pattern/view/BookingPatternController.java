@@ -16,6 +16,11 @@
 
 package de.ks.idnadrev.cost.pattern.view;
 
+import de.ks.flatjsondb.PersistentWork;
+import de.ks.idnadrev.cost.entity.BookingPattern;
+import de.ks.idnadrev.cost.pattern.create.CreateEditPatternActivity;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.activity.ActivityHint;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -27,6 +32,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCode;
 
+import javax.inject.Inject;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -35,7 +41,6 @@ public class BookingPatternController extends BaseController<List<BookingPattern
 
   @FXML
   protected TableView<BookingPattern> table;
-
   @FXML
   protected TableColumn<BookingPattern, String> nameColumn;
   @FXML
@@ -44,13 +49,15 @@ public class BookingPatternController extends BaseController<List<BookingPattern
   protected TableColumn<BookingPattern, String> categoryColumn;
   @FXML
   protected TableColumn<BookingPattern, Boolean> containsColumn;
-
   @FXML
   protected Button create;
   @FXML
   protected Button edit;
   @FXML
   protected Button delete;
+
+  @Inject
+  protected PersistentWork persistentWork;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -103,8 +110,8 @@ public class BookingPatternController extends BaseController<List<BookingPattern
   void onDelete() {
     BookingPattern item = table.getSelectionModel().getSelectedItem();
     store.executeCustomRunnable(() -> {
-      PersistentWork.run(em -> {
-        BookingPattern reload = PersistentWork.reload(item);
+      persistentWork.run(em -> {
+        BookingPattern reload = persistentWork.reload(item);
         em.remove(reload);
       });
     });

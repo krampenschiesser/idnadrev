@@ -16,6 +16,9 @@
 
 package de.ks.idnadrev.cost.pattern.create;
 
+import de.ks.flatjsondb.datasource.CreateEditDS;
+import de.ks.idnadrev.cost.entity.BookingPattern;
+
 public class CreateEditPatternDS extends CreateEditDS<BookingPattern> {
   public CreateEditPatternDS() {
     super(BookingPattern.class);

@@ -16,13 +16,17 @@
 
 package de.ks.idnadrev.cost.csvimport.columnmapping;
 
+import de.ks.idnadrev.cost.entity.Booking;
+import de.ks.standbein.reflection.PropertyPath;
 import org.apache.commons.lang3.StringUtils;
+
+import java.math.BigDecimal;
 
 public class AmountColumnMapping extends BookingColumnMapping<Double> {
   private final boolean useComma;
 
   public AmountColumnMapping(int column, boolean useComma) {
-    super(column, PropertyPath.ofTypeSafe(Booking.class, b -> b.setAmount(0D)));
+    super(column, PropertyPath.ofTypeSafe(Booking.class, b -> b.setAmount(new BigDecimal(0D))));
     this.useComma = useComma;
   }
 

@@ -17,6 +17,13 @@
 package de.ks.idnadrev.cost.csvimport;
 
 import com.google.common.base.Charsets;
+import de.ks.flatjsondb.PersistentWork;
+import de.ks.idnadrev.cost.entity.Account;
+import de.ks.idnadrev.cost.entity.Booking;
+import de.ks.idnadrev.cost.pattern.view.BookingPatternParser;
+import de.ks.standbein.activity.ActivityController;
+import de.ks.standbein.datasource.DataSource;
+import de.ks.standbein.reflection.PropertyPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +49,9 @@ public class BookingFromCSVDS implements DataSource<ImporterBookingViewModel> {
   @Inject
   BookingPatternParser patternParser;
 
+  @Inject
+  PersistentWork persistentWork;
+  
   @Override
   public ImporterBookingViewModel loadModel(Consumer<ImporterBookingViewModel> furtherProcessing) {
     ImporterBookingViewModel retval = new ImporterBookingViewModel();
@@ -52,7 +62,7 @@ public class BookingFromCSVDS implements DataSource<ImporterBookingViewModel> {
       List<Booking> bookings = Collections.synchronizedList(new LinkedList<>());
       LinkedList<CompletableFuture<Void>> futures = new LinkedList<>();
 
-      Account account = PersistentWork.forName(Account.class, accountName);
+      Account account = persistentWork.forName(Account.class, accountName);
 
       BookingFromCSVImporter importer = controller.getImporter();
       try {
@@ -78,38 +88,39 @@ public class BookingFromCSVDS implements DataSource<ImporterBookingViewModel> {
   }
 
   protected CompletableFuture<Void> checkForExistingBooking(List<Booking> bookings, Booking booking, ImporterBookingViewModel retval) {
-    CompletableFuture<Void> future = CompletableFuture.supplyAsync(() -> booking, activityController.getExecutorService()).thenApply(b -> {
-      List<Booking> found = PersistentWork.from(Booking.class, (root, query, builder) -> {
-        Predicate sameDesc = builder.equal(root.get(KEY_DESCRIPTION), b.getDescription());
-        Predicate sameTime = builder.equal(root.get(KEY_BOOKINGTIME), b.getBookingTime());
-        Predicate sameAmount = builder.equal(root.get(KEY_AMOUNT), b.getAmount());
-        query.where(sameAmount, sameDesc, sameTime);
-      }, null);
-
-      if (found.isEmpty()) {
-        if (b.getCategory() == null || b.getCategory().isEmpty()) {
-          b.setCategory(patternParser.parseLine(b.getDescription()));
-        }
-        return b;
-      } else {
-        retval.addError("Booking " + booking.getDescription() + " already exists.");
-        return null;
-      }
-    }).thenAccept(b -> {
-      if (b != null) {
-        bookings.add(b);
-      }
-    });
-    return future;
+//    CompletableFuture<Void> future = CompletableFuture.supplyAsync(() -> booking, activityController.getExecutorService()).thenApply(b -> {
+//      List<Booking> found = PersistentWork.from(Booking.class, (root, query, builder) -> {
+//        Predicate sameDesc = builder.equal(root.get(KEY_DESCRIPTION), b.getDescription());
+//        Predicate sameTime = builder.equal(root.get(KEY_BOOKINGTIME), b.getBookingTime());
+//        Predicate sameAmount = builder.equal(root.get(KEY_AMOUNT), b.getAmount());
+//        query.where(sameAmount, sameDesc, sameTime);
+//      }, null);
+//
+//      if (found.isEmpty()) {
+//        if (b.getCategory() == null || b.getCategory().isEmpty()) {
+//          b.setCategory(patternParser.parseLine(b.getDescription()));
+//        }
+//        return b;
+//      } else {
+//        retval.addError("Booking " + booking.getDescription() + " already exists.");
+//        return null;
+//      }
+//    }).thenAccept(b -> {
+//      if (b != null) {
+//        bookings.add(b);
+//      }
+//    });
+//    return future;
+    return null;// FIXME: 12/20/15 
   }
 
   @Override
   public void saveModel(ImporterBookingViewModel model, Consumer<ImporterBookingViewModel> beforeSaving) {
     beforeSaving.accept(model);
-    PersistentWork.run(em -> {
+    persistentWork.run(em -> {
       List<Booking> bookingsToImport = model.getBookingsToImport();
       for (Booking booking : bookingsToImport) {
-        Account account = PersistentWork.reload(booking.getAccount());
+        Account account = persistentWork.reload(booking.getAccount());
         booking.setAccount(account);
         em.persist(booking);
       }

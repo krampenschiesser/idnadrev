@@ -16,42 +16,42 @@
 
 package de.ks.idnadrev.cost.entity;
 
-import javax.validation.constraints.NotNull;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import de.ks.flatadocdb.annotation.Entity;
+import de.ks.flatadocdb.annotation.ToOne;
+import de.ks.flatadocdb.entity.BaseEntity;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
 
 @Entity
-public class Booking extends AbstractPersistentObject<Booking> {
+public class Booking extends BaseEntity {
   private static final long serialVersionUID = 1L;
-  protected double amount;
+  protected BigDecimal amount;
   protected String internalIdentifier;
-  @Column(length = 1000)
   protected String description;
 
-  @ManyToOne(optional = false)
+  @ToOne
   protected Account account;
 
   protected String category;
-
-  @Column(columnDefinition = "TIMESTAMP", nullable = false)
-  @Convert(converter = LocalDateTimeConverter.class)
-  @NotNull
   protected LocalDateTime bookingTime;
 
-  @Transient
+  @JsonIgnore
   protected boolean total;
 
   public Booking() {
     internalIdentifier = UUID.randomUUID().toString();
   }
 
-  public Booking(Account account, double amount) {
+  public Booking(Account account, BigDecimal amount) {
     this(account, amount, true);
   }
 
-  public Booking(Account account, double amount, boolean book) {
+  public Booking(Account account, BigDecimal amount, boolean book) {
     this.account = account;
     this.amount = amount;
     if (book) {
@@ -60,11 +60,11 @@ public class Booking extends AbstractPersistentObject<Booking> {
     internalIdentifier = UUID.randomUUID().toString();
   }
 
-  public double getAmount() {
+  public BigDecimal getAmount() {
     return amount;
   }
 
-  public Booking setAmount(double amount) {
+  public Booking setAmount(BigDecimal amount) {
     this.amount = amount;
     return this;
   }
@@ -138,16 +138,16 @@ public class Booking extends AbstractPersistentObject<Booking> {
   public void setAccount(Account account) {
     this.account = account;
   }
-
-  @Override
-  public String getIdPropertyName() {
-    return "internalIdentifier";
-  }
-
-  @Override
-  public Object getIdValue() {
-    return internalIdentifier;
-  }
+//
+//  @Override
+//  public String getIdPropertyName() {
+//    return "internalIdentifier";
+//  }
+//
+//  @Override
+//  public Object getIdValue() {
+//    return internalIdentifier;
+//  }
 
   @Override
   public boolean equals(Object o) {

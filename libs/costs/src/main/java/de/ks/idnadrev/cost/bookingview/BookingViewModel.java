@@ -16,6 +16,8 @@
 
 package de.ks.idnadrev.cost.bookingview;
 
+import de.ks.idnadrev.cost.entity.Booking;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

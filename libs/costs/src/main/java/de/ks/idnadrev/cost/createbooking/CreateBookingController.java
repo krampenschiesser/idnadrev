@@ -17,7 +17,7 @@
 package de.ks.idnadrev.cost.createbooking;
 
 import de.ks.executor.group.LastTextChange;
-import de.ks.idnadrev.cost.bookingview.BookingLoadingHint;
+import de.ks.flatjsondb.PersistentWork;
 import de.ks.idnadrev.cost.entity.Account;
 import de.ks.idnadrev.cost.entity.Booking;
 import de.ks.idnadrev.cost.pattern.view.BookingPatternParser;
@@ -31,16 +31,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
-import org.controlsfx.control.textfield.AutoCompletionBinding;
 
 import javax.inject.Inject;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -62,26 +60,31 @@ public class CreateBookingController extends BaseController<Booking> {
   @FXML
   protected Button book;
 
-  private CustomAutoCompletionBinding categoryAutoCompletion;
+  //  private CustomAutoCompletionBinding categoryAutoCompletion;
   private TimeHHMMValidator timeValidator;
+  private LastTextChange lastTextChange;
+
   @Inject
   BookingPatternParser patternParser;
-  private LastTextChange lastTextChange;
+  @Inject
+  PersistentWork persistentWork;
+  @Inject
+  CreateBookingOptions options;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     description.textProperty().bindBidirectional(store.getBinding().getStringProperty(Booking.class, b -> b.getDescription()));
     category.textProperty().bindBidirectional(store.getBinding().getStringProperty(Booking.class, b -> b.getCategory()));
 
-    timeValidator = new TimeHHMMValidator();
+    timeValidator = new TimeHHMMValidator(localized);
     validationRegistry.registerValidator(time, timeValidator);
-    validationRegistry.registerValidator(amount, new DoubleValidator());
-    validationRegistry.registerValidator(amount, new NotEmptyValidator());
-    validationRegistry.registerValidator(date, new NotNullValidator());
+    validationRegistry.registerValidator(amount, new DoubleValidator(localized));
+    validationRegistry.registerValidator(amount, new NotEmptyValidator(localized));
+    validationRegistry.registerValidator(date, new NotNullValidator(localized));
 
     book.disableProperty().bind(validationRegistry.invalidProperty());
 
-    controller.getJavaFXExecutor().submit(() -> categoryAutoCompletion = new CustomAutoCompletionBinding(category, this::supplyCategoryCompletion));
+//    controller.getJavaFXExecutor().submit(() -> categoryAutoCompletion = new CustomAutoCompletionBinding(category, this::supplyCategoryCompletion));
 
 
     lastTextChange = new LastTextChange(description, controller.getExecutorService());
@@ -92,19 +95,20 @@ public class CreateBookingController extends BaseController<Booking> {
     }, controller.getJavaFXExecutor()));
   }
 
-  protected List<String> supplyCategoryCompletion(AutoCompletionBinding.ISuggestionRequest request) {
-    if (request.getUserText() == null || request.getUserText().isEmpty()) {
-      return Collections.emptyList();
-    } else {
-      return PersistentWork.projection(Booking.class, true, MAX_AUTOCOMPLEITON_RESULTS, b -> b.getCategory(), (root, query, builder) -> {
-        Path<String> categoryPath = root.get(BookingLoadingHint.KEY_CATEGORY);
-        Expression<String> categoryPathLower = builder.lower(categoryPath);
-        String pattern = request.getUserText().toLowerCase(Locale.ROOT).trim() + "%";
-        query.where(builder.like(categoryPathLower, pattern));
-        query.orderBy(builder.asc(categoryPath));
-      });
-    }
-  }
+//  protected List<String> supplyCategoryCompletion(AutoCompletionBinding.ISuggestionRequest request) {
+//    if (request.getUserText() == null || request.getUserText().isEmpty()) {
+//      return Collections.emptyList();
+//    } else {
+//      return PersistentWork.projection(Booking.class, true, MAX_AUTOCOMPLEITON_RESULTS, b -> b.getCategory(), (root, query, builder) -> {
+//        Path<String> categoryPath = root.get(BookingLoadingHint.KEY_CATEGORY);
+//        Expression<String> categoryPathLower = builder.lower(categoryPath);
+//        String pattern = request.getUserText().toLowerCase(Locale.ROOT).trim() + "%";
+//        query.where(builder.like(categoryPathLower, pattern));
+//        query.orderBy(builder.asc(categoryPath));
+//      });
+//    }
+//  }
+  // FIXME: 12/20/15 
 
   @FXML
   protected void onBooking() {
@@ -119,7 +123,8 @@ public class CreateBookingController extends BaseController<Booking> {
 
   @Override
   public void onSuspend() {
-    Options.store(account.getValue(), CreateBookingOptions.class).getDefaultAccount();
+    // FIXME: 12/20/15 
+//    Options.store(account.getValue(), CreateBookingOptions.class).getDefaultAccount();
   }
 
   @Override
@@ -131,10 +136,11 @@ public class CreateBookingController extends BaseController<Booking> {
   public void onResume() {
     date.setValue(LocalDate.now());
 
-    CreateBookingOptions options = Options.get(CreateBookingOptions.class);
+    // FIXME: 12/20/15
+//    CreateBookingOptions options = options.get(CreateBookingOptions.class);
     String defaultAccount = options.getDefaultAccount();
 
-    CompletableFuture.supplyAsync(() -> PersistentWork.from(Account.class), controller.getExecutorService())//
+    CompletableFuture.supplyAsync(() -> persistentWork.from(Account.class), controller.getExecutorService())//
       .thenAcceptAsync(accounts -> {
         List<String> accountNames = accounts.stream().map(a -> a.getName()).collect(Collectors.toList());
         account.getItems().clear();
@@ -157,8 +163,8 @@ public class CreateBookingController extends BaseController<Booking> {
 
   @Override
   public void duringSave(Booking model) {
-    model.setAccount(PersistentWork.forName(Account.class, account.getValue()));
-    model.setAmount(Double.parseDouble(amount.getText()));
+    model.setAccount(persistentWork.forName(Account.class, account.getValue()));
+    model.setAmount(new BigDecimal(Double.parseDouble(amount.getText())));
     LocalTime bookingTime = timeValidator.getTime();
     if (bookingTime == null) {
       bookingTime = LocalTime.now();

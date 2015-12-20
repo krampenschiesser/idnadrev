@@ -16,13 +16,16 @@
 
 package de.ks.idnadrev.cost.entity;
 
-import javax.validation.constraints.NotNull;
+import de.ks.flatadocdb.annotation.Entity;
+import de.ks.flatadocdb.annotation.ToOne;
+import de.ks.flatadocdb.entity.NamedEntity;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Entity
-public class BookingCsvTemplate extends NamedPersistentObject<BookingCsvTemplate> {
+public class BookingCsvTemplate extends NamedEntity {
   private static final long serialVersionUID = 1L;
   protected String separator;
   protected String amountColumns;
@@ -33,11 +36,11 @@ public class BookingCsvTemplate extends NamedPersistentObject<BookingCsvTemplate
   protected String datePattern;
   protected boolean useComma;
 
-  @ManyToOne(optional = false)
-  @NotNull
+  @ToOne
   protected Account account;
 
   protected BookingCsvTemplate() {
+    super(null);
   }
 
   public BookingCsvTemplate(String name) {

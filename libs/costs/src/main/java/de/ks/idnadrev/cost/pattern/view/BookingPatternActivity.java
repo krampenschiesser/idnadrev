@@ -16,7 +16,9 @@
 
 package de.ks.idnadrev.cost.pattern.view;
 
-@MenuItem(value = "/main/cost", order = 34)
+import de.ks.standbein.activity.ActivityCfg;
+
+//@MenuItem(value = "/main/cost", order = 34)
 public class BookingPatternActivity extends ActivityCfg {
   public BookingPatternActivity() {
     super(BookingPatternDS.class, BookingPatternController.class);

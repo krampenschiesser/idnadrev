@@ -16,7 +16,9 @@
 
 package de.ks.idnadrev.cost.bookingview;
 
-@MenuItem(value = "/main/cost", order = 31)
+import de.ks.standbein.activity.ActivityCfg;
+
+//@MenuItem(value = "/main/cost", order = 31)
 public class BookingViewActivity extends ActivityCfg {
   public BookingViewActivity() {
     super(BookingViewDS.class, BookingViewController.class);

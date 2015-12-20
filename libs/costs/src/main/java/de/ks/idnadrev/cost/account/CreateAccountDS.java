@@ -16,6 +16,9 @@
 
 package de.ks.idnadrev.cost.account;
 
+import de.ks.flatjsondb.datasource.CreateEditDS;
+import de.ks.idnadrev.cost.entity.Account;
+
 public class CreateAccountDS extends CreateEditDS<Account> {
   public CreateAccountDS() {
     super(Account.class);

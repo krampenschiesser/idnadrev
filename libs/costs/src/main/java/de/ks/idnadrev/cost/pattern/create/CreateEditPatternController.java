@@ -16,6 +16,11 @@
 
 package de.ks.idnadrev.cost.pattern.create;
 
+import de.ks.idnadrev.cost.entity.BookingPattern;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.binding.Binding;
+import de.ks.standbein.validation.validators.NotEmptyValidator;
+import de.ks.standbein.validation.validators.RegexPatternValidator;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
@@ -52,8 +57,8 @@ public class CreateEditPatternController extends BaseController<BookingPattern> 
     BooleanProperty containsBinding = binding.getBooleanProperty(BookingPattern.class, b -> b.isSimpleContains());
     contains.selectedProperty().bindBidirectional(containsBinding);
 
-    Arrays.asList(name, pattern, category).forEach(t -> validationRegistry.registerValidator(t, new NotEmptyValidator()));
-    validationRegistry.registerValidator(pattern, new RegexPatternValidator());
+    Arrays.asList(name, pattern, category).forEach(t -> validationRegistry.registerValidator(t, new NotEmptyValidator(localized)));
+    validationRegistry.registerValidator(pattern, new RegexPatternValidator(localized));
     save.disableProperty().bind(validationRegistry.invalidProperty());
   }
 

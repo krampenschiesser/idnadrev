@@ -16,11 +16,12 @@
 
 package de.ks.idnadrev.cost.bookingview;
 
+import de.ks.idnadrev.cost.entity.Booking;
+import de.ks.standbein.reflection.PropertyPath;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Locale;
 
 public class BookingLoadingHint {
   public static final String KEY_ACCOUNT = PropertyPath.property(Booking.class, b -> b.getAccount());
@@ -96,35 +97,36 @@ public class BookingLoadingHint {
     return category;
   }
 
-  public void applyFilter(CriteriaQuery<?> query, CriteriaBuilder builder, Root<Booking> root, boolean filterDateRange) {
-    ArrayList<Predicate> predicates = new ArrayList<>();
-
-    Join<Booking, Account> account = root.join(KEY_ACCOUNT);
-    account.on(builder.equal(account.get("name"), accountName));
-
-    if (filterDateRange) {
-      predicates.add(builder.and(//
-              builder.greaterThanOrEqualTo(root.get(KEY_TIME), startDate),//
-              builder.lessThan(root.get(KEY_TIME), endDate)));
-    }
-
-    if (category != null) {
-      predicates.add(builder.like(builder.lower(root.get(KEY_CATEGORY)), "%" + category.trim().toLowerCase(Locale.ROOT) + "%"));
-    }
-    if (description != null) {
-      predicates.add(builder.like(builder.lower(root.get(KEY_DESCRIPTION)), "%" + description.trim().toLowerCase(Locale.ROOT) + "%"));
-    }
-    if (amount != null) {
-      double begin = amount - 0.001D;
-      double end = amount + 0.001D;
-      predicates.add(builder.greaterThan(root.get(KEY_AMOUNT), begin));
-      predicates.add(builder.lessThan(root.get(KEY_AMOUNT), end));
-    }
-
-    query.where(predicates.toArray(new Predicate[predicates.size()]));
-    if (filterDateRange) {
-      Order asc = builder.asc(root.get(KEY_TIME));
-      query.orderBy(asc);
-    }
-  }
+  // FIXME: 12/20/15
+//  public void applyFilter(CriteriaQuery<?> query, CriteriaBuilder builder, Root<Booking> root, boolean filterDateRange) {
+//    ArrayList<Predicate> predicates = new ArrayList<>();
+//
+//    Join<Booking, Account> account = root.join(KEY_ACCOUNT);
+//    account.on(builder.equal(account.get("name"), accountName));
+//
+//    if (filterDateRange) {
+//      predicates.add(builder.and(//
+//              builder.greaterThanOrEqualTo(root.get(KEY_TIME), startDate),//
+//              builder.lessThan(root.get(KEY_TIME), endDate)));
+//    }
+//
+//    if (category != null) {
+//      predicates.add(builder.like(builder.lower(root.get(KEY_CATEGORY)), "%" + category.trim().toLowerCase(Locale.ROOT) + "%"));
+//    }
+//    if (description != null) {
+//      predicates.add(builder.like(builder.lower(root.get(KEY_DESCRIPTION)), "%" + description.trim().toLowerCase(Locale.ROOT) + "%"));
+//    }
+//    if (amount != null) {
+//      double begin = amount - 0.001D;
+//      double end = amount + 0.001D;
+//      predicates.add(builder.greaterThan(root.get(KEY_AMOUNT), begin));
+//      predicates.add(builder.lessThan(root.get(KEY_AMOUNT), end));
+//    }
+//
+//    query.where(predicates.toArray(new Predicate[predicates.size()]));
+//    if (filterDateRange) {
+//      Order asc = builder.asc(root.get(KEY_TIME));
+//      query.orderBy(asc);
+//    }
+//  }
 }

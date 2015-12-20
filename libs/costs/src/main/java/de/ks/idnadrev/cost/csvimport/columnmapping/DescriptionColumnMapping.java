@@ -16,6 +16,9 @@
 
 package de.ks.idnadrev.cost.csvimport.columnmapping;
 
+import de.ks.idnadrev.cost.entity.Booking;
+import de.ks.standbein.reflection.PropertyPath;
+
 public class DescriptionColumnMapping extends BookingColumnMapping<String> {
   public DescriptionColumnMapping(int column) {
     super(column, PropertyPath.ofTypeSafe(Booking.class, b -> b.setDescription(null)));

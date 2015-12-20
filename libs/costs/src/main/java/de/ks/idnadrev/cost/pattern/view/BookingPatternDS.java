@@ -16,14 +16,21 @@
 
 package de.ks.idnadrev.cost.pattern.view;
 
+import de.ks.flatjsondb.PersistentWork;
+import de.ks.idnadrev.cost.entity.BookingPattern;
+import de.ks.standbein.datasource.ListDataSource;
+
+import javax.inject.Inject;
 import java.util.List;
 import java.util.function.Consumer;
 
 public class BookingPatternDS implements ListDataSource<BookingPattern> {
+  @Inject
+  PersistentWork persistentWork;
   @Override
   public List<BookingPattern> loadModel(Consumer<List<BookingPattern>> furtherProcessing) {
-    return PersistentWork.wrap(() -> {
-      List<BookingPattern> from = PersistentWork.from(BookingPattern.class);
+    return persistentWork.read(session -> {
+      List<BookingPattern> from = persistentWork.from(BookingPattern.class);
       furtherProcessing.accept(from);
       return from;
     });

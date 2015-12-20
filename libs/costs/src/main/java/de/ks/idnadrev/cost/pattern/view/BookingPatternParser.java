@@ -16,9 +16,12 @@
 
 package de.ks.idnadrev.cost.pattern.view;
 
+import de.ks.flatjsondb.PersistentWork;
+import de.ks.idnadrev.cost.entity.BookingPattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -28,6 +31,9 @@ public class BookingPatternParser {
   private static final Logger log = LoggerFactory.getLogger(BookingPatternParser.class);
   private List<BookingPattern> patterns = new LinkedList<>();
   private LocalDateTime latestModification;
+
+  @Inject
+  PersistentWork persistentWork;
 
   public Map<String, String> parseForCategory(Collection<String> lines) {
     HashMap<String, String> retval = new HashMap<>();
@@ -58,19 +64,20 @@ public class BookingPatternParser {
   }
 
   protected boolean checkPatternList() {
-    long count = PersistentWork.count(BookingPattern.class, null);
-    LocalDateTime lastUpdate = PersistentWork.lastUpdate(BookingPattern.class);
-    if (count != patterns.size()) {
-      return false;
-    }
-    if (lastUpdate != null && lastUpdate.compareTo(this.latestModification) != 0) {
-      return false;
-    }
+    // FIXME: 12/20/15
+//    long count = persistentWork.count(BookingPattern.class, null);
+//    LocalDateTime lastUpdate = persistentWork.lastUpdate(BookingPattern.class);
+//    if (count != patterns.size()) {
+//      return false;
+//    }
+//    if (lastUpdate != null && lastUpdate.compareTo(this.latestModification) != 0) {
+//      return false;
+//    }
     return true;
   }
 
   protected synchronized void loadPatternList() {
-    List<BookingPattern> reloaded = PersistentWork.from(BookingPattern.class);
+    List<BookingPattern> reloaded = persistentWork.from(BookingPattern.class);
     if (reloaded.size() > 0) {
       latestModification = reloaded.stream().map(b -> b.getUpdateTime() == null ? b.getCreationTime() : b.getUpdateTime()).max(LocalDateTime::compareTo).get();
     } else {

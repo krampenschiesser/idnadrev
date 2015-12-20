@@ -18,7 +18,7 @@ package de.ks.idnadrev.cost.account;
 
 import de.ks.standbein.activity.ActivityCfg;
 
-@MenuItem(value = "/main/cost", order = 35)
+//@MenuItem(value = "/main/cost", order = 35)
 public class CreateAccountActivity extends ActivityCfg {
   public CreateAccountActivity() {
     super(CreateAccountDS.class, CreateAccountController.class);

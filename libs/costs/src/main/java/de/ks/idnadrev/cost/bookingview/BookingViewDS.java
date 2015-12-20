@@ -16,18 +16,29 @@
 
 package de.ks.idnadrev.cost.bookingview;
 
+import de.ks.flatjsondb.PersistentWork;
+import de.ks.idnadrev.cost.entity.Account;
+import de.ks.idnadrev.cost.entity.Booking;
+import de.ks.standbein.datasource.DataSource;
+import de.ks.standbein.i18n.Localized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
 public class BookingViewDS implements DataSource<BookingViewModel> {
   private static final Logger log = LoggerFactory.getLogger(BookingViewDS.class);
   private BookingLoadingHint loadingHint;
+  @Inject
+  PersistentWork persistentWork;
+  @Inject
+  Localized localized;
 
   @Override
   public BookingViewModel loadModel(Consumer<BookingViewModel> furtherProcessing) {
@@ -35,18 +46,19 @@ public class BookingViewDS implements DataSource<BookingViewModel> {
       return new BookingViewModel();
     } else {
 
-      List<Booking> bookings = PersistentWork.from(Booking.class, (root, query, builder) -> {
-        loadingHint.applyFilter(query, builder, root, true);
-      }, null);
+      List<Booking> bookings = Collections.emptyList();
+//      List<Booking> bookings = persistentWork.from(Booking.class, (root, query, builder) -> {
+//        loadingHint.applyFilter(query, builder, root, true);
+//      }, null);
       if (!bookings.isEmpty()) {
         Booking totalBefore = getTotalBefore(bookings.get(0).getBookingTime());
         bookings = new ArrayList<>(bookings);
 
         Booking totalAfter = getTotalBeforeIncluding(bookings.get(bookings.size() - 1).getBookingTime());
 
-        double sum = bookings.stream().mapToDouble(Booking::getAmount).sum();
-        Account account = PersistentWork.forName(Account.class, loadingHint.getAccountName());
-        Booking sumBooking = new Booking(account, sum, false).setBookingTime(totalAfter.getBookingTime()).setDescription(Localized.get("sum"));
+        double sum = bookings.stream().mapToDouble(b -> b.getAmount().doubleValue()).sum();
+        Account account = persistentWork.forName(Account.class, loadingHint.getAccountName());
+        Booking sumBooking = new Booking(account, new BigDecimal(sum), false).setBookingTime(totalAfter.getBookingTime()).setDescription(localized.get("sum"));
 
         bookings.add(0, totalBefore);
         bookings.add(sumBooking);
@@ -65,27 +77,29 @@ public class BookingViewDS implements DataSource<BookingViewModel> {
   }
 
   private Booking getTotal(LocalDateTime date, boolean includeDate) {
-    return PersistentWork.read(em -> {
-      CriteriaBuilder builder = em.getCriteriaBuilder();
-
-      CriteriaQuery<Double> query = builder.createQuery(Double.class);
-      Root<Booking> from = query.from(Booking.class);
-      loadingHint.applyFilter(query, builder, from, false);
-      query.select(builder.sum(from.get(BookingLoadingHint.KEY_AMOUNT)));
-      List<Predicate> restriction = new LinkedList<>();
-      restriction.add(query.getRestriction());
-      if (includeDate) {
-        restriction.add(builder.lessThanOrEqualTo(from.get(BookingLoadingHint.KEY_TIME), date));
-      } else {
-        restriction.add(builder.lessThan(from.get(BookingLoadingHint.KEY_TIME), date));
-      }
-      query.where(restriction.toArray(new Predicate[2]));
-
-      Double result = em.createQuery(query).getSingleResult();
-      log.debug("Sum of bookins before {}: {}", date, result);
-      Account account = PersistentWork.forName(Account.class, loadingHint.getAccountName());
-      return new Booking(account, result == null ? 0D : result, false).setBookingTime(date).setDescription(Localized.get("total"));
-    });
+    // FIXME: 12/20/15
+//    return PersistentWork.read(em -> {
+//      CriteriaBuilder builder = em.getCriteriaBuilder();
+//
+//      CriteriaQuery<Double> query = builder.createQuery(Double.class);
+//      Root<Booking> from = query.from(Booking.class);
+//      loadingHint.applyFilter(query, builder, from, false);
+//      query.select(builder.sum(from.get(BookingLoadingHint.KEY_AMOUNT)));
+//      List<Predicate> restriction = new LinkedList<>();
+//      restriction.add(query.getRestriction());
+//      if (includeDate) {
+//        restriction.add(builder.lessThanOrEqualTo(from.get(BookingLoadingHint.KEY_TIME), date));
+//      } else {
+//        restriction.add(builder.lessThan(from.get(BookingLoadingHint.KEY_TIME), date));
+//      }
+//      query.where(restriction.toArray(new Predicate[2]));
+//
+//      Double result = em.createQuery(query).getSingleResult();
+//      log.debug("Sum of bookins before {}: {}", date, result);
+//      Account account = PersistentWork.forName(Account.class, loadingHint.getAccountName());
+//      return new Booking(account, result == null ? 0D : result, false).setBookingTime(date).setDescription(Localized.get("total"));
+//    });
+    return null;
   }
 
   @Override

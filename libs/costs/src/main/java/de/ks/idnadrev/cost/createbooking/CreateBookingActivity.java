@@ -16,7 +16,9 @@
 
 package de.ks.idnadrev.cost.createbooking;
 
-@MenuItem(value = "/main/cost", order = 32)
+import de.ks.standbein.activity.ActivityCfg;
+
+//@MenuItem(value = "/main/cost", order = 32)
 public class CreateBookingActivity extends ActivityCfg {
   public CreateBookingActivity() {
     super(CreateBookingDS.class, CreateBookingController.class);

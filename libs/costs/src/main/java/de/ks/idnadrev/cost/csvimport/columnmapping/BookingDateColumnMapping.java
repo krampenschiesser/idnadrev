@@ -16,6 +16,9 @@
 
 package de.ks.idnadrev.cost.csvimport.columnmapping;
 
+import de.ks.idnadrev.cost.entity.Booking;
+import de.ks.standbein.reflection.PropertyPath;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 

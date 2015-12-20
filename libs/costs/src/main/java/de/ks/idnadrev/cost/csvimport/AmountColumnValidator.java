@@ -16,28 +16,38 @@
 
 package de.ks.idnadrev.cost.csvimport;
 
+import de.ks.standbein.i18n.Localized;
+import de.ks.standbein.validation.ValidationMessage;
+import de.ks.standbein.validation.ValidationResult;
+import de.ks.standbein.validation.Validator;
 import javafx.scene.control.Control;
-import org.controlsfx.validation.ValidationResult;
-import org.controlsfx.validation.Validator;
 
+import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.OptionalInt;
 
-public class AmountColumnValidator implements Validator<String> {
+public class AmountColumnValidator implements Validator<Control, String> {
+  protected final Localized localized;
+
+  @Inject
+  public AmountColumnValidator(Localized localized) {
+    this.localized = localized;
+  }
+
   @Override
   public ValidationResult apply(Control control, String s) {
     String[] split = s.split("\\,");
     try {
       OptionalInt first = Arrays.asList(split).stream().mapToInt(val -> Integer.valueOf(val)).filter(i -> i < 0).findFirst();
       if (first.isPresent()) {
-        return ValidationResult.fromError(control, Localized.get("validation.number.greaterEquals", 0));
+        return new ValidationResult().add(new ValidationMessage(localized.get("validation.number.greaterEquals", 0)));
       }
       first = Arrays.asList(split).stream().mapToInt(val -> Integer.valueOf(val)).filter(i -> i > 100).findFirst();
       if (first.isPresent()) {
-        return ValidationResult.fromError(control, Localized.get("validation.number.lessThan", 100));
+        return new ValidationResult().add(new ValidationMessage(localized.get("validation.number.lessThan", 100)));
       }
     } catch (NumberFormatException e) {
-      return ValidationResult.fromError(control, Localized.get("validation.mustBeInteger"));
+      return new ValidationResult().add(new ValidationMessage(localized.get("validation.mustBeInteger")));
     }
     return null;
   }

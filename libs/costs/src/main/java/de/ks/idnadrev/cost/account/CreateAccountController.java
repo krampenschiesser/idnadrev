@@ -16,6 +16,9 @@
 
 package de.ks.idnadrev.cost.account;
 
+import de.ks.idnadrev.cost.entity.Account;
+import de.ks.standbein.BaseController;
+import de.ks.standbein.validation.validators.NotEmptyValidator;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -34,8 +37,9 @@ public class CreateAccountController extends BaseController<Account> {
     name.textProperty().bindBidirectional(store.getBinding().getStringProperty(Account.class, a -> a.getName()));
 
     save.disableProperty().bind(validationRegistry.invalidProperty().and(store.loadingProperty()));
-    validationRegistry.registerValidator(name, new NotEmptyValidator());
-    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(Account.class));
+    validationRegistry.registerValidator(name, new NotEmptyValidator(localized));
+//    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(Account.class));
+    // FIXME: 12/20/15
   }
 
   @FXML

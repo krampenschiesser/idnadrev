@@ -16,6 +16,9 @@
 
 package de.ks.idnadrev.cost.csvimport.columnmapping;
 
+import de.ks.idnadrev.cost.entity.Booking;
+import de.ks.standbein.reflection.PropertyPath;
+
 public abstract class BookingColumnMapping<T> {
   private final int column;
   private final PropertyPath bookingPath;

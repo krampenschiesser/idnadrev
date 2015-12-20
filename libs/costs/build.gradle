@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-package de.ks.idnadrev.cost.csvimport;
-
-import de.ks.standbein.activity.ActivityCfg;
-
-//@MenuItem(value = "/main/cost", order = 33)
-public class BookingFromCSVActivity extends ActivityCfg {
-  public BookingFromCSVActivity() {
-    super(BookingFromCSVDS.class, BookingFromCSVController.class);
-  }
+dependencies {
+    compile project(":libs:flatjsondbaccess")
 }

@@ -17,6 +17,9 @@
 package de.ks.idnadrev.cost.csvimport;
 
 import com.google.common.base.StandardSystemProperty;
+import de.ks.idnadrev.cost.bookingview.BookingViewTableController;
+import de.ks.idnadrev.cost.entity.Booking;
+import de.ks.standbein.BaseController;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
@@ -52,7 +55,7 @@ public class BookingFromCSVController extends BaseController<ImporterBookingView
   public void initialize(URL location, ResourceBundle resources) {
     controller.getJavaFXExecutor().submit(() -> accordion.setExpandedPane(lineTab));
     TableColumn<Booking, Boolean> markedColumn = bookingTableController.getMarkedColumn();
-    markedColumn.setText(Localized.get("import"));
+    markedColumn.setText(localized.get("import"));
 
   }
 
@@ -75,7 +78,7 @@ public class BookingFromCSVController extends BaseController<ImporterBookingView
   @FXML
   public void onSelectFile() {
     FileChooser fileChooser = new FileChooser();
-    fileChooser.setTitle(Localized.get("import.select.csv.file"));
+    fileChooser.setTitle(localized.get("import.select.csv.file"));
     String homeDir = StandardSystemProperty.USER_HOME.value();
     fileChooser.setInitialDirectory(new File(homeDir));
 

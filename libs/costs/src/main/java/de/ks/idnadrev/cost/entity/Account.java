@@ -16,19 +16,23 @@
 
 package de.ks.idnadrev.cost.entity;
 
+import de.ks.flatadocdb.annotation.Entity;
+import de.ks.flatadocdb.annotation.ToMany;
+import de.ks.flatadocdb.entity.NamedEntity;
+
 import java.util.LinkedList;
 import java.util.List;
 
 @Entity
-public class Account extends NamedPersistentObject<Account> {
+public class Account extends NamedEntity {
   private static final long serialVersionUID = 1L;
   protected String owner;
 
-  @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true, mappedBy = "account")
-  @OrderBy("bookingTime ASC")
+  @ToMany
   protected List<Booking> bookings = new LinkedList<>();
 
-  public Account() {
+  protected Account() {
+    super(null);
   }
 
   public Account(String name) {

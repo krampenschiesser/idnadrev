@@ -16,6 +16,9 @@
 
 package de.ks.idnadrev.cost.csvimport;
 
+import de.ks.idnadrev.cost.bookingview.BookingViewModel;
+import de.ks.idnadrev.cost.entity.Booking;
+
 import java.util.LinkedList;
 import java.util.List;
 
