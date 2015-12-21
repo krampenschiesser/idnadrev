@@ -16,6 +16,11 @@
 
 package de.ks.idnadrev.cost.csvimport;
 
+import de.ks.idnadrev.cost.csvimport.columnmapping.AmountColumnMapping;
+import de.ks.idnadrev.cost.csvimport.columnmapping.BookingColumnMapping;
+import de.ks.idnadrev.cost.csvimport.columnmapping.BookingDateColumnMapping;
+import de.ks.idnadrev.cost.csvimport.columnmapping.DescriptionColumnMapping;
+import de.ks.idnadrev.cost.entity.Booking;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
@@ -33,6 +38,7 @@ public class BookingFromCSVImporterTest {
   private BookingFromCSVImporter importer;
   private static final String simpleAddBooking = "02.16.2015;DE4711;DE0815;Simple adding test createbooking;;31.34;EUR";
   private static final String simpleSubBooking = "03.17.2015;DE4711;;Simple subtracting test createbooking;-7,12;;EUR";
+
 
   @Test
   public void testDamnFormatter() throws Exception {
@@ -78,8 +84,8 @@ public class BookingFromCSVImporterTest {
     assertEquals(firstDate, first.getBookingTime());
     assertEquals(secondDate, second.getBookingTime());
 
-    assertEquals(31.34, first.getAmount(), 0.0001);
-    assertEquals(-7.12, second.getAmount(), 0.0001);
+    assertEquals(31.34, first.getAmount().doubleValue(), 0.0001);
+    assertEquals(-7.12, second.getAmount().doubleValue(), 0.0001);
   }
 
   @Test
@@ -87,10 +93,10 @@ public class BookingFromCSVImporterTest {
     BookingColumnMapping<Double> value1 = new AmountColumnMapping(0, true);
     Booking booking = new Booking();
     value1.apply(booking, new String[]{"31.389,34"});
-    assertEquals(31389.34, booking.getAmount(), 0.001);
+    assertEquals(31389.34, booking.getAmount().doubleValue(), 0.001);
 
     value1 = new AmountColumnMapping(0, false);
     value1.apply(booking, new String[]{"31,389.34"});
-    assertEquals(31389.34, booking.getAmount(), 0.001);
+    assertEquals(31389.34, booking.getAmount().doubleValue(), 0.001);
   }
 }

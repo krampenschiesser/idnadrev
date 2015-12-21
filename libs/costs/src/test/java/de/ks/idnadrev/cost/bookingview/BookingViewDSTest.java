@@ -16,40 +16,53 @@
 
 package de.ks.idnadrev.cost.bookingview;
 
+import de.ks.flatjsondb.PersistentWork;
+import de.ks.idnadrev.cost.entity.Account;
+import de.ks.idnadrev.cost.entity.Booking;
+import de.ks.idnadrev.cost.module.CostModule;
+import de.ks.standbein.IntegrationTestModule;
+import de.ks.standbein.LoggingGuiceTestSupport;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(LauncherRunner.class)
+//@RunWith(LauncherRunner.class)
 public class BookingViewDSTest {
-  @Inject
-  Cleanup cleanup;
+  @Rule
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new CostModule(), new IntegrationTestModule());
+
+  //  @Inject
+//  Cleanup cleanup;
   private BookingViewDS datasource;
+
+  @Inject
+  PersistentWork persistentWork;
 
   @Before
   public void setUp() throws Exception {
-    cleanup.cleanup();
+//    cleanup.cleanup();
 
-    PersistentWork.run(em -> {
+    persistentWork.run(em -> {
       Account account1 = new Account("testAccount1");
-      PersistentWork.persist(account1);
+      persistentWork.persist(account1);
       int amount = 15;
       LocalDateTime dateTime = LocalDateTime.now().minusDays(amount);
       for (int i = 0; i < amount; i++) {
-        Booking booking = new Booking(account1, (i + 1) * 10);
+        Booking booking = new Booking(account1, new BigDecimal((i + 1) * 10));
         booking.setDescription("createbooking #" + i);
         booking.setCategory("Category" + i % 5);
         booking.setBookingTime(dateTime.plusDays(i));
-        PersistentWork.persist(booking);
+        persistentWork.persist(booking);
       }
-      Booking booking = new Booking(account1, -42);
+      Booking booking = new Booking(account1, new BigDecimal(-42));
       booking.setBookingTime(dateTime);
-      PersistentWork.persist(booking);
+      persistentWork.persist(booking);
     });
     datasource = new BookingViewDS();
   }
@@ -88,7 +101,7 @@ public class BookingViewDSTest {
     datasource.setLoadingHint(hint);
     BookingViewModel model = datasource.loadModel(null);
     assertEquals(4, model.bookings.size());
-    assertEquals(-42D, model.getBookings().get(1).getAmount(), 0.01D);
+    assertEquals(-42D, model.getBookings().get(1).getAmount().doubleValue(), 0.01D);
   }
 
   @Test

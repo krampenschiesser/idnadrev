@@ -125,4 +125,11 @@ public class PersistentWork {
   public <E> E byId(String id) {
     return read(session -> session.findById(id));
   }
+
+  public void deleteAllOf(Class<?> clazz) {
+    run(session -> {
+      Collection<IndexElement> all = session.getRepository().getIndex().getAllOf(clazz);
+      all.forEach(session::remove);
+    });
+  }
 }

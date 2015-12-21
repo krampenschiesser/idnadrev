@@ -16,24 +16,39 @@
 
 package de.ks.idnadrev.cost.csvimport;
 
+import de.ks.flatjsondb.PersistentWork;
+import de.ks.idnadrev.cost.entity.Account;
+import de.ks.idnadrev.cost.entity.BookingCsvTemplate;
+import de.ks.idnadrev.cost.module.CostModule;
+import de.ks.standbein.ActivityTest;
+import de.ks.standbein.Condition;
+import de.ks.standbein.IntegrationTestModule;
+import de.ks.standbein.LoggingGuiceTestSupport;
+import de.ks.standbein.activity.ActivityCfg;
+import de.ks.util.FXPlatform;
 import org.hamcrest.Matchers;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
+import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
 
-@RunWith(LauncherRunner.class)
 public class BookingFromCSVActivityTemplatingTest extends ActivityTest {
+  @Rule
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new CostModule(), new IntegrationTestModule());
+  @Inject
+  PersistentWork persistentWork;
+
   @Override
   protected Class<? extends ActivityCfg> getActivityClass() {
     return BookingFromCSVActivity.class;
   }
 
   @Override
-  protected void createTestData(EntityManager em) {
+  protected void beforeActivityStart() throws Exception {
     Account account1 = new Account("account1");
     Account account2 = new Account("account2");
 
@@ -43,10 +58,10 @@ public class BookingFromCSVActivityTemplatingTest extends ActivityTest {
     BookingCsvTemplate template2 = new BookingCsvTemplate("template2");
     template2.setAccount(account1).setSeparator(",").setDateColumn(0).setTimeColumn(0).setDescriptionColumn(2).setAmountColumns(Arrays.asList(5)).setDatePattern("M/d/y").setTimePattern("M/d/y H:m");
 
-    em.persist(account1);
-    em.persist(account2);
-    em.persist(template1);
-    em.persist(template2);
+    persistentWork.persist(account1);
+    persistentWork.persist(account2);
+    persistentWork.persist(template1);
+    persistentWork.persist(template2);
   }
 
   @Test
@@ -97,7 +112,7 @@ public class BookingFromCSVActivityTemplatingTest extends ActivityTest {
       controller.onSaveTemplate("template3");
     });
 
-    List<BookingCsvTemplate> templates = PersistentWork.from(BookingCsvTemplate.class);
+    List<BookingCsvTemplate> templates = persistentWork.from(BookingCsvTemplate.class);
     assertEquals(3, templates.size());
 
     BookingCsvTemplate template = templates.stream().filter(t -> t.getName().endsWith("3")).findFirst().get();

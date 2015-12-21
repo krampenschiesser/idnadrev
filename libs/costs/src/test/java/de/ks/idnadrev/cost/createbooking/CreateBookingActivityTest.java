@@ -16,21 +16,38 @@
 
 package de.ks.idnadrev.cost.createbooking;
 
+import de.ks.flatjsondb.PersistentWork;
+import de.ks.idnadrev.cost.entity.Account;
+import de.ks.idnadrev.cost.entity.Booking;
+import de.ks.idnadrev.cost.module.CostModule;
+import de.ks.standbein.ActivityTest;
+import de.ks.standbein.IntegrationTestModule;
+import de.ks.standbein.LoggingGuiceTestSupport;
+import de.ks.standbein.activity.ActivityCfg;
+import de.ks.util.FXPlatform;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
+import javax.inject.Inject;
 import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.Assert.*;
 
-@RunWith(LauncherRunner.class)
+//@RunWith(LauncherRunner.class)
 public class CreateBookingActivityTest extends ActivityTest {
 
+  @Rule
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new CostModule(), new IntegrationTestModule());
+
+  @Inject
+  PersistentWork persistentWork;
+
   @Override
-  protected void createTestData(EntityManager em) {
+  protected void beforeActivityStart() throws Exception {
+    super.beforeActivityStart();
     Account testAccount = new Account("testAccount");
-    em.persist(testAccount);
+    persistentWork.persist(testAccount);
   }
 
   @Override
@@ -62,11 +79,11 @@ public class CreateBookingActivityTest extends ActivityTest {
       controller.onBooking();
     });
     activityController.waitForDataSource();
-    List<Booking> bookings = PersistentWork.from(Booking.class);
+    List<Booking> bookings = persistentWork.from(Booking.class);
     assertEquals(1, bookings.size());
     Booking booking = bookings.get(0);
     assertNotNull(booking.getAccount());
-    assertEquals(123, booking.getAmount(), 0.01D);
+    assertEquals(123, booking.getAmount().doubleValue(), 0.01D);
     assertEquals(LocalDate.now(), booking.getBookingTime().toLocalDate());
     assertEquals("Steak", booking.getCategory());
     assertEquals("1KG", booking.getDescription());
