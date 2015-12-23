@@ -15,9 +15,6 @@
 
 package de.ks.idnadrev;
 
-import de.ks.standbein.application.ApplicationService;
-import de.ks.standbein.launch.Launcher;
-import de.ks.standbein.version.Versioning;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,19 +26,18 @@ import java.util.concurrent.ExecutionException;
  */
 public class Application {
   private static final Logger log = LoggerFactory.getLogger(Application.class);
-  public static final Versioning versioning = new Versioning(getVersionFile(), Application.class);
 
   public static void main(String[] args) throws ExecutionException, InterruptedException {
-    log.info("Starting {}, currentVersion={}, lastVersion = {}", versioning.getVersionInfo().getDescription(), versioning.getCurrentVersion(), versioning.getLastVersion());
-    versioning.upgradeToCurrentVersion();
+//    log.info("Starting {}, currentVersion={}, lastVersion = {}", versioning.getVersionInfo().getDescription(), versioning.getCurrentVersion(), versioning.getLastVersion());
+//    versioning.upgradeToCurrentVersion();
 
-    Launcher launcher = Launcher.instance;
-    launcher.setPreloader(IdnadrevPreloader.class);
-    launcher.startAll(args);
-    launcher.awaitStart();
-    launcher.getService(ApplicationService.class).waitUntilFXFinished();
-    launcher.stopAll();
-    launcher.awaitStop();
+//    Launcher launcher = Launcher.instance;
+//    launcher.setPreloader(IdnadrevPreloader.class);
+//    launcher.startAll(args);
+//    launcher.awaitStart();
+//    launcher.getService(ApplicationService.class).waitUntilFXFinished();
+//    launcher.stopAll();
+//    launcher.awaitStop();
     log.info("Finishing main");
   }
 

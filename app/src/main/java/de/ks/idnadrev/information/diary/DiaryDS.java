@@ -57,7 +57,7 @@ public class DiaryDS implements DataSource<DiaryInfo> {
   }
 //// FIXME: 12/17/15
 //  private List<LocalDate> readAllDates() {
-//    return PersistentWork.read(em -> {
+//    return persistentWork.read(em -> {
 //      CriteriaBuilder builder = em.getCriteriaBuilder();
 //      CriteriaQuery<LocalDate> query = builder.createQuery(LocalDate.class);
 //      Root<DiaryInfo> root = query.from(DiaryInfo.class);
@@ -73,7 +73,7 @@ public class DiaryDS implements DataSource<DiaryInfo> {
 //  }
 //
 //  private DiaryInfo getExistingDiaryInfo(Consumer<DiaryInfo> furtherProcessing) {
-//    return PersistentWork.read(em -> {
+//    return persistentWork.read(em -> {
 //      CriteriaBuilder builder = em.getCriteriaBuilder();
 //      CriteriaQuery<DiaryInfo> query = builder.createQuery(DiaryInfo.class);
 //      Root<DiaryInfo> root = query.from(DiaryInfo.class);

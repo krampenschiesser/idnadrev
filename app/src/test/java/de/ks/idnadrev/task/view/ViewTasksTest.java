@@ -14,24 +14,39 @@
  */
 package de.ks.idnadrev.task.view;
 
+import de.ks.flatadocdb.session.Session;
+import de.ks.idnadrev.ActivityTest;
+import de.ks.idnadrev.entity.Context;
+import de.ks.idnadrev.entity.Tag;
+import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.task.create.CreateTaskActivity;
+import de.ks.idnadrev.task.create.MainTaskInfo;
+import de.ks.standbein.IntegrationTestModule;
+import de.ks.standbein.LoggingGuiceTestSupport;
+import de.ks.standbein.activity.ActivityCfg;
+import de.ks.standbein.activity.ActivityController;
+import de.ks.util.FXPlatform;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableView;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.List;
 
-import static de.ks.JunitMatchers.withRetry;
+import static de.ks.standbein.JunitMatchers.withRetry;
 import static org.junit.Assert.*;
 
-@RunWith(LauncherRunner.class)
 public class ViewTasksTest extends ActivityTest {
   private static final Logger log = LoggerFactory.getLogger(ViewTasksTest.class);
+
+  @Rule
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule());
+
   @Inject
   ActivityController activityController;
   private ViewTasks controller;
@@ -44,8 +59,8 @@ public class ViewTasksTest extends ActivityTest {
   }
 
   @Override
-  protected void createTestData(EntityManager em) {
-    PersistentWork.deleteAllOf(FileReference.class, Sequence.class, WorkUnit.class, Task.class, Context.class, Tag.class);
+  protected void createTestData(Session session) {
+    persistentWork.removeAllOf(Tag.class);
 
     Context context = new Context("context");
 
@@ -62,7 +77,7 @@ public class ViewTasksTest extends ActivityTest {
     Task other = new Task("other").setContext(context);
     Task noContext = new Task("noContext");
 
-    PersistentWork.persist(context, project1, other, noContext);
+    persistentWork.persist(context, project1, other, noContext);
   }
 
   @Before
@@ -86,7 +101,7 @@ public class ViewTasksTest extends ActivityTest {
 
   @Test
   public void testDeleteProject() throws Exception {
-    List<Task> from = PersistentWork.from(Task.class);
+    List<Task> from = persistentWork.from(Task.class);
     assertEquals(9, from.size());
 
     TreeItem<Task> project = tasksView.getRoot().getChildren().get(2);
@@ -94,7 +109,7 @@ public class ViewTasksTest extends ActivityTest {
 
     controller.deleteTask();
 
-    from = PersistentWork.from(Task.class);
+    from = persistentWork.from(Task.class);
     assertEquals(2, from.size());
   }
 
@@ -115,7 +130,7 @@ public class ViewTasksTest extends ActivityTest {
 
   @Test
   public void testContextFiltering() throws Exception {
-    FXPlatform.invokeLater(() -> master.contextSelection.setValue(Localized.get("all")));
+    FXPlatform.invokeLater(() -> master.contextSelection.setValue(localized.get("all")));
 
     TreeItem<Task> root = tasksView.getRoot();
 
@@ -154,8 +169,8 @@ public class ViewTasksTest extends ActivityTest {
 
     withRetry(() -> ViewTasksActvity.class.getSimpleName().equals(activityController.getCurrentActivityId()));
     activityController.waitForTasks();
-    PersistentWork.wrap(() -> {
-      Task child = PersistentWork.forName(Task.class, "steak");
+    persistentWork.run(session -> {
+      Task child = persistentWork.forName(Task.class, "steak");
       assertNotNull(child.getParent());
       assertEquals("project1", child.getParent().getName());
     });
@@ -180,8 +195,8 @@ public class ViewTasksTest extends ActivityTest {
 
     withRetry(() -> ViewTasksActvity.class.getSimpleName().equals(activityController.getCurrentActivityId()));
     activityController.waitForTasks();
-    PersistentWork.wrap(() -> {
-      Task child = PersistentWork.forName(Task.class, "steak");
+    persistentWork.run(session -> {
+      Task child = persistentWork.forName(Task.class, "steak");
       Task parent = child.getParent();
       assertNotNull(parent);
       assertEquals("noContext", parent.getName());

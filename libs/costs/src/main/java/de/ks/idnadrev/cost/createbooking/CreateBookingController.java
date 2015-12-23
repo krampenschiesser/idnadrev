@@ -99,7 +99,7 @@ public class CreateBookingController extends BaseController<Booking> {
 //    if (request.getUserText() == null || request.getUserText().isEmpty()) {
 //      return Collections.emptyList();
 //    } else {
-//      return PersistentWork.projection(Booking.class, true, MAX_AUTOCOMPLEITON_RESULTS, b -> b.getCategory(), (root, query, builder) -> {
+//      return persistentWork.projection(Booking.class, true, MAX_AUTOCOMPLEITON_RESULTS, b -> b.getCategory(), (root, query, builder) -> {
 //        Path<String> categoryPath = root.get(BookingLoadingHint.KEY_CATEGORY);
 //        Expression<String> categoryPathLower = builder.lower(categoryPath);
 //        String pattern = request.getUserText().toLowerCase(Locale.ROOT).trim() + "%";

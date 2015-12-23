@@ -50,7 +50,7 @@ public class InformationOverviewDS implements ListDataSource<InformationPreviewI
     List<String> tags = loadingHint.getTags();
 //    Category category = loadingHint.getCategory();
 // FIXME: 12/17/15 
-//    List<InformationPreviewItem> retval = PersistentWork.read(em -> {
+//    List<InformationPreviewItem> retval = persistentWork.read(em -> {
 //      CriteriaBuilder builder = em.getCriteriaBuilder();
 //
 //      List<InformationPreviewItem> items = new ArrayList<>();

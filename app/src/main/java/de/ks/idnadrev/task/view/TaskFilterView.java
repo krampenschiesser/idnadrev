@@ -129,7 +129,7 @@ public class TaskFilterView extends BaseController<Void> {
     // FIXME: 12/15/15 
 //    String parentProjectName = parentProjectController.getInput().textProperty().getValueSafe().trim();
 //    if (parentProjectController.getSelectedValue() == null && !parentProjectName.isEmpty()) {
-//      return PersistentWork.forName(Task.class, parentProjectName);
+//      return persistentWork.forName(Task.class, parentProjectName);
 //    }
 //    return parentProjectController.getSelectedValue();
     return null;

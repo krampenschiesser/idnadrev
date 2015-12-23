@@ -249,7 +249,7 @@ public class FileViewController implements Initializable, DatasourceCallback<Fil
         FileReference fileReference = cf.get();
         model.getFiles().remove(fileReference);
         // FIXME: 12/17/15
-//        model.addFileReference(PersistentWork.reload(fileReference));//ensure it is saved
+//        model.addFileReference(persistentWork.reload(fileReference));//ensure it is saved
 //        if (fileReference.getId() > 0) {
 //          return;
 //        }
@@ -262,7 +262,7 @@ public class FileViewController implements Initializable, DatasourceCallback<Fil
         log.info("Adding file reference {}", fileReference);
 
 //        // FIXME: 12/17/15 
-//        PersistentWork.persist(fileReference);
+//        persistentWork.persist(fileReference);
       } catch (InterruptedException | ExecutionException e) {
         log.error("Could not get fileReference for file {}", entry.getKey());
         throw new RuntimeException(e);

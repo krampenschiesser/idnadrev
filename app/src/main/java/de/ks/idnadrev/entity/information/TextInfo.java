@@ -14,15 +14,16 @@
  */
 package de.ks.idnadrev.entity.information;
 
+import de.ks.flatadocdb.annotation.Entity;
+import de.ks.idnadrev.entity.FileContainer;
+import de.ks.idnadrev.entity.FileReference;
+
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@AssociationOverrides(@AssociationOverride(name = "tags", joinTable = @JoinTable(name = "textinfo_tag")))
 public class TextInfo extends Information<TextInfo> implements FileContainer<TextInfo> {
   private static final long serialVersionUID = 1L;
-  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-  @JoinTable(name = "textinfo_file")
   protected Set<FileReference> files = new HashSet<>();
 
   protected TextInfo() {

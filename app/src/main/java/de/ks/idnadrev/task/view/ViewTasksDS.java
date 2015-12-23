@@ -42,7 +42,7 @@ public class ViewTasksDS implements ListDataSource<Task> {
     return Collections.emptyList();
     // FIXME: 12/15/15 
 //    return persistentWork.run(session -> {
-//      List<Task> from = PersistentWork.read((em) -> {
+//      List<Task> from = persistentWork.read((em) -> {
 //        CriteriaBuilder builder = em.getCriteriaBuilder();
 //        CriteriaQuery<Task> query = builder.createQuery(Task.class);
 //
@@ -54,7 +54,7 @@ public class ViewTasksDS implements ListDataSource<Task> {
 //        }
 //
 //        List<Task> resultList = em.createQuery(query).getResultList();
-//        Task parentTask = PersistentWork.reload(taskFilterView.getParentTask());
+//        Task parentTask = persistentWork.reload(taskFilterView.getParentTask());
 //        if (parentTask != null) {
 //          resultList = resultList.stream().filter(t -> t.hasParent(parentTask)).collect(Collectors.toList());
 //          if (!resultList.contains(parentTask)) {

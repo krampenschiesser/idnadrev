@@ -15,9 +15,17 @@
 
 package de.ks.idnadrev.task.choosenext;
 
+import de.ks.flatadocdb.session.Session;
+import de.ks.flatjsondb.PersistentWork;
+import de.ks.idnadrev.entity.Context;
+import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.entity.TaskState;
+import de.ks.idnadrev.entity.WorkUnit;
+import de.ks.standbein.IntegrationTestModule;
+import de.ks.standbein.LoggingGuiceTestSupport;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 import java.time.Duration;
@@ -27,22 +35,22 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(LauncherRunner.class)
 public class NextTaskChooserTest {
+  @Rule
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule());
   @Inject
   NextTaskChooser chooser;
   @Inject
-  Cleanup cleanup;
+  PersistentWork persistentWork;
 
   @Before
   public void setUp() throws Exception {
-    cleanup.cleanup();
-    PersistentWork.run(em -> {
+    persistentWork.run(em -> {
       createTestData(em);
     });
   }
 
-  static void createTestData(EntityManager em) {
+  static void createTestData(Session em) {
     Context workContext = new Context("work");
     Context other = new Context("other");
     em.persist(workContext);

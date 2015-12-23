@@ -15,20 +15,31 @@
 
 package de.ks.idnadrev.review.weeklydone;
 
+import de.ks.flatadocdb.session.Session;
+import de.ks.fxcontrols.weekview.WeekHelper;
+import de.ks.fxcontrols.weekview.WeekViewAppointment;
+import de.ks.idnadrev.ActivityTest;
+import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.entity.WorkUnit;
+import de.ks.standbein.IntegrationTestModule;
+import de.ks.standbein.LoggingGuiceTestSupport;
+import de.ks.standbein.activity.ActivityCfg;
+import de.ks.util.FXPlatform;
 import javafx.collections.ObservableList;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-import static de.ks.JunitMatchers.withRetry;
+import static de.ks.standbein.JunitMatchers.withRetry;
 import static org.junit.Assert.assertEquals;
 
-@RunWith(LauncherRunner.class)
 public class WeeklyDoneTest extends ActivityTest {
+  @Rule
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule());
 
   private LocalDateTime weekStart;
   private WeeklyDone weeklyDone;
@@ -39,22 +50,22 @@ public class WeeklyDoneTest extends ActivityTest {
   }
 
   @Override
-  protected void createTestData(EntityManager em) {
+  protected void createTestData(Session session) {
     Task finished = new Task("finished");
     weekStart = LocalDateTime.of(new WeekHelper().getFirstDayOfWeek(LocalDate.now().minusWeeks(1)), LocalTime.of(12, 0));
     finished.setFinishTime(weekStart);
 
-    em.persist(finished);
+    session.persist(finished);
 
     Task worker = new Task("worker");
-    em.persist(worker);
+    session.persist(worker);
 
     LocalDateTime start = weekStart;
     for (int i = 0; i < 3; i++) {
       WorkUnit workUnit = new WorkUnit(worker);
       workUnit.setStart(start.plusDays(i));
       workUnit.setEnd(start.plusDays(i).plusHours(1));
-      em.persist(workUnit);
+      session.persist(workUnit);
     }
     worker.setFinishTime(start.plusDays(2).plusHours(1));
   }

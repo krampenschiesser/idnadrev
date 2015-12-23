@@ -1,13 +1,22 @@
 package de.ks.idnadrev.information.view;
 
+import de.ks.flatadocdb.session.Session;
+import de.ks.idnadrev.ActivityTest;
+import de.ks.idnadrev.entity.Tag;
+import de.ks.idnadrev.entity.information.TextInfo;
+import de.ks.standbein.IntegrationTestModule;
+import de.ks.standbein.LoggingGuiceTestSupport;
+import de.ks.standbein.activity.ActivityCfg;
+import de.ks.util.FXPlatform;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(LauncherRunner.class)
 public class InformationOverviewActivityTest extends ActivityTest {
+  @Rule
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule());
 
   private InformationListView listView;
 
@@ -22,14 +31,12 @@ public class InformationOverviewActivityTest extends ActivityTest {
   }
 
   @Override
-  protected void createTestData(EntityManager em) {
+  protected void createTestData(Session session) {
     for (int i = 0; i < 5; i++) {
       Tag tag = new Tag("tag" + i);
-      Category category = new Category("category" + i);
       TextInfo info = new TextInfo("info" + i);
       info.addTag(tag);
-      info.setCategory(category);
-      PersistentWork.persist(tag, category, info);
+      persistentWork.persist(tag, info);
     }
   }
 
@@ -46,20 +53,20 @@ public class InformationOverviewActivityTest extends ActivityTest {
     activityController.waitForDataSource();
     expectItemCount(5);
 
-    FXPlatform.invokeLater(() -> listView.categorySelectionController.getInput().setText("category3"));
-    Thread.sleep(LastTextChange.WAIT_TIME + 150);
-    activityController.waitForDataSource();
-    FXPlatform.waitForFX();
-    expectItemCount(1);
-    expectItem(0, "info3");
-
-    FXPlatform.invokeLater(() -> listView.categorySelectionController.getInput().setText(""));
-    FXPlatform.invokeLater(() -> listView.nameSearch.setText("4"));
-    Thread.sleep(LastTextChange.WAIT_TIME + 150);
-    activityController.waitForDataSource();
-    FXPlatform.waitForFX();
-    expectItemCount(1);
-    expectItem(0, "info4");
+//    FXPlatform.invokeLater(() -> listView.categorySelectionController.getInput().setText("category3"));
+//    Thread.sleep(LastTextChange.WAIT_TIME + 150);
+//    activityController.waitForDataSource();
+//    FXPlatform.waitForFX();
+//    expectItemCount(1);
+//    expectItem(0, "info3");
+//
+//    FXPlatform.invokeLater(() -> listView.categorySelectionController.getInput().setText(""));
+//    FXPlatform.invokeLater(() -> listView.nameSearch.setText("4"));
+//    Thread.sleep(LastTextChange.WAIT_TIME + 150);
+//    activityController.waitForDataSource();
+//    FXPlatform.waitForFX();
+//    expectItemCount(1);
+//    expectItem(0, "info4");
   }
 
   private void expectItemCount(int expected) {

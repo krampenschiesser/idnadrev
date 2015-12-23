@@ -34,7 +34,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class PersistentWork {
-  private static final Logger log = LoggerFactory.getLogger(PersistentWork.class);
+  private static final Logger log = LoggerFactory.getLogger(persistentWork.class);
   private final ThreadLocal<Session> localSession = new ThreadLocal<>();
   private final SessionFactory factory;
   private final Repository repository;
@@ -126,10 +126,7 @@ public class PersistentWork {
     return read(session -> session.findById(id));
   }
 
-  public void deleteAllOf(Class<?> clazz) {
-    run(session -> {
-      Collection<IndexElement> all = session.getRepository().getIndex().getAllOf(clazz);
-      all.forEach(session::remove);
-    });
+  public int count(Class<?> clazz) {
+    return repository.getIndex().getAllOf(clazz).size();
   }
 }

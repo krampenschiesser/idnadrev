@@ -15,14 +15,21 @@
 
 package de.ks.idnadrev.task.choosenext;
 
+import de.ks.flatadocdb.session.Session;
+import de.ks.idnadrev.ActivityTest;
+import de.ks.standbein.IntegrationTestModule;
+import de.ks.standbein.LoggingGuiceTestSupport;
+import de.ks.standbein.activity.ActivityCfg;
+import de.ks.util.FXPlatform;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import static org.junit.Assert.*;
 
-@RunWith(LauncherRunner.class)
 public class ChooseNextTaskActivityTest extends ActivityTest {
+  @Rule
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule());
 
   private ChooseNextTaskController controller;
 
@@ -32,8 +39,8 @@ public class ChooseNextTaskActivityTest extends ActivityTest {
   }
 
   @Override
-  protected void createTestData(EntityManager em) {
-    NextTaskChooserTest.createTestData(em);
+  protected void createTestData(Session session) {
+    NextTaskChooserTest.createTestData(session);
   }
 
   @Before

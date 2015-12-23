@@ -15,9 +15,19 @@
 
 package de.ks.idnadrev.task.fasttrack;
 
+import de.ks.executor.group.LastTextChange;
+import de.ks.flatadocdb.session.Session;
+import de.ks.idnadrev.ActivityTest;
+import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.entity.WorkUnit;
+import de.ks.standbein.IntegrationTestModule;
+import de.ks.standbein.LoggingGuiceTestSupport;
+import de.ks.standbein.activity.ActivityCfg;
+import de.ks.text.AsciiDocEditor;
+import de.ks.util.FXPlatform;
 import org.hamcrest.Matchers;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,9 +39,11 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-@RunWith(LauncherRunner.class)
 public class FastTrackActivityTest extends ActivityTest {
   private static final Logger log = LoggerFactory.getLogger(FastTrackActivityTest.class);
+
+  @Rule
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule());
 
   @Override
   protected Class<? extends ActivityCfg> getActivityClass() {
@@ -39,7 +51,7 @@ public class FastTrackActivityTest extends ActivityTest {
   }
 
   @Override
-  protected void createTestData(EntityManager em) {
+  protected void createTestData(Session em) {
     Task existing = new Task("existing");
     existing.setDescription("desc");
     existing.setCreationTime(LocalDateTime.now().minusDays(1));
@@ -69,8 +81,8 @@ public class FastTrackActivityTest extends ActivityTest {
     FXPlatform.invokeLater(() -> fastTrack.finishTask());
     activityController.waitForDataSource();
 
-    PersistentWork.wrap(() -> {
-      List<Task> tasks = PersistentWork.from(Task.class);
+    persistentWork.run(session -> {
+      List<Task> tasks = persistentWork.from(Task.class);
       assertEquals(1, tasks.size());
       Task task = tasks.get(0);
 
@@ -96,8 +108,8 @@ public class FastTrackActivityTest extends ActivityTest {
     FXPlatform.invokeLater(() -> description.setText("blubber"));
     FXPlatform.invokeLater(() -> fastTrack.finishTask());
     activityController.waitForDataSource();
-    PersistentWork.wrap(() -> {
-      Task task = PersistentWork.forName(Task.class, "bla");
+    persistentWork.run(session -> {
+      Task task = persistentWork.forName(Task.class, "bla");
       assertNotNull(task);
       assertEquals("blubber", task.getDescription());
       assertEquals(1, task.getWorkUnits().size());
@@ -137,8 +149,8 @@ public class FastTrackActivityTest extends ActivityTest {
     FXPlatform.invokeLater(() -> fastTrack.finishTask());
     activityController.waitForDataSource();
 
-    PersistentWork.wrap(() -> {
-      List<Task> tasks = PersistentWork.from(Task.class);
+    persistentWork.run(session -> {
+      List<Task> tasks = persistentWork.from(Task.class);
       assertEquals(2, tasks.size());
       tasks.forEach(task -> {
         assertEquals(1, task.getWorkUnits().size());

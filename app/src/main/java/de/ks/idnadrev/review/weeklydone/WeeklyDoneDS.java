@@ -68,7 +68,7 @@ public class WeeklyDoneDS implements ListDataSource<WeekViewAppointment<Task>> {
 
     List<WorkUnit> workUnits = Collections.emptyList();
     // FIXME: 12/15/15
-//    List<WorkUnit> workUnits = PersistentWork.from(WorkUnit.class, (root, query, builder) -> {
+//    List<WorkUnit> workUnits = persistentWork.from(WorkUnit.class, (root, query, builder) -> {
 //      Path start = root.get(PropertyPath.property(WorkUnit.class, unit -> unit.getStart()));
 //      Path end = root.get(PropertyPath.property(WorkUnit.class, unit -> unit.getEnd()));
 //
@@ -96,7 +96,7 @@ public class WeeklyDoneDS implements ListDataSource<WeekViewAppointment<Task>> {
     WeeklyDoneAppointmentView doneView = controller.getControllerInstance(WeeklyDoneAppointmentView.class);
     List<Task> finishedTasks = Collections.emptyList();
 // FIXME: 12/15/15
-//    List<Task> finishedTasks = PersistentWork.from(Task.class, (root, query, builder) -> {
+//    List<Task> finishedTasks = persistentWork.from(Task.class, (root, query, builder) -> {
 //      Path finishTime = root.get(PropertyPath.property(Task.class, task -> task.getFinishTime()));
 //      Predicate finished = builder.isNotNull(finishTime);
 //      @SuppressWarnings("unchecked") Predicate greaterThan = builder.greaterThan(finishTime, beginDate);

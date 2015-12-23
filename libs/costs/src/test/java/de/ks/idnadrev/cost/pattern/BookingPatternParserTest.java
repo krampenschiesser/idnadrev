@@ -63,7 +63,7 @@ public class BookingPatternParserTest {
     assertNotNull(parser.parseLine("blubb"));
     assertEquals("hello", parser.parseLine("blubb"));
 
-    persistentWork.deleteAllOf(BookingPattern.class);
+    persistentWork.removeAllOf(BookingPattern.class);
 
     persistentWork.persist(new BookingPattern("test").setCategory("category1").setRegex("bla").setSimpleContains(true));
     log.info("removing 2nd pattern");

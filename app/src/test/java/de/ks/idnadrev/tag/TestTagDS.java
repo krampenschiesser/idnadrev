@@ -14,6 +14,8 @@
  */
 package de.ks.idnadrev.tag;
 
+import de.ks.standbein.datasource.NewInstanceDataSource;
+
 import java.util.function.Consumer;
 
 public class TestTagDS extends NewInstanceDataSource<TestTagged> {

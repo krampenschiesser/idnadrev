@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,6 +15,10 @@
  */
 package de.ks.idnadrev.information;
 
+import de.ks.idnadrev.information.chart.adoc.ChartFileRendering;
+import de.ks.idnadrev.information.uml.adoc.DiagramPreProcessor;
+import de.ks.text.process.AsciiDocPreProcessor;
+import de.ks.text.view.AsciiDocViewer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +72,8 @@ public abstract class BaseInformationPreProcessor implements AsciiDocPreProcesso
           log.warn("Could not parse idString {}", idString);
         }
         if (viewer != null) {
-          viewer.addSuspensionRunnable(new FileDeletionRunnable(file));
+//          viewer.addSuspensionRunnable(new FileDeletionRunnable(file));
+          // FIXME: 12/23/15
         }
       }
 

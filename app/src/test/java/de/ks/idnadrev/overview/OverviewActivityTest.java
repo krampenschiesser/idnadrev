@@ -1,26 +1,36 @@
 package de.ks.idnadrev.overview;
 
+import de.ks.flatadocdb.session.Session;
+import de.ks.idnadrev.ActivityTest;
+import de.ks.idnadrev.entity.Context;
+import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.entity.Thought;
+import de.ks.standbein.IntegrationTestModule;
+import de.ks.standbein.LoggingGuiceTestSupport;
+import de.ks.standbein.activity.ActivityCfg;
+import de.ks.util.FXPlatform;
 import javafx.collections.ObservableList;
 import org.hamcrest.Matchers;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import java.time.Duration;
 import java.util.List;
 
 import static org.junit.Assert.*;
 
-@RunWith(LauncherRunner.class)
 public class OverviewActivityTest extends ActivityTest {
+  @Rule
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule());
 
   @Override
-  protected void createTestData(EntityManager em) {
-    new OverviewDSTest().createTestData(em);
+  protected void createTestData(Session session) {
+    new OverviewDSTest().createTestData(session);
 
     Context context = new Context("context");
-    em.persist(context);
-    em.persist(new Task("task1").setContext(context).setEstimatedTime(Duration.ofMinutes(42)));
-    em.persist(new Task("task2").setContext(context).setEstimatedTime(Duration.ofMinutes(12)));
+    session.persist(context);
+    session.persist(new Task("task1").setContext(context).setEstimatedTime(Duration.ofMinutes(42)));
+    session.persist(new Task("task2").setContext(context).setEstimatedTime(Duration.ofMinutes(12)));
   }
 
   @Override
@@ -71,7 +81,7 @@ public class OverviewActivityTest extends ActivityTest {
     assertEquals("", addThoughtController.name.getText());
     assertEquals("", addThoughtController.description.getText());
 
-    List<Thought> thoughts = PersistentWork.from(Thought.class);
+    List<Thought> thoughts = persistentWork.from(Thought.class);
     assertEquals(1, thoughts.size());
     assertEquals("testThought", thoughts.get(0).getName());
     assertThat(thoughts.get(0).getDescription(), Matchers.containsString("bastard"));

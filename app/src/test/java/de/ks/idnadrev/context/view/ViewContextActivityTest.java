@@ -15,14 +15,23 @@
 
 package de.ks.idnadrev.context.view;
 
+import de.ks.flatadocdb.session.Session;
+import de.ks.idnadrev.ActivityTest;
+import de.ks.idnadrev.entity.Context;
+import de.ks.idnadrev.entity.Task;
+import de.ks.standbein.IntegrationTestModule;
+import de.ks.standbein.LoggingGuiceTestSupport;
+import de.ks.standbein.activity.ActivityCfg;
+import de.ks.util.FXPlatform;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import static org.junit.Assert.*;
 
-@RunWith(LauncherRunner.class)
 public class ViewContextActivityTest extends ActivityTest {
+  @Rule
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule());
 
   private ViewContextController controller;
 
@@ -32,11 +41,11 @@ public class ViewContextActivityTest extends ActivityTest {
   }
 
   @Override
-  protected void createTestData(EntityManager em) {
-    em.persist(new Context("context1"));
+  protected void createTestData(Session session) {
+    session.persist(new Context("context1"));
     Context context2 = new Context("context2");
-    em.persist(context2);
-    em.persist(new Task("test").setContext(context2));
+    session.persist(context2);
+    session.persist(new Task("test").setContext(context2));
   }
 
   @Before
@@ -46,7 +55,7 @@ public class ViewContextActivityTest extends ActivityTest {
 
   @Test
   public void testEmpty() throws Exception {
-    PersistentWork.deleteAllOf(Task.class, Context.class);
+    persistentWork.removeAllOf(Context.class);
 
     activityController.reload();
     activityController.waitForDataSource();
@@ -65,10 +74,10 @@ public class ViewContextActivityTest extends ActivityTest {
 
     FXPlatform.invokeLater(() -> controller.onDelete());
     activityController.waitForDataSource();
-    PersistentWork.wrap(() -> {
-      Task task = PersistentWork.from(Task.class).get(0);
+    persistentWork.run(session -> {
+      Task task = persistentWork.from(Task.class).get(0);
       assertNull(task.getContext());
-      assertEquals(1, PersistentWork.from(Context.class).size());
+      assertEquals(1, persistentWork.from(Context.class).size());
     });
   }
 }

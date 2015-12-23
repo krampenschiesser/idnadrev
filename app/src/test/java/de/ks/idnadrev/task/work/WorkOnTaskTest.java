@@ -15,11 +15,25 @@
 
 package de.ks.idnadrev.task.work;
 
+import de.ks.flatjsondb.PersistentWork;
+import de.ks.idnadrev.IdnadrevWindow;
+import de.ks.idnadrev.entity.Context;
+import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.entity.Thought;
+import de.ks.idnadrev.entity.WorkUnit;
+import de.ks.idnadrev.task.view.ViewTasksActvity;
+import de.ks.idnadrev.thought.add.AddThought;
+import de.ks.idnadrev.thought.add.AddThoughtActivity;
+import de.ks.standbein.IntegrationTestModule;
+import de.ks.standbein.LoggingGuiceTestSupport;
+import de.ks.standbein.activity.ActivityController;
+import de.ks.standbein.activity.ActivityHint;
+import de.ks.util.FXPlatform;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 import java.time.Duration;
@@ -27,24 +41,23 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-import static de.ks.JunitMatchers.withRetry;
+import static de.ks.standbein.JunitMatchers.withRetry;
 import static org.junit.Assert.*;
 
-@RunWith(LauncherRunner.class)
 public class WorkOnTaskTest {
+  @Rule
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule());
   @Inject
   ActivityController activityController;
   @Inject
-  Cleanup cleanup;
-  @Inject
   IdnadrevWindow window;
+  @Inject
+  PersistentWork persistentWork;
 
   private WorkOnTask controller;
 
   @Before
   public void setUp() throws Exception {
-    cleanup.cleanup();
-
     Context context = new Context("context");
     Task task = new Task("task").setProject(true);
     task.setContext(context);
@@ -52,7 +65,7 @@ public class WorkOnTaskTest {
     workUnit.setStart(LocalDateTime.now().minus(7, ChronoUnit.MINUTES));
     workUnit.stop();
     task.setEstimatedTime(Duration.ofMinutes(10));
-    PersistentWork.persist(context, task, workUnit);
+    persistentWork.persist(context, task, workUnit);
 
     activityController.startOrResume(new ActivityHint(ViewTasksActvity.class));
     activityController.waitForTasks();
@@ -74,7 +87,7 @@ public class WorkOnTaskTest {
     FXPlatform.invokeLater(() -> controller.description.setText("desc"));
     controller.stopWork();
     activityController.waitForTasks();
-    List<Task> tasks = PersistentWork.from(Task.class, t -> t.getWorkUnits().forEach(u -> u.getDuration()));
+    List<Task> tasks = persistentWork.from(Task.class);
     assertEquals(1, tasks.size());
     Task task = tasks.get(0);
     assertEquals(2, task.getWorkUnits().size());
@@ -108,10 +121,10 @@ public class WorkOnTaskTest {
     activityController.waitForTasks();
     assertEquals(WorkOnTaskActivity.class.getSimpleName(), activityController.getCurrentActivityId());
 
-    List<Thought> thoughts = PersistentWork.from(Thought.class);
+    List<Thought> thoughts = persistentWork.from(Thought.class);
     assertEquals(1, thoughts.size());
     assertEquals("testThought", thoughts.get(0).getName());
-    List<Task> tasks = PersistentWork.from(Task.class, t -> t.getWorkUnits().forEach(u -> u.getDuration()));
+    List<Task> tasks = persistentWork.from(Task.class);
     assertEquals(1, tasks.size());
     Task task = tasks.get(0);
     assertEquals(2, task.getWorkUnits().size());

@@ -15,6 +15,7 @@
  */
 package de.ks.idnadrev.overview;
 
+import de.ks.flatadocdb.session.Session;
 import de.ks.flatjsondb.PersistentWork;
 import de.ks.idnadrev.entity.Context;
 import de.ks.idnadrev.entity.Schedule;
@@ -44,16 +45,16 @@ public class OverviewDS implements DataSource<OverviewModel> {
       List<Context> contexts = persistentWork.from(Context.class);
       model.getContexts().addAll(contexts);
 
-      List<Task> scheduled = getScheduledTasks(LocalDate.now());
+      List<Task> scheduled = getScheduledTasks(sesion, LocalDate.now());
       model.getScheduledTasks().addAll(scheduled);
 
-      List<Task> proposedTasks = getProposedTasks(LocalDate.now());
+      List<Task> proposedTasks = getProposedTasks(sesion, LocalDate.now());
       model.getProposedTasks().addAll(proposedTasks);
       return model;
     });
   }
 
-  protected List<Task> getProposedTasks(LocalDate now) {
+  protected List<Task> getProposedTasks(Session sesion, LocalDate now) {
 //    CriteriaBuilder builder = em.getCriteriaBuilder();
 //    CriteriaQuery<Task> query = builder.createQuery(Task.class);
 //    Root<Task> root = query.from(Task.class);
@@ -82,7 +83,7 @@ public class OverviewDS implements DataSource<OverviewModel> {
     return Collections.emptyList();
   }
 
-  protected List<Task> getScheduledTasks(LocalDate now) {
+  protected List<Task> getScheduledTasks(Session sesion, LocalDate now) {
 //    CriteriaBuilder builder = em.getCriteriaBuilder();
 //    CriteriaQuery<Task> query = builder.createQuery(Task.class);
 //    Root<Task> root = query.from(Task.class);

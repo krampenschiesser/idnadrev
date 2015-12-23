@@ -19,10 +19,6 @@ import de.ks.flatjsondb.PersistentWork;
 import de.ks.fxcontrols.weekview.WeekHelper;
 import de.ks.gallery.entity.GalleryFavorite;
 import de.ks.idnadrev.entity.*;
-import de.ks.idnadrev.entity.cost.Account;
-import de.ks.idnadrev.entity.cost.Booking;
-import de.ks.idnadrev.entity.cost.BookingCsvTemplate;
-import de.ks.idnadrev.entity.cost.BookingPattern;
 import de.ks.idnadrev.entity.information.*;
 import de.ks.standbein.application.FXApplicationExceptionHandler;
 import de.ks.standbein.launch.Service;
@@ -56,7 +52,7 @@ public class DummyData extends Service {
   PersistentWork persistentWork;
 
   @Override
-  public int getPriority() {
+  public int getRunLevel() {
     return 4;
   }
 
@@ -184,53 +180,53 @@ public class DummyData extends Service {
     chart.setChartData(chartData);
     persistentWork.persist(chart);
 
-
-    Account account1 = new Account("testAccount1");
-    persistentWork.persist(account1);
-    LocalDateTime dateTime = LocalDateTime.now().minusDays(30);
-    for (int i = 0; i < 15; i++) {
-      Booking booking = new Booking(account1, (i + 1) * 10);
-      booking.setDescription("createbooking #" + i);
-      booking.setCategory("Categtory" + i % 5);
-      booking.setBookingTime(dateTime.plusDays(i));
-      persistentWork.persist(booking);
-    }
-    Account account2 = new Account("testAccount2");
-    persistentWork.persist(account2);
-    for (int i = 0; i < 10; i++) {
-      int subAdd = i % 2 == 0 ? 1 : -1;
-      int amount = i * 10 * subAdd;
-      Booking booking = new Booking(account2, amount);
-      booking.setDescription("createbooking #" + i);
-      booking.setCategory("Category" + i % 5);
-      booking.setBookingTime(dateTime.plusDays(i));
-      persistentWork.persist(booking);
-    }
-
-    BookingCsvTemplate template = new BookingCsvTemplate("template1");
-    template.setAccount(account2);
-    template.setSeparator(";");
-    template.setDatePattern("M/d/y");
-    template.setDateColumn(0);
-    template.setDescriptionColumn(4);
-    template.setAmountColumns(Arrays.asList(13, 14));
-    persistentWork.persist(template);
-
-    BookingPattern pattern1 = new BookingPattern("Gehalt");
-    pattern1.setRegex("Lohn,Gehalt");
-    pattern1.setCategory("Gehalt");
-    pattern1.setSimpleContains(true);
-
-    BookingPattern pattern2 = new BookingPattern("Tanken");
-    pattern2.setRegex("shell,aral,star tst,jetstar,sb tank,total-,esso,sb-tank");
-    pattern2.setCategory("Tanken");
-    pattern2.setSimpleContains(true);
-
-    BookingPattern pattern3 = new BookingPattern("Geldautomat");
-    pattern3.setRegex("^GA .*");
-    pattern3.setCategory("Bargeldabhebung");
-
-    persistentWork.persist(pattern1, pattern2, pattern3);
+//
+//    Account account1 = new Account("testAccount1");
+//    persistentWork.persist(account1);
+//    LocalDateTime dateTime = LocalDateTime.now().minusDays(30);
+//    for (int i = 0; i < 15; i++) {
+//      Booking booking = new Booking(account1, (i + 1) * 10);
+//      booking.setDescription("createbooking #" + i);
+//      booking.setCategory("Categtory" + i % 5);
+//      booking.setBookingTime(dateTime.plusDays(i));
+//      persistentWork.persist(booking);
+//    }
+//    Account account2 = new Account("testAccount2");
+//    persistentWork.persist(account2);
+//    for (int i = 0; i < 10; i++) {
+//      int subAdd = i % 2 == 0 ? 1 : -1;
+//      int amount = i * 10 * subAdd;
+//      Booking booking = new Booking(account2, amount);
+//      booking.setDescription("createbooking #" + i);
+//      booking.setCategory("Category" + i % 5);
+//      booking.setBookingTime(dateTime.plusDays(i));
+//      persistentWork.persist(booking);
+//    }
+//
+//    BookingCsvTemplate template = new BookingCsvTemplate("template1");
+//    template.setAccount(account2);
+//    template.setSeparator(";");
+//    template.setDatePattern("M/d/y");
+//    template.setDateColumn(0);
+//    template.setDescriptionColumn(4);
+//    template.setAmountColumns(Arrays.asList(13, 14));
+//    persistentWork.persist(template);
+//
+//    BookingPattern pattern1 = new BookingPattern("Gehalt");
+//    pattern1.setRegex("Lohn,Gehalt");
+//    pattern1.setCategory("Gehalt");
+//    pattern1.setSimpleContains(true);
+//
+//    BookingPattern pattern2 = new BookingPattern("Tanken");
+//    pattern2.setRegex("shell,aral,star tst,jetstar,sb tank,total-,esso,sb-tank");
+//    pattern2.setCategory("Tanken");
+//    pattern2.setSimpleContains(true);
+//
+//    BookingPattern pattern3 = new BookingPattern("Geldautomat");
+//    pattern3.setRegex("^GA .*");
+//    pattern3.setCategory("Bargeldabhebung");
+//
+//    persistentWork.persist(pattern1, pattern2, pattern3);
 
     GravBlog gravBlog = new GravBlog("grav-bk", "/home/scar/blog/grav-bk/user/pages");
     persistentWork.persist(gravBlog);

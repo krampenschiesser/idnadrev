@@ -14,9 +14,22 @@
  */
 package de.ks.idnadrev.task.create;
 
+import de.ks.flatadocdb.session.Session;
+import de.ks.idnadrev.ActivityTest;
+import de.ks.idnadrev.entity.Context;
+import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.entity.TaskState;
+import de.ks.idnadrev.entity.Thought;
+import de.ks.standbein.IntegrationTestModule;
+import de.ks.standbein.LoggingGuiceTestSupport;
+import de.ks.standbein.activity.ActivityCfg;
+import de.ks.standbein.activity.ActivityController;
+import de.ks.standbein.activity.context.ActivityStore;
+import de.ks.text.AsciiDocEditor;
+import de.ks.util.FXPlatform;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 import java.time.DayOfWeek;
@@ -28,8 +41,10 @@ import java.util.function.Consumer;
 
 import static org.junit.Assert.*;
 
-@RunWith(LauncherRunner.class)
 public class CreateTaskTest extends ActivityTest {
+  @Rule
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule());
+
   @Inject
   ActivityController activityController;
   @Inject
@@ -46,8 +61,8 @@ public class CreateTaskTest extends ActivityTest {
   }
 
   @Override
-  protected void createTestData(EntityManager em) {
-    em.persist(new Context("context"));
+  protected void createTestData(Session session) {
+    session.persist(new Context("context"));
   }
 
   @Before
@@ -62,7 +77,7 @@ public class CreateTaskTest extends ActivityTest {
   @Test
   public void testTaskFromThought() throws Exception {
     Thought bla = new Thought("Bla").setDescription("description");
-    PersistentWork.persist(bla);
+    persistentWork.persist(bla);
 
     @SuppressWarnings("unchecked") CreateTaskDS datasource = (CreateTaskDS) store.getDatasource();
     datasource.fromThought = bla;
@@ -76,13 +91,13 @@ public class CreateTaskTest extends ActivityTest {
     activityController.waitForTasks();
 
     assertNull(datasource.fromThought);
-    assertEquals(0, PersistentWork.from(Thought.class).size());
+    assertEquals(0, persistentWork.from(Thought.class).size());
   }
 
   @Test
   public void testProjectFromThought() throws Exception {
     Thought bla = new Thought("Bla").setDescription("description");
-    PersistentWork.persist(bla);
+    persistentWork.persist(bla);
 
     @SuppressWarnings("unchecked") CreateTaskDS datasource = (CreateTaskDS) store.getDatasource();
     datasource.fromThought = bla;
@@ -103,8 +118,8 @@ public class CreateTaskTest extends ActivityTest {
     activityController.waitForTasks();
 
     assertNull(datasource.fromThought);
-    assertEquals(0, PersistentWork.from(Thought.class).size());
-    assertEquals(2, PersistentWork.count(Task.class));
+    assertEquals(0, persistentWork.from(Thought.class).size());
+    assertEquals(2, persistentWork.count(Task.class));
   }
 
   @Test
@@ -130,7 +145,7 @@ public class CreateTaskTest extends ActivityTest {
     });
     activityController.waitForTasks();
 
-    List<Task> tasks = PersistentWork.from(Task.class, (t) -> {
+    List<Task> tasks = persistentWork.from(Task.class, (t) -> {
       t.getContext().getName();
       if (t.getSchedule() != null) {
         t.getSchedule().getScheduledDate();
@@ -170,7 +185,7 @@ public class CreateTaskTest extends ActivityTest {
     });
     activityController.waitForTasks();
 
-    List<Task> tasks = PersistentWork.from(Task.class, (t) -> {
+    List<Task> tasks = persistentWork.from(Task.class, (t) -> {
       if (t.getSchedule() != null) {
         t.getSchedule().getScheduledDate();
       }
@@ -187,7 +202,7 @@ public class CreateTaskTest extends ActivityTest {
   public void testSaveProject() throws InterruptedException {
     createTask("name", controller -> controller.project.setSelected(true));
 
-    List<Task> tasks = PersistentWork.from(Task.class);
+    List<Task> tasks = persistentWork.from(Task.class);
     assertEquals(1, tasks.size());
     Task task = tasks.get(0);
     assertEquals("name", task.getName());
@@ -215,8 +230,8 @@ public class CreateTaskTest extends ActivityTest {
     createTask("parent", controller -> controller.project.setSelected(true));
     createTask("child", controller -> controller.parentProjectController.getInput().setText("parent"));
 
-    PersistentWork.wrap(() -> {
-      List<Task> tasks = PersistentWork.from(Task.class);
+    persistentWork.run(session -> {
+      List<Task> tasks = persistentWork.from(Task.class);
       assertEquals(2, tasks.size());
       for (Task task : tasks) {
         if (task.getName().equals("parent")) {
@@ -234,7 +249,7 @@ public class CreateTaskTest extends ActivityTest {
 
   @Test
   public void testTags() throws Exception {
-    PersistentWork.persist(new Tag("tag1"));
+    persistentWork.persist(new Tag("tag1"));
 
     FXPlatform.invokeLater(() -> {
       controller.name.setText("name");
@@ -254,7 +269,7 @@ public class CreateTaskTest extends ActivityTest {
     });
     activityController.waitForTasks();
 
-    List<Task> tasks = PersistentWork.from(Task.class, (t) -> {
+    List<Task> tasks = persistentWork.from(Task.class, (t) -> {
       t.getTags().toString();
     });
     Task task = tasks.get(0);
@@ -264,7 +279,7 @@ public class CreateTaskTest extends ActivityTest {
   @Test
   public void testEditExisting() throws Exception {
     Task bla = new Task("Bla").setDescription("description");
-    PersistentWork.persist(bla);
+    persistentWork.persist(bla);
 
     @SuppressWarnings("unchecked") CreateTaskDS datasource = (CreateTaskDS) store.getDatasource();
     datasource.fromTask = bla;
@@ -282,7 +297,7 @@ public class CreateTaskTest extends ActivityTest {
     activityController.waitForTasks();
 
     assertNull(datasource.fromTask);
-    List<Task> tasks = PersistentWork.from(Task.class);
+    List<Task> tasks = persistentWork.from(Task.class);
     assertEquals(1, tasks.size());
     assertEquals("hallo", tasks.get(0).getDescription());
     assertEquals("blubb", tasks.get(0).getName());

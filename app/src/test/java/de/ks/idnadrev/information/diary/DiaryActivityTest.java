@@ -15,18 +15,25 @@
 
 package de.ks.idnadrev.information.diary;
 
+import de.ks.idnadrev.ActivityTest;
+import de.ks.idnadrev.entity.information.DiaryInfo;
+import de.ks.standbein.IntegrationTestModule;
+import de.ks.standbein.LoggingGuiceTestSupport;
+import de.ks.standbein.activity.ActivityCfg;
+import de.ks.util.FXPlatform;
 import org.hamcrest.Matchers;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.Assert.*;
 
-@RunWith(LauncherRunner.class)
 public class DiaryActivityTest extends ActivityTest {
+  @Rule
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule());
 
   private DiaryController diaryController;
 
@@ -50,8 +57,8 @@ public class DiaryActivityTest extends ActivityTest {
     activityController.save();
     activityController.waitForDataSource();
 
-    PersistentWork.wrap(() -> {
-      List<DiaryInfo> diaryInfos = PersistentWork.from(DiaryInfo.class);
+    persistentWork.run(session -> {
+      List<DiaryInfo> diaryInfos = persistentWork.from(DiaryInfo.class);
       assertEquals(1, diaryInfos.size());
       DiaryInfo diaryInfo = diaryInfos.get(0);
       assertThat(diaryInfo.getContent(), Matchers.containsString("sauerland"));
@@ -62,13 +69,13 @@ public class DiaryActivityTest extends ActivityTest {
   @Test
   public void testExisting() throws Exception {
     LocalDate yesterDay = LocalDate.now().minusDays(1);
-    PersistentWork.persist(new DiaryInfo(yesterDay).setContent("Yo como un bistec"));
+    persistentWork.persist(new DiaryInfo(yesterDay).setContent("Yo como un bistec"));
 
     FXPlatform.invokeLater(() -> diaryController.onPrevious());
     assertEquals(yesterDay, diaryController.dateEditor.getValue());
     activityController.waitForDataSource();
-    PersistentWork.wrap(() -> {
-      List<DiaryInfo> diaryInfos = PersistentWork.from(DiaryInfo.class);
+    persistentWork.run(session -> {
+      List<DiaryInfo> diaryInfos = persistentWork.from(DiaryInfo.class);
       assertEquals("Did save unedited diary info, not allowed!", 1, diaryInfos.size());
     });
 

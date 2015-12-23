@@ -29,8 +29,8 @@ public class ChartFileRendering {
   @Inject
   JavaFXExecutorService fxExecutorService;
 
-  public void renderToFile(Long id, Path tempFilePath) {
-//    ChartInfo chartInfo = PersistentWork.byId(ChartInfo.class, id);
+  public void renderToFile(String id, Path tempFilePath) {
+//    ChartInfo chartInfo = persistentWork.byId(ChartInfo.class, id);
 //    if (chartInfo != null) {
 //      log.debug("Rendering chart {} to file {}", id, tempFilePath);
 //

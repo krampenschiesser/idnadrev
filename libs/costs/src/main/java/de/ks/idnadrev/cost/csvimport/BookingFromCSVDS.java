@@ -89,7 +89,7 @@ public class BookingFromCSVDS implements DataSource<ImporterBookingViewModel> {
 
   protected CompletableFuture<Void> checkForExistingBooking(List<Booking> bookings, Booking booking, ImporterBookingViewModel retval) {
 //    CompletableFuture<Void> future = CompletableFuture.supplyAsync(() -> booking, activityController.getExecutorService()).thenApply(b -> {
-//      List<Booking> found = PersistentWork.from(Booking.class, (root, query, builder) -> {
+//      List<Booking> found = persistentWork.from(Booking.class, (root, query, builder) -> {
 //        Predicate sameDesc = builder.equal(root.get(KEY_DESCRIPTION), b.getDescription());
 //        Predicate sameTime = builder.equal(root.get(KEY_BOOKINGTIME), b.getBookingTime());
 //        Predicate sameAmount = builder.equal(root.get(KEY_AMOUNT), b.getAmount());

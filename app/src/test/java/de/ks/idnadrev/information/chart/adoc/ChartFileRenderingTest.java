@@ -1,7 +1,17 @@
 package de.ks.idnadrev.information.chart.adoc;
 
+import de.ks.flatadocdb.session.Session;
+import de.ks.idnadrev.ActivityTest;
+import de.ks.idnadrev.entity.information.ChartData;
+import de.ks.idnadrev.entity.information.ChartInfo;
+import de.ks.idnadrev.entity.information.ChartType;
+import de.ks.idnadrev.information.chart.ChartInfoActivity;
+import de.ks.idnadrev.information.chart.ChartInfoController;
+import de.ks.standbein.IntegrationTestModule;
+import de.ks.standbein.LoggingGuiceTestSupport;
+import de.ks.standbein.activity.ActivityCfg;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,11 +22,14 @@ import java.util.Arrays;
 
 import static org.junit.Assert.assertTrue;
 
-@RunWith(LauncherRunner.class)
 public class ChartFileRenderingTest extends ActivityTest {
   private static final Logger log = LoggerFactory.getLogger(ChartFileRenderingTest.class);
+
+  @Rule
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule());
+
   private ChartInfoController controller;
-  private long chartId;
+  private String chartId;
 
   @Override
   protected Class<? extends ActivityCfg> getActivityClass() {
@@ -24,7 +37,7 @@ public class ChartFileRenderingTest extends ActivityTest {
   }
 
   @Override
-  protected void createTestData(EntityManager em) {
+  protected void createTestData(Session session) {
     ChartData chartData = new ChartData();
     chartData.setXAxisTitle("xtitle");
     chartData.setYAxisTitle("ytitle");
@@ -37,9 +50,9 @@ public class ChartFileRenderingTest extends ActivityTest {
 
     ChartInfo chart = new ChartInfo("chart", ChartType.BAR);
     chart.setChartData(chartData);
-    em.persist(chart);
+    session.persist(chart);
 
-    chartId = PersistentWork.from(ChartInfo.class).get(0).getId();
+    chartId = persistentWork.from(ChartInfo.class).get(0).getId();
   }
 
   @Inject

@@ -105,8 +105,8 @@ public class ViewContextController extends BaseController<List<Context>> {
   void onDelete() {
     Context item = contextList.getSelectionModel().getSelectedItem();
     store.executeCustomRunnable(() -> {
-//      PersistentWork.run(em -> {FIXME
-//        Context reload = PersistentWork.reload(item);
+//      persistentWork.run(em -> {FIXME
+//        Context reload = persistentWork.reload(item);
 //
 //        CriteriaBuilder builder = em.getCriteriaBuilder();
 //        CriteriaUpdate<Task> update = builder.createCriteriaUpdate(Task.class);

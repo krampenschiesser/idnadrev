@@ -1,10 +1,18 @@
 package de.ks.idnadrev.information.chart;
 
+import de.ks.idnadrev.ActivityTest;
+import de.ks.idnadrev.entity.information.ChartData;
+import de.ks.idnadrev.entity.information.ChartInfo;
+import de.ks.idnadrev.entity.information.ChartType;
+import de.ks.standbein.IntegrationTestModule;
+import de.ks.standbein.LoggingGuiceTestSupport;
+import de.ks.standbein.activity.ActivityCfg;
+import de.ks.util.FXPlatform;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.LineChart;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,9 +21,12 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-@RunWith(LauncherRunner.class)
 public class ChartInfoActivityTest extends ActivityTest {
   private static final Logger log = LoggerFactory.getLogger(ChartInfoActivityTest.class);
+
+  @Rule
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule());
+
   private ChartInfoController controller;
 
   @Override
@@ -24,7 +35,7 @@ public class ChartInfoActivityTest extends ActivityTest {
   }
 
   protected void createCategory() {
-    PersistentWork.run(em -> {
+    persistentWork.run(em -> {
       ChartData chartData = new ChartData();
       chartData.setXAxisTitle("xtitle");
       chartData.setYAxisTitle("ytitle");
@@ -50,7 +61,7 @@ public class ChartInfoActivityTest extends ActivityTest {
   public void testLoad() throws Exception {
     FXPlatform.waitForFX();
     createCategory();
-    ChartInfo chartInfo = PersistentWork.from(ChartInfo.class).get(0);
+    ChartInfo chartInfo = persistentWork.from(ChartInfo.class).get(0);
     store.getDatasource().setLoadingHint(chartInfo);
 
     activityController.reload();
@@ -96,8 +107,8 @@ public class ChartInfoActivityTest extends ActivityTest {
     LineChart<String, Double> chart = (LineChart<String, Double>) controller.previewContainer.getChildren().get(0);
 
     assertEquals(2, chart.getData().size());
-    assertEquals(Localized.get("col", 1), chart.getData().get(0).getName());
-    assertEquals(Localized.get("col", 2), chart.getData().get(1).getName());
+    assertEquals(localized.get("col", 1), chart.getData().get(0).getName());
+    assertEquals(localized.get("col", 2), chart.getData().get(1).getName());
 
     FXPlatform.invokeLater(() -> {
       controller.name.setText("test");
@@ -111,7 +122,7 @@ public class ChartInfoActivityTest extends ActivityTest {
     activityController.waitForDataSource();
     FXPlatform.waitForFX();
 
-    List<ChartInfo> charts = PersistentWork.from(ChartInfo.class);
+    List<ChartInfo> charts = persistentWork.from(ChartInfo.class);
     assertEquals(1, charts.size());
     ChartInfo chartInfo = charts.get(0);
     assertEquals("test", chartInfo.getName());

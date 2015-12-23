@@ -121,7 +121,7 @@ public class NextTaskChooser {
   protected List<Task> getAllPossibleTasks(int minutes, String selectedContext) {
     // FIXME: 12/15/15
 //    List<Task> retval = persistentWork.wrap(() -> {
-//      List<Task> tasks = PersistentWork.from(Task.class, (root, query, builder) -> {
+//      List<Task> tasks = persistentWork.from(Task.class, (root, query, builder) -> {
 //        ArrayList<Predicate> predicates = new ArrayList<>();
 //
 //        if (selectedContext != null) {

@@ -14,6 +14,7 @@
  */
 package de.ks.idnadrev;
 
+import de.ks.standbein.preload.LaunchListener;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -82,7 +83,7 @@ public class Preloader implements Initializable, LaunchListener {
   }
 
   @Override
-  public void failure(String msg) {
+  public void failure(String msg, Throwable t) {
   }
 
   @Override

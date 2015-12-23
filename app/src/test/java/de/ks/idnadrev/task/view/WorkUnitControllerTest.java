@@ -1,10 +1,20 @@
 package de.ks.idnadrev.task.view;
 
+import de.ks.flatadocdb.session.Session;
+import de.ks.idnadrev.ActivityTest;
+import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.entity.WorkUnit;
+import de.ks.standbein.Condition;
+import de.ks.standbein.IntegrationTestModule;
+import de.ks.standbein.LoggingGuiceTestSupport;
+import de.ks.standbein.activity.ActivityCfg;
+import de.ks.standbein.validation.ValidationRegistry;
+import de.ks.util.FXPlatform;
 import javafx.collections.ObservableList;
 import org.hamcrest.Matchers;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 import java.time.LocalDateTime;
@@ -14,8 +24,9 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-@RunWith(LauncherRunner.class)
 public class WorkUnitControllerTest extends ActivityTest {
+  @Rule
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule());
 
   private LocalDateTime start1;
   private LocalDateTime end1;
@@ -32,7 +43,7 @@ public class WorkUnitControllerTest extends ActivityTest {
   }
 
   @Override
-  protected void createTestData(EntityManager em) {
+  protected void createTestData(Session session) {
 
     Task task = new Task("task");
 
@@ -49,13 +60,13 @@ public class WorkUnitControllerTest extends ActivityTest {
     task.getWorkUnits().add(workUnit1);
     task.getWorkUnits().add(workUnit2);
 
-    em.persist(task);
+    session.persist(task);
   }
 
   @Before
   public void setUp() throws Exception {
     controller = activityController.getControllerInstance(WorkUnitController.class);
-    FXPlatform.invokeLater(() -> controller.setTask(PersistentWork.from(Task.class).get(0)));
+    FXPlatform.invokeLater(() -> controller.setTask(persistentWork.from(Task.class).get(0)));
   }
 
   @Test
@@ -82,7 +93,7 @@ public class WorkUnitControllerTest extends ActivityTest {
     });
 
     activityController.waitForDataSource();
-    List<WorkUnit> from = PersistentWork.from(WorkUnit.class);
+    List<WorkUnit> from = persistentWork.from(WorkUnit.class);
     from.sort(Comparator.comparing(u -> u.getStart()));
     assertEquals(end1.plusMinutes(1), from.get(0).getEnd());
   }
@@ -100,7 +111,7 @@ public class WorkUnitControllerTest extends ActivityTest {
 
     activityController.waitForDataSource();
     FXPlatform.waitForFX();
-    List<WorkUnit> from = PersistentWork.from(WorkUnit.class);
+    List<WorkUnit> from = persistentWork.from(WorkUnit.class);
     assertEquals(3, from.size());
   }
 
@@ -165,7 +176,7 @@ public class WorkUnitControllerTest extends ActivityTest {
     FXPlatform.invokeLater(() -> controller.onDelete());
     activityController.waitForDataSource();
 
-    List<WorkUnit> workUnits = PersistentWork.from(WorkUnit.class);
+    List<WorkUnit> workUnits = persistentWork.from(WorkUnit.class);
     assertEquals(1, workUnits.size());
 
     Condition.waitFor1s(() -> controller.workUnitTable.getItems(), Matchers.hasSize(1));

@@ -15,24 +15,36 @@
 
 package de.ks.idnadrev.thought.view;
 
+import de.ks.flatadocdb.session.Session;
+import de.ks.idnadrev.ActivityTest;
+import de.ks.idnadrev.entity.FileReference;
+import de.ks.idnadrev.entity.Thought;
+import de.ks.idnadrev.entity.information.TextInfo;
+import de.ks.idnadrev.information.text.TextInfoActivity;
+import de.ks.idnadrev.information.text.TextInfoController;
+import de.ks.standbein.IntegrationTestModule;
+import de.ks.standbein.LoggingGuiceTestSupport;
+import de.ks.standbein.TempFileRule;
+import de.ks.standbein.activity.ActivityCfg;
+import de.ks.util.FXPlatform;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-import static de.ks.JunitMatchers.withRetry;
+import static de.ks.standbein.JunitMatchers.withRetry;
 import static org.junit.Assert.assertEquals;
 
-@RunWith(LauncherRunner.class)
 public class ViewThoughtsTest extends ActivityTest {
   private static final Logger log = LoggerFactory.getLogger(ViewThoughtsTest.class);
   @Rule
   public TempFileRule testFiles = new TempFileRule(2);
 
+  @Rule
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule());
   private ViewThoughts viewThoughts;
 
   @Override
@@ -41,14 +53,14 @@ public class ViewThoughtsTest extends ActivityTest {
   }
 
   @Override
-  protected void createTestData(EntityManager em) {
+  protected void createTestData(Session session) {
     FileReference fileReference = new FileReference("test", "blubb");
-    em.persist(fileReference);
+    session.persist(fileReference);
     Thought thought = new Thought("test");
     thought.addFileReference(fileReference);
     thought.setDescription("desc");
-    em.persist(thought);
-    em.persist(new Thought("testWithLink").setDescription("goto www.krampenschiesser.de"));
+    session.persist(thought);
+    session.persist(new Thought("testWithLink").setDescription("goto www.krampenschiesser.de"));
   }
 
   @Before
@@ -63,7 +75,7 @@ public class ViewThoughtsTest extends ActivityTest {
 
     viewThoughts.delete();
 
-    List<Thought> from = PersistentWork.from(Thought.class);
+    List<Thought> from = persistentWork.from(Thought.class);
     assertEquals(1, from.size());
   }
 
@@ -84,15 +96,15 @@ public class ViewThoughtsTest extends ActivityTest {
     withRetry(() -> ViewThoughtsActivity.class.getSimpleName().equals(activityController.getCurrentActivityId()));
     activityController.waitForTasks();
 
-    PersistentWork.wrap(() -> {
-      List<TextInfo> textInfos = PersistentWork.from(TextInfo.class);
+    persistentWork.run(session -> {
+      List<TextInfo> textInfos = persistentWork.from(TextInfo.class);
       assertEquals(1, textInfos.size());
       TextInfo textInfo = textInfos.get(0);
       assertEquals("test", textInfo.getName());
       assertEquals(1, textInfo.getFiles().size());
 
 
-      List<Thought> thoughts = PersistentWork.from(Thought.class);
+      List<Thought> thoughts = persistentWork.from(Thought.class);
       assertEquals(1, thoughts.size());
       assertEquals("testWithLink", thoughts.get(0).getName());
     });

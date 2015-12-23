@@ -14,6 +14,14 @@
  */
 package de.ks.idnadrev;
 
+import de.ks.flatadocdb.session.Session;
+import de.ks.flatjsondb.PersistentWork;
+import de.ks.standbein.activity.ActivityCfg;
+import de.ks.standbein.activity.ActivityController;
+import de.ks.standbein.activity.ActivityHint;
+import de.ks.standbein.activity.context.ActivityStore;
+import de.ks.standbein.i18n.Localized;
+import de.ks.util.FXPlatform;
 import org.junit.After;
 import org.junit.Before;
 
@@ -25,12 +33,15 @@ public abstract class ActivityTest {
   @Inject
   protected ActivityStore store;
   @Inject
-  protected Cleanup cleanup;
+  protected PersistentWork persistentWork;
+  @Inject
+  protected Localized localized;
 
   @Before
   public void startActivity() throws Exception {
     cleanup();
-    PersistentWork.run(em -> createTestData(em));
+
+    persistentWork.run(em -> createTestData(em));
 
     activityController.startOrResume(new ActivityHint(getActivityClass()));
     activityController.waitForTasks();
@@ -45,10 +56,9 @@ public abstract class ActivityTest {
   }
 
   protected void cleanup() {
-    cleanup.cleanup();
   }
 
-  protected void createTestData(EntityManager em) {
+  protected void createTestData(Session em) {
 
   }
 }

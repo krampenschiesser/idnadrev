@@ -28,7 +28,6 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
-import javafx.scene.control.MenuBar;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
@@ -45,16 +44,17 @@ public class IdnadrevWindow extends MainWindow {
   public static final String PROPERTY_INITIAL_ACTIVITY = "initialActivtiy";
   private static final Logger log = LoggerFactory.getLogger(IdnadrevWindow.class);
 
-  @Inject
-  MenuBarPresenter menuBarPresenter;
-  @Inject
-  PopupSink popupSink;
-  @Inject
-  ContentSink contentSink;
+  //  @Inject
+//  MenuBarPresenter menuBarPresenter;
+//  @Inject
+//  PopupSink popupSink;
+//  @Inject
+//  ContentSink contentSink;
   @Inject
   ActivityController activityController;
 
-  protected final WorkingOnTaskLink workingOnTaskLink = new WorkingOnTaskLink();
+  @Inject
+  protected WorkingOnTaskLink workingOnTaskLink;
 
   private BorderPane borderPane;
   private DefaultLoader<BorderPane, Object> loader;
@@ -65,9 +65,9 @@ public class IdnadrevWindow extends MainWindow {
 
   @PostConstruct
   public void initialize() {
-    popupSink.setMenuPath("/main/help");
-    contentSink.setMenuPath("/main");
-    loader = new DefaultLoader<>(IdnadrevWindow.class);
+//    popupSink.setMenuPath("/main/help");
+//    contentSink.setMenuPath("/main");
+//    loader = new DefaultLoader<>(IdnadrevWindow.class);
   }
 
   @Override
@@ -77,22 +77,22 @@ public class IdnadrevWindow extends MainWindow {
       VBox vBox = new VBox();
       vBox.setMinSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
       vBox.setMaxSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
-      MenuBar menu = menuBarPresenter.getMenu("/main");
-      menu.setMinSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
-      vBox.getChildren().add(menu);
+//      MenuBar menu = menuBarPresenter.getMenu("/main");
+//      menu.setMinSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
+//      vBox.getChildren().add(menu);
 
       StackPane topPane = (StackPane) borderPane.getTop();
       progressBox = (HBox) topPane.getChildren().get(0);
       progressBox.getChildren().add(workingOnTaskLink);
-      topPane.getChildren().add(0, menu);
+//      topPane.getChildren().add(0, menu);
 
-      DefaultLoader<GridPane, ButtonBar> loader = new DefaultLoader<>(ButtonBar.class);
-      buttonBar = loader.getController();
-      buttonBarView = loader.getView();
+//      DefaultLoader<GridPane, ButtonBar> loader = new DefaultLoader<>(ButtonBar.class);
+///      buttonBar = loader.getController();
+//      buttonBarView = loader.getView();
 
       contentPane = new StackPane();
       borderPane.setCenter(contentPane);
-      contentSink.setPane(contentPane);
+//      contentSink.setPane(contentPane);
 
       borderPane.setOnKeyReleased(this::checkShortcut);
 
@@ -105,7 +105,8 @@ public class IdnadrevWindow extends MainWindow {
     String activityClass = System.getProperty(PROPERTY_INITIAL_ACTIVITY, OverviewActivity.class.getName());
     if (!activityClass.isEmpty()) {
       try {
-        @SuppressWarnings("unchecked") Class<? extends ActivityCfg> clazz = (Class<? extends ActivityCfg>) Class.forName(activityClass);
+        @SuppressWarnings("unchecked")
+        Class<? extends ActivityCfg> clazz = (Class<? extends ActivityCfg>) Class.forName(activityClass);
         activityController.startOrResume(new ActivityHint(clazz));
         try {
           Thread.sleep(100);
@@ -184,8 +185,8 @@ public class IdnadrevWindow extends MainWindow {
     return workingOnTaskLink;
   }
 
-  @Override
-  public String getApplicationTitle() {
-    return "Idnadrev Version " + Application.versioning.getVersionInfo().getVersionString();
-  }
+//  @Override
+//  public String getApplicationTitle() {
+//    return "Idnadrev Version " + Application.versioning.getVersionInfo().getVersionString();
+//  }
 }

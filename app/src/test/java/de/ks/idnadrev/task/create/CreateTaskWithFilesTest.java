@@ -15,13 +15,26 @@
 
 package de.ks.idnadrev.task.create;
 
+import de.ks.flatadocdb.session.Session;
+import de.ks.idnadrev.ActivityTest;
+import de.ks.idnadrev.entity.Context;
+import de.ks.idnadrev.entity.FileReference;
+import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.entity.Thought;
+import de.ks.idnadrev.file.FileViewController;
+import de.ks.standbein.IntegrationTestModule;
+import de.ks.standbein.LoggingGuiceTestSupport;
+import de.ks.standbein.activity.ActivityCfg;
+import de.ks.text.AsciiDocEditor;
+import de.ks.util.FXPlatform;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileStore;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
@@ -29,8 +42,10 @@ import java.util.Set;
 
 import static org.junit.Assert.*;
 
-@RunWith(LauncherRunner.class)
 public class CreateTaskWithFilesTest extends ActivityTest {
+  @Rule
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule());
+
   @Inject
   FileStore fileStore;
   private MainTaskInfo controller;
@@ -43,8 +58,8 @@ public class CreateTaskWithFilesTest extends ActivityTest {
   }
 
   @Override
-  protected void createTestData(EntityManager em) {
-    em.persist(new Context("context"));
+  protected void createTestData(Session session) {
+    session.persist(new Context("context"));
   }
 
   @Before
@@ -70,12 +85,12 @@ public class CreateTaskWithFilesTest extends ActivityTest {
     activityController.waitForTasks();
 
     assertNull(datasource.fromThought);
-    assertEquals(0, PersistentWork.from(Thought.class).size());
+    assertEquals(0, persistentWork.from(Thought.class).size());
 
-    PersistentWork.wrap(() -> {
-      List<FileReference> fileReferences = PersistentWork.from(FileReference.class);
+    persistentWork.run(session -> {
+      List<FileReference> fileReferences = persistentWork.from(FileReference.class);
       assertEquals(1, fileReferences.size());
-      List<Task> tasks = PersistentWork.from(Task.class);
+      List<Task> tasks = persistentWork.from(Task.class);
       assertEquals(1, tasks.size());
       Set<FileReference> files = tasks.get(0).getFiles();
       assertEquals(1, files.size());
@@ -101,10 +116,10 @@ public class CreateTaskWithFilesTest extends ActivityTest {
     Thread.sleep(100);
     activityController.waitForTasks();
 
-    PersistentWork.wrap(() -> {
-      List<FileReference> fileReferences = PersistentWork.from(FileReference.class);
+    persistentWork.run(session -> {
+      List<FileReference> fileReferences = persistentWork.from(FileReference.class);
       assertEquals(1, fileReferences.size());
-      List<Task> tasks = PersistentWork.from(Task.class);
+      List<Task> tasks = persistentWork.from(Task.class);
       assertEquals(1, tasks.size());
       Set<FileReference> files = tasks.get(0).getFiles();
       assertEquals(1, files.size());
@@ -130,12 +145,12 @@ public class CreateTaskWithFilesTest extends ActivityTest {
       testFile.createNewFile();
     }
 
-    return PersistentWork.wrap(() -> {
+    return persistentWork.read(session -> {
       Thought thought = new Thought("Bla").setDescription("description");
       FileReference reference = new FileReference("test", "md5123");
       thought.addFileReference(reference);
-      PersistentWork.persist(thought);
-      PersistentWork.persist(reference);
+      persistentWork.persist(thought);
+      persistentWork.persist(reference);
       return thought;
     });
   }

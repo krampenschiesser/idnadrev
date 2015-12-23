@@ -74,7 +74,7 @@ public class Task extends NamedEntity implements FileContainer<Task>, Tagged {
   protected Set<FileReference> files = new HashSet<>();
 
   @ToMany
-  protected Set<Information> informations = new HashSet<>();
+  protected Set<Information> information = new HashSet<>();
 
   protected Task() {
     super(null);
@@ -307,8 +307,13 @@ public class Task extends NamedEntity implements FileContainer<Task>, Tagged {
     return this;
   }
 
-  public Set<Information> getInformations() {
-    return informations;
+  public Set<Information> getInformation() {
+    return information;
+  }
+
+  public Task addInformation(Information info) {
+    information.add(info);
+    return this;
   }
 
   @Override

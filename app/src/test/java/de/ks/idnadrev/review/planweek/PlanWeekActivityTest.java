@@ -15,10 +15,20 @@
 
 package de.ks.idnadrev.review.planweek;
 
+import de.ks.flatadocdb.session.Session;
+import de.ks.fxcontrols.weekview.WeekHelper;
+import de.ks.fxcontrols.weekview.WeekViewAppointment;
+import de.ks.idnadrev.ActivityTest;
+import de.ks.idnadrev.entity.Schedule;
+import de.ks.idnadrev.entity.Task;
+import de.ks.standbein.IntegrationTestModule;
+import de.ks.standbein.LoggingGuiceTestSupport;
+import de.ks.standbein.activity.ActivityCfg;
+import de.ks.util.FXPlatform;
 import javafx.collections.ObservableList;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -27,8 +37,9 @@ import java.time.Year;
 
 import static org.junit.Assert.*;
 
-@RunWith(LauncherRunner.class)
 public class PlanWeekActivityTest extends ActivityTest {
+  @Rule
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule());
 
   private PlanWeek planWeek;
 
@@ -38,7 +49,7 @@ public class PlanWeekActivityTest extends ActivityTest {
   }
 
   @Override
-  protected void createTestData(EntityManager em) {
+  protected void createTestData(Session session) {
 
     LocalDate firstDayOfWeek = new WeekHelper().getFirstDayOfWeek(LocalDate.now());
 
@@ -47,14 +58,14 @@ public class PlanWeekActivityTest extends ActivityTest {
     schedule.setProposedWeek(new WeekHelper().getWeek(LocalDate.now()));
     schedule.setProposedWeekDay(DayOfWeek.THURSDAY);
     proposed.setSchedule(schedule);
-    em.persist(proposed);
+    session.persist(proposed);
 
     Task scheduled = new Task("scheduled");
     schedule = new Schedule();
     schedule.setScheduledDate(firstDayOfWeek.plusDays(1));
     schedule.setScheduledTime(LocalTime.of(12, 0));
     scheduled.setSchedule(schedule);
-    em.persist(scheduled);
+    session.persist(scheduled);
   }
 
   @Before
@@ -73,25 +84,25 @@ public class PlanWeekActivityTest extends ActivityTest {
     LocalDate firstDayOfWeek = new WeekHelper().getFirstDayOfWeek(LocalDate.now());
     assertEquals(DayOfWeek.MONDAY, firstDayOfWeek.getDayOfWeek());//sanity on sunday morning
 
-    WeekViewAppointment<Task> appointment = planWeek.createAppointment(PersistentWork.forName(Task.class, "proposed"));
+    WeekViewAppointment<Task> appointment = planWeek.createAppointment(persistentWork.forName(Task.class, "proposed"));
     assertEquals(firstDayOfWeek.plusDays(3), appointment.getStartDate());
     assertNull(appointment.getStartTime());
 
-    appointment = planWeek.createAppointment(PersistentWork.forName(Task.class, "scheduled"));
+    appointment = planWeek.createAppointment(persistentWork.forName(Task.class, "scheduled"));
     assertEquals(firstDayOfWeek.plusDays(1), appointment.getStartDate());
     assertEquals(LocalTime.of(12, 0), appointment.getStartTime());
   }
 
   @Test
   public void testReplan() throws Exception {
-    WeekViewAppointment<Task> proposed = planWeek.createAppointment(PersistentWork.forName(Task.class, "proposed"));
-    WeekViewAppointment<Task> scheduled = planWeek.createAppointment(PersistentWork.forName(Task.class, "scheduled"));
+    WeekViewAppointment<Task> proposed = planWeek.createAppointment(persistentWork.forName(Task.class, "proposed"));
+    WeekViewAppointment<Task> scheduled = planWeek.createAppointment(persistentWork.forName(Task.class, "scheduled"));
 
     planWeek.changeSchedule(proposed, LocalDate.now(), LocalTime.of(13, 0));
     planWeek.changeSchedule(scheduled, LocalDate.now(), null);
 
-    PersistentWork.wrap(() -> {
-      Schedule schedule = PersistentWork.forName(Task.class, "proposed").getSchedule();
+    persistentWork.run(session -> {
+      Schedule schedule = persistentWork.forName(Task.class, "proposed").getSchedule();
       assertEquals(0, schedule.getProposedWeek());
       assertEquals(0, schedule.getProposedYear());
       assertNull(schedule.getProposedWeekDay());
@@ -99,8 +110,8 @@ public class PlanWeekActivityTest extends ActivityTest {
       assertEquals(LocalDate.now(), schedule.getScheduledDate());
       assertEquals(LocalTime.of(13, 0), schedule.getScheduledTime());
     });
-    PersistentWork.wrap(() -> {
-      Schedule schedule = PersistentWork.forName(Task.class, "scheduled").getSchedule();
+    persistentWork.run(session -> {
+      Schedule schedule = persistentWork.forName(Task.class, "scheduled").getSchedule();
       WeekHelper weekHelper = new WeekHelper();
       int week = weekHelper.getWeek(LocalDate.now());
       DayOfWeek dayOfWeek = LocalDate.now().getDayOfWeek();
@@ -117,7 +128,7 @@ public class PlanWeekActivityTest extends ActivityTest {
   public void testStartDragOutOfRange() throws Exception {
     FXPlatform.invokeLater(() -> planWeek.weekView.weekOfYearProperty().set(planWeek.weekView.getWeekOfYear() + 2));
     activityController.waitForDataSource();
-    WeekViewAppointment<Task> appointment = planWeek.createAppointment(PersistentWork.forName(Task.class, "proposed"));
+    WeekViewAppointment<Task> appointment = planWeek.createAppointment(persistentWork.forName(Task.class, "proposed"));
 
 
     ObservableList<WeekViewAppointment<Task>> entries = planWeek.weekView.getEntries();

@@ -15,17 +15,27 @@
 
 package de.ks.idnadrev.information.text;
 
+import de.ks.flatadocdb.session.Session;
+import de.ks.idnadrev.ActivityTest;
+import de.ks.idnadrev.entity.Tag;
+import de.ks.idnadrev.entity.information.TextInfo;
+import de.ks.standbein.IntegrationTestModule;
+import de.ks.standbein.LoggingGuiceTestSupport;
+import de.ks.standbein.activity.ActivityCfg;
+import de.ks.util.FXPlatform;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.*;
 
-@RunWith(LauncherRunner.class)
 public class TextInfoActivityTest extends ActivityTest {
+  @Rule
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule());
+
   @Override
   protected Class<? extends ActivityCfg> getActivityClass() {
     return TextInfoActivity.class;
@@ -38,8 +48,7 @@ public class TextInfoActivityTest extends ActivityTest {
   }
 
   @Override
-  protected void createTestData(EntityManager em) {
-    em.persist(new Category("cat1"));
+  protected void createTestData(Session session) {
   }
 
   @Test
@@ -49,19 +58,16 @@ public class TextInfoActivityTest extends ActivityTest {
       controller.name.setText("test");
       controller.content.setText("= title\n\nbla");
       controller.tagContainerController.addTag("tag1");
-      controller.categorySelectionController.setSelectedValue(PersistentWork.forName(Category.class, "cat1"));
     });
     FXPlatform.waitForFX();
     activityController.waitForTasks();
     activityController.save();
     activityController.waitForDataSource();
 
-    PersistentWork.wrap(() -> {
-      TextInfo textInfo = PersistentWork.forName(TextInfo.class, "test");
+    persistentWork.run(session -> {
+      TextInfo textInfo = persistentWork.forName(TextInfo.class, "test");
       assertNotNull(textInfo);
 
-      assertNotNull(textInfo.getCategory());
-      assertEquals("cat1", textInfo.getCategory().getName());
 
       Set<Tag> tags = textInfo.getTags();
       assertEquals(1, tags.size());
@@ -74,12 +80,9 @@ public class TextInfoActivityTest extends ActivityTest {
   @Test
   public void testEdit() throws Exception {
     TextInfoDS datasource = (TextInfoDS) store.getDatasource();
-    TextInfo model = PersistentWork.read(em -> {
+    TextInfo model = persistentWork.read(em -> {
       TextInfo textInfo = new TextInfo("test").setDescription("desc");
       textInfo.addTag("tag");
-      Category testCategory = new Category("testCategory");
-      em.persist(testCategory);
-      textInfo.setCategory(testCategory);
       em.persist(textInfo);
       return textInfo;
     });
@@ -91,15 +94,14 @@ public class TextInfoActivityTest extends ActivityTest {
     TextInfoController controller = activityController.getControllerInstance(TextInfoController.class);
     assertEquals("test", controller.name.getText());
     assertEquals("desc", controller.content.getText());
-    assertEquals("testCategory", controller.categorySelectionController.getInput().getText());
     assertTrue(controller.tagContainerController.getCurrentTags().contains("tag"));
 
     FXPlatform.invokeLater(() -> controller.content.setText("other"));
     activityController.save();
     activityController.waitForDataSource();
 
-    PersistentWork.wrap(() -> {
-      List<TextInfo> from = PersistentWork.from(TextInfo.class);
+    persistentWork.run(session -> {
+      List<TextInfo> from = persistentWork.from(TextInfo.class);
       assertEquals(1, from.size());
       TextInfo info = from.get(0);
       assertEquals("other", info.getContent());

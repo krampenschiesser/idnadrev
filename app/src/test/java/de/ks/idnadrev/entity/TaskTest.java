@@ -15,13 +15,16 @@
 
 package de.ks.idnadrev.entity;
 
-import org.junit.Before;
+import de.ks.flatjsondb.PersistentWork;
+import de.ks.idnadrev.entity.information.Information;
+import de.ks.idnadrev.entity.information.TextInfo;
+import de.ks.standbein.IntegrationTestModule;
+import de.ks.standbein.LoggingGuiceTestSupport;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.*;
@@ -29,22 +32,18 @@ import static org.junit.Assert.*;
 /**
  *
  */
-@RunWith(LauncherRunner.class)
 public class TaskTest {
+  @Rule
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule());
   @Inject
-  Cleanup cleanup;
-
-  @Before
-  public void setUp() throws Exception {
-    cleanup.cleanup();
-  }
+  PersistentWork persistentWork;
 
   @Test
   public void testPersist() throws Exception {
     Task task = new Task("bla");
-    PersistentWork.persist(task);
+    persistentWork.persist(task);
     assertNotNull(task.getCreationTime());
-    Task reload = PersistentWork.reload(task);
+    Task reload = persistentWork.reload(task);
     assertNotSame(task, reload);
     assertNotNull(reload.getOutcome());
   }
@@ -63,9 +62,9 @@ public class TaskTest {
     LocalDateTime end = last.getStart().plusMinutes(3);
     last.setEnd(end);
 
-    PersistentWork.persist(task);
-    PersistentWork.run((em) -> {
-      Task readTask = em.find(Task.class, task.getId());
+    persistentWork.persist(task);
+    persistentWork.run((em) -> {
+      Task readTask = em.findById(Task.class, task.getId());
       assertEquals(workUnitAmount, readTask.getWorkUnits().size());
       assertEquals(3, task.getSpentMinutes());
     });
@@ -80,12 +79,13 @@ public class TaskTest {
     Task task = new Task("test");
     Tag tag = new Tag(tagName);
     information.addTag(tag);
-    information.setTask(task);
+    task.addInformation(information);
+//    information.setTask(task);
 
-    PersistentWork.persist(task, tag, information);
+    persistentWork.persist(task, tag, information);
 
-    PersistentWork.run((em) -> {
-      Task readTask = em.find(Task.class, task.getId());
+    persistentWork.run((em) -> {
+      Task readTask = em.findById(Task.class, task.getId());
 
       assertEquals(1, readTask.getInformation().size());
       Information<?> readInformation = readTask.getInformation().iterator().next();
@@ -93,16 +93,16 @@ public class TaskTest {
       assertEquals(tagName, readInformation.getTags().iterator().next().getName());
     });
 
-    PersistentWork.run((em) -> {
-      TextInfo readInformation = em.find(TextInfo.class, information.getId());
+    persistentWork.run((em) -> {
+      TextInfo readInformation = em.findById(TextInfo.class, information.getId());
       em.remove(readInformation);
     });
-    PersistentWork.run((em) -> {
-      Tag readTag = em.find(Tag.class, tag.getId());
+    persistentWork.run((em) -> {
+      Tag readTag = em.findById(Tag.class, tag.getId());
       assertNotNull(readTag);
     });
-    PersistentWork.run((em) -> {
-      em.remove(em.find(Task.class, task.getId()));
+    persistentWork.run((em) -> {
+      em.remove(em.findById(Task.class, task.getId()));
     });
   }
 
@@ -112,18 +112,18 @@ public class TaskTest {
     Task task = new Task("blubber");
     task.setContext(new Context(contextName));
 
-    PersistentWork.persist(task);
+    persistentWork.persist(task);
 
-    PersistentWork.run((em) -> {
-      Task readTask = em.find(Task.class, task.getId());
+    persistentWork.run((em) -> {
+      Task readTask = em.findById(Task.class, task.getId());
       assertNotNull(readTask.getContext());
       assertEquals(contextName, readTask.getContext().getName());
     });
-    PersistentWork.run((em) -> {
-      em.remove(em.find(Task.class, task.getId()));
+    persistentWork.run((em) -> {
+      em.remove(em.findById(Task.class, task.getId()));
     });
-    PersistentWork.run((em) -> {
-      Context context = em.find(Context.class, task.getContext().getId());
+    persistentWork.run((em) -> {
+      Context context = em.findById(Context.class, task.getContext().getId());
       assertNotNull(context);
       assertEquals(contextName, context.getName());
     });
@@ -137,10 +137,10 @@ public class TaskTest {
     parent.addChild(child2);
     child2.addChild(new Task("SubChild"));
 
-    PersistentWork.persist(parent);
+    persistentWork.persist(parent);
 
-    PersistentWork.run((em) -> {
-      Task readParent = em.find(parent.getClass(), parent.getId());
+    persistentWork.run((em) -> {
+      Task readParent = persistentWork.reload(parent);
       Set<Task> children = readParent.getChildren();
       assertEquals(2, children.size());
       for (Task child : children) {
@@ -152,28 +152,25 @@ public class TaskTest {
       }
     });
 
-    PersistentWork.run((em) -> {
-      em.remove(em.find(parent.getClass(), parent.getId()));
+    persistentWork.run((em) -> {
+      em.remove(persistentWork.reload(parent));
     });
 
-    PersistentWork.run((em) -> {
-      List foundTasks = em.createQuery("from " + Task.class.getName()).getResultList();
-      assertEquals(0, foundTasks.size());
-    });
+    assertEquals(0, persistentWork.from(Task.class).size());
   }
 
   @Test
   public void testFinish() throws Exception {
     Task task = new Task("bla");
     task.setState(TaskState.LATER);
-    PersistentWork.persist(task);
+    persistentWork.persist(task);
 
-    PersistentWork.wrap(() -> {
-      PersistentWork.reload(task).setFinished(true);
+    persistentWork.run(session -> {
+      persistentWork.reload(task).setFinished(true);
     });
 
-    PersistentWork.wrap(() -> {
-      Task reload = PersistentWork.reload(task);
+    persistentWork.run(session -> {
+      Task reload = persistentWork.reload(task);
       assertEquals(TaskState.NONE, reload.getState());
       assertTrue(reload.isFinished());
       assertNotNull(reload.getFinishTime());

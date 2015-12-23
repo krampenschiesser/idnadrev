@@ -78,7 +78,7 @@ public class BookingViewDS implements DataSource<BookingViewModel> {
 
   private Booking getTotal(LocalDateTime date, boolean includeDate) {
     // FIXME: 12/20/15
-//    return PersistentWork.read(em -> {
+//    return persistentWork.read(em -> {
 //      CriteriaBuilder builder = em.getCriteriaBuilder();
 //
 //      CriteriaQuery<Double> query = builder.createQuery(Double.class);
@@ -96,7 +96,7 @@ public class BookingViewDS implements DataSource<BookingViewModel> {
 //
 //      Double result = em.createQuery(query).getSingleResult();
 //      log.debug("Sum of bookins before {}: {}", date, result);
-//      Account account = PersistentWork.forName(Account.class, loadingHint.getAccountName());
+//      Account account = persistentWork.forName(Account.class, loadingHint.getAccountName());
 //      return new Booking(account, result == null ? 0D : result, false).setBookingTime(date).setDescription(Localized.get("total"));
 //    });
     return null;
