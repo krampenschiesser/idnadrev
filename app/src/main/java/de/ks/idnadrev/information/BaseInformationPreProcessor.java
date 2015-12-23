@@ -48,7 +48,7 @@ public abstract class BaseInformationPreProcessor implements AsciiDocPreProcesso
     if (adoc == null) {
       return null;
     }
-    Map<Long, Path> tasks = new HashMap<>();
+    Map<String, Path> tasks = new HashMap<>();
     StringBuilder retval = new StringBuilder();
 
     Matcher matcher = pattern.matcher(adoc);
@@ -66,8 +66,7 @@ public abstract class BaseInformationPreProcessor implements AsciiDocPreProcesso
       File file = tempFilePath.toFile();
       if (!file.exists()) {
         try {
-          Long id = Long.valueOf(idString);
-          tasks.put(id, tempFilePath);
+          tasks.put(idString, tempFilePath);
         } catch (NumberFormatException e) {
           log.warn("Could not parse idString {}", idString);
         }
@@ -93,5 +92,5 @@ public abstract class BaseInformationPreProcessor implements AsciiDocPreProcesso
     return retval.toString();
   }
 
-  protected abstract void handleIds(Map<Long, Path> tasks);
+  protected abstract void handleIds(Map<String, Path> tasks);
 }

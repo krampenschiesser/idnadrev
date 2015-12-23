@@ -34,7 +34,7 @@ public class ChartPreProcessor extends BaseInformationPreProcessor {
   }
 
   @Override
-  protected void handleIds(Map<Long, Path> tasks) {
+  protected void handleIds(Map<String, Path> tasks) {
     tasks.forEach((id, path) -> fileRendering.renderToFile(id, path));
   }
 }

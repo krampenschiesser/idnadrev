@@ -34,7 +34,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class PersistentWork {
-  private static final Logger log = LoggerFactory.getLogger(persistentWork.class);
+  private static final Logger log = LoggerFactory.getLogger(PersistentWork.class);
   private final ThreadLocal<Session> localSession = new ThreadLocal<>();
   private final SessionFactory factory;
   private final Repository repository;

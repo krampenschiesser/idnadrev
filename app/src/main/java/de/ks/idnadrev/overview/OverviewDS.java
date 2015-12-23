@@ -40,7 +40,7 @@ public class OverviewDS implements DataSource<OverviewModel> {
 
   @Override
   public OverviewModel loadModel(Consumer<OverviewModel> furtherProcessing) {
-    return persistentWork.read(em -> {
+    return persistentWork.read(sesion -> {
       OverviewModel model = new OverviewModel();
       List<Context> contexts = persistentWork.from(Context.class);
       model.getContexts().addAll(contexts);

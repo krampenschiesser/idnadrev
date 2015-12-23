@@ -36,8 +36,8 @@ public class ChartPreProcessorTest {
     log.info(result);
     assertThat(result, containsString("image::"));
 
-    Mockito.verify(preProcessor.fileRendering).renderToFile(Mockito.eq(103L), Mockito.any(Path.class));
-    Mockito.verify(preProcessor.fileRendering, Mockito.atMost(1)).renderToFile(Mockito.eq(1L), Mockito.any(Path.class));
+    Mockito.verify(preProcessor.fileRendering).renderToFile(Mockito.eq("103L"), Mockito.any(Path.class));
+    Mockito.verify(preProcessor.fileRendering, Mockito.atMost(1)).renderToFile(Mockito.eq("1L"), Mockito.any(Path.class));
   }
 
   @Test

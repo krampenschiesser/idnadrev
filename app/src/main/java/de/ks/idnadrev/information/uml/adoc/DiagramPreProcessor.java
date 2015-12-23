@@ -39,7 +39,7 @@ public class DiagramPreProcessor extends BaseInformationPreProcessor {
   }
 
   @Override
-  protected void handleIds(Map<Long, Path> tasks) {
+  protected void handleIds(Map<String, Path> tasks) {
 
     tasks.forEach((id, path) -> {
       // FIXME: 12/17/15

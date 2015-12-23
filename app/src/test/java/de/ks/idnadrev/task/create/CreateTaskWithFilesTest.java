@@ -35,7 +35,6 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileStore;
-import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -73,7 +72,8 @@ public class CreateTaskWithFilesTest extends ActivityTest {
   public void testTaskFromThought() throws Exception {
     Thought bla = createThoughtAndTestFile();
 
-    @SuppressWarnings("unchecked") CreateTaskDS datasource = (CreateTaskDS) store.getDatasource();
+    @SuppressWarnings("unchecked")
+    CreateTaskDS datasource = (CreateTaskDS) store.getDatasource();
     datasource.fromThought = bla;
     activityController.reload();
     activityController.waitForTasks();
@@ -102,7 +102,8 @@ public class CreateTaskWithFilesTest extends ActivityTest {
   public void testAddFile() throws Exception {
     createThoughtAndTestFile();
 
-    @SuppressWarnings("unchecked") CreateTaskDS datasource = (CreateTaskDS) store.getDatasource();
+    @SuppressWarnings("unchecked")
+    CreateTaskDS datasource = (CreateTaskDS) store.getDatasource();
     activityController.reload();
     activityController.waitForTasks();
     FXPlatform.waitForFX();
@@ -128,22 +129,23 @@ public class CreateTaskWithFilesTest extends ActivityTest {
   }
 
   protected File getTestFile() {
-    String fileStoreDir = fileStore.getFileStoreDir();
-    File dir = new File(fileStoreDir + File.separator + "fileDir");
-    File testFile = new File(dir, "test");
-    return testFile;
+//    String fileStoreDir = fileStore.getFileStoreDir();
+//    File dir = new File(fileStoreDir + File.separator + "fileDir");
+//    File testFile = new File(dir, "test");
+//    return testFile;
+    return null;
   }
 
   protected Thought createThoughtAndTestFile() throws IOException {
-    String fileStoreDir = fileStore.getFileStoreDir();
-    File dir = new File(fileStoreDir + File.separator + "fileDir");
-    if (!dir.exists()) {
-      Files.createDirectories(dir.toPath());
-    }
-    File testFile = new File(dir, "test");
-    if (!testFile.exists()) {
-      testFile.createNewFile();
-    }
+//    String fileStoreDir = fileStore.getFileStoreDir();
+//    File dir = new File(fileStoreDir + File.separator + "fileDir");
+//    if (!dir.exists()) {
+//      Files.createDirectories(dir.toPath());
+//    }
+//    File testFile = new File(dir, "test");
+//    if (!testFile.exists()) {
+//      testFile.createNewFile();
+//    }
 
     return persistentWork.read(session -> {
       Thought thought = new Thought("Bla").setDescription("description");
