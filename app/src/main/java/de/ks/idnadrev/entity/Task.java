@@ -16,7 +16,7 @@
 package de.ks.idnadrev.entity;
 
 import de.ks.flatadocdb.annotation.*;
-import de.ks.flatadocdb.entity.NamedEntity;
+import de.ks.flatadocdb.query.Query;
 import de.ks.idnadrev.entity.information.Information;
 
 import java.time.Duration;
@@ -29,13 +29,14 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 @Entity
-public class Task extends NamedEntity implements FileContainer<Task>, Tagged {
-  private static final long serialVersionUID = 1L;
-  private static final String TASK_TAG_JOINTABLE = "task_tag";
+public class Task extends TaggedEntity implements FileContainer<Task> {
+  @QueryProvider
+  public static Query<Task, Boolean> finishedQuery() {
+    return Query.of(Task.class, Task::isFinished);
+  }
 
   protected String description;
 
-  //  @ToMany
   protected SortedSet<WorkUnit> workUnits = new TreeSet<>();
 
   protected LocalDateTime finishTime;
@@ -67,8 +68,6 @@ public class Task extends NamedEntity implements FileContainer<Task>, Tagged {
   protected boolean project;
 
   protected Outcome outcome = new Outcome();
-
-  protected Set<Tag> tags = new HashSet<>();
 
   @Children
   protected Set<FileReference> files = new HashSet<>();
@@ -256,11 +255,6 @@ public class Task extends NamedEntity implements FileContainer<Task>, Tagged {
   public Task setEstimatedTime(Duration estimatedTime) {
     this.estimatedTime = estimatedTime;
     return this;
-  }
-
-  @Override
-  public Set<Tag> getTags() {
-    return tags;
   }
 
   public Outcome getOutcome() {

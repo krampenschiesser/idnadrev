@@ -68,9 +68,9 @@ public class FastTrackActivityTest extends ActivityTest {
   public void testExisting() throws Exception {
     FastTrack fastTrack = activityController.getControllerInstance(FastTrack.class);
     assertNotNull(fastTrack);
-    assertNotNull(fastTrack.nameController);
+    assertNotNull(fastTrack.selection);
 
-    FXPlatform.invokeLater(() -> fastTrack.nameController.getInput().setText("Existing"));
+    FXPlatform.invokeLater(() -> fastTrack.selection.getTextField().setText("Existing"));
     Thread.sleep(LastTextChange.WAIT_TIME);
     activityController.waitForTasks();
     FXPlatform.waitForFX();
@@ -97,9 +97,9 @@ public class FastTrackActivityTest extends ActivityTest {
   public void testNew() throws Exception {
     FastTrack fastTrack = activityController.getControllerInstance(FastTrack.class);
     assertNotNull(fastTrack);
-    assertNotNull(fastTrack.nameController);
+    assertNotNull(fastTrack.selection);
 
-    FXPlatform.invokeLater(() -> fastTrack.nameController.getInput().setText("bla"));
+    FXPlatform.invokeLater(() -> fastTrack.selection.getTextField().setText("bla"));
     Thread.sleep(LastTextChange.WAIT_TIME);
     activityController.waitForTasks();
     FXPlatform.waitForFX();
@@ -129,22 +129,22 @@ public class FastTrackActivityTest extends ActivityTest {
   public void testExistingFirstThenNew() throws Exception {
     FastTrack fastTrack = activityController.getControllerInstance(FastTrack.class);
     assertNotNull(fastTrack);
-    assertNotNull(fastTrack.nameController);
+    assertNotNull(fastTrack.selection);
 
-    FXPlatform.invokeLater(() -> fastTrack.nameController.getInput().setText("Existing"));
+    FXPlatform.invokeLater(() -> fastTrack.selection.getTextField().setText("Existing"));
     Thread.sleep(LastTextChange.WAIT_TIME);
     activityController.waitForTasks();
 
     //now set to new task
     log.info("Now setting to new task");
-    FXPlatform.invokeLater(() -> fastTrack.nameController.getInput().setText("bla"));
+    FXPlatform.invokeLater(() -> fastTrack.selection.getTextField().setText("bla"));
     Thread.sleep(LastTextChange.WAIT_TIME * 2);
     activityController.waitForTasks();
     FXPlatform.waitForFX();
 
     AsciiDocEditor description = fastTrack.description;
     assertEquals("", description.getText());
-    assertEquals("bla", fastTrack.nameController.getInput().getText());
+    assertEquals("bla", fastTrack.selection.getTextField().getText());
 
     FXPlatform.invokeLater(() -> fastTrack.finishTask());
     activityController.waitForDataSource();

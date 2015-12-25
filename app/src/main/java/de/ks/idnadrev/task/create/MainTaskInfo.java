@@ -14,13 +14,17 @@
  */
 package de.ks.idnadrev.task.create;
 
+import com.google.inject.Injector;
 import de.ks.flatadocdb.entity.NamedEntity;
 import de.ks.flatjsondb.PersistentWork;
+import de.ks.flatjsondb.selection.NamedEntitySelection;
+import de.ks.flatjsondb.validator.NamedEntityMustNotExistValidator;
+import de.ks.flatjsondb.validator.NamedEntityValidator;
+import de.ks.idnadrev.entity.Context;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.TaskState;
 import de.ks.idnadrev.tag.TagContainer;
 import de.ks.standbein.BaseController;
-import de.ks.standbein.reflection.PropertyPath;
 import de.ks.standbein.validation.validators.DurationValidator;
 import de.ks.text.AsciiDocEditor;
 import javafx.beans.property.StringProperty;
@@ -35,15 +39,11 @@ import javafx.scene.layout.StackPane;
 import javax.inject.Inject;
 import java.net.URL;
 import java.time.Duration;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
 public class MainTaskInfo extends BaseController<Task> {
-  //  @FXML
-//  protected NamedPersistentObjectSelection<Task> parentProjectController;
-//  @FXML
-//  protected NamedPersistentObjectSelection<Context> contextController;
-// FIXME: 12/17/15 
   @FXML
   protected TagContainer tagAddController;
 
@@ -60,6 +60,12 @@ public class MainTaskInfo extends BaseController<Task> {
 
   @Inject
   protected PersistentWork persistentWork;
+  @Inject
+  Injector injector;
+  @Inject
+  NamedEntitySelection<Task> parentProjectController;
+  @Inject
+  NamedEntitySelection<Context> contextController;
 
   protected AsciiDocEditor description;
   protected DurationValidator durationValidator;
@@ -69,22 +75,18 @@ public class MainTaskInfo extends BaseController<Task> {
   public void initialize(URL location, ResourceBundle resources) {
     AsciiDocEditor.load(activityInitialization, descriptionContainer.getChildren()::add, ade -> this.description = ade);
 
-    // FIXME: 12/17/15 
-//    validationRegistry.registerBeanValidationValidator(name, Task.class, PropertyPath.of(Task.class, t -> t.getName()).getPropertyPath());
-//    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(Task.class, t -> t.getId() == store.<Task>getModel().getId()));
+    contextController.configure(Context.class);
+    parentProjectController.configure(Task.class);
+
+    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(Task.class, t -> Objects.equals(t.getId(), store.<Task>getModel().getId()), persistentWork, localized));
     description.hideActionBar();
     StringProperty nameBinding = store.getBinding().getStringProperty(Task.class, t -> t.getName());
     name.textProperty().bindBidirectional(nameBinding);
     StringProperty descriptionBinding = store.getBinding().getStringProperty(Task.class, t -> t.getDescription());
     descriptionBinding.bindBidirectional(description.textProperty());
 
-    String projectKey = PropertyPath.property(Task.class, (t) -> t.isProject());
-    // FIXME: 12/17/15 
-//    parentProjectController.from(Task.class, (root, query, builder) -> {
-//      query.where(builder.isTrue(root.get(projectKey)));
-//    }).enableValidation();
-//
-//    contextController.from(Context.class).enableValidation();
+    validationRegistry.registerValidator(contextController.getTextField(), new NamedEntityValidator(Context.class, persistentWork, localized));
+    validationRegistry.registerValidator(parentProjectController.getTextField(), new NamedEntityValidator(Task.class, persistentWork, localized));
 
     durationValidator = new DurationValidator(localized);
 // FIXME: 12/17/15 
@@ -95,7 +97,7 @@ public class MainTaskInfo extends BaseController<Task> {
     validationRegistry.registerValidator(estimatedTimeDuration, durationValidator);
 
     project.setText("");
-    project.selectedProperty().bindBidirectional(store.getBinding().getBooleanProperty(Task.class, (t) -> t.isProject()));
+    project.selectedProperty().bindBidirectional(store.getBinding().getBooleanProperty(Task.class, Task::isProject));
 
 
     state.setItems(states);
@@ -133,17 +135,16 @@ public class MainTaskInfo extends BaseController<Task> {
       long minutes = estimatedTime.toMinutes() % 60;
       estimatedTimeDuration.setText(hours + ":" + String.format("%02d", minutes));
     }
-    // FIXME: 12/17/15 
-//    if (model.getContext() != null) {
-//      contextController.getInput().setText(model.getContext().getName());
-//    } else {
-//      contextController.getInput().setText("");
-//    }
-//    if (model.getParent() != null) {
-//      parentProjectController.getInput().setText(model.getParent().getName());
-//    } else {
-//      parentProjectController.getInput().setText("");
-//    }
+    if (model.getContext() != null) {
+      contextController.getTextField().setText(model.getContext().getName());
+    } else {
+      contextController.getTextField().setText("");
+    }
+    if (model.getParent() != null) {
+      parentProjectController.getTextField().setText(model.getParent().getName());
+    } else {
+      parentProjectController.getTextField().setText("");
+    }
   }
 
   public Duration getEstimatedDuration() {
@@ -162,12 +163,11 @@ public class MainTaskInfo extends BaseController<Task> {
 
   @Override
   public void duringSave(Task task) {
-//    String contextName = contextController.getInput().textProperty().getValueSafe().trim();
-//    setToOne(task, Context.class, contextName, task::setContext);
-//
-//    String parentProject = parentProjectController.getInput().textProperty().getValueSafe().trim();
-//    setToOne(task, Task.class, parentProject, task::setParent);
-    // FIXME: 12/17/15
+    String contextName = contextController.getTextField().textProperty().getValueSafe().trim();
+    setToOne(task, Context.class, contextName, task::setContext);
+
+    String parentProject = parentProjectController.getTextField().textProperty().getValueSafe().trim();
+    setToOne(task, Task.class, parentProject, task::setParent);
 
     task.setEstimatedTime(getEstimatedDuration());
     task.setState(state.getValue());
@@ -175,12 +175,11 @@ public class MainTaskInfo extends BaseController<Task> {
 
   private <T extends NamedEntity> void setToOne(Task model, Class<T> clazz, String name, Consumer<T> consumer) {
     if (!name.isEmpty()) {
-      T found = persistentWork.forName(clazz, name);
+      T found = persistentWork.read(session -> session.findByNaturalId(clazz, name));
       if (found != null) {
         consumer.accept(found);
       } else {
         //keep previous
-
       }
     } else {
       consumer.accept(null);

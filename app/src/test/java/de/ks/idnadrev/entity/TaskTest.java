@@ -90,7 +90,7 @@ public class TaskTest {
       assertEquals(1, readTask.getInformation().size());
       Information<?> readInformation = readTask.getInformation().iterator().next();
       assertEquals(1, readInformation.getTags().size());
-      assertEquals(tagName, readInformation.getTags().iterator().next().getName());
+      assertEquals(tagName, readInformation.getTags().iterator().next().getDisplayName());
     });
 
     persistentWork.run((em) -> {

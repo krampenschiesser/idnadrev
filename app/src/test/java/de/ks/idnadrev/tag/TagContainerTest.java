@@ -51,7 +51,7 @@ public class TagContainerTest extends ActivityTest {
     assertEquals(0, container.tagPane.getChildren().size());
 
     addTag(container, "tag1");
-    assertEquals(0, container.tagAddController.getInput().getText().length());
+    assertEquals(0, container.getInput().getText().length());
     assertEquals(1, container.tagPane.getChildren().size());
 
     addTag(container, "tag1");
@@ -102,8 +102,8 @@ public class TagContainerTest extends ActivityTest {
 
   private void addTag(TagContainer container, String tagName) throws Exception {
     FXPlatform.invokeLater(() -> {
-      container.tagAddController.getInput().setText(tagName);
-      container.tagAddController.getOnAction().handle(null);
+      container.getInput().setText(tagName);
+      container.getOnAction().handle(null);
     });
     Thread.sleep(LastTextChange.WAIT_TIME + 10);
     activityController.waitForTasks();

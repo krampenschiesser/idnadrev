@@ -16,15 +16,18 @@ package de.ks.idnadrev.tag;
 
 import de.ks.flatjsondb.PersistentWork;
 import de.ks.idnadrev.entity.Tag;
-import de.ks.idnadrev.entity.Tagged;
+import de.ks.idnadrev.entity.TaggedEntity;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.activity.ActivityLoadFinishedEvent;
 import de.ks.standbein.application.fxml.DefaultLoader;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -36,10 +39,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-public class TagContainer extends BaseController<Tagged> {
-  // FIXME: 12/15/15 
-//  @FXML
-//  protected NamedPersistentObjectSelection<Tag> tagAddController;
+public class TagContainer extends BaseController<TaggedEntity> {
   @FXML
   protected StackPane tagSelectionContainer;
   @FXML
@@ -49,20 +49,20 @@ public class TagContainer extends BaseController<Tagged> {
   protected PersistentWork persistentWork;
   @Inject
   protected Provider<DefaultLoader> loaderProvider;
+  @Inject
+  protected TagSelection tagSelection;
 
   protected final ObservableSet<String> currentTags = FXCollections.observableSet(new TreeSet<String>());
   protected boolean readOnly = false;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-//    tagAddController.from(Tag.class);
-//    tagAddController.setHideOnSingleClick(true);
-//    tagAddController.setOnAction(e -> {
-//      TextField input = tagAddController.getInput();
-//      addTag(input.getText());
-//      input.clear();
-//    });
-    // FIXME: 12/15/15 
+    tagSelection.setOnAction(e -> {
+      TextField input = tagSelection.getTextField();
+      addTag(input.getText());
+      input.clear();
+    });
+    currentTags.addListener(this::onTagsChanged);
     currentTags.addListener(this::onTagsChanged);
   }
 
@@ -73,7 +73,6 @@ public class TagContainer extends BaseController<Tagged> {
         DefaultLoader<GridPane, TagInfo> loader = loaderProvider.get().load(TagInfo.class);
         return loader;
       }, controller.getExecutorService()).thenAcceptAsync((loader) -> {
-//        currentTags.add(addedTag);
         TagInfo ctrl = loader.getController();
         ctrl.getName().setText(addedTag);
         GridPane view = loader.getView();
@@ -104,52 +103,48 @@ public class TagContainer extends BaseController<Tagged> {
   }
 
   @Override
-  public void duringSave(Tagged model) {
+  public void duringSave(TaggedEntity model) {
     if (!readOnly) {
-      tagPane.getChildren().stream().filter(c -> c.getId() != null).map(c -> new Tag(c.getId())).forEach(tag -> {
-        Tag readTag = persistentWork.forName(Tag.class, tag.getName());
-        readTag = readTag == null ? tag : readTag;
-        model.addTag(readTag);
-      });
+      tagPane.getChildren().stream().filter(c -> c.getId() != null).map(c -> new Tag(c.getId())).forEach(model::addTag);
     }
   }
 
   @Override
-  public void duringLoad(Tagged model) {
+  public void duringLoad(TaggedEntity model) {
     super.duringLoad(model);
     if (!readOnly) {
-      model.getTags().forEach(t -> t.getName());
+      model.getTags().forEach(Tag::getDisplayName);
     }
   }
 
   @Override
-  protected void onRefresh(Tagged model) {
+  protected void onRefresh(TaggedEntity model) {
     super.onRefresh(model);
     if (!readOnly) {
       currentTags.clear();
 
-      List<String> tags = model.getTags().stream().map(t -> t.getName()).collect(Collectors.toList());
+      List<String> tags = model.getTags().stream().map(t -> t.getDisplayName()).collect(Collectors.toList());
       Collections.sort(tags);
       currentTags.addAll(tags);
     }
   }
 
   @Override
-  protected Tagged extractFromEvent(ActivityLoadFinishedEvent e) {
+  protected TaggedEntity extractFromEvent(ActivityLoadFinishedEvent e) {
     if (readOnly) {
       return null;
     } else {
       return super.extractFromEvent(e);
     }
   }
-// FIXME: 12/15/15 
-//  public TextField getInput() {
-//    return tagAddController.getInput();
-//  }
-//
-//  public EventHandler<ActionEvent> getOnAction() {
-//    return tagAddController.getOnAction();
-//  }
+
+  public TextField getInput() {
+    return tagSelection.getTextField();
+  }
+
+  public EventHandler<ActionEvent> getOnAction() {
+    return tagSelection.getOnAction();
+  }
 
   public boolean isReadOnly() {
     return readOnly;

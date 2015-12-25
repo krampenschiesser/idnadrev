@@ -160,7 +160,7 @@ public class ViewTasks extends BaseController<List<Task>> {
       setEffortProgress(task.getMentalEffort().getAmount(), mentalEffort, RECOVERING_EFFORT);
       setEffortProgress(task.getFunFactor().getAmount(), funFactor, NEGATIVE_FUN_FACTOR);
 
-      task.getTags().forEach((tag) -> tagPane.getChildren().add(new Label(tag.getName())));
+      task.getTags().forEach((tag) -> tagPane.getChildren().add(new Label(tag.getDisplayName())));
 
       asciiDocViewer.show(new AsciiDocContent(task.getName(), task.getDescription()));
     }

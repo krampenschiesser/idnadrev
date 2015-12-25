@@ -17,7 +17,6 @@ package de.ks.idnadrev.task.view;
 import de.ks.flatadocdb.session.Session;
 import de.ks.idnadrev.ActivityTest;
 import de.ks.idnadrev.entity.Context;
-import de.ks.idnadrev.entity.Tag;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.task.create.CreateTaskActivity;
 import de.ks.idnadrev.task.create.MainTaskInfo;
@@ -60,8 +59,6 @@ public class ViewTasksTest extends ActivityTest {
 
   @Override
   protected void createTestData(Session session) {
-    persistentWork.removeAllOf(Tag.class);
-
     Context context = new Context("context");
 
     Task project1 = new Task("project1").setProject(true);

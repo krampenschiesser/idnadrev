@@ -15,17 +15,53 @@
 
 package de.ks.idnadrev.entity;
 
-import de.ks.flatadocdb.entity.NamedEntity;
+import java.util.Locale;
+import java.util.Objects;
 
-//@Entity
-public class Tag extends NamedEntity {
-  private static final long serialVersionUID = 1L;
+public class Tag implements Comparable<Tag> {
+  private final String displayName;
+  private final String reducedName;
 
-  protected Tag() {
-    super(null);
+  public Tag(String displayName) {
+    Objects.requireNonNull(displayName);
+    this.displayName = displayName;
+    reducedName = displayName.trim().toLowerCase(Locale.ROOT);
   }
 
-  public Tag(String name) {
-    super(name);
+  public String getDisplayName() {
+    return displayName;
+  }
+
+  public String getReducedName() {
+    return reducedName;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Tag)) {
+      return false;
+    }
+
+    Tag tag = (Tag) o;
+
+    return reducedName.equals(tag.reducedName);
+  }
+
+  @Override
+  public int hashCode() {
+    return reducedName.hashCode();
+  }
+
+  @Override
+  public String toString() {
+    return displayName;
+  }
+
+  @Override
+  public int compareTo(Tag o) {
+    return displayName.compareTo(o.displayName);
   }
 }

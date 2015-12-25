@@ -16,10 +16,7 @@ package de.ks.idnadrev.task.create;
 
 import de.ks.flatadocdb.session.Session;
 import de.ks.idnadrev.ActivityTest;
-import de.ks.idnadrev.entity.Context;
-import de.ks.idnadrev.entity.Task;
-import de.ks.idnadrev.entity.TaskState;
-import de.ks.idnadrev.entity.Thought;
+import de.ks.idnadrev.entity.*;
 import de.ks.standbein.IntegrationTestModule;
 import de.ks.standbein.LoggingGuiceTestSupport;
 import de.ks.standbein.activity.ActivityCfg;
@@ -79,7 +76,8 @@ public class CreateTaskTest extends ActivityTest {
     Thought bla = new Thought("Bla").setDescription("description");
     persistentWork.persist(bla);
 
-    @SuppressWarnings("unchecked") CreateTaskDS datasource = (CreateTaskDS) store.getDatasource();
+    @SuppressWarnings("unchecked")
+    CreateTaskDS datasource = (CreateTaskDS) store.getDatasource();
     datasource.fromThought = bla;
     activityController.reload();
     activityController.waitForTasks();
@@ -99,7 +97,8 @@ public class CreateTaskTest extends ActivityTest {
     Thought bla = new Thought("Bla").setDescription("description");
     persistentWork.persist(bla);
 
-    @SuppressWarnings("unchecked") CreateTaskDS datasource = (CreateTaskDS) store.getDatasource();
+    @SuppressWarnings("unchecked")
+    CreateTaskDS datasource = (CreateTaskDS) store.getDatasource();
     datasource.fromThought = bla;
     activityController.reload();
     activityController.waitForTasks();
@@ -145,12 +144,7 @@ public class CreateTaskTest extends ActivityTest {
     });
     activityController.waitForTasks();
 
-    List<Task> tasks = persistentWork.from(Task.class, (t) -> {
-      t.getContext().getName();
-      if (t.getSchedule() != null) {
-        t.getSchedule().getScheduledDate();
-      }
-    });
+    List<Task> tasks = persistentWork.from(Task.class);
     assertEquals(1, tasks.size());
     Task task = tasks.get(0);
     assertEquals("name", task.getName());
@@ -185,11 +179,7 @@ public class CreateTaskTest extends ActivityTest {
     });
     activityController.waitForTasks();
 
-    List<Task> tasks = persistentWork.from(Task.class, (t) -> {
-      if (t.getSchedule() != null) {
-        t.getSchedule().getScheduledDate();
-      }
-    });
+    List<Task> tasks = persistentWork.from(Task.class);
     assertEquals(1, tasks.size());
     Task task = tasks.get(0);
     assertEquals("name", task.getName());
@@ -269,9 +259,7 @@ public class CreateTaskTest extends ActivityTest {
     });
     activityController.waitForTasks();
 
-    List<Task> tasks = persistentWork.from(Task.class, (t) -> {
-      t.getTags().toString();
-    });
+    List<Task> tasks = persistentWork.from(Task.class);
     Task task = tasks.get(0);
     assertEquals(2, task.getTags().size());
   }
@@ -281,7 +269,8 @@ public class CreateTaskTest extends ActivityTest {
     Task bla = new Task("Bla").setDescription("description");
     persistentWork.persist(bla);
 
-    @SuppressWarnings("unchecked") CreateTaskDS datasource = (CreateTaskDS) store.getDatasource();
+    @SuppressWarnings("unchecked")
+    CreateTaskDS datasource = (CreateTaskDS) store.getDatasource();
     datasource.fromTask = bla;
     activityController.reload();
     activityController.waitForTasks();

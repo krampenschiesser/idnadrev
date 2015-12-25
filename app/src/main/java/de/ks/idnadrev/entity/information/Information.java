@@ -16,15 +16,14 @@
 package de.ks.idnadrev.entity.information;
 
 import de.ks.flatadocdb.annotation.ToMany;
-import de.ks.flatadocdb.entity.NamedEntity;
 import de.ks.idnadrev.entity.Tag;
-import de.ks.idnadrev.entity.Tagged;
+import de.ks.idnadrev.entity.TaggedEntity;
 import de.ks.idnadrev.entity.Task;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public abstract class Information<E extends Information<E>> extends NamedEntity implements Tagged {
+public abstract class Information<E extends Information<E>> extends TaggedEntity {
   public static final String INFORMATION_TAG_JOINTABLE = "information_tag";
 
   private static final long serialVersionUID = 1L;

@@ -14,10 +14,14 @@
  */
 package de.ks.idnadrev.task.fasttrack;
 
+import de.ks.flatadocdb.entity.NamedEntity;
+import de.ks.flatjsondb.PersistentWork;
+import de.ks.flatjsondb.selection.NamedEntitySelection;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.WorkUnit;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.activity.executor.ActivityExecutor;
+import de.ks.standbein.table.TableConfigurator;
 import de.ks.text.AsciiDocEditor;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.StringProperty;
@@ -27,43 +31,64 @@ import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.net.URL;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class FastTrack extends BaseController<Task> {
   private static final Logger log = LoggerFactory.getLogger(FastTrack.class);
   @FXML
   protected StackPane descriptionView;
-  //  @FXML
-//  protected NamedPersistentObjectSelection<Task> nameController;
-// FIXME: 12/17/15
   @FXML
   protected Label spentTime;
   protected AsciiDocEditor description;
+
+  @Inject
+  NamedEntitySelection<Task> selection;
+  @Inject
+  TableConfigurator<Task> selectTableConfigurator;
+  @Inject
+  PersistentWork persistentWork;
 
   protected SimpleObjectProperty<LocalDateTime> start = new SimpleObjectProperty<>();
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     AsciiDocEditor.load(this.activityInitialization, descriptionView.getChildren()::add, ade -> this.description = ade);
+    selection.configure(Task.class, conf -> conf.addBoolean(Task.class, Task::isProject));
 
-    // FIXME: 12/17/15
-//    nameController.from(Task.class);
-//
-//    nameController.selectedValueProperty().addListener((p, o, n) -> {
-//      if (n != null) {
-//        store.setModel(n);
-//      } else {
-//        String text = nameController.getInput().getText();
-//        Task model = new Task(text);
-//        store.setModel(model);
-//      }
-//    });
-//    StringProperty nameBinding = store.getBinding().getStringProperty(Task.class, t -> t.getName());
-//    nameBinding.bindBidirectional(nameController.getInput().textProperty());
+    Function<String, List<Task>> tableItemSupplier = input -> {
+      Collection<Task> query = persistentWork.query(Task.class, NamedEntity.nameQuery(), (String s) -> s.startsWith(input));
+      ArrayList<Task> tasks = new ArrayList<>(query);
+      Collections.sort(tasks, Comparator.comparing(NamedEntity::getName));
+      return tasks;
+    };
+    Function<String, List<String>> comboValueSupplier = input -> {
+      Collection<Task> query = persistentWork.query(Task.class, NamedEntity.nameQuery(), (String s) -> s.startsWith(input));
+      List<String> names = query.stream().map(NamedEntity::getName).collect(Collectors.toList());
+      Collections.sort(names);
+      return names;
+    };
+
+    selection.setOnAction(e -> {
+      String text = selection.getTextField().textProperty().getValueSafe();
+      if (!text.trim().isEmpty()) {
+        Task read = persistentWork.read(session -> session.findByNaturalId(Task.class, text));
+        if (read != null) {
+          store.setModel(read);
+        } else {
+          Task task = new Task(text);
+          store.setModel(task);
+        }
+      }
+    });
+    StringProperty nameBinding = store.getBinding().getStringProperty(Task.class, t -> t.getName());
+    nameBinding.bindBidirectional(selection.getTextField().textProperty());
 
     description.hideActionBar();
     StringProperty descriptionBinding = store.getBinding().getStringProperty(Task.class, t -> t.getDescription());
@@ -71,9 +96,7 @@ public class FastTrack extends BaseController<Task> {
   }
 
   private boolean isNameSet() {
-    // FIXME: 12/17/15
-//    return nameController.getInput().textProperty().getValueSafe().trim().length() > 0;
-    return false;
+    return selection.getTextField().textProperty().getValueSafe().trim().length() > 0;
   }
 
   private void showSpentTime() {
@@ -130,7 +153,6 @@ public class FastTrack extends BaseController<Task> {
     if (model.isFinished() || model.getId() == null) {
       model.setFinished(true);
     }
-//    persistentWork.persist(workUnit);
     start.set(null);
   }
 

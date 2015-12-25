@@ -63,7 +63,7 @@ public class UmlDiagramActivityTest extends ActivityTest {
       Set<Tag> tags = diagramInfo.getTags();
       assertEquals(1, tags.size());
       Tag tag = tags.iterator().next();
-      assertEquals("tag1", tag.getName());
+      assertEquals("tag1", tag.getDisplayName());
       assertEquals(UML_DIAGRAM_STRING, diagramInfo.getContent());
     });
   }
