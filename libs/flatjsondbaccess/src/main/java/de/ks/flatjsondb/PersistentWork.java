@@ -20,6 +20,7 @@ import de.ks.flatadocdb.Repository;
 import de.ks.flatadocdb.entity.BaseEntity;
 import de.ks.flatadocdb.entity.NamedEntity;
 import de.ks.flatadocdb.index.IndexElement;
+import de.ks.flatadocdb.query.Query;
 import de.ks.flatadocdb.session.Session;
 import de.ks.flatadocdb.session.SessionFactory;
 import org.slf4j.Logger;
@@ -29,8 +30,10 @@ import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class PersistentWork {
@@ -114,10 +117,6 @@ public class PersistentWork {
     });
   }
 
-  public <E extends NamedEntity> E forName(Class<E> clazz, String name) {
-    return read(session -> session.findByNaturalId(clazz, name));
-  }
-
   public <E, V> List<V> projection(Class<E> clazz, Function<E, V> projection) {
     return read(session -> from(clazz).stream().map(projection).collect(Collectors.toList()));
   }
@@ -126,7 +125,31 @@ public class PersistentWork {
     return read(session -> session.findById(id));
   }
 
+  public <E extends NamedEntity> E byName(Class<E> clazz, String name) {
+    return forName(clazz, name);
+  }
+
+  public <E extends NamedEntity> E forName(Class<E> clazz, String name) {
+    return read(session -> session.findByNaturalId(clazz, name));
+  }
+
   public int count(Class<?> clazz) {
     return repository.getIndex().getAllOf(clazz).size();
+  }
+
+  public <R, E, V> Set<V> queryValues(Class<R> resultClass, Query<E, V> query, Predicate<V> filter) {
+    return read(session -> session.queryValues(resultClass, query, filter));
+  }
+
+  public <R, E, V> Collection<R> query(Class<R> resultClass, Query<E, V> query, Predicate<V> filter) {
+    return read(session -> session.query(resultClass, query, filter));
+  }
+
+  public <E> Collection<E> multiQuery(Class<E> resultClass, Consumer<Session.MultiQueyBuilder<E>> queryBuilder) {
+    return read(session -> {
+      Session.MultiQueyBuilder<E> builder = session.multiQuery(resultClass);
+      queryBuilder.accept(builder);
+      return builder.find();
+    });
   }
 }
