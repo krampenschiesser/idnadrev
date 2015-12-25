@@ -97,10 +97,10 @@ public class TaskTest {
       TextInfo readInformation = em.findById(TextInfo.class, information.getId());
       em.remove(readInformation);
     });
-    persistentWork.run((em) -> {
-      Tag readTag = em.findById(Tag.class, tag.getId());
-      assertNotNull(readTag);
-    });
+//    persistentWork.run((em) -> {
+//      Tag readTag = em.findById(Tag.class, tag.getId());
+//      assertNotNull(readTag);
+//    });
     persistentWork.run((em) -> {
       em.remove(em.findById(Task.class, task.getId()));
     });

@@ -24,7 +24,7 @@ import java.util.Set;
 
 public abstract class TaggedEntity extends NamedEntity {
   @QueryProvider
-  public static Query<TaggedEntity, Set<Tag>> query() {
+  public static Query<TaggedEntity, Set<Tag>> byTags() {
     return Query.of(TaggedEntity.class, TaggedEntity::getTags);
   }
 

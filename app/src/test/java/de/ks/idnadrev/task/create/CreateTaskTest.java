@@ -126,7 +126,7 @@ public class CreateTaskTest extends ActivityTest {
     FXPlatform.invokeLater(() -> {
       controller.name.setText("name");
       controller.description.setText("description");
-      controller.contextController.getInput().setText("context");
+      controller.contextController.getTextField().setText("context");
       controller.estimatedTimeDuration.setText("15min");
       controller.state.setValue(TaskState.ASAP);
       effortInfo.funFactor.valueProperty().set(3);
@@ -218,7 +218,7 @@ public class CreateTaskTest extends ActivityTest {
   @Test
   public void testSaveWithParentProject() throws InterruptedException {
     createTask("parent", controller -> controller.project.setSelected(true));
-    createTask("child", controller -> controller.parentProjectController.getInput().setText("parent"));
+    createTask("child", controller -> controller.parentProjectController.getTextField().setText("parent"));
 
     persistentWork.run(session -> {
       List<Task> tasks = persistentWork.from(Task.class);

@@ -15,13 +15,17 @@
 package de.ks.idnadrev.tag;
 
 import de.ks.idnadrev.entity.Tag;
-import de.ks.idnadrev.entity.Tagged;
+import de.ks.idnadrev.entity.TaggedEntity;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class TestTagged implements Tagged {
+public class TestTagged extends TaggedEntity {
   protected final Set<Tag> tags = new HashSet<>();
+
+  public TestTagged(String name) {
+    super(name);
+  }
 
   @Override
   public Set<Tag> getTags() {

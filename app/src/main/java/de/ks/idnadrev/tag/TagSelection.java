@@ -82,7 +82,7 @@ public class TagSelection {
   }
 
   private List<Tag> getTags(String s) {
-    Set<Set<Tag>> sets = persistentWork.queryValues(TaggedEntity.class, TaggedEntity.query(), l -> true);
+    Set<Set<Tag>> sets = persistentWork.queryValues(TaggedEntity.class, TaggedEntity.byTags(), l -> true);
     Set<Tag> collect = sets.stream().flatMap(Collection::stream).collect(Collectors.toSet());
     ArrayList<Tag> tags = new ArrayList<>(collect);
     Collections.sort(tags);
@@ -90,7 +90,7 @@ public class TagSelection {
   }
 
   private List<String> getTagNames(String s) {
-    Set<Set<Tag>> sets = persistentWork.queryValues(TaggedEntity.class, TaggedEntity.query(), l -> true);
+    Set<Set<Tag>> sets = persistentWork.queryValues(TaggedEntity.class, TaggedEntity.byTags(), l -> true);
     Set<String> collect = sets.stream().flatMap(Collection::stream).map(Tag::getDisplayName).collect(Collectors.toSet());
     ArrayList<String> tags = new ArrayList<>(collect);
     Collections.sort(tags);
