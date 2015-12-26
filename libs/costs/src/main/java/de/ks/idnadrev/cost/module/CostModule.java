@@ -16,10 +16,18 @@
 package de.ks.idnadrev.cost.module;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.multibindings.Multibinder;
+import de.ks.flatjsondb.RegisteredEntity;
+import de.ks.idnadrev.cost.entity.*;
 
 public class CostModule extends AbstractModule {
   @Override
   protected void configure() {
-
+    Multibinder<Class> entities = Multibinder.newSetBinder(binder(), Class.class, RegisteredEntity.class);
+    entities.addBinding().toInstance(Account.class);
+    entities.addBinding().toInstance(Booking.class);
+    entities.addBinding().toInstance(BookingCsvTemplate.class);
+    entities.addBinding().toInstance(BookingPattern.class);
+    entities.addBinding().toInstance(ScheduledBooking.class);
   }
 }

@@ -143,7 +143,7 @@ public class WorkOnTaskTest {
     assertNotNull(window.getWorkingOnTaskLink().getCurrentTask());
     assertEquals("task", window.getWorkingOnTaskLink().getCurrentTask().getName());
 
-    FXPlatform.invokeLater(() -> window.getWorkingOnTaskLink().getOnAction().handle(null));
+    FXPlatform.invokeLater(() -> window.getWorkingOnTaskLink().getHyperlink().getOnAction().handle(null));
 
     withRetry(() -> WorkOnTaskActivity.class.getSimpleName().equals(activityController.getCurrentActivityId()));
     activityController.waitForTasks();

@@ -15,108 +15,86 @@
 
 package de.ks.idnadrev;
 
-import de.ks.idnadrev.overview.OverviewActivity;
 import de.ks.idnadrev.task.work.WorkingOnTaskLink;
-import de.ks.standbein.activity.ActivityCfg;
 import de.ks.standbein.activity.ActivityController;
-import de.ks.standbein.activity.ActivityHint;
+import de.ks.standbein.application.ApplicationRoot;
 import de.ks.standbein.application.MainWindow;
 import de.ks.standbein.application.fxml.DefaultLoader;
 import de.ks.standbein.javafx.NodeLookup;
-import javafx.application.Platform;
+import de.ks.standbein.menu.MenuBarCreator;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
+import javafx.scene.control.MenuBar;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import java.util.Set;
 
 @Singleton
 public class IdnadrevWindow extends MainWindow {
-  public static final String PROPERTY_INITIAL_ACTIVITY = "initialActivtiy";
   private static final Logger log = LoggerFactory.getLogger(IdnadrevWindow.class);
 
-  //  @Inject
-//  MenuBarPresenter menuBarPresenter;
-//  @Inject
-//  PopupSink popupSink;
-//  @Inject
-//  ContentSink contentSink;
   @Inject
   ActivityController activityController;
+  @Inject
+  MenuBarCreator menuBarCreator;
 
   @Inject
-  protected WorkingOnTaskLink workingOnTaskLink;
+  protected Provider<WorkingOnTaskLink> workingOnTaskLinkProvider;
+  @Inject
+  private DefaultLoader<BorderPane, Object> rootLoader;
+  @Inject
+  private DefaultLoader<GridPane, ButtonBar> buttonBarLoader;
 
   private BorderPane borderPane;
-  private DefaultLoader<BorderPane, Object> loader;
   private ButtonBar buttonBar;
   private GridPane buttonBarView;
   private StackPane contentPane;
   protected HBox progressBox;
+  private WorkingOnTaskLink workingOnTaskLink;
 
-  @PostConstruct
-  public void initialize() {
-//    popupSink.setMenuPath("/main/help");
-//    contentSink.setMenuPath("/main");
-//    loader = new DefaultLoader<>(IdnadrevWindow.class);
+  @Override
+  public ApplicationRoot getRoot() {
+    rootLoader.load(getClass().getResource(getClass().getSimpleName() + ".fxml"));
+    borderPane = rootLoader.getView();
+    VBox vBox = new VBox();
+    vBox.setMinSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
+    vBox.setMaxSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
+    MenuBar menu = menuBarCreator.createMenu("/main");
+    menu.setMinSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
+    vBox.getChildren().add(menu);
+
+    workingOnTaskLink = workingOnTaskLinkProvider.get();
+
+    StackPane topPane = (StackPane) borderPane.getTop();
+    progressBox = (HBox) topPane.getChildren().get(0);
+    progressBox.getChildren().add(workingOnTaskLink.getHyperlink());
+    topPane.getChildren().add(0, menu);
+
+    buttonBarLoader.load(ButtonBar.class);
+    buttonBar = buttonBarLoader.getController();
+    buttonBarView = buttonBarLoader.getView();
+
+    contentPane = new StackPane();
+    borderPane.setCenter(contentPane);
+
+    borderPane.setOnKeyReleased(this::checkShortcut);
+
+    ApplicationRoot applicationRoot = new ApplicationRoot(borderPane, contentPane);
+    return applicationRoot;
   }
 
   @Override
   public Parent getNode() {
-    if (borderPane == null) {
-      borderPane = loader.getView();
-      VBox vBox = new VBox();
-      vBox.setMinSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
-      vBox.setMaxSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
-//      MenuBar menu = menuBarPresenter.getMenu("/main");
-//      menu.setMinSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
-//      vBox.getChildren().add(menu);
-
-      StackPane topPane = (StackPane) borderPane.getTop();
-      progressBox = (HBox) topPane.getChildren().get(0);
-      progressBox.getChildren().add(workingOnTaskLink);
-//      topPane.getChildren().add(0, menu);
-
-//      DefaultLoader<GridPane, ButtonBar> loader = new DefaultLoader<>(ButtonBar.class);
-///      buttonBar = loader.getController();
-//      buttonBarView = loader.getView();
-
-      contentPane = new StackPane();
-      borderPane.setCenter(contentPane);
-//      contentSink.setPane(contentPane);
-
-      borderPane.setOnKeyReleased(this::checkShortcut);
-
-      Platform.runLater(this::startInitialActivity);
-    }
-    return borderPane;
-  }
-
-  protected void startInitialActivity() {
-    String activityClass = System.getProperty(PROPERTY_INITIAL_ACTIVITY, OverviewActivity.class.getName());
-    if (!activityClass.isEmpty()) {
-      try {
-        @SuppressWarnings("unchecked")
-        Class<? extends ActivityCfg> clazz = (Class<? extends ActivityCfg>) Class.forName(activityClass);
-        activityController.startOrResume(new ActivityHint(clazz));
-        try {
-          Thread.sleep(100);
-        } catch (InterruptedException e) {
-          //
-        }
-      } catch (ClassNotFoundException e) {
-        log.error("Could not load activity class {}", activityClass, e);
-      }
-    }
+    return new StackPane();
   }
 
   private void checkShortcut(KeyEvent event) {
@@ -184,9 +162,4 @@ public class IdnadrevWindow extends MainWindow {
   public WorkingOnTaskLink getWorkingOnTaskLink() {
     return workingOnTaskLink;
   }
-
-//  @Override
-//  public String getApplicationTitle() {
-//    return "Idnadrev Version " + Application.versioning.getVersionInfo().getVersionString();
-//  }
 }

@@ -61,8 +61,8 @@ public class AsciiDocViewer implements Initializable, ActivityCallback {
   ActivityController controller;
   @Inject
   AsciiDocParser parser;
-  @Inject
-  Set<AsciiDocPreProcessor> preProcessorProvider;
+  @com.google.inject.Inject(optional = true)
+  Set<AsciiDocPreProcessor> preProcessorProvider = new HashSet<>();
 
   @FXML
   protected StackPane root;

@@ -134,25 +134,27 @@ public class ButtonBar implements Initializable {
     controller.startOrResume(new ActivityHint(UmlDiagramActivity.class));
     hide();
   }
-//
-//  @FXML
-//  public void bookingView() {
+
+  //
+  @FXML
+  public void bookingView() {
 //    controller.startOrResume(new ActivityHint(BookingViewActivity.class));
 //    hide();
-//  }
-//
-//  @FXML
-//  public void createAccount() {
+  }
+
+  //
+  @FXML
+  public void createAccount() {
 //    controller.startOrResume(new ActivityHint(CreateAccountActivity.class));
 //    hide();
-//  }
-//
-//  @FXML
-//  public void createBooking() {
+  }
+
+  //
+  @FXML
+  public void createBooking() {
 //    controller.startOrResume(new ActivityHint(CreateBookingActivity.class));
 //    hide();
-//  }
-  // FIXME: 12/17/15 
+  }
 
   public void show(Pane contentPane) {
     contentPane.getStyleClass().add("fadingContent");

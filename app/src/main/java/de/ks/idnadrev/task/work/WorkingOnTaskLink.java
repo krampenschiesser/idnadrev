@@ -24,28 +24,30 @@ import javafx.scene.control.Hyperlink;
 
 import javax.inject.Inject;
 
-public class WorkingOnTaskLink extends Hyperlink {
+public class WorkingOnTaskLink {
   protected final SimpleObjectProperty<Task> currentTask = new SimpleObjectProperty<>();
   private final ActivityController activityController;
   private final Localized localized;
+
+  private Hyperlink hyperlink = new Hyperlink();
 
   @Inject
   public WorkingOnTaskLink(ActivityController activityController, Localized localized) {
     this.activityController = activityController;
     this.localized = localized;
-    setVisible(false);
+    hyperlink.setVisible(false);
     currentTask.addListener((p, o, n) -> {
       if (n == null) {
-        setText("");
-        setVisible(false);
+        hyperlink.setText("");
+        hyperlink.setVisible(false);
       } else {
         String taskName = n.getName().length() < 50 ? n.getName() : n.getName().substring(0, 50);
         String title = localized.get("task.workingOn:") + " " + taskName;
-        setText(title);
-        setVisible(true);
+        hyperlink.setText(title);
+        hyperlink.setVisible(true);
       }
     });
-    setOnAction(e -> workOnTask());
+    hyperlink.setOnAction(e -> workOnTask());
   }
 
   protected void workOnTask() {
@@ -66,6 +68,10 @@ public class WorkingOnTaskLink extends Hyperlink {
 
   public void setCurrentTask(Task currentTask) {
     this.currentTask.set(currentTask);
+  }
+
+  public Hyperlink getHyperlink() {
+    return hyperlink;
   }
 }
 

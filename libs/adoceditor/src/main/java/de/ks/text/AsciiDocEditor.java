@@ -86,8 +86,8 @@ public class AsciiDocEditor implements Initializable, DatasourceCallback<Object>
   ActivityController controller;
   @Inject
   ActivityInitialization initialization;
-  @Inject
-  Set<AsciiDocEditorCommand> editorCommands;
+  @com.google.inject.Inject(optional = true)
+  Set<AsciiDocEditorCommand> editorCommands = new HashSet<>();
   @Inject
   Localized localized;
   @FXML

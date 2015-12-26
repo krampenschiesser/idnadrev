@@ -15,10 +15,18 @@
 
 package de.ks.idnadrev;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Module;
+import de.ks.idnadrev.module.IdnadrevModule;
+import de.ks.standbein.launch.Launcher;
+import de.ks.standbein.module.ApplicationModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.ServiceLoader;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -28,16 +36,23 @@ public class Application {
   private static final Logger log = LoggerFactory.getLogger(Application.class);
 
   public static void main(String[] args) throws ExecutionException, InterruptedException {
+    HashSet<Module> modules = new HashSet<>();
+    ServiceLoader<Module> loader = ServiceLoader.load(Module.class);
+    loader.forEach(modules::add);
+    for (Module module : modules) {
+      log.info("Loaded additional module {} from service loader(classpath).", module);
+    }
+
+    modules.add(new IdnadrevModule());
+    modules.add(new ApplicationModule());
+
+    Injector injector = Guice.createInjector(modules);
+
+    Launcher launcher = injector.getInstance(Launcher.class);
+    launcher.launchAndWaitForUIThreads(args); //launch services
+
 //    log.info("Starting {}, currentVersion={}, lastVersion = {}", versioning.getVersionInfo().getDescription(), versioning.getCurrentVersion(), versioning.getLastVersion());
 //    versioning.upgradeToCurrentVersion();
-
-//    Launcher launcher = Launcher.instance;
-//    launcher.setPreloader(IdnadrevPreloader.class);
-//    launcher.startAll(args);
-//    launcher.awaitStart();
-//    launcher.getService(ApplicationService.class).waitUntilFXFinished();
-//    launcher.stopAll();
-//    launcher.awaitStop();
     log.info("Finishing main");
   }
 

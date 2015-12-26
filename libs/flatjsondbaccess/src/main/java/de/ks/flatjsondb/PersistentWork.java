@@ -16,13 +16,11 @@
 
 package de.ks.flatjsondb;
 
-import de.ks.flatadocdb.Repository;
 import de.ks.flatadocdb.entity.BaseEntity;
 import de.ks.flatadocdb.entity.NamedEntity;
 import de.ks.flatadocdb.index.IndexElement;
 import de.ks.flatadocdb.query.Query;
 import de.ks.flatadocdb.session.Session;
-import de.ks.flatadocdb.session.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,13 +37,11 @@ import java.util.stream.Collectors;
 public class PersistentWork {
   private static final Logger log = LoggerFactory.getLogger(PersistentWork.class);
   private final ThreadLocal<Session> localSession = new ThreadLocal<>();
-  private final SessionFactory factory;
-  private final Repository repository;
+  private final RepositorySelector repositorySelector;
 
   @Inject
-  public PersistentWork(SessionFactory factory, Repository repository) {
-    this.factory = factory;
-    this.repository = repository;
+  public PersistentWork(RepositorySelector repositorySelector) {
+    this.repositorySelector = repositorySelector;
   }
 
   public void run(Consumer<Session> runnable) {
@@ -60,7 +56,7 @@ public class PersistentWork {
       return function.apply(localSession.get());
     } else {
       try {
-        return factory.transactedSessionRead(repository, session -> {
+        return repositorySelector.getSessionFactory().transactedSessionRead(repositorySelector.getCurrentRepository(), session -> {
           localSession.set(session);
           return function.apply(session);
         });
@@ -134,7 +130,7 @@ public class PersistentWork {
   }
 
   public int count(Class<?> clazz) {
-    return repository.getIndex().getAllOf(clazz).size();
+    return repositorySelector.getCurrentRepository().getIndex().getAllOf(clazz).size();
   }
 
   public <R, E, V> Set<V> queryValues(Class<R> resultClass, Query<E, V> query, Predicate<V> filter) {
