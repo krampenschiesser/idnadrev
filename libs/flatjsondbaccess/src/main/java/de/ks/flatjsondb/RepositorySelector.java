@@ -28,10 +28,20 @@ public class RepositorySelector {
   final Set<Class> entityClasses;
   final AtomicReference<SessionFactory> sessionFactory = new AtomicReference<>();
   Repository currentRepository;
+  private Set<Repository> repositories;
 
   @Inject
   public RepositorySelector(@RegisteredEntity Set<Class> entityClasses) {
     this.entityClasses = entityClasses;
+  }
+
+  @com.google.inject.Inject(optional = true)
+  public void setRepositories(Set<Repository> repositories) {
+    this.repositories = repositories;
+  }
+
+  public boolean hasCurrentRepository() {
+    return currentRepository != null;
   }
 
   public Repository getCurrentRepository() {
@@ -49,8 +59,9 @@ public class RepositorySelector {
   }
 
   @com.google.inject.Inject(optional = true)//in test we can register a default repository, yeah!
-  public void setCurrentRepository(Repository currentRepository) {
+  public void setCurrentRepository(@InitialRepository Repository currentRepository) {
     this.currentRepository = currentRepository;
+
 
     if (sessionFactory.get() == null) {
       synchronized (this) {

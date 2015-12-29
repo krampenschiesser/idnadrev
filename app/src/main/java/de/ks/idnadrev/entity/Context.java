@@ -15,12 +15,14 @@
 
 package de.ks.idnadrev.entity;
 
+import de.ks.flatadocdb.annotation.Entity;
 import de.ks.flatadocdb.annotation.ToMany;
 import de.ks.flatadocdb.entity.NamedEntity;
 
 import java.util.HashSet;
 import java.util.Set;
 
+@Entity
 public class Context extends NamedEntity {
   private static final long serialVersionUID = 1L;
 
