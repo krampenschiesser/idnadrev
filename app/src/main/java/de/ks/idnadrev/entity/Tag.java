@@ -22,6 +22,10 @@ public class Tag implements Comparable<Tag> {
   private final String displayName;
   private final String reducedName;
 
+  protected Tag() {
+    this("");
+  }
+
   public Tag(String displayName) {
     Objects.requireNonNull(displayName);
     this.displayName = displayName;
