@@ -20,7 +20,6 @@ import de.ks.idnadrev.entity.Tag;
 import de.ks.idnadrev.entity.TaggedEntity;
 import de.ks.idnadrev.entity.Task;
 
-import java.util.HashSet;
 import java.util.Set;
 
 public abstract class Information<E extends Information<E>> extends TaggedEntity {
@@ -32,9 +31,6 @@ public abstract class Information<E extends Information<E>> extends TaggedEntity
 
   @ToMany
   protected Set<Task> task;
-
-  //  @ToMany
-  protected Set<Tag> tags = new HashSet<>();
 
   protected Information() {
     super(null);
