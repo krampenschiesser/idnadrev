@@ -22,8 +22,10 @@ import de.ks.text.AsciiDocParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Singleton;
 import java.util.concurrent.*;
 
+@Singleton
 public class AsciiDocService extends Service {
   private static final Logger log = LoggerFactory.getLogger(AsciiDocService.class);
   protected final ExecutorService executorService = new ThreadPoolExecutor(0, 1, 100, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).build());
