@@ -51,6 +51,8 @@ public class WeeklyDoneDS implements ListDataSource<WeekViewAppointment<Task>> {
 
   @Inject
   ActivityController controller;
+  @Inject
+  Images images;
 
   @Override
   public synchronized List<WeekViewAppointment<Task>> loadModel(Consumer<List<WeekViewAppointment<Task>>> furtherProcessing) {
@@ -107,7 +109,7 @@ public class WeeklyDoneDS implements ListDataSource<WeekViewAppointment<Task>> {
 
 
     String doneImagePath = getClass().getResource("done.png").toExternalForm();
-    Image image = Images.get(doneImagePath);
+    Image image = images.get(doneImagePath);
     List<WeekViewAppointment<Task>> finishedAppointments = finishedTasks.stream().map(task -> {
       ImageView view = new ImageView(image);
       Consumer<Button> enhanceForFinish = btn -> {
