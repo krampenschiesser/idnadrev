@@ -48,11 +48,8 @@
         <Label text="%task.description" GridPane.rowIndex="5"/>
         <TextField fx:id="description" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
         <Label text="%task.parent.project" GridPane.rowIndex="6"/>
-        <StackPane GridPane.columnIndex="1" GridPane.rowIndex="6" GridPane.valignment="TOP" GridPane.vgrow="NEVER">
-            <children>
-                <fx:include fx:id="parentProject" source="/de/ks/selection/NamedPersistentObjectSelection.fxml"/>
-            </children>
-        </StackPane>
+        <StackPane GridPane.columnIndex="1" GridPane.rowIndex="6" GridPane.valignment="TOP" GridPane.vgrow="NEVER"
+                   fx:id="parentProjectContainer"/>
     </children>
     <padding>
         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>

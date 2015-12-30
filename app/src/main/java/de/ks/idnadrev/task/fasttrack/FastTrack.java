@@ -46,6 +46,8 @@ public class FastTrack extends BaseController<Task> {
   protected StackPane descriptionView;
   @FXML
   protected Label spentTime;
+  @FXML
+  protected StackPane nameContainer;
   protected AsciiDocEditor description;
 
   @Inject
@@ -93,6 +95,8 @@ public class FastTrack extends BaseController<Task> {
     description.hideActionBar();
     StringProperty descriptionBinding = store.getBinding().getStringProperty(Task.class, t -> t.getDescription());
     descriptionBinding.bindBidirectional(description.textProperty());
+
+    nameContainer.getChildren().add(selection.getRoot());
   }
 
   private boolean isNameSet() {

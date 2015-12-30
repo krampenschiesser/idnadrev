@@ -27,11 +27,7 @@
         <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
     </rowConstraints>
     <children>
-        <StackPane fx:id="tagSelectionContainer">
-            <children>
-                <fx:include fx:id="tagAdd" source="/de/ks/selection/NamedPersistentObjectSelection.fxml"/>
-            </children>
-        </StackPane>
+        <StackPane fx:id="tagSelectionContainer"/>
         <FlowPane fx:id="tagPane" GridPane.rowIndex="1"/>
     </children>
 </GridPane>

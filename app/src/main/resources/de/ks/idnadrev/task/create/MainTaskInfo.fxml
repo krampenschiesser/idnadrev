@@ -45,18 +45,12 @@
         <CheckBox fx:id="project" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
         <Label text="%task.parent.project:" GridPane.rowIndex="2"/>
-        <StackPane GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="TOP" GridPane.vgrow="NEVER">
-            <children>
-                <fx:include fx:id="parentProject" source="/de/ks/selection/NamedPersistentObjectSelection.fxml"/>
-            </children>
-        </StackPane>
+        <StackPane GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="TOP" GridPane.vgrow="NEVER"
+                   fx:id="parentProjectContainer"/>
 
         <Label text="%task.context:" GridPane.rowIndex="3"/>
-        <StackPane GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.valignment="TOP" GridPane.vgrow="NEVER">
-            <children>
-                <fx:include fx:id="context" source="/de/ks/selection/NamedPersistentObjectSelection.fxml"/>
-            </children>
-        </StackPane>
+        <StackPane GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.valignment="TOP" GridPane.vgrow="NEVER"
+                   fx:id="contextContainer"/>
 
         <Label text="%task.state:" GridPane.rowIndex="4"/>
         <ComboBox fx:id="state" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="4"/>

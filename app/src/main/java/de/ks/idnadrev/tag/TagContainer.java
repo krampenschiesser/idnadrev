@@ -62,6 +62,7 @@ public class TagContainer extends BaseController<TaggedEntity> {
       addTag(input.getText());
       input.clear();
     });
+    tagSelectionContainer.getChildren().add(tagSelection.getRoot());
     currentTags.addListener(this::onTagsChanged);
     currentTags.addListener(this::onTagsChanged);
   }

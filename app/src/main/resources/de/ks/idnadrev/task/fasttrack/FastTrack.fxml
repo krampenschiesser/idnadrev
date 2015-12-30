@@ -33,11 +33,7 @@
         <RowConstraints minHeight="10.0" vgrow="NEVER"/>
     </rowConstraints>
     <children>
-        <StackPane GridPane.valignment="CENTER">
-            <children>
-                <fx:include fx:id="name" source="/de/ks/selection/NamedPersistentObjectSelection.fxml"/>
-            </children>
-        </StackPane>
+        <StackPane GridPane.valignment="CENTER" fx:id="nameContainer"/>
         <Label text="%task.spentTime:" GridPane.columnIndex="2"/>
         <StackPane fx:id="descriptionView" prefHeight="150.0" prefWidth="200.0" GridPane.columnSpan="2147483647"
                    GridPane.rowIndex="1"/>

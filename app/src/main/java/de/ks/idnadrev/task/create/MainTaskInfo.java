@@ -58,6 +58,11 @@ public class MainTaskInfo extends BaseController<Task> {
   @FXML
   protected ComboBox<TaskState> state;
 
+  @FXML
+  protected StackPane parentProjectContainer;
+  @FXML
+  protected StackPane contextContainer;
+
   @Inject
   protected PersistentWork persistentWork;
   @Inject
@@ -106,6 +111,8 @@ public class MainTaskInfo extends BaseController<Task> {
     states.add(TaskState.DELEGATED);
     states.add(TaskState.LATER);
 
+    parentProjectContainer.getChildren().add(parentProjectController.getRoot());
+    contextContainer.getChildren().add(contextController.getRoot());
   }
 
   // FIXME: 12/17/15 

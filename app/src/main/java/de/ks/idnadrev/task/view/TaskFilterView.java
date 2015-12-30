@@ -14,6 +14,7 @@
  */
 package de.ks.idnadrev.task.view;
 
+import de.ks.flatjsondb.selection.NamedEntitySelection;
 import de.ks.idnadrev.entity.Task;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.javafx.event.ChainedEventHandler;
@@ -23,16 +24,17 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.StackPane;
 
+import javax.inject.Inject;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class TaskFilterView extends BaseController<Void> {
   @FXML
   protected TextField description;
-  // FIXME: 12/15/15 
-//  @FXML
-//  protected NamedPersistentObjectSelection<Task> parentProjectController;
+  @FXML
+  protected StackPane parentProjectContainer;
   @FXML
   protected CheckBox showAsap;
   @FXML
@@ -44,6 +46,9 @@ public class TaskFilterView extends BaseController<Void> {
   @FXML
   protected CheckBox showFinished;
 
+  @Inject
+  NamedEntitySelection<Task> parentProjectController;
+
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     ChainedEventHandler<KeyEvent> clearOrHide = new ChainedEventHandler<>(new ClearTextOnEscape(), e -> {
@@ -52,18 +57,11 @@ public class TaskFilterView extends BaseController<Void> {
       }
     });
     description.setOnKeyReleased(clearOrHide);
-    // FIXME: 12/15/15 
-//    parentProjectController.getInput().setOnKeyReleased(clearOrHide);
-//
-//    String projectKey = PropertyPath.property(Task.class, (t) -> t.isProject());
-//    parentProjectController.from(Task.class, (root, query, builder) -> {
-//      query.where(builder.isTrue(root.get(projectKey)));
-//    }).enableValidation();
-//    parentProjectController.hideBrowserBtn();
-//
-//
-//    parentProjectController.selectedValueProperty().addListener((p, o, n) -> triggerFilter());
-//    parentProjectController.getInput().textProperty().addListener((p, o, n) -> triggerFilter());
+    parentProjectController.configure(Task.class);
+    parentProjectContainer.getChildren().add(parentProjectController.getRoot());
+    parentProjectController.getTextField().setOnKeyReleased(clearOrHide);
+    parentProjectController.itemProperty().addListener((p, o, n) -> triggerFilter());
+
     description.textProperty().addListener((p, o, n) -> triggerFilter());
     showAsap.selectedProperty().addListener((p, o, n) -> triggerFilter());
     showLater.selectedProperty().addListener((p, o, n) -> triggerFilter());
