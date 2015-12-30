@@ -19,6 +19,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import de.ks.idnadrev.module.IdnadrevModule;
+import de.ks.idnadrev.module.RepositoryModule;
 import de.ks.standbein.launch.Launcher;
 import de.ks.standbein.module.ApplicationModule;
 import org.slf4j.Logger;
@@ -44,6 +45,7 @@ public class Application {
     }
 
     modules.add(new IdnadrevModule());
+    modules.add(new RepositoryModule());
     modules.add(new ApplicationModule());
 
     Injector injector = Guice.createInjector(modules);
