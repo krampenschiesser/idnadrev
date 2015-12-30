@@ -51,16 +51,19 @@ public class IdnadrevModule extends AbstractModule {
   protected void configure() {
     bind(ApplicationCfg.class).toInstance(new ApplicationCfg("app.title", 1280, 800).setIcon("appicon.png"));
     bind(MainWindow.class).to(IdnadrevWindow.class);
-    OptionalBinder.newOptionalBinder(binder(), InitialActivity.class).setDefault().toInstance(new InitialActivity(OverviewActivity.class));
+    bindInitialActivity();
 
     Multibinder.newSetBinder(binder(), Key.get(String.class, FxCss.class)).addBinding().toInstance("/de/ks/idnadrev/idnadrev.css");
 
     configureEntities();
     registerMenuItems();
-    install(new RepositoryModule());
   }
 
-  private void registerMenuItems() {
+  protected void bindInitialActivity() {
+    OptionalBinder.newOptionalBinder(binder(), InitialActivity.class).setDefault().toInstance(new InitialActivity(OverviewActivity.class));
+  }
+
+  protected void registerMenuItems() {
     Multibinder<MenuEntry> menuBinder = Multibinder.newSetBinder(binder(), MenuEntry.class);
     menuBinder.addBinding().toInstance(new MenuEntry("/main/overview", "overview", new StartActivityAction(OverviewActivity.class)).setOrder(100));
     menuBinder.addBinding().toInstance(new MenuEntry("/main/thought", "add", new StartActivityAction(AddThoughtActivity.class)).setOrder(200));
@@ -79,7 +82,7 @@ public class IdnadrevModule extends AbstractModule {
     menuBinder.addBinding().toInstance(new MenuEntry("/main/context", "contexts", new StartActivityAction(ViewContextActivity.class)).setOrder(800));
   }
 
-  private void configureEntities() {
+  protected void configureEntities() {
     Multibinder<Class> entities = Multibinder.newSetBinder(binder(), Class.class, RegisteredEntity.class);
     entities.addBinding().toInstance(Context.class);
     entities.addBinding().toInstance(Task.class);
