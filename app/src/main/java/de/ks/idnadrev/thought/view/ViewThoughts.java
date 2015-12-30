@@ -38,15 +38,14 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.net.URL;
-import java.nio.file.FileStore;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 public class ViewThoughts extends BaseController<List<Thought>> {
   private static final Logger log = LoggerFactory.getLogger(ViewThoughts.class);
-  @Inject
-  FileStore fileStore;
+  //  @Inject
+//  FileStore fileStore;
   @Inject
   ActivityExecutor executor;
   @Inject
