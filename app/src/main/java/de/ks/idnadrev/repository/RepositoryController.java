@@ -17,7 +17,10 @@ package de.ks.idnadrev.repository;
 
 import de.ks.flatadocdb.Repository;
 import de.ks.flatjsondb.RepositorySelector;
+import de.ks.idnadrev.overview.OverviewActivity;
 import de.ks.standbein.BaseController;
+import de.ks.standbein.activity.ActivityHint;
+import de.ks.standbein.activity.context.ActivityContext;
 import de.ks.standbein.validation.validators.FileExistsValidator;
 import de.ks.standbein.validation.validators.NotEmptyValidator;
 import javafx.collections.ListChangeListener;
@@ -54,6 +57,8 @@ public class RepositoryController extends BaseController<List<Path>> {
 
   @Inject
   protected RepositorySelector repositorySelector;
+  @Inject
+  ActivityContext context;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -123,7 +128,15 @@ public class RepositoryController extends BaseController<List<Path>> {
 
   @FXML
   void onCancel() {
-    controller.stopCurrent();
+    stopAndReturn();
+  }
+
+  private void stopAndReturn() {
+    if (context.isMainActivity(context.getCurrentActivity())) {
+      controller.stopCurrentStartNew(new ActivityHint(OverviewActivity.class));
+    } else {
+      controller.stopCurrent();
+    }
   }
 
   @FXML
@@ -135,7 +148,7 @@ public class RepositoryController extends BaseController<List<Path>> {
   @FXML
   void onSave() {
     store.save();
-    controller.stopCurrent();
+    stopAndReturn();
   }
 
   @Override
