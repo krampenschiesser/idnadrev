@@ -17,12 +17,25 @@ package de.ks.idnadrev.module;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.Multibinder;
+import com.google.inject.multibindings.OptionalBinder;
+import de.ks.idnadrev.repository.RepositoryActivity;
+import de.ks.idnadrev.repository.RepositoryLoader;
 import de.ks.launch.RepositoryService;
+import de.ks.standbein.activity.InitialActivity;
 import de.ks.standbein.launch.Service;
+
+import java.nio.file.Path;
+import java.util.List;
 
 public class RepositoryModule extends AbstractModule {
   @Override
   protected void configure() {
     Multibinder.newSetBinder(binder(), Service.class).addBinding().to(RepositoryService.class);
+
+    RepositoryLoader loader = new RepositoryLoader();
+    List<Path> repositoryPaths = loader.loadRepositoryPaths();
+    if (repositoryPaths.isEmpty()) {
+      OptionalBinder.newOptionalBinder(binder(), InitialActivity.class).setBinding().toInstance(new InitialActivity(RepositoryActivity.class));
+    }
   }
 }
