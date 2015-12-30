@@ -39,7 +39,12 @@ public class AsciiDocService extends Service {
   public AsciiDocParser getAsciiDocParser() {
     new AsciiDocMetaData().extract();
     try {
-      return asciiDocParserFuture.get();
+      if (!asciiDocParserFuture.isDone()) {
+        log.info("Waiting for asciidoctor to load....");
+      }
+      AsciiDocParser asciiDocParser = asciiDocParserFuture.get();
+      log.info("Ascidoctor loaded successfully.");
+      return asciiDocParser;
     } catch (InterruptedException | ExecutionException e) {
       log.error("Could not load asciiDocParser", e);
       throw new RuntimeException(e);
