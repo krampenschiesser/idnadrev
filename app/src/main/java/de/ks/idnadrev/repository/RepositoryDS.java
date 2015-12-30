@@ -18,6 +18,7 @@ package de.ks.idnadrev.repository;
 import de.ks.standbein.datasource.ListDataSource;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -26,7 +27,7 @@ public class RepositoryDS implements ListDataSource<Path> {
 
   @Override
   public List<Path> loadModel(Consumer<List<Path>> furtherProcessing) {
-    List<Path> paths = loader.loadRepositoryPaths();
+    List<Path> paths = new ArrayList<>(loader.loadRepositoryPaths());
     furtherProcessing.accept(paths);
     return paths;
   }
