@@ -17,7 +17,7 @@ package de.ks.idnadrev.entity;
 
 import de.ks.flatadocdb.annotation.*;
 import de.ks.flatadocdb.query.Query;
-import de.ks.idnadrev.entity.information.Information;
+import de.ks.idnadrev.entity.information.TextInfo;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -69,11 +69,11 @@ public class Task extends TaggedEntity implements FileContainer<Task> {
 
   protected Outcome outcome = new Outcome();
 
-  @Children
+  //  @Children
   protected Set<FileReference> files = new HashSet<>();
 
   @ToMany
-  protected Set<Information> information = new HashSet<>();
+  protected Set<TextInfo> information = new HashSet<>();
 
   protected Task() {
     super(null);
@@ -301,11 +301,11 @@ public class Task extends TaggedEntity implements FileContainer<Task> {
     return this;
   }
 
-  public Set<Information> getInformation() {
+  public Set<TextInfo> getInformation() {
     return information;
   }
 
-  public Task addInformation(Information info) {
+  public Task addInformation(TextInfo info) {
     information.add(info);
     return this;
   }
