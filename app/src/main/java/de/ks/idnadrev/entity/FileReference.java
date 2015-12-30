@@ -15,12 +15,10 @@
 
 package de.ks.idnadrev.entity;
 
-import de.ks.flatadocdb.annotation.Entity;
 import de.ks.flatadocdb.entity.NamedEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Entity
 public class FileReference extends NamedEntity {
   private static final long serialVersionUID = 1L;
   private static final Logger log = LoggerFactory.getLogger(FileReference.class);
