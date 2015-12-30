@@ -20,6 +20,8 @@ import de.ks.flatadocdb.session.SessionFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -28,16 +30,18 @@ public class RepositorySelector {
   final Set<Class> entityClasses;
   final AtomicReference<SessionFactory> sessionFactory = new AtomicReference<>();
   Repository currentRepository;
-  private Set<Repository> repositories;
+  private List<Repository> repositories;
 
   @Inject
   public RepositorySelector(@RegisteredEntity Set<Class> entityClasses) {
     this.entityClasses = entityClasses;
   }
 
-  @com.google.inject.Inject(optional = true)
-  public void setRepositories(Set<Repository> repositories) {
+  public void setRepositories(List<Repository> repositories) {
     this.repositories = repositories;
+    if (!repositories.isEmpty()) {
+      setCurrentRepository(repositories.get(0));
+    }
   }
 
   public boolean hasCurrentRepository() {
@@ -58,8 +62,7 @@ public class RepositorySelector {
     return sessionFactory.get();
   }
 
-  @com.google.inject.Inject(optional = true)//in test we can register a default repository, yeah!
-  public void setCurrentRepository(@InitialRepository Repository currentRepository) {
+  public void setCurrentRepository(Repository currentRepository) {
     this.currentRepository = currentRepository;
 
 
@@ -71,5 +74,9 @@ public class RepositorySelector {
     } else {
       sessionFactory.get().addRepository(currentRepository);
     }
+  }
+
+  public List<Repository> getRepositories() {
+    return Collections.unmodifiableList(repositories);
   }
 }
