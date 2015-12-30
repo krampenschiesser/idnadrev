@@ -18,8 +18,8 @@ package de.ks.idnadrev.entity;
 import com.google.common.collect.Sets;
 import de.ks.flatadocdb.entity.NamedEntity;
 import de.ks.flatjsondb.PersistentWork;
+import de.ks.idnadrev.IdnadrevIntegrationTestModule;
 import de.ks.idnadrev.entity.information.TextInfo;
-import de.ks.standbein.IntegrationTestModule;
 import de.ks.standbein.LoggingGuiceTestSupport;
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,7 +37,7 @@ import static org.junit.Assert.assertEquals;
 public class PersistEntitiesTest {
   private static final Logger log = LoggerFactory.getLogger(PersistEntitiesTest.class);
   @Rule
-  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule());
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IdnadrevIntegrationTestModule()).launchServices();
 
   @Inject
   PersistentWork persistentWork;
@@ -63,8 +63,8 @@ public class PersistEntitiesTest {
   @Test
   public void testNoDuplicateNamedPersistentObject() throws Exception {
     persistentWork.run((em) -> {
-      em.persist(new Tag("hello"));
-      em.persist(new Tag("hello"));
+      em.persist(new Task("hello"));
+      em.persist(new Task("hello"));//just warns, does nothing
     });
   }
 

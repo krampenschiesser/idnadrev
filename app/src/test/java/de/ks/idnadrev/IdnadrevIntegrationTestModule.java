@@ -13,13 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.flatjsondb;
+package de.ks.idnadrev;
 
-import javax.inject.Qualifier;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import com.google.inject.AbstractModule;
+import de.ks.idnadrev.module.IdnadrevModule;
+import de.ks.standbein.IntegrationTestModule;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Qualifier
-public @interface InitialRepository {
+public class IdnadrevIntegrationTestModule extends AbstractModule {
+
+  @Override
+  protected void configure() {
+    install(new IdnadrevModule() {
+      @Override
+      protected void bindInitialActivity() {
+        //no initial activity
+      }
+    });
+    install(new IntegrationTestModule());
+    install(new TempRepositoryModule());
+  }
 }
