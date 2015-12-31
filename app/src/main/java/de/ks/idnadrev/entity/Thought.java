@@ -15,6 +15,10 @@
 
 package de.ks.idnadrev.entity;
 
+import de.ks.entity.AdocFile;
+import de.ks.entity.AdocFileNameGenerator;
+import de.ks.entity.SameFolderGenerator;
+import de.ks.flatadocdb.annotation.Child;
 import de.ks.flatadocdb.annotation.Entity;
 import de.ks.flatadocdb.entity.NamedEntity;
 import de.ks.idnadrev.thought.ThoughtOptions;
@@ -34,7 +38,8 @@ public class Thought extends NamedEntity implements FileContainer<Thought> {
   private static final long serialVersionUID = 1L;
   public static final String THOUGHT_FILE_JOINTABLE = "thought_file";
 
-  protected String description;
+  @Child(fileGenerator = AdocFileNameGenerator.class, folderGenerator = SameFolderGenerator.class)
+  protected AdocFile adocFile;
   protected LocalDate postponedDate;
 
   protected Set<FileReference> files = new HashSet<>();
@@ -47,20 +52,28 @@ public class Thought extends NamedEntity implements FileContainer<Thought> {
     super(name);
   }
 
+  public AdocFile getAdocFile() {
+    return adocFile;
+  }
+
   public Thought setDescription(String description) {
-    this.description = description;
+    if (adocFile == null) {
+      adocFile = new AdocFile(getName()).setContent(description);
+    } else {
+      adocFile.setContent(description);
+    }
     return this;
   }
 
   public String getDescription() {
-    return description;
+    return adocFile == null ? null : adocFile.getContent();
   }
 
   public String getShortDescription() {
-    if ((description != null) && (description.length() > 50)) {
-      return description.substring(0, 50);
+    if ((getDescription() != null) && (getDescription().length() > 50)) {
+      return getDescription().substring(0, 50);
     } else {
-      return description;
+      return getDescription();
     }
   }
 

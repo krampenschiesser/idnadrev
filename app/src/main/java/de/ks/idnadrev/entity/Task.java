@@ -15,6 +15,9 @@
 
 package de.ks.idnadrev.entity;
 
+import de.ks.entity.AdocFile;
+import de.ks.entity.AdocFileNameGenerator;
+import de.ks.entity.SameFolderGenerator;
 import de.ks.flatadocdb.annotation.*;
 import de.ks.flatadocdb.query.Query;
 import de.ks.idnadrev.entity.information.TextInfo;
@@ -35,7 +38,8 @@ public class Task extends TaggedEntity implements FileContainer<Task> {
     return Query.of(Task.class, Task::isFinished);
   }
 
-  protected String description;
+  @Child(fileGenerator = AdocFileNameGenerator.class, folderGenerator = SameFolderGenerator.class)
+  protected AdocFile adocFile;
 
   protected SortedSet<WorkUnit> workUnits = new TreeSet<>();
 
@@ -83,31 +87,26 @@ public class Task extends TaggedEntity implements FileContainer<Task> {
     super(name);
   }
 
-  public Task(String name, String description) {
-    this(name);
-    this.description = description;
-  }
-
   @Override
   public Set<FileReference> getFiles() {
     return files;
   }
 
-  public String getDescription() {
-    return description;
-  }
-
-  public String getShortDescription() {
-    if ((description != null) && (description.length() > 50)) {
-      return description.substring(0, 50);
-    } else {
-      return description;
-    }
+  public AdocFile getAdocFile() {
+    return adocFile;
   }
 
   public Task setDescription(String description) {
-    this.description = description;
+    if (adocFile == null) {
+      adocFile = new AdocFile(getName()).setContent(description);
+    } else {
+      adocFile.setContent(description);
+    }
     return this;
+  }
+
+  public String getDescription() {
+    return adocFile == null ? null : adocFile.getContent();
   }
 
   public long getSpentMinutes() {

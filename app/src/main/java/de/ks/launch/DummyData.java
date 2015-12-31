@@ -76,14 +76,14 @@ public class DummyData extends Service {
 
     Context hiking = new Context("Hiking");
 
-    Task backpack = new Task("Build a new backpack", "DIY").setProject(true);
+    Task backpack = new Task("Build a new backpack").setDescription("DIY").setProject(true);
     backpack.setContext(hiking);
     tasks.add(backpack);
 
     Task sketch = new Task("Create a sketch").setDescription("sketchy\n\tsketchy");
     sketch.setEstimatedTime(Duration.ofMinutes(42));
     tasks.add(sketch);
-    Task sew = new Task("Sew the backpack", "no hussle please");
+    Task sew = new Task("Sew the backpack").setDescription("no hussle please");
     sew.setEstimatedTime(Duration.ofMinutes(60 * 3 + 32));
     tasks.add(sew);
     backpack.addChild(sketch);
@@ -96,7 +96,7 @@ public class DummyData extends Service {
     tasks.add(task);
 
     Context work = new Context("Work");
-    Task asciiDocSample = new Task("AsciiDocSample", asciiDocString).setEstimatedTime(Duration.ofMinutes(1));
+    Task asciiDocSample = new Task("AsciiDocSample").setDescription(asciiDocString).setEstimatedTime(Duration.ofMinutes(1));
     asciiDocSample.setContext(work);
     asciiDocSample.getOutcome().setExpectedOutcome("= title\n\n== other\n");
     tasks.add(asciiDocSample);
