@@ -19,7 +19,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <GridPane fx:id="root" hgap="5.0" minHeight="600.0" minWidth="800.0" onDragDropped="#onDragDrop"
-          onDragOver="#onDragOver" onMouseEntered="#onMouseEntered" vgap="5.0" xmlns="http://javafx.com/javafx/8"
+          onDragOver="#onDragOver" onMouseEntered="#onMouseEntered" vgap="5.0" xmlns="http://javafx.com/javafx/8.0.60"
           xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.idnadrev.thought.add.AddThought">
     <children>
         <Label text="%thought.name:" GridPane.columnIndex="0"/>
@@ -27,23 +27,26 @@
         <TextField fx:id="name" onAction="#saveThought" prefWidth="200.0" GridPane.columnIndex="1"/>
         <StackPane fx:id="descriptionContainer" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="1"
                    GridPane.rowIndex="1"/>
-        <StackPane GridPane.columnIndex="1" GridPane.rowIndex="2">
-            <children>
-                <fx:include fx:id="fileView" source="../../../file/FileView.fxml"/>
-            </children>
-        </StackPane>
+        <TitledPane expanded="false" text="%files" GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <content>
+                <StackPane>
+                    <children>
+                        <fx:include fx:id="fileView" source="../../../file/FileView.fxml"/>
+                    </children>
+                </StackPane>
+            </content>
+        </TitledPane>
         <Button fx:id="save" defaultButton="true" mnemonicParsing="true" onAction="#onSave" text="%save.mnemonic"
                 GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.rowIndex="3">
             <GridPane.margin>
                 <Insets/>
             </GridPane.margin>
         </Button>
-        <Label text="%files:" GridPane.rowIndex="2"/>
 
 
     </children>
     <columnConstraints>
-        <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="10.0"/>
+        <ColumnConstraints halignment="RIGHT" hgrow="NEVER" maxWidth="-Infinity" minWidth="10.0"/>
         <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
     </columnConstraints>
     <padding>
