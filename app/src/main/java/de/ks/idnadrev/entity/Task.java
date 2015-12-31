@@ -22,6 +22,7 @@ import de.ks.flatadocdb.annotation.*;
 import de.ks.flatadocdb.query.Query;
 import de.ks.idnadrev.entity.information.TextInfo;
 
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -73,8 +74,7 @@ public class Task extends TaggedEntity implements FileContainer<Task> {
 
   protected Outcome outcome = new Outcome();
 
-  //  @Children
-  protected Set<FileReference> files = new HashSet<>();
+  protected Set<Path> files = new HashSet<>();
 
   @ToMany
   protected Set<TextInfo> information = new HashSet<>();
@@ -88,7 +88,7 @@ public class Task extends TaggedEntity implements FileContainer<Task> {
   }
 
   @Override
-  public Set<FileReference> getFiles() {
+  public Set<Path> getFiles() {
     return files;
   }
 

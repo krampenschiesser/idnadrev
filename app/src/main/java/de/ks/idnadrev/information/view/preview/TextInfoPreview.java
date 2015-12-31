@@ -64,7 +64,7 @@ public class TextInfoPreview extends BaseController<List<InformationPreviewItem>
 
   protected void processLoadedTextInfo(TextInfo item) {
     if (item != null) {
-      AsciiDocContent content = new AsciiDocContent(item.getName(), item.getDescription());
+      AsciiDocContent content = new AsciiDocContent(item.getName(), item.getContent());
       infos.put(item.getName(), item);
       if (selectedItem != null && item.getName().equals(selectedItem.getName())) {
         controller.getJavaFXExecutor().submit(() -> asciiDocViewer.show(content));
@@ -81,7 +81,7 @@ public class TextInfoPreview extends BaseController<List<InformationPreviewItem>
     this.selectedItem = item;
     TextInfo textInfo = infos.get(item.getName());
     if (textInfo != null) {
-      AsciiDocContent content = new AsciiDocContent(textInfo.getName(), textInfo.getDescription());
+      AsciiDocContent content = new AsciiDocContent(textInfo.getName(), textInfo.getContent());
       asciiDocViewer.show(content);
     }
     return adocContainer;

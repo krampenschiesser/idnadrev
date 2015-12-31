@@ -17,6 +17,7 @@ package de.ks.entity;
 
 import de.ks.flatadocdb.Repository;
 import de.ks.flatadocdb.defaults.DefaultFileGenerator;
+import de.ks.flatadocdb.defaults.NameStripper;
 import de.ks.flatadocdb.metamodel.EntityDescriptor;
 
 public class AdocFileNameGenerator extends DefaultFileGenerator {
@@ -24,13 +25,13 @@ public class AdocFileNameGenerator extends DefaultFileGenerator {
   public String getFileName(Repository repository, EntityDescriptor entityDescriptor, Object o) {
     AdocFile adocFile = (AdocFile) o;
     String name = adocFile.getName();
-    return parseNaturalId(name) + ".adoc";
+    return NameStripper.stripName(name) + ".adoc";
   }
 
   @Override
   public String getFlushFileName(Repository repository, EntityDescriptor entityDescriptor, Object o) {
     AdocFile adocFile = (AdocFile) o;
     String name = adocFile.getName();
-    return parseNaturalId(name) + ".adoc.flush";
+    return NameStripper.stripName(name) + ".adoc.flush";
   }
 }

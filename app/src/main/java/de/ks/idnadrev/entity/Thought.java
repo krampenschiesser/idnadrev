@@ -15,34 +15,42 @@
 
 package de.ks.idnadrev.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.ks.entity.AdocFile;
 import de.ks.entity.AdocFileNameGenerator;
 import de.ks.entity.SameFolderGenerator;
 import de.ks.flatadocdb.annotation.Child;
 import de.ks.flatadocdb.annotation.Entity;
+import de.ks.flatadocdb.annotation.lifecycle.PostUpdate;
+import de.ks.flatadocdb.defaults.SingleFolderGenerator;
 import de.ks.flatadocdb.entity.NamedEntity;
 import de.ks.idnadrev.thought.ThoughtOptions;
 import de.ks.standbein.option.Options;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Created by Christian Loehnert
- * Krampenschiesser@freenet.de
- * All rights reserved by now, license may come later.
- */
-@Entity
+@Entity(folderGenerator = SingleFolderGenerator.class)
 public class Thought extends NamedEntity implements FileContainer<Thought> {
-  private static final long serialVersionUID = 1L;
-  public static final String THOUGHT_FILE_JOINTABLE = "thought_file";
+  private static final Logger log = LoggerFactory.getLogger(Thought.class);
 
   @Child(fileGenerator = AdocFileNameGenerator.class, folderGenerator = SameFolderGenerator.class)
   protected AdocFile adocFile;
+
   protected LocalDate postponedDate;
 
-  protected Set<FileReference> files = new HashSet<>();
+  @JsonIgnore
+  protected Set<Path> files = new HashSet<>();
 
   protected Thought() {
     super(null);
@@ -77,8 +85,22 @@ public class Thought extends NamedEntity implements FileContainer<Thought> {
     }
   }
 
-  public Set<FileReference> getFiles() {
+  @Override
+  public Set<Path> getFiles() {
+    if (files.isEmpty() && getPathInRepository() != null) {
+      FilenameFilter filenameFilter = getFileFilter();
+      File[] files = getPathInRepository().getParent().toFile().listFiles(filenameFilter);
+      if (files != null) {
+        Arrays.asList(files).stream().map(File::toPath).forEach(this.files::add);
+      }
+    }
     return files;
+  }
+
+  protected FilenameFilter getFileFilter() {
+    String ownFileName = getPathInRepository().getFileName().toString();
+    String adocFileName = StringUtils.replace(ownFileName, ".json", ".adoc");
+    return (dir, fileName) -> !fileName.equals(ownFileName) && !fileName.equals(adocFileName);
   }
 
   public void postPone(Options options) {
@@ -97,5 +119,18 @@ public class Thought extends NamedEntity implements FileContainer<Thought> {
       return now.isBefore(postponedDate);
     }
     return false;
+  }
+
+  @PostUpdate
+  public void copyFiles() {
+    Path parent = getPathInRepository().getParent();
+
+    files.stream().filter(file -> !file.getParent().equals(parent)).forEach(file -> {
+      try {
+        Files.copy(file, parent.resolve(file.getFileName()));
+      } catch (IOException e) {
+        log.error("Could not copy requested file {} to ", file, parent);
+      }
+    });
   }
 }

@@ -205,6 +205,6 @@ public class ViewThoughts extends BaseController<List<Thought>> {
 
   @Override
   public void duringLoad(List<Thought> model) {
-    model.forEach(m -> m.getFiles().forEach(f -> f.getName()));
+//    model.forEach(m -> m.getFiles().forEach(f -> f.getName()));
   }
 }

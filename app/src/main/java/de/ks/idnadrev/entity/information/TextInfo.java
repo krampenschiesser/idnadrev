@@ -16,15 +16,15 @@ package de.ks.idnadrev.entity.information;
 
 import de.ks.flatadocdb.annotation.Entity;
 import de.ks.idnadrev.entity.FileContainer;
-import de.ks.idnadrev.entity.FileReference;
 
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 public class TextInfo extends Information<TextInfo> implements FileContainer<TextInfo> {
   private static final long serialVersionUID = 1L;
-  protected Set<FileReference> files = new HashSet<>();
+  protected Set<Path> files = new HashSet<>();
 
   protected TextInfo() {
   }
@@ -34,18 +34,7 @@ public class TextInfo extends Information<TextInfo> implements FileContainer<Tex
   }
 
   @Override
-  public Set<FileReference> getFiles() {
+  public Set<Path> getFiles() {
     return files;
-  }
-
-  @Override
-  public String getDescription() {
-    return getContent();
-  }
-
-  @Override
-  public TextInfo setDescription(String description) {
-    setContent(description);
-    return this;
   }
 }

@@ -18,7 +18,6 @@ package de.ks.idnadrev.file;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import de.ks.idnadrev.entity.FileContainer;
-import de.ks.idnadrev.entity.FileReference;
 import de.ks.standbein.activity.ActivityLoadFinishedEvent;
 import de.ks.standbein.activity.context.ActivityStore;
 import de.ks.standbein.activity.initialization.DatasourceCallback;
@@ -34,7 +33,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +41,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -77,7 +76,7 @@ public class FileViewController implements Initializable, DatasourceCallback<Fil
 //  protected FileStore fileStore;
   @Inject
   protected GlobalImageProvider imageProvider;
-  protected final Map<File, CompletableFuture<FileReference>> fileReferences = new HashMap<>();
+  protected final Map<File, CompletableFuture<Path>> fileReferences = new HashMap<>();
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -233,7 +232,7 @@ public class FileViewController implements Initializable, DatasourceCallback<Fil
 
   @Override
   public void duringLoad(FileContainer<?> model) {
-    model.getFiles().forEach(f -> f.getName());
+    //nope
   }
 
   @Override
@@ -245,8 +244,8 @@ public class FileViewController implements Initializable, DatasourceCallback<Fil
     this.fileReferences.entrySet().forEach(entry -> {
       try {
         File file = entry.getKey();
-        CompletableFuture<FileReference> cf = entry.getValue();
-        FileReference fileReference = cf.get();
+        CompletableFuture<Path> cf = entry.getValue();
+        Path fileReference = cf.get();
         model.getFiles().remove(fileReference);
         // FIXME: 12/17/15
 //        model.addFileReference(persistentWork.reload(fileReference));//ensure it is saved
@@ -255,10 +254,6 @@ public class FileViewController implements Initializable, DatasourceCallback<Fil
 //        }
 //        fileStore.scheduleCopy(fileReference, file);
 
-        String search = "file:///" + file.getAbsolutePath();
-        String replacement = FileReference.FILESTORE_VAR + fileReference.getMd5Sum() + File.separator + file.getName();
-        String newDescription = StringUtils.replace(model.getDescription(), search, replacement);
-        model.setDescription(newDescription);
         log.info("Adding file reference {}", fileReference);
 
 //        // FIXME: 12/17/15 

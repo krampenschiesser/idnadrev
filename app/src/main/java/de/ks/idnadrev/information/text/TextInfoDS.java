@@ -39,7 +39,7 @@ public class TextInfoDS extends CreateEditDS<TextInfo> {
       Thought thought = (Thought) dataSourceHint;
       fromThought = thought;
 
-      TextInfo textInfo = new TextInfo(thought.getName()).setDescription(thought.getDescription());
+      TextInfo textInfo = new TextInfo(thought.getName()).setContent(thought.getDescription());
 //      textInfo.getFiles().addAll(thought.getFiles());// FIXME: 12/17/15
       hint = textInfo;
       return;

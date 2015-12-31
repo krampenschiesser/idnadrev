@@ -24,6 +24,7 @@ public class IdnadrevIntegrationTestModule extends AbstractModule {
 
   @Override
   protected void configure() {
+    install(new AsciiDoctorModule());
     install(new IdnadrevModule() {
       @Override
       protected void bindInitialActivity() {
@@ -32,6 +33,5 @@ public class IdnadrevIntegrationTestModule extends AbstractModule {
     });
     install(new IntegrationTestModule());
     install(new TempRepositoryModule());
-    install(new AsciiDoctorModule());
   }
 }

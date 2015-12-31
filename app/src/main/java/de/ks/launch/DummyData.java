@@ -154,7 +154,7 @@ public class DummyData extends Service {
     for (int i = 0; i < 5; i++) {
       Tag tag = new Tag("tag" + i);
       TextInfo info = new TextInfo("info" + i);
-      info.setDescription(asciiDocString);
+      info.setContent(asciiDocString);
       info.addTag(tag);
       persistentWork.persist(tag, info);
     }

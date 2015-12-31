@@ -17,7 +17,6 @@ package de.ks.idnadrev.thought.view;
 
 import de.ks.flatadocdb.session.Session;
 import de.ks.idnadrev.ActivityTest;
-import de.ks.idnadrev.entity.FileReference;
 import de.ks.idnadrev.entity.Thought;
 import de.ks.idnadrev.entity.information.TextInfo;
 import de.ks.idnadrev.information.text.TextInfoActivity;
@@ -54,10 +53,10 @@ public class ViewThoughtsTest extends ActivityTest {
 
   @Override
   protected void createTestData(Session session) {
-    FileReference fileReference = new FileReference("test", "blubb");
-    session.persist(fileReference);
+//    FileReference fileReference = new FileReference("test", "blubb");
+//    session.persist(fileReference);
     Thought thought = new Thought("test");
-    thought.addFileReference(fileReference);
+//    thought.addFile(fileReference);
     thought.setDescription("desc");
     session.persist(thought);
     session.persist(new Thought("testWithLink").setDescription("goto www.krampenschiesser.de"));

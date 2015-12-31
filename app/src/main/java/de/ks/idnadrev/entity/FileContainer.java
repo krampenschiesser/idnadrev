@@ -1,5 +1,6 @@
 /*
- * Copyright [2014] [Christian Loehnert, krampenschiesser@gmail.com]
+ * Copyright [2015] [Christian Loehnert]
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,19 +15,16 @@
  */
 package de.ks.idnadrev.entity;
 
+import java.nio.file.Path;
 import java.util.Set;
 
 public interface FileContainer<T> {
 
-  Set<FileReference> getFiles();
+  Set<Path> getFiles();
 
-  default void addFileReference(FileReference ref) {
+  default void addFile(Path ref) {
     getFiles().add(ref);
   }
 
   String getId();
-
-  String getDescription();
-
-  T setDescription(String description);
 }

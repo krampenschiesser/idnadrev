@@ -81,7 +81,7 @@ public class TextInfoActivityTest extends ActivityTest {
   public void testEdit() throws Exception {
     TextInfoDS datasource = (TextInfoDS) store.getDatasource();
     TextInfo model = persistentWork.read(em -> {
-      TextInfo textInfo = new TextInfo("test").setDescription("desc");
+      TextInfo textInfo = new TextInfo("test").setContent("desc");
       textInfo.addTag("tag");
       em.persist(textInfo);
       return textInfo;

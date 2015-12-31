@@ -15,7 +15,6 @@
 package de.ks.idnadrev.thought.add;
 
 import de.ks.idnadrev.ActivityTest;
-import de.ks.idnadrev.entity.FileReference;
 import de.ks.idnadrev.entity.Thought;
 import de.ks.standbein.IntegrationTestModule;
 import de.ks.standbein.LoggingGuiceTestSupport;
@@ -277,22 +276,15 @@ public class AddThoughtTest extends ActivityTest {
     activityController.waitForDataSource();
 
     persistentWork.run(session -> {
-      List<FileReference> references = persistentWork.from(FileReference.class);
       List<Thought> thoughts = persistentWork.from(Thought.class);
 
-      assertEquals(1, references.size());
       assertEquals(1, thoughts.size());
 
       Thought thought = thoughts.get(0);
       log.info(thought.getDescription());
-      FileReference fileReference = references.get(0);
-
-      assertEquals("test.jpg", fileReference.getName());
       assertEquals(1, thought.getFiles().size());
 
       assertThat(thought.getDescription(), not(containsString("file://" + file.getAbsolutePath())));
-      assertThat(thought.getDescription(), containsString(fileReference.getMd5Sum()));
-      assertThat(thought.getDescription(), containsString(FileReference.FILESTORE_VAR));
     });
 
   }
