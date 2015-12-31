@@ -18,6 +18,8 @@ package de.ks;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.multibindings.Multibinder;
+import de.ks.entity.AdocFile;
+import de.ks.flatjsondb.RegisteredEntity;
 import de.ks.launch.AsciiDocService;
 import de.ks.standbein.launch.Service;
 import de.ks.text.AsciiDocParser;
@@ -26,6 +28,8 @@ public class AsciiDoctorModule extends AbstractModule {
   @Override
   protected void configure() {
     Multibinder.newSetBinder(binder(), Service.class).addBinding().to(AsciiDocService.class);
+    Multibinder.newSetBinder(binder(), Class.class, RegisteredEntity.class).addBinding().toInstance(AdocFile.class);
+
   }
 
   @Provides

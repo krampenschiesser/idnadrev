@@ -23,6 +23,7 @@ dependencies {
     compile("org.asciidoctor:asciidoctorj-diagram:$asciidocDiagram") {
         transitive = false;
     }
+    compile project(":libs:flatjsondbaccess")
 
     testCompile "de.ks:standbein-testutil:$standbein"
     //asciidoc:
