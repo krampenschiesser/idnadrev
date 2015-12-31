@@ -45,6 +45,8 @@ public class SelectImageController implements Initializable {
   private FlowPane imagePane;
   @Inject
   ActivityController activityController;
+  @Inject
+  Images images;
   protected final SimpleStringProperty selectedImagePath = new SimpleStringProperty();
   protected final Map<String, GridPane> image2Grid = new HashMap<>();
   protected final List<Future<?>> loadingFutures = new ArrayList<>();
@@ -52,7 +54,7 @@ public class SelectImageController implements Initializable {
   protected Dimension2D defaultSize = new Dimension2D(200, 200);
 
   public Future<?> addImage(String name, String path) {
-    CompletableFuture<Image> future = Images.later(path, activityController.getExecutorService());
+    CompletableFuture<Image> future = images.later(path, activityController.getExecutorService());
     future.thenAcceptAsync(img -> this.addImageToPane(img, name, path), activityController.getJavaFXExecutor());
     this.loadingFutures.add(future);
     return future;
