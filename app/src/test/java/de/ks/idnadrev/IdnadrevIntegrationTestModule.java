@@ -16,6 +16,7 @@
 package de.ks.idnadrev;
 
 import com.google.inject.AbstractModule;
+import de.ks.AsciiDoctorModule;
 import de.ks.idnadrev.module.IdnadrevModule;
 import de.ks.standbein.IntegrationTestModule;
 
@@ -31,5 +32,6 @@ public class IdnadrevIntegrationTestModule extends AbstractModule {
     });
     install(new IntegrationTestModule());
     install(new TempRepositoryModule());
+    install(new AsciiDoctorModule());
   }
 }
