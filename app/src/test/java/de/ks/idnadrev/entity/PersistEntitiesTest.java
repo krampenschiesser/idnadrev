@@ -63,7 +63,7 @@ public class PersistEntitiesTest {
   @Test
   public void testNoDuplicateNamedPersistentObject() throws Exception {
     persistentWork.run((em) -> {
-      em.persist(new Task("hello"));
+      em.persist(new Task("hello").setDescription("a description"));
       em.persist(new Task("hello"));//just warns, does nothing
     });
   }
