@@ -16,12 +16,37 @@
 package de.ks.idnadrev;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Key;
 import com.google.inject.multibindings.Multibinder;
+import com.google.inject.name.Names;
+import de.ks.standbein.LoggingGuiceTestSupport;
 import de.ks.standbein.launch.Service;
 
 public class TempRepositoryModule extends AbstractModule {
+  public static final String tempDirName = "tempDirNameBinding";
+
   @Override
   protected void configure() {
     Multibinder.newSetBinder(binder(), Service.class).addBinding().to(TempRepositoryService.class);
+
+    String testClassName = magicallyResolveTestClassName();
+    bind(Key.get(String.class, Names.named(tempDirName))).toInstance(testClassName);
+  }
+
+  private String magicallyResolveTestClassName() {
+    Exception exception = new Exception();
+    exception.fillInStackTrace();
+    StackTraceElement[] stackTrace = exception.getStackTrace();
+    String testClassName = "";
+    for (int i = 0; i < stackTrace.length; i++) {
+      StackTraceElement stackTraceElement = stackTrace[i];
+      if (stackTraceElement.getClassName().equals(LoggingGuiceTestSupport.class.getName())) {
+        testClassName = stackTrace[i + 1].getClassName();
+        break;
+      }
+    }
+    int beginIndex = testClassName.lastIndexOf(".");
+    testClassName = beginIndex < 0 ? testClassName : testClassName.substring(beginIndex + 1);
+    return testClassName;
   }
 }

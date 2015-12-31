@@ -16,25 +16,35 @@
 
 package de.ks.idnadrev;
 
+import com.google.common.base.StandardSystemProperty;
 import de.ks.flatadocdb.Repository;
 import de.ks.flatadocdb.util.DeleteDir;
 import de.ks.flatjsondb.RepositorySelector;
 import de.ks.idnadrev.repository.RepositoryLoader;
 import de.ks.standbein.launch.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 
 @Singleton
 public class TempRepositoryService extends Service {
+  static boolean cleanupAfterTest = false;
+  private static final Logger log = LoggerFactory.getLogger(TempRepositoryService.class);
   @Inject
   RepositorySelector repositorySelector;
   @Inject
   RepositoryLoader loader;
+  @Inject
+  @Named(TempRepositoryModule.tempDirName)
+  String folderName;
 
   private Path repoPath;
   private Repository repository;
@@ -42,7 +52,13 @@ public class TempRepositoryService extends Service {
   @Override
   protected void doStart() {
     try {
-      repoPath = Files.createTempDirectory("idnadrevTempRepo");
+      String tmpDir = StandardSystemProperty.JAVA_IO_TMPDIR.value();
+      Path dir = Paths.get(tmpDir, folderName);
+      if (Files.exists(dir)) {
+        new DeleteDir(dir).delete();
+      }
+      Files.createDirectories(dir);
+      repoPath = dir;
 
       repository = new Repository(repoPath);
     } catch (IOException e) {
@@ -54,11 +70,13 @@ public class TempRepositoryService extends Service {
   @Override
   protected void doStop() {
     repositorySelector.getRepositories().forEach(Repository::close);
-    new DeleteDir(repoPath).delete();
-    try {
-      Files.deleteIfExists(repoPath);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+    if (cleanupAfterTest) {
+      new DeleteDir(repoPath).delete();
+      try {
+        Files.deleteIfExists(repoPath);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
     }
   }
 
