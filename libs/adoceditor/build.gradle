@@ -14,10 +14,13 @@
  */
 
 dependencies {
-    compile("org.asciidoctor:asciidoctorj:$asciidocJavaIntegration") {
+    compile("org.asciidoctor:asciidoctorj:$asciidocJava") {
         transitive = false;
     }
     compile("org.asciidoctor:asciidoctorj-pdf:$asciidocPdf") {
+        transitive = false;
+    }
+    compile("org.asciidoctor:asciidoctorj-diagram:$asciidocDiagram") {
         transitive = false;
     }
 
