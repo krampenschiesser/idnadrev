@@ -16,7 +16,7 @@
 package de.ks.texteditor;
 
 import com.google.common.base.StandardSystemProperty;
-import de.ks.texteditor.markup.Markup;
+import de.ks.texteditor.markup.Line;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,10 +32,10 @@ public class LineParser {
     this.lineSeparator = lineSeparator;
   }
 
-  public List<Markup.Line> getLines(String text) {
+  public List<Line> getLines(String text) {
     int vagueLineLength = 120;
     int vagueLines = text.length() / vagueLineLength;
-    ArrayList<Markup.Line> lines = new ArrayList<>(vagueLines < 10 ? 10 : vagueLineLength);
+    ArrayList<Line> lines = new ArrayList<>(vagueLines < 10 ? 10 : vagueLineLength);
 
     char[] chars = text.toCharArray();
     StringBuilder line = new StringBuilder(vagueLineLength);
@@ -43,7 +43,7 @@ public class LineParser {
     for (int i = 0; i < chars.length; i++) {
       char current = chars[i];
       if (lineSeparator.equals(String.valueOf(current))) {
-        Markup.Line lastLine = new Markup.Line(lastLineStart, line.toString());
+        Line lastLine = new Line(lastLineStart, line.toString());
         lines.add(lastLine);
         lastLineStart = i + 1;
         line = new StringBuilder(vagueLineLength);
@@ -51,7 +51,7 @@ public class LineParser {
         line.append(current);
       }
     }
-    Markup.Line lastLine = new Markup.Line(lastLineStart, line.toString());
+    Line lastLine = new Line(lastLineStart, line.toString());
     lines.add(lastLine);
     return lines;
   }

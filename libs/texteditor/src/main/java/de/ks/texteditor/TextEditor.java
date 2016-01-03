@@ -17,7 +17,8 @@ package de.ks.texteditor;
 
 import de.ks.executor.JavaFXExecutorService;
 import de.ks.executor.group.LastExecutionGroup;
-import de.ks.texteditor.markup.Markup;
+import de.ks.texteditor.markup.Line;
+import de.ks.texteditor.markup.MarkupStyleRange;
 import de.ks.texteditor.markup.adoc.AdocMarkup;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -88,8 +89,8 @@ public class TextEditor implements Initializable {
         CompletableFuture<RichTextChange<Collection<String>>> future = markupGeneration.schedule(() -> change);
         if (future.getNumberOfDependents() == 0) {
           future.thenApply(change1 -> {
-            List<Markup.Line> lines = lineParser.getLines(codeArea.getText());
-            List<Markup.MarkupStyleRange> styleRanges = new AdocMarkup().getStyleRanges(lines);
+            List<Line> lines = lineParser.getLines(codeArea.getText());
+            List<MarkupStyleRange> styleRanges = new AdocMarkup().getStyleRanges(lines);
             return styleRanges;
 //          }).thenApplyAsync(styleRanges -> {
 //            codeArea.clearStyle(0, codeArea.getText().length());

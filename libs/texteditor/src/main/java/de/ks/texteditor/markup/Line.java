@@ -13,28 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.texteditor.markup.adoc;
+package de.ks.texteditor.markup;
 
-import de.ks.texteditor.markup.Line;
-import de.ks.texteditor.markup.StyleDetector;
+public class Line {
+  String text;
+  int positionInDocument;
 
-import java.util.List;
+  public Line(int positionInDocument, String text) {
+    this.text = text;
+    this.positionInDocument = positionInDocument;
+  }
 
-public class ImageStyle implements StyleDetector {
+  public String getText() {
+    return text;
+  }
 
-  public static final String ADOC_IMAGE = "adocImage";
+  public int getPositionInDocument() {
+    return positionInDocument;
+  }
 
-  @Override
-  public List<DetectionResult> detect(Line line) {
-    if (line.getText().startsWith("image::")) {
-      return wholeLine(line);
-    } else {
-      return none();
-    }
+  public int getStart() {
+    return getPositionInDocument();
+  }
+
+  public int getEnd() {
+    return getStart() + text.length();
   }
 
   @Override
-  public String getStyleClass() {
-    return ADOC_IMAGE;
+  public String toString() {
+    return text;
   }
 }

@@ -15,8 +15,10 @@
  */
 package de.ks.texteditor.markup.adoc;
 
+import de.ks.texteditor.markup.Line;
 import de.ks.texteditor.markup.StyleDetector;
 
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -36,11 +38,11 @@ public class NewStyleHeader implements StyleDetector {
   }
 
   @Override
-  public int detect(String line) {
-    if (line.startsWith(headerStart + " ")) {
-      return 0;
+  public List<DetectionResult> detect(Line line) {
+    if (line.getText().startsWith(headerStart + " ")) {
+      return wholeLine(line);
     } else {
-      return -1;
+      return none();
     }
   }
 

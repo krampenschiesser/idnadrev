@@ -15,17 +15,21 @@
  */
 package de.ks.texteditor.markup.adoc;
 
+import de.ks.texteditor.markup.Line;
 import de.ks.texteditor.markup.StyleDetector;
+
+import java.util.List;
 
 public class AdocTitleElementStyle implements StyleDetector {
   public static final String ADOC_TITLE_ELEMENT = "adocTitleElement";
 
   @Override
-  public int detect(String line) {
-    if (line.startsWith(":") && (line.endsWith(":") || line.contains(": "))) {
-      return 0;
+  public List<DetectionResult> detect(Line line) {
+    String text = line.getText();
+    if (text.startsWith(":") && (text.endsWith(":") || text.contains(": "))) {
+      return wholeLine(line);
     } else {
-      return -1;
+      return none();
     }
   }
 

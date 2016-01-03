@@ -17,40 +17,45 @@ package de.ks.texteditor.markup.adoc;
 
 import de.ks.texteditor.markup.Line;
 import de.ks.texteditor.markup.StyleDetector;
-import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class ListingStyle implements StyleDetector {
+public class InlineStyle implements StyleDetector {
+  private final String inlineChar;
+  private final String styleClass;
+  private final String begin;
+  private final String end;
 
-  public static final String ADOC_LISTING = "adocListing";
-  private final String listingChar;
-  private final String styleSuffix;
-
-  public ListingStyle(String listingChar, String styleSuffix) {
-    this.listingChar = listingChar;
-    this.styleSuffix = styleSuffix;
+  public InlineStyle(String inlineChar, String styleClass) {
+    this.inlineChar = inlineChar;
+    this.styleClass = styleClass;
+    begin = inlineChar;
+    end = inlineChar;
   }
 
   @Override
   public List<DetectionResult> detect(Line line) {
-    if (line.getText().startsWith(listingChar)) {
-      if (listingChar.endsWith(" ")) {
-        return wholeLine(line);
-      } else {
-        if (StringUtils.remove(line.getText(), listingChar).startsWith(" ")) {
-          return wholeLine(line);
-        } else {
-          return none();
+    ArrayList<DetectionResult> retval = new ArrayList<>();
+
+    int startPos = 0;
+    int beginIndex = -1;
+    int endIndex = -1;
+    do {
+      beginIndex = line.getText().indexOf(begin, startPos);
+      if (beginIndex >= 0) {
+        endIndex = line.getText().indexOf(end, beginIndex + 2);
+        if (endIndex > beginIndex) {
+          startPos = endIndex + 1;
+          retval.add(inline(line, beginIndex, endIndex));
         }
       }
-    } else {
-      return none();
-    }
+    } while (beginIndex >= 0 && endIndex > 0);
+    return retval;
   }
 
   @Override
   public String getStyleClass() {
-    return ADOC_LISTING + styleSuffix;
+    return styleClass;
   }
 }

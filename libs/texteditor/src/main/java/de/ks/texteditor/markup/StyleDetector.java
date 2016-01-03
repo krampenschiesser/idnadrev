@@ -15,12 +15,58 @@
  */
 package de.ks.texteditor.markup;
 
-public interface StyleDetector {
-  int detect(String line);
+import java.util.Collections;
+import java.util.List;
 
-  default int getPreviouslines() {
-    return 0;
+public interface StyleDetector {
+  List<DetectionResult> detect(Line line);
+
+  default List<DetectionResult> wholeLine(Line line) {
+    return Collections.singletonList(DetectionResult.wholeLine(line));
+  }
+
+  default DetectionResult inline(Line line, int begin, int end) {
+    return DetectionResult.inline(line.getPositionInDocument() + begin, line.getPositionInDocument() + end);
+  }
+
+  default List<DetectionResult> none() {
+    return Collections.emptyList();
   }
 
   String getStyleClass();
+
+  public static class DetectionResult {
+    public static DetectionResult wholeLine(Line line) {
+      return new DetectionResult(true, line.getStart(), line.getEnd());
+    }
+
+    public static DetectionResult inline(int begin, int end) {
+      return new DetectionResult(begin, end);
+    }
+
+    boolean wholeLine = false;
+    int begin, end;
+
+    DetectionResult(boolean wholeLine, int begin, int end) {
+      this.wholeLine = wholeLine;
+      this.begin = begin;
+      this.end = end;
+    }
+
+    DetectionResult(int begin, int end) {
+      this(false, begin, end);
+    }
+
+    public boolean isWholeLine() {
+      return wholeLine;
+    }
+
+    public int getBegin() {
+      return begin;
+    }
+
+    public int getEnd() {
+      return end;
+    }
+  }
 }

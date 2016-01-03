@@ -16,14 +16,14 @@
 
 package de.ks.texteditor.markup.adoc;
 
+import de.ks.texteditor.markup.Line;
 import de.ks.texteditor.markup.Markup;
+import de.ks.texteditor.markup.MarkupStyleRange;
 import de.ks.texteditor.markup.StyleDetector;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiConsumer;
 
 public class AdocMarkup implements Markup {
   protected final List<StyleDetector> styleDetectors = new ArrayList<>();
@@ -39,6 +39,9 @@ public class AdocMarkup implements Markup {
     styleDetectors.add(new ListingStyle(".", "Ordered"));
     styleDetectors.add(new ListingStyle("*", "Unordered"));
     styleDetectors.add(new ListingStyle("- ", "Unordered"));
+    styleDetectors.add(new InlineStyle("*", "adocBold"));
+    styleDetectors.add(new InlineStyle("_", "adocItalic"));
+
   }
 
   @Override
@@ -49,35 +52,38 @@ public class AdocMarkup implements Markup {
   @Override
   public List<MarkupStyleRange> getStyleRanges(List<Line> lines) {
     ArrayList<MarkupStyleRange> retval = new ArrayList<>();
-    final AtomicInteger lastDetection = new AtomicInteger(-1);
+    final ArrayList<StyleDetector.DetectionResult> detectionResults = new ArrayList<>();
     final AtomicReference<StyleDetector> currentDetector = new AtomicReference<>(null);
-    ArrayList<Line> currentLines = new ArrayList<>();
-
-    BiConsumer<Line, Integer> onDetect = (line, detected) -> {
-      boolean didInclude = includePreviousLines(lines, currentDetector.get(), currentLines, line);
-      currentLines.add(line);
-      if (didInclude) {
-        lastDetection.set(currentLines.get(0).getPositionInDocument());
-      } else {
-        lastDetection.set(detected);
-      }
-    };
 
     Runnable addMarkup = () -> {
-      String styleName = currentDetector.get().getStyleClass();
-      int begin = lastDetection.get() > 0 ? lastDetection.get() : currentLines.get(0).getPositionInDocument();
-      int end = currentLines.get(currentLines.size() - 1).getEnd();
-      retval.add(new MarkupStyleRange(begin, end, styleName));
-      lastDetection.set(-1);
+      MarkupStyleRange lastWholeLine = null;
+      for (StyleDetector.DetectionResult detectionResult : detectionResults) {
+        if (detectionResult.isWholeLine()) {
+          String styleName = currentDetector.get().getStyleClass();
+          int begin = detectionResult.getBegin();
+          int end = detectionResult.getEnd();
+
+          if (lastWholeLine == null) {
+            lastWholeLine = new MarkupStyleRange(begin, end, styleName);
+            retval.add(lastWholeLine);
+          } else {
+            lastWholeLine.extendToPos(end);
+          }
+        } else {
+          lastWholeLine = null;
+          String styleName = currentDetector.get().getStyleClass();
+          retval.add(new MarkupStyleRange(detectionResult.getBegin(), detectionResult.getEnd(), styleName));
+        }
+      }
+      detectionResults.clear();
       currentDetector.set(null);
-      currentLines.clear();
     };
 
     for (Line line : lines) {
       if (currentDetector.get() != null) {
-        int detected = currentDetector.get().detect(line.getText());
-        if (detected >= 0) {
-          onDetect.accept(line, detected);
+        List<StyleDetector.DetectionResult> current = currentDetector.get().detect(line);
+        if (current.size() > 0) {
+          detectionResults.addAll(current);
           continue;
         } else {
           addMarkup.run();
@@ -85,10 +91,10 @@ public class AdocMarkup implements Markup {
       }
 
       for (StyleDetector styleDetector : styleDetectors) {
-        int detected = styleDetector.detect(line.getText());
-        if (detected >= 0) {
+        List<StyleDetector.DetectionResult> current = styleDetector.detect(line);
+        if (current.size() > 0) {
+          detectionResults.addAll(current);
           currentDetector.set(styleDetector);
-          onDetect.accept(line, detected);
           break;
         }
       }
@@ -99,15 +105,4 @@ public class AdocMarkup implements Markup {
     return retval;
   }
 
-  protected boolean includePreviousLines(List<Line> lines, StyleDetector currentDetector, ArrayList<Line> currentLines, Line line) {
-    if (currentDetector.getPreviouslines() > 0) {
-      int lineIndex = lines.indexOf(line);
-      for (int i = Math.max(0, lineIndex - currentDetector.getPreviouslines()); i < lineIndex; i++) {
-        currentLines.add(lines.get(i));
-      }
-      return true;
-    } else {
-      return false;
-    }
-  }
 }

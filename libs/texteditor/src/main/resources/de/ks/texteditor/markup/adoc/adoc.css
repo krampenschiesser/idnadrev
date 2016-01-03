@@ -37,3 +37,9 @@
 .adocTitleElement {
     -fx-fill: green;
 }
+.adocBold {
+    -fx-font-weight: bold;
+}
+.adocItalic {
+    -fx-font-weight: italic;
+}

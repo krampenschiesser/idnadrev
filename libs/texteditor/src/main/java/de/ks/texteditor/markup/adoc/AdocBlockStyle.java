@@ -15,7 +15,10 @@
  */
 package de.ks.texteditor.markup.adoc;
 
+import de.ks.texteditor.markup.Line;
 import de.ks.texteditor.markup.StyleDetector;
+
+import java.util.List;
 
 public class AdocBlockStyle implements StyleDetector {
   public static final String ADOC_BLOCK = "adocBlock";
@@ -23,25 +26,25 @@ public class AdocBlockStyle implements StyleDetector {
   boolean stopDetectionOnNextLine = false;
 
   @Override
-  public int detect(String line) {
-    boolean isBlockStart = detectedBlock == null && line.startsWith("---");
-    boolean isBlockEnd = detectedBlock != null && line.equals(detectedBlock);
+  public List<DetectionResult> detect(Line line) {
+    boolean isBlockStart = detectedBlock == null && line.getText().startsWith("---");
+    boolean isBlockEnd = detectedBlock != null && line.getText().equals(detectedBlock);
 
     if (isBlockStart) {
-      detectedBlock = line;
+      detectedBlock = line.getText();
     } else if (isBlockEnd) {
       stopDetectionOnNextLine = true;
-      return 0;
+      return wholeLine(line);
     }
 
     if (stopDetectionOnNextLine) {
       detectedBlock = null;
       stopDetectionOnNextLine = false;
-      return -1;
+      return none();
     } else if (detectedBlock != null) {
-      return 0;
+      return wholeLine(line);
     } else {
-      return -1;
+      return none();
     }
   }
 

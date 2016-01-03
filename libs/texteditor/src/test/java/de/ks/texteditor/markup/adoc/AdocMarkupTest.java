@@ -17,7 +17,9 @@
 package de.ks.texteditor.markup.adoc;
 
 import de.ks.texteditor.LineParser;
-import de.ks.texteditor.markup.Markup;
+import de.ks.texteditor.markup.Line;
+import de.ks.texteditor.markup.MarkupStyleRange;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,7 +29,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class AdocMarkupTest {
 
@@ -40,10 +42,10 @@ public class AdocMarkupTest {
 
   @Test
   public void testHeaders() throws Exception {
-    List<Markup.Line> lines = new LineParser("\n").getLines("= header1\n== header2\n### header2\n## header2");
-    List<Markup.MarkupStyleRange> styleRanges = markup.getStyleRanges(lines);
+    List<Line> lines = new LineParser("\n").getLines("= header1\n== header2\n### header2\n## header2");
+    List<MarkupStyleRange> styleRanges = markup.getStyleRanges(lines);
     assertEquals(4, styleRanges.size());
-    Markup.MarkupStyleRange range = styleRanges.get(0);
+    MarkupStyleRange range = styleRanges.get(0);
     assertEquals(NewStyleHeader.ADOC_HEADER + 1, range.getStyleClass());
     assertEquals(0, range.getFromPos());
     assertEquals(9, range.getToPos());
@@ -61,23 +63,24 @@ public class AdocMarkupTest {
 
   @Test
   public void testListing() throws Exception {
-    List<Markup.Line> lines = new LineParser("\n").getLines(". bla\n* blub\n** blubb\n- ah\n.. urks");
-    List<Markup.MarkupStyleRange> styleRanges = markup.getStyleRanges(lines);
-    assertEquals(4, styleRanges.size());
+    List<Line> lines = new LineParser("\n").getLines(". bla\n* blub\n** blubb\n- ah\n.. urks\n*bold*");
+    List<MarkupStyleRange> styleRanges = markup.getStyleRanges(lines);
+    assertEquals(5, styleRanges.size());
+    assertThat(styleRanges.get(4).getStyleClass(), Matchers.not(Matchers.startsWith(ListingStyle.ADOC_LISTING)));
   }
 
   @Test
   public void testImage() throws Exception {
-    List<Markup.Line> lines = new LineParser("\n").getLines("image::img.jpg[]");
-    List<Markup.MarkupStyleRange> styleRanges = markup.getStyleRanges(lines);
+    List<Line> lines = new LineParser("\n").getLines("image::img.jpg[]");
+    List<MarkupStyleRange> styleRanges = markup.getStyleRanges(lines);
     assertEquals(1, styleRanges.size());
   }
 
   @Test
   public void testAdocBlock() throws Exception {
-    List<Markup.Line> lines = new LineParser("\n").getLines("----------------\nbla\n blubb\n-----\n----------------\n\nhuhu");
+    List<Line> lines = new LineParser("\n").getLines("----------------\nbla\n blubb\n-----\n----------------\n\nhuhu");
 
-    List<Markup.MarkupStyleRange> styleRanges = markup.getStyleRanges(lines);
+    List<MarkupStyleRange> styleRanges = markup.getStyleRanges(lines);
     assertEquals(1, styleRanges.size());
     assertEquals(0, styleRanges.get(0).getFromPos());
     assertEquals(50, styleRanges.get(0).getToPos());
@@ -85,19 +88,32 @@ public class AdocMarkupTest {
 
   @Test
   public void test2Blocks() throws Exception {
-    List<Markup.Line> lines = new LineParser("\n").getLines("-----\nbla\n-----\n\n----blubb\n----");
+    List<Line> lines = new LineParser("\n").getLines("-----\nbla\n-----\n\n----blubb\n----");
 
-    List<Markup.MarkupStyleRange> styleRanges = markup.getStyleRanges(lines);
+    List<MarkupStyleRange> styleRanges = markup.getStyleRanges(lines);
     assertEquals(2, styleRanges.size());
+  }
+
+  @Test
+  public void testInlineBold() throws Exception {
+    List<Line> lines = new LineParser("\n").getLines("hello *world*!\n*bla* other");
+    List<MarkupStyleRange> styleRanges = markup.getStyleRanges(lines);
+    assertEquals(2, styleRanges.size());
+
+    assertEquals(6, styleRanges.get(0).getFromPos());
+    assertEquals(12, styleRanges.get(0).getToPos());
+
+    assertEquals(15, styleRanges.get(1).getFromPos());
+    assertEquals(19, styleRanges.get(1).getToPos());
   }
 
   @Test
   public void testSmallDoc() throws Exception {
     URL resource = getClass().getResource("smalldoc.adoc");
     String content = Files.readAllLines(Paths.get(resource.toURI())).stream().collect(Collectors.joining("\n"));
-    List<Markup.Line> lines = new LineParser("\n").getLines(content);
-    List<Markup.MarkupStyleRange> styleRanges = markup.getStyleRanges(lines);
+    List<Line> lines = new LineParser("\n").getLines(content);
+    List<MarkupStyleRange> styleRanges = markup.getStyleRanges(lines);
 
-    assertEquals(10, styleRanges.size());
+    assertEquals(12, styleRanges.size());
   }
 }
