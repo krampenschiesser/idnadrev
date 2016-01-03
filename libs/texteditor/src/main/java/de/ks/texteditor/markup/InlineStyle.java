@@ -43,7 +43,7 @@ public class InlineStyle implements StyleDetector {
         endIndex = line.getText().indexOf(end, beginIndex + 1);
         if (endIndex > beginIndex) {
           startPos = endIndex + 1;
-          retval.add(inline(line, beginIndex, endIndex, styleClass));
+          retval.add(inline(line, beginIndex, endIndex + 1, styleClass));
         }
       }
     } while (beginIndex >= 0 && endIndex > 0);

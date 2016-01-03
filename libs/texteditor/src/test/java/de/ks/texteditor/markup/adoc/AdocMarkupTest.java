@@ -101,10 +101,10 @@ public class AdocMarkupTest {
     assertEquals(2, styleRanges.size());
 
     assertEquals(6, styleRanges.get(0).getFromPos());
-    assertEquals(12, styleRanges.get(0).getToPos());
+    assertEquals(13, styleRanges.get(0).getToPos());
 
     assertEquals(15, styleRanges.get(1).getFromPos());
-    assertEquals(19, styleRanges.get(1).getToPos());
+    assertEquals(20, styleRanges.get(1).getToPos());
   }
 
   @Test
