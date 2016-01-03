@@ -41,7 +41,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 public class AsciiDocViewer implements Initializable, ActivityCallback {
-
   public static final String DEFAULT = "default";
 
   public static CompletableFuture<DefaultLoader<Node, AsciiDocViewer>> load(ActivityInitialization initialization, Consumer<StackPane> viewConsumer, Consumer<AsciiDocViewer> controllerConsumer) {

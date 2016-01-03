@@ -15,11 +15,14 @@
  */
 package de.ks.texteditor;
 
-import de.ks.executor.JavaFXExecutorService;
 import de.ks.executor.group.LastExecutionGroup;
+import de.ks.standbein.activity.executor.ActivityExecutor;
+import de.ks.standbein.activity.executor.ActivityJavaFXExecutor;
+import de.ks.standbein.activity.initialization.ActivityInitialization;
 import de.ks.texteditor.markup.Line;
 import de.ks.texteditor.markup.MarkupStyleRange;
 import de.ks.texteditor.markup.adoc.AdocMarkup;
+import de.ks.texteditor.preview.TextPreview;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -28,7 +31,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.scene.web.WebView;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.RichTextChange;
@@ -42,7 +44,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.IntFunction;
 
@@ -58,18 +59,22 @@ public class TextEditor implements Initializable {
   @FXML
   private Tab previewTab;
   @FXML
-  private WebView preview;
+  private StackPane previewContainer;
   @FXML
   private Tab htmlTab;
   @FXML
   private TextArea htmlEditor;
 
   @Inject
-  JavaFXExecutorService javaFXExecutorService;
+  ActivityJavaFXExecutor javaFXExecutorService;
   @Inject
-  ExecutorService executorService;
+  ActivityExecutor executorService;
+  @Inject
+  ActivityInitialization initialization;
+
   LineParser lineParser = new LineParser();
   private CodeArea codeArea;
+  private TextPreview preview;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -78,41 +83,60 @@ public class TextEditor implements Initializable {
     codeArea.setParagraphGraphicFactory(factory);
     editorContainer.getChildren().add(codeArea);
 
-    executorService.submit(() -> {
-      try {
-        Thread.sleep(50);
-        javaFXExecutorService.submit(() -> codeArea.requestFocus());
-      } catch (InterruptedException e) {
-        //ok
-      }
-    });
+    preview = initialization.loadAdditionalController(TextPreview.class).getController();
+    previewContainer.getChildren().add(preview.getRoot());
+    focusEditor();
 
     LastExecutionGroup<RichTextChange<Collection<String>>> markupGeneration = new LastExecutionGroup<>("MarkupGeneration", 300, executorService);
-
-    final AtomicBoolean richtTextFXMurksGuard = new AtomicBoolean();
+    final AtomicBoolean richtTextFXMurksGuard = new AtomicBoolean();//needed because sometimes richtextfx is stuck in a loop/stackoverflow (when replacing styles)
     codeArea.richChanges().subscribe(change -> {
       if (!richtTextFXMurksGuard.get()) {
         CompletableFuture<RichTextChange<Collection<String>>> future = markupGeneration.schedule(() -> change);
         if (future.getNumberOfDependents() == 0) {
-          future.thenApply(change1 -> {
-            List<Line> lines = lineParser.getLines(codeArea.getText());
-            List<MarkupStyleRange> styleRanges = new AdocMarkup().getStyleRanges(lines);
-            return styleRanges;
-//          }).thenApplyAsync(styleRanges -> {
-//            codeArea.clearStyle(0, codeArea.getText().length());
-//            return styleRanges;
-//          }, javaFXExecutorService).thenAcceptAsync(styleRanges -> {
-          }).thenAcceptAsync(styleRanges -> {
-            styleRanges.forEach(style -> codeArea.setStyle(style.getFromPos(), style.getToPos(), Collections.singleton(style.getStyleClass())));
-            richtTextFXMurksGuard.set(false);
-          }, javaFXExecutorService);
+          addChangeListener(future)//
+            .thenRunAsync(() -> richtTextFXMurksGuard.set(false), javaFXExecutorService);
         }
       }
       richtTextFXMurksGuard.set(true);
     });
   }
 
+  private CompletableFuture<Void> addChangeListener(CompletableFuture<RichTextChange<Collection<String>>> future) {
+
+    return future.thenApplyAsync(change1 -> {
+      List<Line> lines = lineParser.getLines(codeArea.getText());
+      List<MarkupStyleRange> styleRanges = getMarkup().getStyleRanges(lines);
+      return styleRanges;
+    }, executorService)//
+      .thenAcceptAsync(styleRanges -> {
+        styleRanges.forEach(style -> codeArea.setStyle(style.getFromPos(), style.getToPos(), Collections.singleton(style.getStyleClass())));
+      }, javaFXExecutorService);
+  }
+
+  protected AdocMarkup getMarkup() {
+    return new AdocMarkup();
+  }
+
+  protected void focusEditor() {
+    executorService.submit(() -> {
+      try {
+        Thread.sleep(100);
+        javaFXExecutorService.submit(() -> codeArea.requestFocus());
+      } catch (InterruptedException e) {
+        //ok
+      }
+    });
+  }
+
   public CodeArea getCodeArea() {
     return codeArea;
+  }
+
+  public String getContent() {
+    return codeArea.getText();
+  }
+
+  public void setContent(String content) {
+    codeArea.replaceText(content);
   }
 }

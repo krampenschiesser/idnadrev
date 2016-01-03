@@ -18,7 +18,7 @@ package de.ks.texteditor.render;
 import java.nio.file.Path;
 
 public interface Renderer {
-  Path renderFilePreview(Path path);
+  Path renderFilePreview(Path source, Path targetDirectory);
 
-  String renderStringPreview(Path path);
+  String renderStringPreview(Path source);
 }

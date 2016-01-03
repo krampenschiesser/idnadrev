@@ -15,6 +15,21 @@
  */
 
 dependencies {
+
+    compile("org.asciidoctor:asciidoctorj:$asciidocJava") {
+        transitive = false;
+    }
+    compile("org.asciidoctor:asciidoctorj-pdf:$asciidocPdf") {
+        transitive = false;
+    }
+    compile("org.asciidoctor:asciidoctorj-diagram:$asciidocDiagram") {
+        transitive = false;
+    }
+
     compile "org.fxmisc.richtext:richtextfx:$richtextfx"
+
     runtime group: 'org.fxmisc.wellbehaved', name: 'wellbehavedfx', version: '0.2'
+
+    runtime "org.jruby:jruby-complete:$jruby"
+    runtime "com.beust:jcommander:$jcommander"
 }

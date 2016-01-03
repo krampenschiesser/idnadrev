@@ -15,5 +15,55 @@
  */
 package de.ks.texteditor.render;
 
-public class AsciidocRenderer {
+import org.asciidoctor.Asciidoctor;
+import org.asciidoctor.AttributesBuilder;
+import org.asciidoctor.OptionsBuilder;
+
+import javax.inject.Inject;
+import java.nio.file.Path;
+
+public class AsciidocRenderer implements Renderer {
+
+  private final Path cssPath;
+
+  @Inject
+  public AsciidocRenderer(Path cssPath) {
+    this.cssPath = cssPath;
+  }
+
+  @Override
+  public Path renderFilePreview(Path source, Path targetFile) {
+    Asciidoctor asciidoctor = getAsciidoctor();
+    OptionsBuilder optionsBuilder = getOptions(source, targetFile);
+
+    asciidoctor.renderFile(source.toFile(), optionsBuilder);
+    return targetFile;
+  }
+
+  protected OptionsBuilder getOptions(Path source, Path targetFile) {
+    OptionsBuilder options = OptionsBuilder.options();
+    options.toFile(targetFile.toFile());
+    options.toDir(targetFile.getParent().toFile());
+    options.baseDir(source.getParent().toFile());
+    options.destinationDir(targetFile.getParent().toFile());
+    options.backend("pdf");
+
+    AttributesBuilder attributes = AttributesBuilder.attributes();
+    attributes.linkCss(true);
+    attributes.experimental(true);
+    attributes.stylesDir(targetFile.relativize(cssPath).toString());
+    attributes.attribute("stem");
+
+    options.attributes(attributes);
+    return options;
+  }
+
+  protected Asciidoctor getAsciidoctor() {
+    return Asciidoctor.Factory.create();
+  }
+
+  @Override
+  public String renderStringPreview(Path source) {
+    return null;
+  }
 }

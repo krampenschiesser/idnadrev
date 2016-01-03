@@ -1,6 +1,8 @@
 = Idnadrev Guide
 :toc:
 :toclevels: 4
+:stem: latexmath
+:math:
 
 == About
 
@@ -96,6 +98,17 @@ f(x)=\sum_{n=0}^\infty\frac{f^{(n)}(a)}{n!}(x-a)^n
 $$
 +++
 ----------------
+
+[stem]
+++++
+f(x)=\sum_{n=0}^\infty\frac{f^{(n)}(a)}{n!}(x-a)^n
+sqrt(4) = 2
+++++
+
+[latexmath]
+++++
+x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
+++++
 
 Just use 3 plus signs followed by 2 dollar signs and insert your formula.
 A nice shortcut is *alt*+*m*.

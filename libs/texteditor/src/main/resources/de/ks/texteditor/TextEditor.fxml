@@ -16,11 +16,9 @@
   ~ limitations under the License.
   -->
 
-
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.web.WebView?>
 <StackPane minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.60"
            xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.texteditor.TextEditor">
     <children>
@@ -59,7 +57,7 @@
                             <tabs>
                                 <Tab fx:id="previewTab" closable="false" text="%preview">
                                     <content>
-                                        <WebView fx:id="preview" prefHeight="200.0" prefWidth="200.0"/>
+                                        <StackPane fx:id="previewContainer"/>
                                     </content>
                                 </Tab>
                                 <Tab fx:id="htmlTab" closable="false" text="%html">
