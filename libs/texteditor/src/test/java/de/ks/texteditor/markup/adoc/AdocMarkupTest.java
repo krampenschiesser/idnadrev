@@ -63,7 +63,7 @@ public class AdocMarkupTest {
   public void testListing() throws Exception {
     List<Markup.Line> lines = new LineParser("\n").getLines(". bla\n* blub\n** blubb\n- ah\n.. urks");
     List<Markup.MarkupStyleRange> styleRanges = markup.getStyleRanges(lines);
-    assertEquals(1, styleRanges.size());
+    assertEquals(4, styleRanges.size());
   }
 
   @Test
@@ -98,6 +98,6 @@ public class AdocMarkupTest {
     List<Markup.Line> lines = new LineParser("\n").getLines(content);
     List<Markup.MarkupStyleRange> styleRanges = markup.getStyleRanges(lines);
 
-    assertEquals(9, styleRanges.size());
+    assertEquals(10, styleRanges.size());
   }
 }
