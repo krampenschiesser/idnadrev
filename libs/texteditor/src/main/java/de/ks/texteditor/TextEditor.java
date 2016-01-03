@@ -78,8 +78,14 @@ public class TextEditor implements Initializable {
     codeArea.setParagraphGraphicFactory(factory);
     editorContainer.getChildren().add(codeArea);
 
-    executorService.submit(codeArea::requestFocus);
-
+    executorService.submit(() -> {
+      try {
+        Thread.sleep(50);
+        javaFXExecutorService.submit(() -> codeArea.requestFocus());
+      } catch (InterruptedException e) {
+        //ok
+      }
+    });
 
     LastExecutionGroup<RichTextChange<Collection<String>>> markupGeneration = new LastExecutionGroup<>("MarkupGeneration", 300, executorService);
 
