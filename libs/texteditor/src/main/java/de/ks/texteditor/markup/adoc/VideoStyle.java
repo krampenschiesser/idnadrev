@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.ks.texteditor.markup.adoc;
 
 import de.ks.texteditor.markup.LineBeginsStyle;
 
-public class ImageStyle extends LineBeginsStyle {
-  public static final String ADOC_IMAGE = "adocImage";
+public class VideoStyle extends LineBeginsStyle {
+  public static final String ADOC_VIDEO = "adocVideo";
 
-  public ImageStyle() {
-    super("image::", ADOC_IMAGE);
+  public VideoStyle() {
+    super("video::", ADOC_VIDEO);
   }
 }

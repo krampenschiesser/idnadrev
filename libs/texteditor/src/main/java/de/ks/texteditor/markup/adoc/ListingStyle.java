@@ -36,10 +36,10 @@ public class ListingStyle implements StyleDetector {
   public List<DetectionResult> detect(Line line) {
     if (line.getText().startsWith(listingChar)) {
       if (listingChar.endsWith(" ")) {
-        return wholeLine(line);
+        return wholeLine(line, ADOC_LISTING + styleSuffix);
       } else {
         if (StringUtils.remove(line.getText(), listingChar).startsWith(" ")) {
-          return wholeLine(line);
+          return wholeLine(line, ADOC_LISTING + styleSuffix);
         } else {
           return none();
         }
@@ -47,10 +47,5 @@ public class ListingStyle implements StyleDetector {
     } else {
       return none();
     }
-  }
-
-  @Override
-  public String getStyleClass() {
-    return ADOC_LISTING + styleSuffix;
   }
 }

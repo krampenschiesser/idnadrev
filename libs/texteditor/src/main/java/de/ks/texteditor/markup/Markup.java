@@ -15,11 +15,70 @@
  */
 package de.ks.texteditor.markup;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
-public interface Markup {
-  String getCssFile();
+public abstract class Markup {
+  protected final List<StyleDetector> styleDetectors = new ArrayList<>();
 
-  List<MarkupStyleRange> getStyleRanges(List<Line> lines);
+  public abstract String getCssFile();
 
+  public List<MarkupStyleRange> getStyleRanges(List<Line> lines) {
+    ArrayList<MarkupStyleRange> retval = new ArrayList<>();
+    final ArrayList<StyleDetector.DetectionResult> detectionResults = new ArrayList<>();
+    final AtomicReference<StyleDetector> currentDetector = new AtomicReference<>(null);
+
+    Runnable addMarkup = () -> {
+      MarkupStyleRange lastWholeLine = null;
+      for (StyleDetector.DetectionResult detectionResult : detectionResults) {
+        if (detectionResult.isWholeLine()) {
+          String styleName = detectionResult.getStyleClass();
+          int begin = detectionResult.getBegin();
+          int end = detectionResult.getEnd();
+
+          if (lastWholeLine == null) {
+            lastWholeLine = new MarkupStyleRange(begin, end, styleName);
+            retval.add(lastWholeLine);
+          } else {
+            lastWholeLine.extendToPos(end);
+          }
+        } else {
+          lastWholeLine = null;
+          String styleName = detectionResult.getStyleClass();
+          retval.add(new MarkupStyleRange(detectionResult.getBegin(), detectionResult.getEnd(), styleName));
+        }
+      }
+      detectionResults.clear();
+      currentDetector.set(null);
+    };
+
+    for (Line line : lines) {
+      if (currentDetector.get() != null) {
+        List<StyleDetector.DetectionResult> current = currentDetector.get().detect(line);
+        if (current.size() > 0) {
+          detectionResults.addAll(current);
+          continue;
+        } else {
+          addMarkup.run();
+        }
+      }
+
+      for (StyleDetector styleDetector : styleDetectors) {
+        List<StyleDetector.DetectionResult> current = styleDetector.detect(line);
+        if (current.size() > 0) {
+          detectionResults.addAll(current);
+          boolean isWholeLineResult = current.stream().filter(r -> r.isWholeLine()).count() == current.size();
+          if (isWholeLineResult) {
+            currentDetector.set(styleDetector);
+            break;
+          }
+        }
+      }
+    }
+    if (!detectionResults.isEmpty()) {
+      addMarkup.run();
+    }
+    return retval;
+  }
 }

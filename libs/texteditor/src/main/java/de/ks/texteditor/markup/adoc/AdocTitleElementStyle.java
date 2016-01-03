@@ -27,14 +27,10 @@ public class AdocTitleElementStyle implements StyleDetector {
   public List<DetectionResult> detect(Line line) {
     String text = line.getText();
     if (text.startsWith(":") && (text.endsWith(":") || text.contains(": "))) {
-      return wholeLine(line);
+      return wholeLine(line, ADOC_TITLE_ELEMENT);
     } else {
       return none();
     }
   }
 
-  @Override
-  public String getStyleClass() {
-    return ADOC_TITLE_ELEMENT;
-  }
 }

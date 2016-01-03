@@ -1,5 +1,5 @@
 /*
- * Copyright [2015] [Christian Loehnert]
+ * Copyright [2016] [Christian Loehnert]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,23 @@
 
 package de.ks.texteditor.markup;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class SampleMarkup implements Markup {
-  @Override
-  public String getCssFile() {
-    return null;
+public class LineBeginsStyle implements StyleDetector {
+  private final String linePrefix;
+  private final String styleClass;
+
+  public LineBeginsStyle(String linePrefix, String styleClass) {
+    this.linePrefix = linePrefix;
+    this.styleClass = styleClass;
   }
 
   @Override
-  public List<MarkupStyleRange> getStyleRanges(List<Line> lines) {
-    ArrayList<MarkupStyleRange> retval = new ArrayList<>();
-    for (Line line : lines) {
-      if (line.getText().trim().startsWith("===")) {
-        retval.add(new MarkupStyleRange(line.getStart(), line.getEnd(), "bold"));
-      }
+  public List<DetectionResult> detect(Line line) {
+    if (line.getText().startsWith(linePrefix)) {
+      return wholeLine(line, styleClass);
+    } else {
+      return none();
     }
-
-    return retval;
   }
 }

@@ -34,7 +34,7 @@ public class AdocBlockStyle implements StyleDetector {
       detectedBlock = line.getText();
     } else if (isBlockEnd) {
       stopDetectionOnNextLine = true;
-      return wholeLine(line);
+      return wholeLine(line, ADOC_BLOCK);
     }
 
     if (stopDetectionOnNextLine) {
@@ -42,14 +42,9 @@ public class AdocBlockStyle implements StyleDetector {
       stopDetectionOnNextLine = false;
       return none();
     } else if (detectedBlock != null) {
-      return wholeLine(line);
+      return wholeLine(line, ADOC_BLOCK);
     } else {
       return none();
     }
-  }
-
-  @Override
-  public String getStyleClass() {
-    return ADOC_BLOCK;
   }
 }

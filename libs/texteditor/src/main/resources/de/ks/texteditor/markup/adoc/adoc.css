@@ -25,6 +25,9 @@
 .adocImage {
     -fx-fill: darkmagenta;
 }
+.adocVideo {
+    -fx-fill: darkmagenta;
+}
 .adocListingOrdered {
     -fx-fill: blue;
 }
@@ -41,5 +44,8 @@
     -fx-font-weight: bold;
 }
 .adocItalic {
-    -fx-font-weight: italic;
+    -fx-font-style: italic;
+}
+.adocLink {
+    -fx-fill: darkmagenta;
 }

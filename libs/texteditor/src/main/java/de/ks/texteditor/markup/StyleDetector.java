@@ -21,40 +21,40 @@ import java.util.List;
 public interface StyleDetector {
   List<DetectionResult> detect(Line line);
 
-  default List<DetectionResult> wholeLine(Line line) {
-    return Collections.singletonList(DetectionResult.wholeLine(line));
+  default List<DetectionResult> wholeLine(Line line, String styleClass) {
+    return Collections.singletonList(DetectionResult.wholeLine(line, styleClass));
   }
 
-  default DetectionResult inline(Line line, int begin, int end) {
-    return DetectionResult.inline(line.getPositionInDocument() + begin, line.getPositionInDocument() + end);
+  default DetectionResult inline(Line line, int begin, int end, String styleClass) {
+    return DetectionResult.inline(line.getPositionInDocument() + begin, line.getPositionInDocument() + end, styleClass);
   }
 
   default List<DetectionResult> none() {
     return Collections.emptyList();
   }
 
-  String getStyleClass();
-
   public static class DetectionResult {
-    public static DetectionResult wholeLine(Line line) {
-      return new DetectionResult(true, line.getStart(), line.getEnd());
+    public static DetectionResult wholeLine(Line line, String styleClass) {
+      return new DetectionResult(true, line.getStart(), line.getEnd(), styleClass);
     }
 
-    public static DetectionResult inline(int begin, int end) {
-      return new DetectionResult(begin, end);
+    public static DetectionResult inline(int begin, int end, String styleClass) {
+      return new DetectionResult(begin, end, styleClass);
     }
 
     boolean wholeLine = false;
     int begin, end;
+    String styleClass;
 
-    DetectionResult(boolean wholeLine, int begin, int end) {
+    DetectionResult(boolean wholeLine, int begin, int end, String styleClass) {
       this.wholeLine = wholeLine;
       this.begin = begin;
       this.end = end;
+      this.styleClass = styleClass;
     }
 
-    DetectionResult(int begin, int end) {
-      this(false, begin, end);
+    DetectionResult(int begin, int end, String styleClass) {
+      this(false, begin, end, styleClass);
     }
 
     public boolean isWholeLine() {
@@ -67,6 +67,10 @@ public interface StyleDetector {
 
     public int getEnd() {
       return end;
+    }
+
+    public String getStyleClass() {
+      return styleClass;
     }
   }
 }

@@ -13,25 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.texteditor.markup.adoc;
 
-import de.ks.texteditor.markup.Line;
-import de.ks.texteditor.markup.StyleDetector;
+package de.ks.texteditor.markup;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class InlineStyle implements StyleDetector {
-  private final String inlineChar;
   private final String styleClass;
   private final String begin;
   private final String end;
 
-  public InlineStyle(String inlineChar, String styleClass) {
-    this.inlineChar = inlineChar;
+  public InlineStyle(String beginChar, String endChar, String styleClass) {
     this.styleClass = styleClass;
-    begin = inlineChar;
-    end = inlineChar;
+    begin = beginChar;
+    end = endChar;
   }
 
   @Override
@@ -44,18 +40,13 @@ public class InlineStyle implements StyleDetector {
     do {
       beginIndex = line.getText().indexOf(begin, startPos);
       if (beginIndex >= 0) {
-        endIndex = line.getText().indexOf(end, beginIndex + 2);
+        endIndex = line.getText().indexOf(end, beginIndex + 1);
         if (endIndex > beginIndex) {
           startPos = endIndex + 1;
-          retval.add(inline(line, beginIndex, endIndex));
+          retval.add(inline(line, beginIndex, endIndex, styleClass));
         }
       }
     } while (beginIndex >= 0 && endIndex > 0);
     return retval;
-  }
-
-  @Override
-  public String getStyleClass() {
-    return styleClass;
   }
 }

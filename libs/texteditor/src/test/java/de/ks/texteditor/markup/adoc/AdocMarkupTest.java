@@ -108,12 +108,20 @@ public class AdocMarkupTest {
   }
 
   @Test
+  public void testInlineLink() throws Exception {
+    List<Line> lines = new LineParser("\n").getLines("a link http://www.w3.org[]\nlink with description http://www.w3.org[www3]");
+    List<MarkupStyleRange> styleRanges = markup.getStyleRanges(lines);
+    assertEquals(2, styleRanges.size());
+
+  }
+
+  @Test
   public void testSmallDoc() throws Exception {
     URL resource = getClass().getResource("smalldoc.adoc");
     String content = Files.readAllLines(Paths.get(resource.toURI())).stream().collect(Collectors.joining("\n"));
     List<Line> lines = new LineParser("\n").getLines(content);
     List<MarkupStyleRange> styleRanges = markup.getStyleRanges(lines);
 
-    assertEquals(12, styleRanges.size());
+    assertEquals(13, styleRanges.size());
   }
 }

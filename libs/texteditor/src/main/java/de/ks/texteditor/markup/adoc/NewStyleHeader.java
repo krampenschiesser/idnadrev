@@ -40,14 +40,9 @@ public class NewStyleHeader implements StyleDetector {
   @Override
   public List<DetectionResult> detect(Line line) {
     if (line.getText().startsWith(headerStart + " ")) {
-      return wholeLine(line);
+      return wholeLine(line, ADOC_HEADER + headerLevel);
     } else {
       return none();
     }
-  }
-
-  @Override
-  public String getStyleClass() {
-    return ADOC_HEADER + headerLevel;
   }
 }
