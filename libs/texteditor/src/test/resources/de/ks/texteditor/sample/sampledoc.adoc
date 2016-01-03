@@ -1,0 +1,385 @@
+= Idnadrev Guide
+:toc:
+:toclevels: 4
+
+== About
+
+Idnadrev is a little tool that helps you to store your information and manage your tasks.
+It is aimed to be used on a PC (Mac,Win,Linux), it is not a cloud/mobile/web app and never will be.
+The main intention is to help workers spending most of their time on a Computer to gather and manage their tasks and information.
+Because it is no application that uploads everything into the "cloud" you can even use it to store private information
+(either in your company environment or personal data).
+Additionally it is almost self contained (one directory). So you can use an usb stick to have the same information or use some online storage to share it between multiple computers.
+
+== Feature list
+
+* Asciidoc markup language + MathML for formulas
+* Information storage
+** Asciidoc documents
+** Files
+** Charts
+** UML diagrams
+* Tagging
+* Categories
+* Diary functionality
+
+* Task management
+** time and effort estimations
+** grouping by contexts
+** Projects and tasks can be hierarchically structured
+** task states (asap, later, delegated)
+** file attachment
+** descriptive content via asciidoc markup
+** scheduling
+*** due date and time
+*** week and weekday proposal
+
+* Weekly planning and review module
+
+== Getting started
+
+Idnadrev consists of <<activities>>.
+Each activity represents a specific workflow/activity, eg. creating a new task, viewing tasks etc.
+You can select all activities via the menu provided in the top or via <<function-keys>>.
+
+=== Basic workflow
+
+If you already are into personal task management you can skip this section.
+It all starts with ideas and information you receive from some place.
+All this stuff is collected as *thoughts* (<<add-thought>>).
+Once you have time to think about all the collected stuff you can review your thoughts (<<view-_thoughts>>)
+and transfer them into tasks (<<add-task>>), projects (<<add-task>>) or documents (<<add-document>>).
+A task should at least be defined by a name, an estimated time and a context.
+If you don't know a concrete estimated time you should make the task a project and spend some thinking on the next task you can add to this project that actually has an estimated time.
+A context is used to define where you can do a specific task.
+Eg. at home, at the computer, in the supermarket. Or mapped to your work it can be more specifc: Viewing emails, customer relations, programming, phone calls.
+A task can have a state making it urgent (ASAP) or postpone it to do it later.
+You can select the task you want to work on via the <<view-tasks>>.
+While working on a task your spent time is tracked which you can later review via <<work-over-week>>.
+When you have a lot of tasks you might need some planning and choose what tasks are important and need to be done on the next week via <<plan-week>>.
+If you don't know where to start the <<next-task-proposal>> gives you some proposals depending on you current context.
+Any information you gather can be stored as a document (<<add-document>>).
+All information can be tagged and categorized which helps a lot when finding information in the <<view-information>>.
+
+=== Asciidoc editor
+
+Because it is so essential I will explain the asciidoc editor which you will use in most activities.
+For the general asciidoc syntax please visit the following pages:
+
+* http://powerman.name/doc/asciidoc[cheat sheet]
+* http://asciidoctor.org/docs/user-manual[asciidoctor user manual]
+* http://www.methods.co.nz/asciidoc/userguide.html[original user guide]
+
+The asciidoc editor in Idnadrev consists of 3 tabs. +
+The first tab is the *editor tab*. It provides a simple text editor with some action buttons on the top.
+These buttons provide some shortcut functions or additional functionality. They are accessible via <<mnemonics>>. +
+The second tab is the *preview tab*. It provides a rendered html preview of the document. +
+The third tab just shows the html code of the preview tab.
+
+Additionally there is the *Preview* button accessible via *alt*+*p*. This opens a new window showing the html preview.
+You can use it to show the document on a second screen(or a projector).
+
+The *Export* button (*alt*+*x*) can store the plain asciidoc document or a html document.
+The html document always comes with a folder storing all relevant files(images, charts, css).
+In a future release export to PDF and docx will also be available.
+
+The *Help* button just opens the http://powerman.name/doc/asciidoc[cheat sheet] in your systems browser.
+
+==== Mathjax rendering
+
+As long as you stick to html documents you can write math formulas using http://www1.chapman.edu/~jipsen/mathml/asciimathsyntax.html[asciimath]
+[source,asciidoc]
+----------------
++++
+$$
+f(x)=\sum_{n=0}^\infty\frac{f^{(n)}(a)}{n!}(x-a)^n
+$$
++++
+----------------
+
+Just use 3 plus signs followed by 2 dollar signs and insert your formula.
+A nice shortcut is *alt*+*m*.
+The result will look like the following:
+
+image::img/mathformula.png[rendered math formula]
+
+==== Inclusion of diagrams
+
+The UML diagrams you created can be reused in your documents.
+Just use the button "Insert diagram" (*alt*+*g*).
+Then you can select a diagram and use it in your document
+
+image::img/asciidoc_diagram.png[asciidoc document with uml diagram]
+
+==== Inclusion of charts
+
+The charts you created can be reused in your documents.
+Just use the button "Insert chart" (*alt*+*a*).
+Then you can select a chart and use it in your document
+
+image::img/asciidoc_chart.png[asciidoc document with chart]
+
+=== Selecting other objects
+
+You will quite often find selections of other objects, eg. a parent project or a context.
+These selections always consist of a text input and a browse button.
+You can enter any text in the text input and it will try to find the corresponding object.
+There are auto completion suggestions, so the input will be treated as prefix for a search.
+There are only 10 suggestions given. If you need mor suggestions you can press the browse button.
+This will give you a list of all possible results (starting with the input text as prefix).
+
+=== Keyboard shortcuts
+
+Idnadrev provides some basic keyboard shortcut concepts.
+There are some shortcuts that apply everywhere:
+
+* ctrl+enter to execute the default "blue" button
+* ctrl+s to export an asciidoc document
+* esc to hide a popup window or clear a text filter(when searching)
+* <<function-keys>>
+
+==== Mnemonics
+
+Mnemonics is a basic feature that you already know from other programs.
+Press alt (win,linux) and most of the buttons will show an underscore "*_*" under some character
+
+image::img/mnemonic_button.png[button with mnemonic]
+
+So then you can just press that character and the button will be selected.
+
+==== Function keys
+
+The function keys F1 - F12 are used to directly go to specific activities.
+
+* *F1:* opens a popup menu giving you an overview of all possible activities
+* *F2:* opens the <<overview>>
+* *F3:* opens the <<add-thought>>
+* *F4:* opens the <<add-task>>
+* *F5:* opens the <<add-document>>
+* *F6:* opens the <<view-thoughts>>
+* *F7:* opens the <<view-tasks>>
+* *F8:* opens the <<view-information>>
+* *F9:* opens the <<plan-week>>
+* *F10:* opens the <<work-over-week>>
+* *F11:* opens the <<next-task-proposal>>
+* *F12:* opens the <<fast-task-tracking>>
+
+== Activities
+
+=== Overview
+
+The overview activity is the main entry point for idnadrev.
+It provides the following features:
+
+* directly add a thought
+* task overview for a selected context
+* appointments that are scheduled as due dates for today
+* proposed tasks that you planned for this week or day
+
+image::img/activity/overview.png[]
+
+=== Add thought
+
+With this activity you can add a new thought. This is your dropbox for every new input.
+If the inputs are empty the content of your clipboard will be copied into the description and the first line will be used as name.
+You can drag and drop files to attach to the information.
+These files will be copied to your local file store. Images can be directly used in the document.
+
+image::img/activity/addthought.png[]
+
+=== View thoughts
+
+This activity shows you all collected thoughts and gives you the possibility to transform them.
+The following actions are possible:
+
+* transform information to task. This will create a new task with the name, description and files of the thought. The thought is only deleted when the task is created.
+* transform information to document. This will create a new docuemnt with the name, description and files of the thought. The thought is only deleted when the document is created.
+* process later. This will hide the thought for one day. The amount of days will be configurable in a later version.
+* edit
+* delete
+
+image::img/activity/viewthoughts.png[]
+
+=== Add task
+
+With this activity you can create a new task or project.
+There are 5 tabs presenting different information of the task.
+
+==== Main task information
+
+This is the default tab where you can enter all important information.
+
+* name: is mandatory
+* is project: defines that this is a project and can be referenced by tasks
+* parent project: allows you to create tree structures of multiple projects and tasks
+* context: allows you to group tasks in contexts
+* state: can be asap, delegated, none(default) or later
+* estimated time: the time in minutes or hours you think you would need.
+* description: asciidoc document
+* tags: you cann add tags to a task. However browsing by those tags is not yet supported.
+
+image::img/activity/addtask_main.png[]
+
+==== Effort
+
+Allows you to configure effort for the task.
+Is visible in the tasks view.
+
+image::img/activity/addtask_effort.png[]
+
+====  Files
+
+File attachment.
+
+image::img/activity/addtask_files.png[]
+
+==== Scheduling
+
+Allows you to schedule a task.
+There are 2 kinds of scheduling: Due and proposal.
+
+===== Due date
+
+Allows you to configure a due date and time which is fixed for the task
+
+===== Proposed week
+
+Allows you to select a week day/week. This task should be done in that week and will be displayed on the overview.
+If you mark the checkbox "use proposed weekday" the selected day will be the suggestion.
+A more nice view to schedule and plan tasks is the plan week activity.
+
+image::img/activity/addtask_scheduling.png[]
+
+==== Expected outcome
+
+Allows you to add a description of the expected outcome.
+When finishing a task you  can add the real outcome and compare it to the expected one.
+
+=== View tasks
+
+Shows you all tasks in a treeview representing the project hierarchy.
+On the top you have a text box which you can use to filter for a task's name.
+Right next to it is a context selection that shows only the tasks for a given context.
+The more button gives you more filtering options:
+
+* show finished tasks
+* show tasks with a given state
+* search for a description containing a given text
+* use a project as root
+
+In the preview on the right you see the main task information.
+In the details tab the effort info and tags are shown.
+
+The following actions are provided:
+
+* start work: will go to the work on task activity and track the spent time.
+* finish: will finish the task
+* edit: will allow you to edit the task
+* create subtask: will convert this task to a project and go to the add task activity.
+* delete
+* later: change the state to later(hide id from the default view)
+* asap: change the state to asap(make it bold in the view)
+
+image::img/activity/viewtasks.png[]
+
+==== Show timeunits
+
+In the show timeunits view you can see all recorded timeunits for this task.
+You can always edit the currently selected timeunit or create a new one.
+
+image::img/activity/viewtasks_timeunits.png[]
+
+=== Fast task tracking
+
+This is the activity for all the interruptions and unplanned tasks.
+In the name field you can select an existing task, including finished, or just enter a new name.
+If no previous task was found it will create a new task once you press finished.
+An existing task is kept in its current mode, so a finished task will stay finished and a non finished task will stay non finished.
+
+image::img/activity/fasttracking.png[]
+
+=== Next task proposal
+
+This activity helps a bit with procrastination.
+Just select your current context and the given time in minutes and it will give you a list of possible tasks.
+The search is defined as followed:
+
+. the task has the selected context
+. the state is NONE or ASAP
+. the remaining time, total of workunits - estimated time, is less then the available time
+
+The order of tasks tries to prioritize those tasks. The priority is calculated from a mixture of:
+
+* age
+* state (ASAP)
+* time remaining
+
+image::img/activity/nexttask.png[]
+
+=== View Information
+
+Simple preview for the collected information.
+You can browse by tags, category, type or name.
+
+image::img/activity/viewinformation.png[]
+
+=== Add document
+
+You can add a document which is tagged and categorized.
+You can also add files to the document.
+
+image::img/activity/addocument.png[]
+
+=== Add chart
+
+This is allows you to add charts which you can use in documents again.
+It is quite basic, allowing you some different kind of charts.
+It will be enhanced in future versions for xlsx and csv.
+
+image::img/activity/addchart.png[]
+
+=== Add UML diagram
+
+Simple uml editor activity.
+It uses plantuml which requires an installation of http://plantuml.sourceforge.net/graphvizdot.html[graphviz].
+So in order to use make sure you have graphviz installed.
+Then you can add simple uml diagrams which are reusable in your documents.
+
+image::img/activity/addumldiagram.png[]
+
+=== Diary
+
+Simple diary functionality.
+
+image::img/activity/diary.png[]
+
+=== Plan week
+
+Allows you to schedule tasks for a given week.
+Simple drag the tasks from the left and drop them in the week view.
+If you drop them at a specific time of a day the task will be scheduled for that time and day.
+If you drop it in the column below it will be proposed to be done that day.
+You can zoom in by pressing control(win,linux) and scrolling with the mouse wheel.
+
+image::img/activity/planweek.png[]
+
+=== Work over week
+
+Shows the work you have done in a week.
+
+image::img/activity/workoverweek.png[]
+
+=== Contexts
+
+Shows all existing contexts and allows you to edit them or create new contexts.
+
+image::img/activity/contexts.png[]
+
+=== Category
+
+Shows all existing categories and allows you to edit them or create new categories.
+You can define an image or a color for a category which helps you when you browse them.
+
+image::img/activity/category.png[]
+
+image::img/activity/category_create.png[]

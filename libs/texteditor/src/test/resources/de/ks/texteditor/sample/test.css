@@ -1,0 +1,4 @@
+.bold {
+    -fx-font-weight: bold;
+    -fx-fill: red;
+}

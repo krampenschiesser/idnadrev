@@ -1,5 +1,6 @@
 /*
- * Copyright [2014] [Christian Loehnert, krampenschiesser@gmail.com]
+ * Copyright [2015] [Christian Loehnert]
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -12,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-include "doc"
+package de.ks.texteditor.render;
 
-include "libs:fxcontrols"
-include "libs:flatjsondbaccess"
-include "libs:gravblogging", "libs:gallery"
-include "libs:costs"
-include "libs:texteditor"
-include "libs:adoceditor"
-include "libs:googleintegration"
-include "libs:markdowneditor"
-include "app"
+import java.nio.file.Path;
+
+public interface Renderer {
+  Path renderFilePreview(Path path);
+
+  String renderStringPreview(Path path);
+}

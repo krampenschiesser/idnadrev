@@ -1,0 +1,48 @@
+= Idnadrev Guide
+:toc:
+:toclevels: 4
+
+== About
+
+Idnadrev is a little tool that helps you to store your information and manage your tasks.
+It is aimed to be used on a PC (Mac,Win,Linux), it is not a cloud/mobile/web app and never will be.
+The main intention is to help workers spending most of their time on a Computer to gather and manage their tasks and information.
+Because it is no application that uploads everything into the "cloud" you can even use it to store private information
+(either in your company environment or personal data).
+Additionally it is almost self contained (one directory). So you can use an usb stick to have the same information or use some online storage to share it between multiple computers.
+
+== Feature list
+
+* Asciidoc markup language + MathML for formulas
+* Information storage
+** Asciidoc documents
+** Files
+** Charts
+** UML diagrams
+* Tagging
+* Categories
+* Diary functionality
+
+=== Asciidoc editor
+
+Because it is so essential I will explain the asciidoc editor which you will use in most activities.
+For the general asciidoc syntax please visit the following pages:
+
+* http://powerman.name/doc/asciidoc[cheat sheet]
+* http://asciidoctor.org/docs/user-manual[asciidoctor user manual]
+* http://www.methods.co.nz/asciidoc/userguide.html[original user guide]
+
+
+==== Mathjax rendering
+
+As long as you stick to html documents you can write math formulas using http://www1.chapman.edu/~jipsen/mathml/asciimathsyntax.html[asciimath]
+[source,asciidoc]
+----------------
+f(x)=\sum_{n=0}^\infty\frac{f^{(n)}(a)}{n!}(x-a)^n
+----------------
+
+Just use 3 plus signs followed by 2 dollar signs and insert your formula.
+A nice shortcut is *alt*+*m*.
+The result will look like the following:
+
+image::img/mathformula.png[rendered math formula]
