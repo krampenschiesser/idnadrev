@@ -16,7 +16,10 @@
 package de.ks.texteditor.render;
 
 import java.nio.file.Path;
+import java.util.List;
 
 public interface Renderer {
   Path renderFilePreview(Path source, Path targetFile, RenderType renderType);
+
+  List<RenderType> getSupportedRenderingTypes();
 }

@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.List;
 
 public class MarkdownRenderer implements Renderer {
   private static final Logger log = LoggerFactory.getLogger(MarkdownRenderer.class);
@@ -43,5 +45,10 @@ public class MarkdownRenderer implements Renderer {
       log.error("Could not write {}", targetFile, e);
     }
     return targetFile;
+  }
+
+  @Override
+  public List<RenderType> getSupportedRenderingTypes() {
+    return Collections.singletonList(RenderType.HTML);
   }
 }

@@ -21,6 +21,8 @@ import org.asciidoctor.OptionsBuilder;
 
 import javax.inject.Inject;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
 
 public class AsciidocRenderer implements Renderer {
   private final AsciiDocParser parser;
@@ -37,6 +39,11 @@ public class AsciidocRenderer implements Renderer {
 
     asciidoctor.renderFile(source.toFile(), optionsBuilder);
     return targetFile;
+  }
+
+  @Override
+  public List<RenderType> getSupportedRenderingTypes() {
+    return Arrays.asList(RenderType.values());
   }
 
   protected OptionsBuilder getOptions(Path source, Path targetFile, RenderType type) {
