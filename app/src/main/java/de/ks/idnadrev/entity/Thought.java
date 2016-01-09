@@ -44,7 +44,7 @@ import java.util.Set;
 public class Thought extends NamedEntity implements FileContainer<Thought> {
   private static final Logger log = LoggerFactory.getLogger(Thought.class);
 
-  @Child(fileGenerator = AdocFileNameGenerator.class, folderGenerator = SameFolderGenerator.class)
+  @Child(fileGenerator = AdocFileNameGenerator.class, folderGenerator = SameFolderGenerator.class, lazy = false)
   protected AdocFile adocFile;
 
   protected LocalDate postponedDate;

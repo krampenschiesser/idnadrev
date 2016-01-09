@@ -16,13 +16,13 @@ package de.ks.idnadrev.thought.view;
 
 import de.ks.flatjsondb.PersistentWork;
 import de.ks.idnadrev.entity.Thought;
+import de.ks.idnadrev.entity.adoc.AdocFile;
 import de.ks.idnadrev.information.text.TextInfoActivity;
 import de.ks.idnadrev.task.create.CreateTaskActivity;
 import de.ks.idnadrev.thought.add.AddThoughtActivity;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.activity.ActivityHint;
 import de.ks.standbein.activity.executor.ActivityExecutor;
-import de.ks.text.view.AsciiDocContent;
 import de.ks.texteditor.preview.TextPreview;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.DoubleBinding;
@@ -40,7 +40,6 @@ import javax.inject.Inject;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 public class ViewThoughts extends BaseController<List<Thought>> {
   private static final Logger log = LoggerFactory.getLogger(ViewThoughts.class);
@@ -81,7 +80,7 @@ public class ViewThoughts extends BaseController<List<Thought>> {
       if (n == null) {
         asciiDocViewer.clear();
       } else {
-        asciiDocViewer.show(new AsciiDocContent(n.getName(), n.getDescription()));
+        asciiDocViewer.show(n.getAdocFile().getTmpFile());
       }
     });
     @SuppressWarnings("unchecked")
@@ -195,14 +194,16 @@ public class ViewThoughts extends BaseController<List<Thought>> {
   @Override
   protected void onRefresh(List<Thought> thoughts) {
     thoughtTable.setItems(FXCollections.observableList(thoughts));
-    List<AsciiDocContent> asciiDocContents = thoughts.stream().map(t -> new AsciiDocContent(t.getName(), t.getDescription())).collect(Collectors.toList());
-    this.asciiDocViewer.preload(asciiDocContents);
+    thoughts.forEach(t -> {
+      AdocFile adocFile = t.getAdocFile();
+      asciiDocViewer.preload(adocFile.getTmpFile(), adocFile.getRenderingPath(), adocFile.getContent());
+    });
     thoughtTable.requestFocus();
     controller.getJavaFXExecutor().submit(() -> thoughtTable.getSelectionModel().select(0));
   }
 
   @Override
   public void duringLoad(List<Thought> model) {
-//    model.forEach(m -> m.getFiles().forEach(f -> f.getName()));
+//    model.forEach(t->t.getAdocFile().getName());
   }
 }

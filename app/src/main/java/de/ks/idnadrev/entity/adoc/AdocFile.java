@@ -19,6 +19,7 @@ import de.ks.flatadocdb.annotation.Entity;
 import de.ks.flatadocdb.annotation.Id;
 import de.ks.flatadocdb.annotation.PathInRepository;
 import de.ks.flatadocdb.annotation.Version;
+import org.apache.commons.lang3.StringUtils;
 
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -68,6 +69,28 @@ public class AdocFile {
 
   public Path getPathInRepository() {
     return pathInRepository;
+  }
+
+  /**
+   * Used as source for rendering
+   *
+   * @return path
+   */
+  public Path getTmpFile() {
+    String fileName = pathInRepository.getFileName().toString();
+    fileName = StringUtils.replace(fileName, ".adoc", ".tmp.adoc");
+    return pathInRepository.getParent().resolve(fileName);
+  }
+
+  /**
+   * Used as html rendering target
+   *
+   * @return path
+   */
+  public Path getRenderingPath() {
+    String fileName = pathInRepository.getFileName().toString();
+    fileName = fileName.substring(0, fileName.lastIndexOf('.')) + ".html";
+    return pathInRepository.getParent().resolve(fileName);
   }
 
   AdocFile setPathInRepository(Path pathInRepository) {
