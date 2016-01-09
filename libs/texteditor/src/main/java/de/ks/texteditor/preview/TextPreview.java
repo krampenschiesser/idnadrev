@@ -100,7 +100,7 @@ public class TextPreview implements Initializable {
 //  }
 
   public void preload(Path temporarySourceFile, Path targetFile, String content) {
-    Renderer renderer = renderers.stream().filter(r -> r.getName().equals(currentRenderer)).findFirst().get();
+    Renderer renderer = renderers.stream().filter(r -> r.getName().equals(currentRenderer.get())).findFirst().get();
     CompletableFuture<Path> future = CompletableFuture.supplyAsync(new PreviewTask(temporarySourceFile, targetFile, content, renderer), executor);
     preloaded.put(temporarySourceFile, future);
   }
