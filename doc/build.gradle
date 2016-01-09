@@ -21,7 +21,7 @@ buildscript {
 //        }
     }
     dependencies {
-        classpath "org.asciidoctor:asciidoctor-gradle-plugin:$asciidoc"
+        classpath "org.asciidoctor:asciidoctor-gradle-plugin:$asciidocjavadoc"
     }
 }
 

@@ -56,7 +56,7 @@ allprojects {
     }
 
     dependencies {
-        asciidoclet "org.asciidoctor:asciidoclet:$asciidoc"
+        asciidoclet "org.asciidoctor:asciidoclet:$asciidocjavadoc"
 
         compile "de.ks:standbein:$standbein";
         compile "de.ks:flatjsondb:$flatjsondb";
