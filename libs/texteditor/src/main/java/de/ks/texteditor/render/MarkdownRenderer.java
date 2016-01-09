@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class MarkdownRenderer implements Renderer {
+  public static final String NAME = "Markdown";
   private static final Logger log = LoggerFactory.getLogger(MarkdownRenderer.class);
   private final MarkdownParser parser;
 
@@ -54,6 +55,8 @@ public class MarkdownRenderer implements Renderer {
 
   @Override
   public String getName() {
-    return "Markdown";
+    return NAME;
+
+
   }
 }

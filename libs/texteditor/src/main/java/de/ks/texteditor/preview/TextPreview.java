@@ -46,22 +46,26 @@ import java.util.stream.Collectors;
 
 public class TextPreview implements Initializable {
   private static final Logger log = LoggerFactory.getLogger(TextPreview.class);
-  private StackPane stackPane;
-  @Inject
-  ActivityJavaFXExecutor javaFXExecutor;
-  @Inject
-  ActivityExecutor executor;
-  private final AtomicReference<WebView> webView = new AtomicReference<>();
-  private final AtomicReference<Path> currentPreview = new AtomicReference<>();
-  protected final SimpleStringProperty html = new SimpleStringProperty();
 
-  private final ConcurrentHashMap<Path, CompletableFuture<Path>> preloaded = new ConcurrentHashMap<>();
+  StackPane stackPane;
+  final AtomicReference<WebView> webView = new AtomicReference<>();
+  final SimpleStringProperty html = new SimpleStringProperty();
+  final AtomicInteger lastScrollPos = new AtomicInteger();
+
+  final ActivityJavaFXExecutor javaFXExecutor;
+  final ActivityExecutor executor;
+  final Set<Renderer> renderers;
+  final AtomicReference<String> currentRenderer = new AtomicReference<>();
+
+  final ConcurrentHashMap<Path, CompletableFuture<Path>> preloaded = new ConcurrentHashMap<>();
+
   @Inject
-  private Set<Renderer> renderers;
-  @Inject
-  @Named(TextEditorModule.DEFAULT_RENDERER)
-  private volatile String currentRenderer;
-  protected final AtomicInteger lastScrollPos = new AtomicInteger();
+  public TextPreview(@Named(TextEditorModule.DEFAULT_RENDERER) String currentRenderer, Set<Renderer> renderers, ActivityJavaFXExecutor javaFXExecutor, ActivityExecutor executor) {
+    this.javaFXExecutor = javaFXExecutor;
+    this.executor = executor;
+    this.currentRenderer.set(currentRenderer);
+    this.renderers = renderers;
+  }
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -76,19 +80,24 @@ public class TextPreview implements Initializable {
         }
       });
     });
+    recreateRenderingButtons();
 
   }
 
-  public void preload(String id, String content) {
-    Path path = getTemporaryFile(id);
-    Path target = path.getParent();
-    preload(path, target, content);
+  private void recreateRenderingButtons() {
 
   }
-
-  private Path getTemporaryFile(String id) {
-    return null;
-  }
+//
+//  public void preload(String id, String content) {
+//    Path path = getTemporaryFile(id);
+//    Path target = path.getParent();
+//    preload(path, target, content);
+//
+//  }
+//
+//  private Path getTemporaryFile(String id) {
+//    return null;
+//  }
 
   public void preload(Path temporarySourceFile, Path targetFile, String content) {
     Renderer renderer = renderers.stream().filter(r -> r.getName().equals(currentRenderer)).findFirst().get();
@@ -140,10 +149,11 @@ public class TextPreview implements Initializable {
   }
 
   public String getCurrentRenderer() {
-    return currentRenderer;
+    return currentRenderer.get();
   }
 
   public void setCurrentRenderer(String currentRenderer) {
-    this.currentRenderer = currentRenderer;
+    this.currentRenderer.set(currentRenderer);
+    javaFXExecutor.submit(this::recreateRenderingButtons);
   }
 }
