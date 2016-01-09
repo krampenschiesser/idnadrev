@@ -17,6 +17,8 @@ package de.ks.texteditor.preview;
 
 import de.ks.standbein.activity.executor.ActivityExecutor;
 import de.ks.standbein.activity.executor.ActivityJavaFXExecutor;
+import de.ks.standbein.activity.initialization.ActivityInitialization;
+import de.ks.standbein.application.fxml.DefaultLoader;
 import de.ks.standbein.i18n.Localized;
 import de.ks.texteditor.module.TextEditorModule;
 import de.ks.texteditor.render.Renderer;
@@ -24,6 +26,7 @@ import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.concurrent.Worker;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebView;
 import org.slf4j.Logger;
@@ -43,9 +46,19 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class TextPreview implements Initializable {
+  public static CompletableFuture<DefaultLoader<Node, TextPreview>> load(ActivityInitialization initialization, Consumer<StackPane> viewConsumer, Consumer<TextPreview> controllerConsumer) {
+    return initialization.loadAdditionalControllerWithFuture(TextPreview.class)//
+      .thenApply(loader -> {
+        viewConsumer.accept((StackPane) loader.getView());
+        controllerConsumer.accept(loader.getController());
+        return loader;
+      });
+  }
+
   private static final Logger log = LoggerFactory.getLogger(TextPreview.class);
 
   StackPane stackPane;
@@ -149,5 +162,10 @@ public class TextPreview implements Initializable {
 
   public SimpleStringProperty currentRendererProperty() {
     return currentRenderer;
+  }
+
+  public void clear() {
+    preloaded.clear();
+    webView.get().getEngine().loadContent("");
   }
 }

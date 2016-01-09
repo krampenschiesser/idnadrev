@@ -26,7 +26,7 @@ import de.ks.idnadrev.entity.TaskState;
 import de.ks.idnadrev.tag.TagContainer;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.validation.validators.DurationValidator;
-import de.ks.text.AsciiDocEditor;
+import de.ks.texteditor.TextEditor;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -72,19 +72,18 @@ public class MainTaskInfo extends BaseController<Task> {
   @Inject
   NamedEntitySelection<Context> contextController;
 
-  protected AsciiDocEditor description;
+  protected TextEditor description;
   protected DurationValidator durationValidator;
   protected final ObservableList<TaskState> states = FXCollections.observableArrayList();
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    AsciiDocEditor.load(activityInitialization, descriptionContainer.getChildren()::add, ade -> this.description = ade);
+    TextEditor.load(activityInitialization, descriptionContainer.getChildren()::add, ade -> this.description = ade);
 
     contextController.configure(Context.class);
     parentProjectController.configure(Task.class);
 
     validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(Task.class, t -> Objects.equals(t.getId(), store.<Task>getModel().getId()), persistentWork, localized));
-    description.hideActionBar();
     StringProperty nameBinding = store.getBinding().getStringProperty(Task.class, t -> t.getName());
     name.textProperty().bindBidirectional(nameBinding);
     StringProperty descriptionBinding = store.getBinding().getStringProperty(Task.class, t -> t.getDescription());
@@ -197,7 +196,7 @@ public class MainTaskInfo extends BaseController<Task> {
     return name;
   }
 
-  public AsciiDocEditor getDescription() {
+  public TextEditor getDescription() {
     return description;
   }
 

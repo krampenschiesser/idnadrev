@@ -16,9 +16,9 @@ package de.ks.idnadrev.task.finish;
 
 import de.ks.idnadrev.entity.Task;
 import de.ks.standbein.BaseController;
-import de.ks.text.AsciiDocEditor;
 import de.ks.text.view.AsciiDocContent;
-import de.ks.text.view.AsciiDocViewer;
+import de.ks.texteditor.TextEditor;
+import de.ks.texteditor.preview.TextPreview;
 import javafx.fxml.FXML;
 import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
@@ -35,16 +35,15 @@ public class FinishTask extends BaseController<Task> {
   @FXML
   private StackPane finalOutcomeContainer;
 
-  protected AsciiDocEditor finalOutcome;
-  protected AsciiDocViewer expectedOutcome;
+  protected TextEditor finalOutcome;
+  protected TextPreview expectedOutcome;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    AsciiDocEditor.load(this.activityInitialization, pane -> finalOutcomeContainer.getChildren().add(pane), editor -> {
+    TextEditor.load(this.activityInitialization, pane -> finalOutcomeContainer.getChildren().add(pane), editor -> {
       finalOutcome = editor;
-      finalOutcome.hideActionBar();
     });
-    AsciiDocViewer.load(this.activityInitialization, pane -> expectedOutcomeContainer.getChildren().add(pane), viewer -> expectedOutcome = viewer);
+    TextPreview.load(this.activityInitialization, pane -> expectedOutcomeContainer.getChildren().add(pane), viewer -> expectedOutcome = viewer);
   }
 
   @Override

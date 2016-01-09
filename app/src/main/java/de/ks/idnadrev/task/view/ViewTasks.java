@@ -24,7 +24,7 @@ import de.ks.idnadrev.task.work.WorkOnTaskActivity;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.activity.ActivityHint;
 import de.ks.text.view.AsciiDocContent;
-import de.ks.text.view.AsciiDocViewer;
+import de.ks.texteditor.preview.TextPreview;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
@@ -102,24 +102,22 @@ public class ViewTasks extends BaseController<List<Task>> {
   @Inject
   PersistentWork persistentWork;
 
-  private AsciiDocViewer asciiDocViewer;
+  private TextPreview asciiDocViewer;
   private final SimpleBooleanProperty disable = new SimpleBooleanProperty(false);
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     TreeTableView<Task> tasksView = viewController.getTasksView();
 
-    activityInitialization.loadAdditionalControllerWithFuture(AsciiDocViewer.class).thenAcceptAsync(l -> {
-      asciiDocViewer = l.getController();
-      tasksView.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
-        if (n == null) {
-          asciiDocViewer.reset();
-        } else {
-          asciiDocViewer.show(new AsciiDocContent(n.getValue().getName(), n.getValue().getDescription()));
-        }
-      });
-      description.getChildren().add(l.getView());
-    }, controller.getJavaFXExecutor());
+    TextPreview.load(activityInitialization, view -> description.getChildren().add(view), ctrl -> asciiDocViewer = ctrl);
+
+    tasksView.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
+      if (n == null) {
+        asciiDocViewer.clear();
+      } else {
+        asciiDocViewer.show(new AsciiDocContent(n.getValue().getName(), n.getValue().getDescription()));
+      }
+    });
 
     viewController.getTasksView().setOnMouseClicked(e -> {
       if (e.getClickCount() > 1 && !start.isDisabled()) {
@@ -194,7 +192,7 @@ public class ViewTasks extends BaseController<List<Task>> {
   private void clear() {
     name.setText(null);
     spentTime.setText(null);
-    asciiDocViewer.reset();
+    asciiDocViewer.clear();
     parentProject.setText(null);
     context.setText(null);
     physicalEffort.setProgress(0);

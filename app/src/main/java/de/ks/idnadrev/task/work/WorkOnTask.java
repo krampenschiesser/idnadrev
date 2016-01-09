@@ -24,7 +24,7 @@ import de.ks.idnadrev.thought.add.AddThoughtActivity;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.activity.ActivityHint;
 import de.ks.standbein.activity.executor.ActivityExecutor;
-import de.ks.text.AsciiDocEditor;
+import de.ks.texteditor.TextEditor;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
@@ -54,7 +54,7 @@ public class WorkOnTask extends BaseController<Task> {
   protected Label overTime;
   @FXML
   protected StackPane descriptionView;
-  protected AsciiDocEditor description;
+  protected TextEditor description;
 
   @Inject
   IdnadrevWindow window;
@@ -65,12 +65,11 @@ public class WorkOnTask extends BaseController<Task> {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    AsciiDocEditor.load(activityInitialization, descriptionView.getChildren()::add, ade -> this.description = ade);
+    TextEditor.load(activityInitialization, descriptionView.getChildren()::add, ade -> this.description = ade);
 
     StringProperty nameBinding = store.getBinding().getStringProperty(Task.class, t -> t.getName());
     name.textProperty().bind(nameBinding);
 
-    description.hideActionBar();
     StringProperty descriptionBinding = store.getBinding().getStringProperty(Task.class, t -> t.getDescription());
     descriptionBinding.bind(description.textProperty());
 
@@ -165,9 +164,6 @@ public class WorkOnTask extends BaseController<Task> {
       executorService.scheduleAtFixedRate(this::increaseProgress, 100, refreshRate, TimeUnit.MILLISECONDS);
 
       estimatedTime.setText(getHourMinutesString(time));
-    }
-    if (!description.getText().isEmpty()) {
-      description.selectPreview();
     }
 
     Task lastWorkedOnTask = window.getWorkingOnTaskLink().getCurrentTask();

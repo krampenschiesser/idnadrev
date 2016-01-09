@@ -19,7 +19,8 @@ import de.ks.flatjsondb.PersistentWork;
 import de.ks.fxcontrols.weekview.WeekHelper;
 import de.ks.gallery.entity.GalleryFavorite;
 import de.ks.idnadrev.entity.*;
-import de.ks.idnadrev.entity.information.*;
+import de.ks.idnadrev.entity.information.DiaryInfo;
+import de.ks.idnadrev.entity.information.TextInfo;
 import de.ks.standbein.application.FXApplicationExceptionHandler;
 import de.ks.standbein.launch.Service;
 import org.slf4j.Logger;
@@ -33,7 +34,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class DummyData extends Service {
@@ -158,27 +158,6 @@ public class DummyData extends Service {
       info.addTag(tag);
       persistentWork.persist(tag, info);
     }
-    UmlDiagramInfo classDiagram = new UmlDiagramInfo("example class diagram");
-    classDiagram.setContent(UML_CLASS_DIAGRAM);
-    persistentWork.persist(classDiagram);
-
-    UmlDiagramInfo activityDiagram = new UmlDiagramInfo("example activity diagram");
-    activityDiagram.setContent(UML_ACTIVITY_DIAGRAM);
-    persistentWork.persist(activityDiagram);
-
-    ChartData chartData = new ChartData();
-    chartData.setXAxisTitle("xtitle");
-    chartData.setYAxisTitle("ytitle");
-    chartData.getCategories().add("cat1");
-    chartData.getCategories().add("cat2");
-    chartData.getCategories().add("cat3");
-    chartData.addSeries("series1", Arrays.asList(1D, 3D, 5D));
-    chartData.addSeries("series2", Arrays.asList(4D, 2D, 7D));
-    chartData.addSeries("series3", Arrays.asList(8D, 5D, 1D));
-
-    ChartInfo chart = new ChartInfo("chart", ChartType.LINE);
-    chart.setChartData(chartData);
-    persistentWork.persist(chart);
 
 //
 //    Account account1 = new Account("testAccount1");

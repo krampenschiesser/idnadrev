@@ -19,7 +19,7 @@ import de.ks.idnadrev.file.FileViewController;
 import de.ks.idnadrev.tag.TagContainer;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.validation.validators.NotEmptyValidator;
-import de.ks.text.AsciiDocEditor;
+import de.ks.texteditor.TextEditor;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -43,14 +43,13 @@ public class TextInfoController extends BaseController<TextInfo> {
 //  @FXML
 //  protected CategorySelection categorySelectionController;
 
-  protected AsciiDocEditor content;
+  protected TextEditor content;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    AsciiDocEditor.load(activityInitialization, pane -> adocContainer.getChildren().add(pane), editor -> {
+    TextEditor.load(activityInitialization, pane -> adocContainer.getChildren().add(pane), editor -> {
       this.content = editor;
-      editor.hideActionBar();
-// FIXME: 12/17/15 
+// FIXME: 12/17/15
 //      FileOptions fileOptions = Options.get(FileOptions.class);
 //      editor.setPersistentStoreBack(getClass().getSimpleName(), new File(fileOptions.getFileStoreDir()));
     });
@@ -78,7 +77,7 @@ public class TextInfoController extends BaseController<TextInfo> {
     return name;
   }
 
-  public AsciiDocEditor getContent() {
+  public TextEditor getContent() {
     return content;
   }
 }

@@ -16,7 +16,6 @@ package de.ks.idnadrev;
 
 import de.ks.idnadrev.information.diary.DiaryActivity;
 import de.ks.idnadrev.information.text.TextInfoActivity;
-import de.ks.idnadrev.information.uml.UmlDiagramActivity;
 import de.ks.idnadrev.information.view.InformationOverviewActivity;
 import de.ks.idnadrev.overview.OverviewActivity;
 import de.ks.idnadrev.review.planweek.PlanWeekActivity;
@@ -131,8 +130,8 @@ public class ButtonBar implements Initializable {
 
   @FXML
   public void umlDiagram() {
-    controller.startOrResume(new ActivityHint(UmlDiagramActivity.class));
-    hide();
+//    controller.startOrResume(new ActivityHint(UmlDiagramActivity.class));
+//    hide();
   }
 
   //

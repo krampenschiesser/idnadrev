@@ -17,9 +17,8 @@ package de.ks.idnadrev.review.weeklydone;
 import de.ks.fxcontrols.weekview.WeekViewAppointment;
 import de.ks.idnadrev.entity.Task;
 import de.ks.standbein.BaseController;
-import de.ks.standbein.application.fxml.DefaultLoader;
 import de.ks.text.view.AsciiDocContent;
-import de.ks.text.view.AsciiDocViewer;
+import de.ks.texteditor.preview.TextPreview;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -33,7 +32,6 @@ import java.net.URL;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class WeeklyDoneAppointmentView extends BaseController<List<WeekViewAppointment<Task>>> {
@@ -52,15 +50,11 @@ public class WeeklyDoneAppointmentView extends BaseController<List<WeekViewAppoi
   @FXML
   ImageView doneView;
 
-  AsciiDocViewer viewer;
+  TextPreview viewer;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    CompletableFuture<DefaultLoader<Node, AsciiDocViewer>> future = activityInitialization.loadAdditionalControllerWithFuture(AsciiDocViewer.class);
-    future.thenAcceptAsync(loader -> {
-      descriptionContainer.getChildren().add(loader.getView());
-      viewer = loader.getController();
-    }, controller.getJavaFXExecutor());
+    TextPreview.load(activityInitialization, view -> descriptionContainer.getChildren().add(view), controller -> viewer = controller);
 
     appointment.addListener((p, o, n) -> {
       clear();

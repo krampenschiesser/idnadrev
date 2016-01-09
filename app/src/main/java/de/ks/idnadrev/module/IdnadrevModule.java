@@ -19,6 +19,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Key;
 import com.google.inject.multibindings.Multibinder;
 import com.google.inject.multibindings.OptionalBinder;
+import de.ks.entity.AdocFile;
 import de.ks.flatjsondb.RegisteredEntity;
 import de.ks.idnadrev.IdnadrevWindow;
 import de.ks.idnadrev.context.view.ViewContextActivity;
@@ -89,5 +90,7 @@ public class IdnadrevModule extends AbstractModule {
     entities.addBinding().toInstance(Thought.class);
     entities.addBinding().toInstance(TextInfo.class);
     entities.addBinding().toInstance(DiaryInfo.class);
+
+    entities.addBinding().toInstance(AdocFile.class);
   }
 }

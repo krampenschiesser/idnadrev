@@ -22,7 +22,7 @@ import de.ks.idnadrev.entity.WorkUnit;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.activity.executor.ActivityExecutor;
 import de.ks.standbein.table.TableConfigurator;
-import de.ks.text.AsciiDocEditor;
+import de.ks.texteditor.TextEditor;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
@@ -48,7 +48,7 @@ public class FastTrack extends BaseController<Task> {
   protected Label spentTime;
   @FXML
   protected StackPane nameContainer;
-  protected AsciiDocEditor description;
+  protected TextEditor description;
 
   @Inject
   NamedEntitySelection<Task> selection;
@@ -61,7 +61,7 @@ public class FastTrack extends BaseController<Task> {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    AsciiDocEditor.load(this.activityInitialization, descriptionView.getChildren()::add, ade -> this.description = ade);
+    TextEditor.load(this.activityInitialization, descriptionView.getChildren()::add, ade -> this.description = ade);
     selection.configure(Task.class, conf -> conf.addBoolean(Task.class, Task::isProject));
 
     Function<String, List<Task>> tableItemSupplier = input -> {
@@ -92,7 +92,6 @@ public class FastTrack extends BaseController<Task> {
     StringProperty nameBinding = store.getBinding().getStringProperty(Task.class, t -> t.getName());
     nameBinding.bindBidirectional(selection.getTextField().textProperty());
 
-    description.hideActionBar();
     StringProperty descriptionBinding = store.getBinding().getStringProperty(Task.class, t -> t.getDescription());
     descriptionBinding.bindBidirectional(description.textProperty());
 

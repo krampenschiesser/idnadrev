@@ -19,7 +19,7 @@ import de.ks.flatjsondb.PersistentWork;
 import de.ks.idnadrev.entity.Thought;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.validation.validators.NotEmptyValidator;
-import de.ks.text.AsciiDocEditor;
+import de.ks.texteditor.TextEditor;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -45,11 +45,11 @@ public class OverviewAddThoughtController extends BaseController<OverviewModel> 
   @FXML
   protected StackPane descriptionContainer;
 
-  protected AsciiDocEditor description;
+  protected TextEditor description;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    AsciiDocEditor.load(activityInitialization, descriptionContainer.getChildren()::add, this::setDescription);
+    TextEditor.load(activityInitialization, descriptionContainer.getChildren()::add, this::setDescription);
 
     validationRegistry.registerValidator(name, new NotEmptyValidator(localized));
 //    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator(Thought.class));
@@ -58,9 +58,8 @@ public class OverviewAddThoughtController extends BaseController<OverviewModel> 
 
   }
 
-  protected void setDescription(AsciiDocEditor description) {
+  protected void setDescription(TextEditor description) {
     this.description = description;
-    description.hideActionBar();
   }
 
   @FXML

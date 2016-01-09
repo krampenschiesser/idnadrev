@@ -19,6 +19,7 @@ import de.ks.executor.group.LastExecutionGroup;
 import de.ks.standbein.activity.executor.ActivityExecutor;
 import de.ks.standbein.activity.executor.ActivityJavaFXExecutor;
 import de.ks.standbein.activity.initialization.ActivityInitialization;
+import de.ks.standbein.application.fxml.DefaultLoader;
 import de.ks.standbein.i18n.Localized;
 import de.ks.texteditor.launch.search.SearchResult;
 import de.ks.texteditor.launch.search.Searcher;
@@ -28,6 +29,7 @@ import de.ks.texteditor.markup.adoc.AdocMarkup;
 import de.ks.texteditor.preview.TextPreview;
 import de.ks.texteditor.render.RenderType;
 import de.ks.texteditor.render.Renderer;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -58,10 +60,20 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
 
 public class TextEditor implements Initializable {
+  public static CompletableFuture<DefaultLoader<Node, TextEditor>> load(ActivityInitialization initialization, Consumer<StackPane> viewConsumer, Consumer<TextEditor> controllerConsumer) {
+    return initialization.loadAdditionalControllerWithFuture(TextEditor.class)//
+      .thenApply(loader -> {
+        viewConsumer.accept((StackPane) loader.getView());
+        controllerConsumer.accept(loader.getController());
+        return loader;
+      });
+  }
+
   private static final Logger log = LoggerFactory.getLogger(TextEditor.class);
   @FXML
   StackPane root;
@@ -82,6 +94,7 @@ public class TextEditor implements Initializable {
   @FXML
   protected HBox exportActions;
 
+  protected final SimpleStringProperty text = new SimpleStringProperty();
   protected final ObservableList<SearchResult> searchResults = FXCollections.observableArrayList();
 
   @Inject
@@ -141,6 +154,17 @@ public class TextEditor implements Initializable {
           addPreviewChangeListener(future)//
             .thenRunAsync(() -> richtTextFXMurksGuardPreview.set(false), javaFXExecutorService);
         }
+      }
+    });
+
+    codeArea.textProperty().addListener((p, o, n) -> {
+      if (n != null && !n.equals(text.get())) {
+        text.set(n);
+      }
+    });
+    text.addListener((p, o, n) -> {
+      if (n != null && !n.equals(codeArea.getText())) {
+        codeArea.replaceText(n);
       }
     });
     recreateRenderingButtons();
@@ -291,13 +315,6 @@ public class TextEditor implements Initializable {
     return codeArea;
   }
 
-  public String getContent() {
-    return codeArea.getText();
-  }
-
-  public void setContent(String content) {
-    codeArea.replaceText(content);
-  }
 
   public TextPreview getPreview() {
     return preview;
@@ -317,5 +334,17 @@ public class TextEditor implements Initializable {
 
   public Path getTargetPath() {
     return targetPath;
+  }
+
+  public String getText() {
+    return text.get();
+  }
+
+  public SimpleStringProperty textProperty() {
+    return text;
+  }
+
+  public void setText(String text) {
+    this.text.set(text);
   }
 }

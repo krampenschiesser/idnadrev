@@ -18,7 +18,7 @@ package de.ks.idnadrev.thought.add;
 import de.ks.idnadrev.entity.Thought;
 import de.ks.idnadrev.file.FileViewController;
 import de.ks.standbein.BaseController;
-import de.ks.text.AsciiDocEditor;
+import de.ks.texteditor.TextEditor;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -49,7 +49,7 @@ public class AddThought extends BaseController<Thought> {
   private GridPane root;
   @FXML
   protected StackPane descriptionContainer;
-  protected AsciiDocEditor description;
+  protected TextEditor description;
   @FXML
   protected TextField name;
   @FXML
@@ -61,7 +61,7 @@ public class AddThought extends BaseController<Thought> {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    AsciiDocEditor.load(activityInitialization, descriptionContainer.getChildren()::add, this::setDescription);
+    TextEditor.load(activityInitialization, descriptionContainer.getChildren()::add, this::setDescription);
     bindValidation();
     fileViewController.getFiles().addListener((ListChangeListener<File>) change -> {
       ObservableList<? extends File> list = change.getList();
@@ -75,7 +75,6 @@ public class AddThought extends BaseController<Thought> {
       }
     });
 
-    description.hideActionBar();
     StringProperty nameBinding = store.getBinding().getStringProperty(Thought.class, t -> t.getName());
     nameBinding.bindBidirectional(name.textProperty());
     StringProperty descriptionBinding = store.getBinding().getStringProperty(Thought.class, t -> t.getDescription());
@@ -89,7 +88,7 @@ public class AddThought extends BaseController<Thought> {
 //    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(Thought.class, t -> t.getId() == store.<Thought>getModel().getId()));
   }
 
-  private void setDescription(AsciiDocEditor description) {
+  private void setDescription(TextEditor description) {
     this.description = description;
     // FIXME: 12/17/15
 //    FileOptions fileOptions = Options.get(FileOptions.class);
@@ -161,7 +160,7 @@ public class AddThought extends BaseController<Thought> {
     this.name.requestFocus();
   }
 
-  public AsciiDocEditor getDescription() {
+  public TextEditor getDescription() {
     return description;
   }
 

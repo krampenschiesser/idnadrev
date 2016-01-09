@@ -21,8 +21,7 @@ import de.ks.idnadrev.information.text.TextInfoActivity;
 import de.ks.idnadrev.information.view.InformationPreviewItem;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.activity.ActivityHint;
-import de.ks.text.view.AsciiDocContent;
-import de.ks.text.view.AsciiDocViewer;
+import de.ks.texteditor.preview.TextPreview;
 import javafx.fxml.FXML;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -42,13 +41,13 @@ public class TextInfoPreview extends BaseController<List<InformationPreviewItem>
   @Inject
   PersistentWork persistentWork;
 
-  protected AsciiDocViewer asciiDocViewer;
+  protected TextPreview asciiDocViewer;
   protected final Map<String, TextInfo> infos = new ConcurrentHashMap<>();
   protected volatile InformationPreviewItem selectedItem;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    AsciiDocViewer.load(activityInitialization, root -> adocContainer.getChildren().add(root), viewer -> asciiDocViewer = viewer);
+    TextPreview.load(activityInitialization, root -> adocContainer.getChildren().add(root), viewer -> asciiDocViewer = viewer);
   }
 
   @Override

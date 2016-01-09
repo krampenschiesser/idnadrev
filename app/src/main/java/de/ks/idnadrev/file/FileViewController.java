@@ -21,8 +21,6 @@ import de.ks.idnadrev.entity.FileContainer;
 import de.ks.standbein.activity.ActivityLoadFinishedEvent;
 import de.ks.standbein.activity.context.ActivityStore;
 import de.ks.standbein.activity.initialization.DatasourceCallback;
-import de.ks.text.image.GlobalImageProvider;
-import de.ks.text.image.ImageData;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -74,8 +72,8 @@ public class FileViewController implements Initializable, DatasourceCallback<Fil
   protected ActivityStore store;
   //  @Inject
 //  protected FileStore fileStore;
-  @Inject
-  protected GlobalImageProvider imageProvider;
+//  @Inject
+//  protected GlobalImageProvider imageProvider;
   protected final Map<File, CompletableFuture<Path>> fileReferences = new HashMap<>();
 
   @Override
@@ -131,7 +129,7 @@ public class FileViewController implements Initializable, DatasourceCallback<Fil
     try {
       String contentType = Files.probeContentType(file.toPath());
       if (contentType != null && contentType.contains("image")) {
-        imageProvider.addImage(new ImageData(file.getName(), file.getPath()));
+//        imageProvider.addImage(new ImageData(file.getName(), file.getPath()));
       }
     } catch (IOException e) {
       //

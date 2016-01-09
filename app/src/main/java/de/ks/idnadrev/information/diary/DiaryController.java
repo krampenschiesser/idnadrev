@@ -18,7 +18,7 @@ import de.ks.idnadrev.entity.information.DiaryInfo;
 import de.ks.idnadrev.entity.information.TextInfo;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.datasource.DataSource;
-import de.ks.text.AsciiDocEditor;
+import de.ks.texteditor.TextEditor;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.DateCell;
@@ -38,14 +38,13 @@ public class DiaryController extends BaseController<DiaryInfo> {
   @FXML
   protected StackPane adocContainer;
 
-  protected AsciiDocEditor content;
+  protected TextEditor content;
   protected String baseText;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    AsciiDocEditor.load(activityInitialization, pane -> adocContainer.getChildren().add(pane), editor -> {
+    TextEditor.load(activityInitialization, pane -> adocContainer.getChildren().add(pane), editor -> {
       this.content = editor;
-      editor.hideActionBar();
     });
 
     StringProperty contentProperty = store.getBinding().getStringProperty(TextInfo.class, t -> t.getContent());
@@ -84,10 +83,8 @@ public class DiaryController extends BaseController<DiaryInfo> {
       String date = dateEditor.getValue().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL));
       baseText = "= " + date + "\n\n";
       content.setText(baseText);
-      content.selectEditor();
-    } else {
-      content.selectPreview();
     }
+    content.getCodeArea().requestFocus();
   }
 
   @Override

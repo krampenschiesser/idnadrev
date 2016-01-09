@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,10 +16,8 @@
 package de.ks.idnadrev.information.view;
 
 import de.ks.executor.group.LastTextChange;
-import de.ks.idnadrev.entity.information.ChartInfo;
 import de.ks.idnadrev.entity.information.Information;
 import de.ks.idnadrev.entity.information.TextInfo;
-import de.ks.idnadrev.entity.information.UmlDiagramInfo;
 import de.ks.idnadrev.tag.TagContainer;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.reflection.PropertyPath;
@@ -28,10 +26,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.SetChangeListener;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
-import javafx.util.StringConverter;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -55,8 +55,6 @@ public class InformationListView extends BaseController<List<InformationPreviewI
   @FXML
   protected Label typeLabel;
   @FXML
-  protected ComboBox<Class<? extends Information<?>>> typeCombo;
-  @FXML
   protected TableView<InformationPreviewItem> informationList;
   @FXML
   protected TableColumn<InformationPreviewItem, String> nameColumn;
@@ -73,26 +71,6 @@ public class InformationListView extends BaseController<List<InformationPreviewI
     lastTextChange.registerHandler(cf -> triggerReload());
     informationList.setItems(FXCollections.observableArrayList());
 
-    typeCombo.setItems(FXCollections.observableArrayList(NoInfo.class, ChartInfo.class, TextInfo.class, UmlDiagramInfo.class));
-
-    typeCombo.setConverter(new StringConverter<Class<? extends Information<?>>>() {
-      @Override
-      public String toString(Class<? extends Information<?>> c) {
-        if (c.equals(NoInfo.class)) {
-          return "";
-        } else {
-          String translation = localized.get(c.getSimpleName());
-          return translation;
-        }
-      }
-
-      @Override
-      public Class<? extends Information<?>> fromString(String string) {
-        return null;
-      }
-    });
-    typeCombo.getSelectionModel().select(0);
-    typeCombo.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> triggerReload());
     tagContainerController.getCurrentTags().addListener((SetChangeListener<String>) change -> triggerReload());
 //    categorySelectionController.selectedValueProperty().addListener((observable, oldValue, newValue) -> triggerReload());
 
@@ -128,7 +106,7 @@ public class InformationListView extends BaseController<List<InformationPreviewI
   }
 
   private InformationLoadingHint createLoadingHint() {
-    Class<? extends Information<?>> infoClass = typeCombo.getSelectionModel().getSelectedItem();
+    Class<? extends Information<?>> infoClass = TextInfo.class;
     infoClass = infoClass.equals(NoInfo.class) ? null : infoClass;
     String name = nameSearch.textProperty().getValueSafe().toLowerCase(Locale.ROOT).trim();
 
@@ -144,8 +122,6 @@ public class InformationListView extends BaseController<List<InformationPreviewI
 
   public void setFixedTypeFilter(Class<? extends Information<?>> type) {
     controller.getJavaFXExecutor().submit(() -> {
-      typeCombo.getSelectionModel().select(type);
-      typeCombo.setVisible(false);
       typeLabel.setVisible(false);
       root.getRowConstraints().get(1).setPrefHeight(0.0F);
       root.getRowConstraints().get(1).setMinHeight(0.0F);

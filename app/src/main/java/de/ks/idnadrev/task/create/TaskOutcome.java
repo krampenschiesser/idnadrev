@@ -16,7 +16,7 @@ package de.ks.idnadrev.task.create;
 
 import de.ks.idnadrev.entity.Task;
 import de.ks.standbein.BaseController;
-import de.ks.text.AsciiDocEditor;
+import de.ks.texteditor.TextEditor;
 import javafx.fxml.FXML;
 import javafx.scene.layout.StackPane;
 
@@ -27,14 +27,13 @@ public class TaskOutcome extends BaseController<Task> {
   @FXML
   protected StackPane expectedOutcomeContainer;
 
-  protected AsciiDocEditor expectedOutcome;
+  protected TextEditor expectedOutcome;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    activityInitialization.loadAdditionalControllerWithFuture(AsciiDocEditor.class).thenAcceptAsync(loader -> {
+    activityInitialization.loadAdditionalControllerWithFuture(TextEditor.class).thenAcceptAsync(loader -> {
       expectedOutcome = loader.getController();
       expectedOutcomeContainer.getChildren().add(loader.getView());
-      expectedOutcome.hideActionBar();
     }, controller.getJavaFXExecutor());
   }
 

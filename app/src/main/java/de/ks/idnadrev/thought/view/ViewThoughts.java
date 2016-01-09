@@ -23,7 +23,7 @@ import de.ks.standbein.BaseController;
 import de.ks.standbein.activity.ActivityHint;
 import de.ks.standbein.activity.executor.ActivityExecutor;
 import de.ks.text.view.AsciiDocContent;
-import de.ks.text.view.AsciiDocViewer;
+import de.ks.texteditor.preview.TextPreview;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.SimpleStringProperty;
@@ -70,22 +70,20 @@ public class ViewThoughts extends BaseController<List<Thought>> {
   @FXML
   protected Button editBtn;
 
-  protected AsciiDocViewer asciiDocViewer;
+  protected TextPreview asciiDocViewer;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    activityInitialization.loadAdditionalControllerWithFuture(AsciiDocViewer.class).thenAcceptAsync(l -> {
-      asciiDocViewer = l.getController();
-      thoughtTable.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
-        if (n == null) {
-          asciiDocViewer.reset();
-        } else {
-          asciiDocViewer.show(new AsciiDocContent(n.getName(), n.getDescription()));
-        }
-      });
-      description.getChildren().add(l.getView());
-    }, controller.getJavaFXExecutor());
 
+    TextPreview.load(activityInitialization, view -> description.getChildren().add(view), ctrl -> asciiDocViewer = ctrl);
+
+    thoughtTable.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
+      if (n == null) {
+        asciiDocViewer.clear();
+      } else {
+        asciiDocViewer.show(new AsciiDocContent(n.getName(), n.getDescription()));
+      }
+    });
     @SuppressWarnings("unchecked")
     TableColumn<Thought, String> nameColumn = (TableColumn<Thought, String>) thoughtTable.getColumns().get(0);
 
