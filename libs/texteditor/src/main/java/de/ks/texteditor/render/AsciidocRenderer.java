@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class AsciidocRenderer implements Renderer {
+  public static final String NAME = "AsciiDoctor";
   private final AsciiDocParser parser;
 
   @Inject
@@ -44,6 +45,11 @@ public class AsciidocRenderer implements Renderer {
   @Override
   public List<RenderType> getSupportedRenderingTypes() {
     return Arrays.asList(RenderType.values());
+  }
+
+  @Override
+  public String getName() {
+    return NAME;
   }
 
   protected OptionsBuilder getOptions(Path source, Path targetFile, RenderType type) {

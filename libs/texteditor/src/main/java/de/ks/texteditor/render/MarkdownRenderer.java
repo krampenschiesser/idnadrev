@@ -51,4 +51,9 @@ public class MarkdownRenderer implements Renderer {
   public List<RenderType> getSupportedRenderingTypes() {
     return Collections.singletonList(RenderType.HTML);
   }
+
+  @Override
+  public String getName() {
+    return "Markdown";
+  }
 }

@@ -17,7 +17,8 @@ package de.ks.texteditor.preview;
 
 import de.ks.standbein.activity.executor.ActivityExecutor;
 import de.ks.standbein.activity.executor.ActivityJavaFXExecutor;
-import de.ks.texteditor.render.MarkdownRenderer;
+import de.ks.texteditor.module.TextEditorModule;
+import de.ks.texteditor.render.Renderer;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.concurrent.Worker;
@@ -28,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -35,6 +37,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -54,7 +57,10 @@ public class TextPreview implements Initializable {
 
   private final ConcurrentHashMap<Path, CompletableFuture<Path>> preloaded = new ConcurrentHashMap<>();
   @Inject
-  private MarkdownRenderer renderer;
+  private Set<Renderer> renderers;
+  @Inject
+  @Named(TextEditorModule.DEFAULT_RENDERER)
+  private volatile String currentRenderer;
   protected final AtomicInteger lastScrollPos = new AtomicInteger();
 
   @Override
@@ -85,6 +91,7 @@ public class TextPreview implements Initializable {
   }
 
   public void preload(Path temporarySourceFile, Path targetFile, String content) {
+    Renderer renderer = renderers.stream().filter(r -> r.getName().equals(currentRenderer)).findFirst().get();
     CompletableFuture<Path> future = CompletableFuture.supplyAsync(new PreviewTask(temporarySourceFile, targetFile, content, renderer), executor);
     preloaded.put(temporarySourceFile, future);
   }
@@ -130,5 +137,13 @@ public class TextPreview implements Initializable {
 
   public ReadOnlyStringProperty htmlProperty() {
     return html;
+  }
+
+  public String getCurrentRenderer() {
+    return currentRenderer;
+  }
+
+  public void setCurrentRenderer(String currentRenderer) {
+    this.currentRenderer = currentRenderer;
   }
 }

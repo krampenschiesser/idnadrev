@@ -21,6 +21,9 @@ import com.google.inject.multibindings.Multibinder;
 import com.google.inject.name.Names;
 import de.ks.standbein.javafx.FxCss;
 import de.ks.texteditor.launch.MetaData;
+import de.ks.texteditor.render.AsciidocRenderer;
+import de.ks.texteditor.render.MarkdownRenderer;
+import de.ks.texteditor.render.Renderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,13 +33,19 @@ import java.nio.file.Path;
 public class TextEditorModule extends AbstractModule {
   private static final Logger log = LoggerFactory.getLogger(TextEditorModule.class);
   public static final String DATA_DIR = "dataDir";
+  public static final String DEFAULT_RENDERER = "defaultRenderer";
 
   @Override
   protected void configure() {
     File dataDir = discoverDataDir();
     binder().bind(Key.get(Path.class, Names.named(DATA_DIR))).toInstance(dataDir.toPath());
+    binder().bind(Key.get(String.class, Names.named(DEFAULT_RENDERER))).toInstance(AsciidocRenderer.NAME);
 
     Multibinder.newSetBinder(binder(), String.class, FxCss.class).addBinding().toInstance("/de/ks/texteditor/markup/adoc/adoc.css");
+
+    Multibinder<Renderer> rendererBinder = Multibinder.newSetBinder(binder(), Renderer.class);
+    rendererBinder.addBinding().to(AsciidocRenderer.class);
+    rendererBinder.addBinding().to(MarkdownRenderer.class);
   }
 
   public static File discoverDataDir() {

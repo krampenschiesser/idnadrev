@@ -22,4 +22,6 @@ public interface Renderer {
   Path renderFilePreview(Path source, Path targetFile, RenderType renderType);
 
   List<RenderType> getSupportedRenderingTypes();
+
+  String getName();
 }
