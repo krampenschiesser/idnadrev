@@ -17,7 +17,9 @@ package de.ks.texteditor.preview;
 
 import de.ks.texteditor.render.RenderType;
 import de.ks.texteditor.render.Renderer;
+import org.apache.commons.codec.digest.DigestUtils;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -40,10 +42,29 @@ public class PreviewTask implements Supplier<Path> {
   @Override
   public Path get() {
     try {
-      Files.write(temporarySourceFile, content.getBytes(StandardCharsets.UTF_8));
-      return renderer.renderFilePreview(temporarySourceFile, targetFile, RenderType.HTML);
+      boolean canReuseTarget = canReuseTarget();
+      if (canReuseTarget) {
+        return targetFile;
+      } else {
+        Files.write(temporarySourceFile, content.getBytes(StandardCharsets.UTF_8));
+        return renderer.renderFilePreview(temporarySourceFile, targetFile, RenderType.HTML);
+      }
     } catch (IOException e) {
       return targetFile;
     }
+  }
+
+  protected boolean canReuseTarget() throws IOException {
+    String md5Current = DigestUtils.md5Hex(content);
+    boolean canReuseTarget = false;
+    if (Files.exists(targetFile) && Files.exists(temporarySourceFile)) {
+      try (FileInputStream stream = new FileInputStream(temporarySourceFile.toFile())) {
+        String md5File = DigestUtils.md5Hex(stream);
+        if (md5File.equals(md5Current)) {
+          canReuseTarget = true;
+        }
+      }
+    }
+    return canReuseTarget;
   }
 }
