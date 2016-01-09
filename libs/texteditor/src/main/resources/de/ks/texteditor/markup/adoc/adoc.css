@@ -49,3 +49,8 @@
 .adocLink {
     -fx-fill: darkmagenta;
 }
+.searchresult {
+    -fx-fill: orange;
+    -fx-font-weight: bold;
+    -fx-font-style: italic;
+}

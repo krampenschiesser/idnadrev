@@ -20,12 +20,17 @@ import de.ks.standbein.activity.executor.ActivityExecutor;
 import de.ks.standbein.activity.executor.ActivityJavaFXExecutor;
 import de.ks.standbein.activity.initialization.ActivityInitialization;
 import de.ks.standbein.i18n.Localized;
+import de.ks.texteditor.launch.search.SearchResult;
+import de.ks.texteditor.launch.search.Searcher;
 import de.ks.texteditor.markup.Line;
 import de.ks.texteditor.markup.MarkupStyleRange;
 import de.ks.texteditor.markup.adoc.AdocMarkup;
 import de.ks.texteditor.preview.TextPreview;
 import de.ks.texteditor.render.RenderType;
 import de.ks.texteditor.render.Renderer;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -33,6 +38,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
@@ -53,10 +59,12 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.IntFunction;
+import java.util.function.Predicate;
 
 public class TextEditor implements Initializable {
   private static final Logger log = LoggerFactory.getLogger(TextEditor.class);
-
+  @FXML
+  StackPane root;
   @FXML
   private TextField searchField;
   @FXML
@@ -74,6 +82,8 @@ public class TextEditor implements Initializable {
   @FXML
   protected HBox exportActions;
 
+  protected final ObservableList<SearchResult> searchResults = FXCollections.observableArrayList();
+
   @Inject
   ActivityJavaFXExecutor javaFXExecutorService;
   @Inject
@@ -82,6 +92,8 @@ public class TextEditor implements Initializable {
   ActivityInitialization initialization;
   @Inject
   Localized localized;
+  @Inject
+  Searcher searcher;
 
   LineParser lineParser = new LineParser();
   CodeArea codeArea;
@@ -90,6 +102,8 @@ public class TextEditor implements Initializable {
   Path sourcePath;
   Path targetPath;
   Path lastRenderingTarget;
+
+  String lastSearchText;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -134,7 +148,60 @@ public class TextEditor implements Initializable {
         recreateRenderingButtons();
       }
     });
+    root.setOnKeyReleased(e -> {
+      if (e.getCode() == KeyCode.F && e.isControlDown()) {
+        searchField.requestFocus();
+      }
+    });
+    searchField.setOnKeyReleased(e -> {
+      if (e.getCode() == KeyCode.ESCAPE) {
+        searchField.setText("");
+        resetSearchResults();
+      } else if (e.getCode() == KeyCode.ENTER) {
+        String currentSearchString = searchField.textProperty().getValueSafe();
+        if (currentSearchString.equals(lastSearchText) && !searchResults.isEmpty()) {
+          int caretPosition = codeArea.getCaretPosition();
+          Predicate<SearchResult> filter;
+          boolean searchUp = e.isShiftDown();
+          if (searchUp) {
+            filter = r -> r.getEnd() < caretPosition;
+          } else {
+            filter = r -> r.getStart() > caretPosition;
+          }
+          List<SearchResult> resultsToSearch = new ArrayList<SearchResult>(this.searchResults);
+          if (searchUp) {
+            Collections.reverse(resultsToSearch);
+          }
+          SearchResult result = resultsToSearch.stream().sequential().filter(filter).findFirst().orElse(searchUp ? this.searchResults.get(this.searchResults.size() - 1) : this.searchResults.get(0));
+          codeArea.positionCaret(result.getStart());
+          codeArea.selectRange(result.getStart(), result.getEnd());
+        } else {
+          resetSearchResults();
+          lastSearchText = currentSearchString;
+          CompletableFuture.supplyAsync(() -> searcher.search(searchField.getText(), codeArea.getText()), executorService)//
+            .thenAcceptAsync(results -> {
+              this.searchResults.clear();
+              this.searchResults.addAll(results);
+              if (!results.isEmpty()) {
+                codeArea.positionCaret(results.get(0).getStart());
+                codeArea.selectRange(results.get(0).getStart(), results.get(0).getEnd());
+              }
+            }, javaFXExecutorService);
+        }
 
+      }
+    });
+    searchResults.addListener((ListChangeListener<SearchResult>) c -> {
+      CompletableFuture<RichTextChange<Collection<String>>> cf = CompletableFuture.completedFuture(null);
+      addMarkupChangeListener(cf);
+    });
+  }
+
+  protected void resetSearchResults() {
+    for (SearchResult searchResult : searchResults) {
+      codeArea.clearStyle(searchResult.getStart(), searchResult.getEnd());
+    }
+    searchResults.clear();
   }
 
   private void recreateRenderingButtons() {
@@ -194,6 +261,9 @@ public class TextEditor implements Initializable {
       return styleRanges;
     }, executorService).thenAcceptAsync(styleRanges -> {
       styleRanges.forEach(style -> codeArea.setStyle(style.getFromPos(), style.getToPos(), Collections.singleton(style.getStyleClass())));
+      for (SearchResult result : searchResults) {
+        codeArea.setStyle(result.getStart(), result.getEnd(), Collections.singleton("searchresult"));
+      }
     }, javaFXExecutorService);
   }
 
