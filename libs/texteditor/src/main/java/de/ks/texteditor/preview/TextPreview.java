@@ -87,17 +87,6 @@ public class TextPreview implements Initializable {
   private void recreateRenderingButtons() {
 
   }
-//
-//  public void preload(String id, String content) {
-//    Path path = getTemporaryFile(id);
-//    Path target = path.getParent();
-//    preload(path, target, content);
-//
-//  }
-//
-//  private Path getTemporaryFile(String id) {
-//    return null;
-//  }
 
   public void preload(Path temporarySourceFile, Path targetFile, String content) {
     Renderer renderer = renderers.stream().filter(r -> r.getName().equals(currentRenderer.get())).findFirst().get();
