@@ -20,7 +20,7 @@ mainClassName = "de.ks.idnadrev.Application"
 
 dependencies {
     compile project(":libs:fxcontrols")
-    compile project(":libs:adoceditor")
+    compile project(":libs:texteditor")
     compile project(":libs:gravblogging")
     compile "commons-codec:commons-codec:$commonscodec"
     compile "org.apache.poi:poi:$poi"
