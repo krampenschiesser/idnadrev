@@ -17,19 +17,32 @@ package de.ks.texteditor.preview;
 
 import de.ks.standbein.activity.executor.ActivityExecutor;
 import de.ks.standbein.activity.executor.ActivityJavaFXExecutor;
+import de.ks.texteditor.render.AsciidocRenderer;
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.concurrent.Worker;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 public class TextPreview implements Initializable {
+  private static final Logger log = LoggerFactory.getLogger(TextPreview.class);
   private StackPane stackPane;
   @Inject
   ActivityJavaFXExecutor javaFXExecutor;
@@ -37,15 +50,25 @@ public class TextPreview implements Initializable {
   ActivityExecutor executor;
   private final AtomicReference<WebView> webView = new AtomicReference<>();
   private final AtomicReference<Path> currentPreview = new AtomicReference<>();
+  protected final SimpleStringProperty html = new SimpleStringProperty();
 
-  private final ConcurrentHashMap<Path, Future<Path>> preloaded = new ConcurrentHashMap<>();
+  private final ConcurrentHashMap<Path, CompletableFuture<Path>> preloaded = new ConcurrentHashMap<>();
+  @Inject
+  private AsciidocRenderer renderer;
+  protected final AtomicInteger lastScrollPos = new AtomicInteger();
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     stackPane = new StackPane();
     javaFXExecutor.submit(() -> {
-      webView.set(new WebView());
-      stackPane.getChildren().add(webView.get());
+      WebView view = new WebView();
+      webView.set(view);
+      stackPane.getChildren().add(view);
+      view.getEngine().getLoadWorker().stateProperty().addListener((p, o, n) -> {
+        if (n == Worker.State.SUCCEEDED) {
+          view.getEngine().executeScript("window.scrollTo(" + 0 + ", " + lastScrollPos.get() + ")");
+        }
+      });
     });
 
   }
@@ -61,14 +84,36 @@ public class TextPreview implements Initializable {
     return null;
   }
 
-  public void preload(Path temporarySourceFile, Path targetDirectory, String content) {
-//    PreviewTask previewTask = new PreviewTask(temporarySourceFile, targetDirectory, content);
-//    Future<Path> future = executor.submit(previewTask);
+  public void preload(Path temporarySourceFile, Path targetFile, String content) {
+    CompletableFuture<Path> future = CompletableFuture.supplyAsync(new PreviewTask(temporarySourceFile, targetFile, content, renderer), executor);
+    preloaded.put(temporarySourceFile, future);
   }
 
   public void show(Path temporarySourceFile) {
     WebView webView = this.webView.get();
-//    webView.getEngine().load(temporarySourceFile.);
+    webView.getEngine().setOnAlert(e -> {
+      log.info("Alert {}", e.getData());
+    });
+    CompletableFuture<Path> pathFuture = preloaded.get(temporarySourceFile);
+    pathFuture.thenApplyAsync(path -> {
+      try {
+        String content = Files.readAllLines(path, StandardCharsets.UTF_8).stream().collect(Collectors.joining("\n"));
+        return content;
+      } catch (IOException e) {
+        return "";
+      }
+    }, executor).thenAcceptAsync(html::set, javaFXExecutor);
+
+    pathFuture.thenAcceptAsync(path -> {
+      try {
+        int scrollpos = (Integer) webView.getEngine().executeScript("document.body.scrollTop");
+        lastScrollPos.set(scrollpos);
+        URL url = path.toUri().toURL();
+        webView.getEngine().load(url.toExternalForm());
+      } catch (MalformedURLException e) {
+        //
+      }
+    }, javaFXExecutor);
   }
 
   public StackPane getRoot() {
@@ -77,5 +122,13 @@ public class TextPreview implements Initializable {
 
   public WebView getWebView() {
     return webView.get();
+  }
+
+  public String getHtml() {
+    return html.get();
+  }
+
+  public ReadOnlyStringProperty htmlProperty() {
+    return html;
   }
 }

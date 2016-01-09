@@ -1,5 +1,5 @@
 /*
- * Copyright [2015] [Christian Loehnert]
+ * Copyright [2016] [Christian Loehnert]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 package de.ks.texteditor.render;
 
-import java.nio.file.Path;
-
-public interface Renderer {
-  Path renderFilePreview(Path source, Path targetFile, RenderType renderType);
+public enum RenderType {
+  HTML, PDF, DOCBOOK;
 }

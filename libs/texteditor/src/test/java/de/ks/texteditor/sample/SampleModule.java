@@ -20,13 +20,15 @@ import com.google.inject.multibindings.Multibinder;
 import de.ks.standbein.application.ApplicationCfg;
 import de.ks.standbein.application.MainWindow;
 import de.ks.standbein.javafx.FxCss;
+import de.ks.texteditor.module.TextEditorModule;
 
 public class SampleModule extends AbstractModule {
   @Override
   protected void configure() {
     bind(ApplicationCfg.class).toInstance(new ApplicationCfg("Texteditor", 800, 600).setLocalized(false));
     bind(MainWindow.class).to(SampleWindow.class);
+
     Multibinder.newSetBinder(binder(), String.class, FxCss.class).addBinding().toInstance("/de/ks/texteditor/sample/test.css");
-    Multibinder.newSetBinder(binder(), String.class, FxCss.class).addBinding().toInstance("/de/ks/texteditor/markup/adoc/adoc.css");
+    install(new TextEditorModule());
   }
 }

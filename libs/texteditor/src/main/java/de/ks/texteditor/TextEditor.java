@@ -39,6 +39,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -75,6 +77,8 @@ public class TextEditor implements Initializable {
   LineParser lineParser = new LineParser();
   private CodeArea codeArea;
   private TextPreview preview;
+  Path sourcePath;
+  Path targetPath;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -85,32 +89,53 @@ public class TextEditor implements Initializable {
 
     preview = initialization.loadAdditionalController(TextPreview.class).getController();
     previewContainer.getChildren().add(preview.getRoot());
+    htmlEditor.textProperty().bind(preview.htmlProperty());
     focusEditor();
 
     LastExecutionGroup<RichTextChange<Collection<String>>> markupGeneration = new LastExecutionGroup<>("MarkupGeneration", 300, executorService);
-    final AtomicBoolean richtTextFXMurksGuard = new AtomicBoolean();//needed because sometimes richtextfx is stuck in a loop/stackoverflow (when replacing styles)
+    final AtomicBoolean richtTextFXMurksGuardMarkup = new AtomicBoolean();//needed because sometimes richtextfx is stuck in a loop/stackoverflow (when replacing styles)
     codeArea.richChanges().subscribe(change -> {
-      if (!richtTextFXMurksGuard.get()) {
+      if (!richtTextFXMurksGuardMarkup.get()) {
         CompletableFuture<RichTextChange<Collection<String>>> future = markupGeneration.schedule(() -> change);
         if (future.getNumberOfDependents() == 0) {
-          addChangeListener(future)//
-            .thenRunAsync(() -> richtTextFXMurksGuard.set(false), javaFXExecutorService);
+          addMarkupChangeListener(future)//
+            .thenRunAsync(() -> richtTextFXMurksGuardMarkup.set(false), javaFXExecutorService);
         }
       }
-      richtTextFXMurksGuard.set(true);
+      richtTextFXMurksGuardMarkup.set(true);
+    });
+
+    final AtomicBoolean richtTextFXMurksGuardPreview = new AtomicBoolean();//needed because sometimes richtextfx is stuck in a loop/stackoverflow (when replacing styles)
+    LastExecutionGroup<RichTextChange<Collection<String>>> previewGeneration = new LastExecutionGroup<>("PreviewGeneration", 1000, executorService);
+    codeArea.richChanges().subscribe(change -> {
+      if (!richtTextFXMurksGuardPreview.get()) {
+        CompletableFuture<RichTextChange<Collection<String>>> future = previewGeneration.schedule(() -> change);
+        if (future.getNumberOfDependents() == 0) {
+          addPreviewChangeListener(future)//
+            .thenRunAsync(() -> richtTextFXMurksGuardPreview.set(false), javaFXExecutorService);
+        }
+      }
+      richtTextFXMurksGuardPreview.set(true);
     });
   }
 
-  private CompletableFuture<Void> addChangeListener(CompletableFuture<RichTextChange<Collection<String>>> future) {
+  private CompletableFuture<Void> addPreviewChangeListener(CompletableFuture<RichTextChange<Collection<String>>> future) {
+    return future.thenAcceptAsync(change -> {
+      log.info("rendering preview");
+      preview.preload(sourcePath, targetPath, codeArea.getText());
+    }, executorService).thenRunAsync(() -> {
+      preview.show(sourcePath);
+    }, javaFXExecutorService);
+  }
 
+  private CompletableFuture<Void> addMarkupChangeListener(CompletableFuture<RichTextChange<Collection<String>>> future) {
     return future.thenApplyAsync(change1 -> {
       List<Line> lines = lineParser.getLines(codeArea.getText());
       List<MarkupStyleRange> styleRanges = getMarkup().getStyleRanges(lines);
       return styleRanges;
-    }, executorService)//
-      .thenAcceptAsync(styleRanges -> {
-        styleRanges.forEach(style -> codeArea.setStyle(style.getFromPos(), style.getToPos(), Collections.singleton(style.getStyleClass())));
-      }, javaFXExecutorService);
+    }, executorService).thenAcceptAsync(styleRanges -> {
+      styleRanges.forEach(style -> codeArea.setStyle(style.getFromPos(), style.getToPos(), Collections.singleton(style.getStyleClass())));
+    }, javaFXExecutorService);
   }
 
   protected AdocMarkup getMarkup() {
@@ -138,5 +163,25 @@ public class TextEditor implements Initializable {
 
   public void setContent(String content) {
     codeArea.replaceText(content);
+  }
+
+  public TextPreview getPreview() {
+    return preview;
+  }
+
+  public void setRenderingPaths(Path sourcePath, Path targetPath) {
+    if (Files.isDirectory(sourcePath) || Files.isDirectory(targetPath)) {
+      throw new IllegalArgumentException("Paths have to be a file");
+    }
+    this.sourcePath = sourcePath;
+    this.targetPath = targetPath;
+  }
+
+  public Path getSourcePath() {
+    return sourcePath;
+  }
+
+  public Path getTargetPath() {
+    return targetPath;
   }
 }

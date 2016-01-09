@@ -15,6 +15,7 @@
  */
 package de.ks.texteditor.sample;
 
+import com.google.common.base.StandardSystemProperty;
 import de.ks.standbein.application.MainWindow;
 import de.ks.standbein.application.fxml.DefaultLoader;
 import de.ks.texteditor.TextEditor;
@@ -44,6 +45,11 @@ public class SampleWindow extends MainWindow {
       Path path = Paths.get(resource.toURI());
       String content = Files.readAllLines(path).stream().collect(Collectors.joining("\n"));
       editor.getCodeArea().replaceText(0, 0, content);
+
+      Path sourceFile = Paths.get(StandardSystemProperty.JAVA_IO_TMPDIR.value(), "test.adoc");
+      Path targetFile = Paths.get(StandardSystemProperty.JAVA_IO_TMPDIR.value(), "test.html");
+
+      editor.setRenderingPaths(sourceFile, targetFile);
     } catch (Exception e) {
       log.error("Could not load sampledoc", e);
     }

@@ -15,31 +15,35 @@
  */
 package de.ks.texteditor.preview;
 
+import de.ks.texteditor.render.RenderType;
 import de.ks.texteditor.render.Renderer;
-import org.apache.commons.codec.digest.DigestUtils;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.concurrent.Callable;
+import java.util.function.Supplier;
 
-public class PreviewTask implements Callable<Path> {
+public class PreviewTask implements Supplier<Path> {
   private final Path temporarySourceFile;
-  private final Path targetDirectory;
+  private final Path targetFile;
   private final String content;
   private final Renderer renderer;
 
-  public PreviewTask(Path temporarySourceFile, Path targetDirectory, String content, Renderer renderer) {
+  public PreviewTask(Path temporarySourceFile, Path targetFile, String content, Renderer renderer) {
     this.temporarySourceFile = temporarySourceFile;
-    this.targetDirectory = targetDirectory;
+    this.targetFile = targetFile;
     this.content = content;
     this.renderer = renderer;
   }
 
   @Override
-  public Path call() throws Exception {
-    String md5 = DigestUtils.md5Hex(content);
-    Files.write(temporarySourceFile, content.getBytes(StandardCharsets.UTF_8));
-    return renderer.renderFilePreview(temporarySourceFile, targetDirectory);
+  public Path get() {
+    try {
+      Files.write(temporarySourceFile, content.getBytes(StandardCharsets.UTF_8));
+      return renderer.renderFilePreview(temporarySourceFile, targetFile, RenderType.HTML);
+    } catch (IOException e) {
+      return targetFile;
+    }
   }
 }

@@ -17,6 +17,8 @@
 package de.ks.texteditor.render;
 
 import com.google.common.base.StandardSystemProperty;
+import de.ks.texteditor.launch.AsciiDocParser;
+import de.ks.texteditor.module.TextEditorModule;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -67,16 +69,15 @@ public class AsciidocRendererTest {
     });
     Files.createDirectories(sourceDir);
     sourceFile = sourceDir.resolve(userGuideDirectory.relativize(userGuide));
-    targetFile = sourceDir.resolve("render.pdf");
+    targetFile = sourceDir.resolve("render.html");
 
   }
 
   @Test
   public void testRenderFile() throws Exception {
-    AsciidocRenderer asciidocRenderer = new AsciidocRenderer(Paths.get("/home/scar/idnadrev/data"));
-    Path result = asciidocRenderer.renderFilePreview(sourceFile, targetFile);
+    AsciidocRenderer asciidocRenderer = new AsciidocRenderer(new AsciiDocParser(TextEditorModule.discoverDataDir().toPath()));
+    Path result = asciidocRenderer.renderFilePreview(sourceFile, targetFile, RenderType.HTML);
     assertNotNull(result);
     assertTrue(Files.exists(result));
-
   }
 }
