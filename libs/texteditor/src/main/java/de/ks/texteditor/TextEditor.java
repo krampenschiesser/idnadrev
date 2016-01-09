@@ -134,13 +134,14 @@ public class TextEditor implements Initializable {
     LastExecutionGroup<RichTextChange<Collection<String>>> previewGeneration = new LastExecutionGroup<>("PreviewGeneration", 1000, executorService);
     codeArea.richChanges().subscribe(change -> {
       if (!richtTextFXMurksGuardPreview.get()) {
+        richtTextFXMurksGuardPreview.set(true);
+        research(searchField.textProperty().getValueSafe());
         CompletableFuture<RichTextChange<Collection<String>>> future = previewGeneration.schedule(() -> change);
         if (future.getNumberOfDependents() == 0) {
           addPreviewChangeListener(future)//
             .thenRunAsync(() -> richtTextFXMurksGuardPreview.set(false), javaFXExecutorService);
         }
       }
-      richtTextFXMurksGuardPreview.set(true);
     });
     recreateRenderingButtons();
     preview.currentRendererProperty().addListener((p, o, n) -> {
@@ -148,7 +149,7 @@ public class TextEditor implements Initializable {
         recreateRenderingButtons();
       }
     });
-    root.setOnKeyReleased(e -> {
+    root.setOnKeyPressed(e -> {
       if (e.getCode() == KeyCode.F && e.isControlDown()) {
         searchField.requestFocus();
       }
@@ -158,15 +159,15 @@ public class TextEditor implements Initializable {
         searchField.setText("");
         resetSearchResults();
       } else if (e.getCode() == KeyCode.ENTER) {
-        String currentSearchString = searchField.textProperty().getValueSafe();
-        if (currentSearchString.equals(lastSearchText) && !searchResults.isEmpty()) {
+        String currentSearchText = searchField.textProperty().getValueSafe();
+        if (currentSearchText.equals(lastSearchText) && !searchResults.isEmpty()) {
           int caretPosition = codeArea.getCaretPosition();
           Predicate<SearchResult> filter;
           boolean searchUp = e.isShiftDown();
           if (searchUp) {
             filter = r -> r.getEnd() < caretPosition;
           } else {
-            filter = r -> r.getStart() > caretPosition;
+            filter = r -> r.getStart() >= caretPosition;
           }
           List<SearchResult> resultsToSearch = new ArrayList<SearchResult>(this.searchResults);
           if (searchUp) {
@@ -176,17 +177,7 @@ public class TextEditor implements Initializable {
           codeArea.positionCaret(result.getStart());
           codeArea.selectRange(result.getStart(), result.getEnd());
         } else {
-          resetSearchResults();
-          lastSearchText = currentSearchString;
-          CompletableFuture.supplyAsync(() -> searcher.search(searchField.getText(), codeArea.getText()), executorService)//
-            .thenAcceptAsync(results -> {
-              this.searchResults.clear();
-              this.searchResults.addAll(results);
-              if (!results.isEmpty()) {
-                codeArea.positionCaret(results.get(0).getStart());
-                codeArea.selectRange(results.get(0).getStart(), results.get(0).getEnd());
-              }
-            }, javaFXExecutorService);
+          research(currentSearchText);
         }
 
       }
@@ -197,8 +188,22 @@ public class TextEditor implements Initializable {
     });
   }
 
+  protected void research(String currentSearchText) {
+    resetSearchResults();
+    lastSearchText = currentSearchText;
+    CompletableFuture.supplyAsync(() -> searcher.search(searchField.getText(), codeArea.getText()), executorService)//
+      .thenAcceptAsync(results -> {
+        this.searchResults.clear();
+        this.searchResults.addAll(results);
+        if (!results.isEmpty() && searchField.isFocused()) {
+          codeArea.positionCaret(results.get(0).getStart());
+          codeArea.selectRange(results.get(0).getStart(), results.get(0).getEnd());
+        }
+      }, javaFXExecutorService);
+  }
+
   protected void resetSearchResults() {
-    for (SearchResult searchResult : searchResults) {
+    for (SearchResult searchResult : new ArrayList<>(searchResults)) {
       codeArea.clearStyle(searchResult.getStart(), searchResult.getEnd());
     }
     searchResults.clear();
