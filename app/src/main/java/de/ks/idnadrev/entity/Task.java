@@ -15,11 +15,11 @@
 
 package de.ks.idnadrev.entity;
 
-import de.ks.entity.AdocFile;
-import de.ks.entity.AdocFileNameGenerator;
-import de.ks.entity.SameFolderGenerator;
 import de.ks.flatadocdb.annotation.*;
 import de.ks.flatadocdb.query.Query;
+import de.ks.idnadrev.entity.adoc.AdocFile;
+import de.ks.idnadrev.entity.adoc.AdocFileNameGenerator;
+import de.ks.idnadrev.entity.adoc.SameFolderGenerator;
 import de.ks.idnadrev.entity.information.TextInfo;
 
 import java.nio.file.Path;

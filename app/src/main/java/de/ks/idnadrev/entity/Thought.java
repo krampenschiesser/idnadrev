@@ -16,14 +16,14 @@
 package de.ks.idnadrev.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import de.ks.entity.AdocFile;
-import de.ks.entity.AdocFileNameGenerator;
-import de.ks.entity.SameFolderGenerator;
 import de.ks.flatadocdb.annotation.Child;
 import de.ks.flatadocdb.annotation.Entity;
 import de.ks.flatadocdb.annotation.lifecycle.PostUpdate;
 import de.ks.flatadocdb.defaults.SingleFolderGenerator;
 import de.ks.flatadocdb.entity.NamedEntity;
+import de.ks.idnadrev.entity.adoc.AdocFile;
+import de.ks.idnadrev.entity.adoc.AdocFileNameGenerator;
+import de.ks.idnadrev.entity.adoc.SameFolderGenerator;
 import de.ks.idnadrev.thought.ThoughtOptions;
 import de.ks.standbein.option.Options;
 import org.apache.commons.lang3.StringUtils;

@@ -1,5 +1,5 @@
 /*
- * Copyright [2015] [Christian Loehnert]
+ * Copyright [2016] [Christian Loehnert]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.entity;
+package de.ks.idnadrev.entity.adoc;
 
 import de.ks.flatadocdb.Repository;
 import de.ks.flatadocdb.defaults.JoinedRootFolderGenerator;
