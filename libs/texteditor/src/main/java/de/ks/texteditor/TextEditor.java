@@ -19,18 +19,23 @@ import de.ks.executor.group.LastExecutionGroup;
 import de.ks.standbein.activity.executor.ActivityExecutor;
 import de.ks.standbein.activity.executor.ActivityJavaFXExecutor;
 import de.ks.standbein.activity.initialization.ActivityInitialization;
+import de.ks.standbein.i18n.Localized;
 import de.ks.texteditor.markup.Line;
 import de.ks.texteditor.markup.MarkupStyleRange;
 import de.ks.texteditor.markup.adoc.AdocMarkup;
 import de.ks.texteditor.preview.TextPreview;
+import de.ks.texteditor.render.RenderType;
+import de.ks.texteditor.render.Renderer;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.stage.FileChooser;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.RichTextChange;
@@ -38,13 +43,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.IntFunction;
@@ -66,6 +71,8 @@ public class TextEditor implements Initializable {
   private Tab htmlTab;
   @FXML
   private TextArea htmlEditor;
+  @FXML
+  protected HBox exportActions;
 
   @Inject
   ActivityJavaFXExecutor javaFXExecutorService;
@@ -73,12 +80,16 @@ public class TextEditor implements Initializable {
   ActivityExecutor executorService;
   @Inject
   ActivityInitialization initialization;
+  @Inject
+  Localized localized;
 
   LineParser lineParser = new LineParser();
-  private CodeArea codeArea;
-  private TextPreview preview;
+  CodeArea codeArea;
+  TextPreview preview;
+
   Path sourcePath;
   Path targetPath;
+  Path lastRenderingTarget;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -117,11 +128,59 @@ public class TextEditor implements Initializable {
       }
       richtTextFXMurksGuardPreview.set(true);
     });
+    recreateRenderingButtons();
+    preview.currentRendererProperty().addListener((p, o, n) -> {
+      if (n != null && !n.equals(o)) {
+        recreateRenderingButtons();
+      }
+    });
+
+  }
+
+  private void recreateRenderingButtons() {
+    exportActions.getChildren().clear();
+    List<RenderType> supportedRenderingTypes = preview.getRenderer().getSupportedRenderingTypes();
+    for (RenderType renderType : supportedRenderingTypes) {
+      String typeName = renderType.name().toLowerCase(Locale.ROOT);
+      typeName = typeName.substring(0, 1).toUpperCase(Locale.ROOT) + typeName.substring(1);
+      Button renderButton = new Button(localized.get("texteditor.renderTo", typeName));
+      renderButton.setOnAction(event -> {
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle(localized.get("texteditor.chooseFile"));
+        if (sourcePath != null && lastRenderingTarget == null) {
+          lastRenderingTarget = sourcePath;
+        }
+        if (lastRenderingTarget != null) {
+          Path source = lastRenderingTarget;
+          fileChooser.setInitialDirectory(source.getParent().toFile());
+          String fileName = source.getFileName().toString();
+          if (fileName.contains(".")) {
+            fileName = fileName.substring(0, fileName.lastIndexOf('.'));
+          }
+          fileName += renderType.getFileExtension();
+          fileChooser.setInitialFileName(fileName);
+        }
+        fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter(renderType.name(), renderType.getFileExtension()));
+        File file = fileChooser.showSaveDialog(htmlEditor.getScene().getWindow());
+        if (file != null) {
+          lastRenderingTarget = file.toPath();
+
+          Renderer renderer = preview.getRenderer();
+          try {
+            Files.write(sourcePath, codeArea.getText().getBytes(StandardCharsets.UTF_8));
+          } catch (IOException e) {
+            log.error("Could not render to {}", file, e);
+          }
+          renderer.renderFilePreview(sourcePath, file.toPath(), renderType);
+        }
+      });
+      exportActions.getChildren().add(renderButton);
+    }
   }
 
   private CompletableFuture<Void> addPreviewChangeListener(CompletableFuture<RichTextChange<Collection<String>>> future) {
     return future.thenAcceptAsync(change -> {
-      log.info("rendering preview");
       preview.preload(sourcePath, targetPath, codeArea.getText());
     }, executorService).thenRunAsync(() -> {
       preview.show(sourcePath);

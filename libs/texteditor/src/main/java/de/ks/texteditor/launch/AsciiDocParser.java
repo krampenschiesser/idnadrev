@@ -20,6 +20,7 @@ import de.ks.texteditor.render.RenderType;
 import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.AttributesBuilder;
 import org.asciidoctor.OptionsBuilder;
+import org.asciidoctor.SafeMode;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -54,7 +55,7 @@ public class AsciiDocParser {
   }
 
   public OptionsBuilder getDefaultOptions(AttributesBuilder attributes) {
-    return OptionsBuilder.options().headerFooter(true).backend(RenderType.HTML.name().toLowerCase(Locale.ROOT)).attributes(attributes.get());
+    return OptionsBuilder.options().headerFooter(true).backend(RenderType.HTML.name().toLowerCase(Locale.ROOT)).attributes(attributes.get()).safe(SafeMode.UNSAFE);
   }
 
   public Asciidoctor getAsciidoctor() {

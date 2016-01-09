@@ -17,6 +17,7 @@ package de.ks.texteditor.preview;
 
 import de.ks.standbein.activity.executor.ActivityExecutor;
 import de.ks.standbein.activity.executor.ActivityJavaFXExecutor;
+import de.ks.standbein.i18n.Localized;
 import de.ks.texteditor.module.TextEditorModule;
 import de.ks.texteditor.render.Renderer;
 import javafx.beans.property.ReadOnlyStringProperty;
@@ -55,9 +56,11 @@ public class TextPreview implements Initializable {
   final ActivityJavaFXExecutor javaFXExecutor;
   final ActivityExecutor executor;
   final Set<Renderer> renderers;
-  final AtomicReference<String> currentRenderer = new AtomicReference<>();
+  final SimpleStringProperty currentRenderer = new SimpleStringProperty();
 
   final ConcurrentHashMap<Path, CompletableFuture<Path>> preloaded = new ConcurrentHashMap<>();
+  @Inject
+  Localized localized;
 
   @Inject
   public TextPreview(@Named(TextEditorModule.DEFAULT_RENDERER) String currentRenderer, Set<Renderer> renderers, ActivityJavaFXExecutor javaFXExecutor, ActivityExecutor executor) {
@@ -80,18 +83,17 @@ public class TextPreview implements Initializable {
         }
       });
     });
-    recreateRenderingButtons();
-
-  }
-
-  private void recreateRenderingButtons() {
 
   }
 
   public void preload(Path temporarySourceFile, Path targetFile, String content) {
-    Renderer renderer = renderers.stream().filter(r -> r.getName().equals(currentRenderer.get())).findFirst().get();
+    Renderer renderer = getRenderer();
     CompletableFuture<Path> future = CompletableFuture.supplyAsync(new PreviewTask(temporarySourceFile, targetFile, content, renderer), executor);
     preloaded.put(temporarySourceFile, future);
+  }
+
+  public Renderer getRenderer() {
+    return renderers.stream().filter(r -> r.getName().equals(currentRenderer.get())).findFirst().get();
   }
 
   public void show(Path temporarySourceFile) {
@@ -143,6 +145,9 @@ public class TextPreview implements Initializable {
 
   public void setCurrentRenderer(String currentRenderer) {
     this.currentRenderer.set(currentRenderer);
-    javaFXExecutor.submit(this::recreateRenderingButtons);
+  }
+
+  public SimpleStringProperty currentRendererProperty() {
+    return currentRenderer;
   }
 }

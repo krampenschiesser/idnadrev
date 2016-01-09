@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 public class AsciidocRenderer implements Renderer {
   public static final String NAME = "AsciiDoctor";
@@ -53,11 +54,13 @@ public class AsciidocRenderer implements Renderer {
   }
 
   protected OptionsBuilder getOptions(Path source, Path targetFile, RenderType type) {
+    Path parent = targetFile.getParent();
     OptionsBuilder options = parser.getDefaultOptions();
     options.toFile(targetFile.toFile());
-    options.toDir(targetFile.getParent().toFile());
+    options.toDir(parent.toFile());
     options.baseDir(source.getParent().toFile());
-    options.destinationDir(targetFile.getParent().toFile());
+    options.destinationDir(parent.toFile());
+    options.backend(type.name().toLowerCase(Locale.ROOT));
     return options;
   }
 

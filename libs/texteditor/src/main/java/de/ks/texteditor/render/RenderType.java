@@ -16,5 +16,15 @@
 package de.ks.texteditor.render;
 
 public enum RenderType {
-  HTML, PDF, DOCBOOK;
+  HTML(".html"), PDF(".pdf"), DOCBOOK(".xml");
+
+  private final String fileExtension;
+
+  RenderType(String fileExtension) {
+    this.fileExtension = fileExtension;
+  }
+
+  public String getFileExtension() {
+    return fileExtension;
+  }
 }
