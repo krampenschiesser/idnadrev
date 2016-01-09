@@ -25,6 +25,7 @@ dependencies {
     compile("org.asciidoctor:asciidoctorj-diagram:$asciidocDiagram") {
         transitive = false;
     }
+    compile "com.github.rjeschke:txtmark:$txtMark"
 
     compile "org.fxmisc.richtext:richtextfx:$richtextfx"
 

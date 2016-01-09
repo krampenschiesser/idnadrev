@@ -17,7 +17,7 @@ package de.ks.texteditor.preview;
 
 import de.ks.standbein.activity.executor.ActivityExecutor;
 import de.ks.standbein.activity.executor.ActivityJavaFXExecutor;
-import de.ks.texteditor.render.AsciidocRenderer;
+import de.ks.texteditor.render.MarkdownRenderer;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.concurrent.Worker;
@@ -54,7 +54,7 @@ public class TextPreview implements Initializable {
 
   private final ConcurrentHashMap<Path, CompletableFuture<Path>> preloaded = new ConcurrentHashMap<>();
   @Inject
-  private AsciidocRenderer renderer;
+  private MarkdownRenderer renderer;
   protected final AtomicInteger lastScrollPos = new AtomicInteger();
 
   @Override
