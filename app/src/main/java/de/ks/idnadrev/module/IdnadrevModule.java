@@ -40,10 +40,12 @@ import de.ks.idnadrev.task.fasttrack.FastTrackActivity;
 import de.ks.idnadrev.task.view.ViewTasksActvity;
 import de.ks.idnadrev.thought.add.AddThoughtActivity;
 import de.ks.idnadrev.thought.view.ViewThoughtsActivity;
+import de.ks.launch.DummyData;
 import de.ks.standbein.activity.InitialActivity;
 import de.ks.standbein.application.ApplicationCfg;
 import de.ks.standbein.application.MainWindow;
 import de.ks.standbein.javafx.FxCss;
+import de.ks.standbein.launch.Service;
 import de.ks.standbein.menu.MenuEntry;
 import de.ks.standbein.menu.StartActivityAction;
 
@@ -58,10 +60,14 @@ public class IdnadrevModule extends AbstractModule {
 
     configureEntities();
     registerMenuItems();
+
+    if (System.getProperty(DummyData.CREATE_DUMMYDATA) != null) {
+      Multibinder.newSetBinder(binder(), Service.class).addBinding().to(DummyData.class);
+    }
   }
 
   protected void bindInitialActivity() {
-    OptionalBinder.newOptionalBinder(binder(), InitialActivity.class).setDefault().toInstance(new InitialActivity(OverviewActivity.class));
+    OptionalBinder.newOptionalBinder(binder(), InitialActivity.class).setDefault().toInstance(new InitialActivity(ViewThoughtsActivity.class));
   }
 
   protected void registerMenuItems() {
