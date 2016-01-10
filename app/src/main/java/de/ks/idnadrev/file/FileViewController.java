@@ -18,7 +18,6 @@ package de.ks.idnadrev.file;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import de.ks.idnadrev.entity.FileContainer;
-import de.ks.standbein.activity.ActivityLoadFinishedEvent;
 import de.ks.standbein.activity.context.ActivityStore;
 import de.ks.standbein.activity.initialization.DatasourceCallback;
 import javafx.beans.binding.Bindings;
@@ -26,7 +25,6 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -39,10 +37,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.util.Collections;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -70,11 +68,6 @@ public class FileViewController implements Initializable, DatasourceCallback<Fil
 
   @Inject
   protected ActivityStore store;
-  //  @Inject
-//  protected FileStore fileStore;
-//  @Inject
-//  protected GlobalImageProvider imageProvider;
-  protected final Map<File, CompletableFuture<Path>> fileReferences = new HashMap<>();
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -92,13 +85,6 @@ public class FileViewController implements Initializable, DatasourceCallback<Fil
     BooleanBinding isDirectory = Bindings.createBooleanBinding(() -> selection.get() != null && selection.get().isDirectory(), selection);
     edit.disableProperty().bind(isDirectory);
 
-//    files.addListener((ListChangeListener<File>) change -> {
-//      files.forEach(file -> {
-//        if (!fileReferences.containsKey(file) && file.exists() && !file.isDirectory()) {
-//          fileReferences.put(file, fileStore.getReference(file));
-//        }
-//      });
-//    });// FIXME: 12/17/15 
     BooleanBinding disable = fileList.getSelectionModel().selectedItemProperty().isNull();
     open.disableProperty().bind(disable);
     edit.disableProperty().bind(disable);
@@ -145,7 +131,7 @@ public class FileViewController implements Initializable, DatasourceCallback<Fil
   }
 
   @FXML
-  void open(ActionEvent event) {
+  void open() {
     ObservableList<File> items = fileList.getSelectionModel().getSelectedItems();
     for (File item : items) {
       executor.submit(() -> {
@@ -160,7 +146,7 @@ public class FileViewController implements Initializable, DatasourceCallback<Fil
   }
 
   @FXML
-  void edit(ActionEvent event) {
+  void edit() {
     ObservableList<File> items = fileList.getSelectionModel().getSelectedItems();
     for (File item : items) {
       executor.submit(() -> {
@@ -175,7 +161,7 @@ public class FileViewController implements Initializable, DatasourceCallback<Fil
   }
 
   @FXML
-  void openFolder(ActionEvent event) {
+  void openFolder() {
     TreeSet<File> files = new TreeSet<>();
 
     ObservableList<File> items = fileList.getSelectionModel().getSelectedItems();
@@ -199,33 +185,25 @@ public class FileViewController implements Initializable, DatasourceCallback<Fil
   }
 
   @FXML
-  public void removeFile(ActionEvent event) {
+  public void removeFile() {
     ObservableList<File> selectedItems = fileList.getSelectionModel().getSelectedItems();
     log.info("Removing files {}", selectedItems);
-    selectedItems.forEach(f -> files.remove(f));
+    selectedItems.forEach(files::remove);
   }
 
   @FXML
-  void addNewFile(ActionEvent event) {
+  void addNewFile() {
     FileChooser fileChooser = new FileChooser();
     File file = fileChooser.showOpenDialog(edit.getScene().getWindow());
     if (file != null) {
-      addFiles(Arrays.asList(file));
+      addFiles(Collections.singletonList(file));
     }
   }
 
   @Subscribe
-  public void onRefresh(ActivityLoadFinishedEvent event) {
+  public void onRefresh() {
     log.debug("Clearing files");
     files.clear();
-    fileReferences.clear();
-    // FIXME: 12/17/15 
-//    event.<FileContainer<?>>getModel().getFiles().forEach(f -> {
-//      File file = fileStore.getFile(f);
-//      fileReferences.put(file, CompletableFuture.completedFuture(f));
-//      addPossibleImage(file);
-//      files.add(file);
-//    });
   }
 
   @Override
@@ -235,31 +213,11 @@ public class FileViewController implements Initializable, DatasourceCallback<Fil
 
   @Override
   public void duringSave(FileContainer<?> model) {
-    fileReferences.keySet().retainAll(files);
-    if (this.fileReferences.isEmpty()) {
+    if (this.files.isEmpty()) {
       log.info("No files to save for {}", model);
     }
-    this.fileReferences.entrySet().forEach(entry -> {
-      try {
-        File file = entry.getKey();
-        CompletableFuture<Path> cf = entry.getValue();
-        Path fileReference = cf.get();
-        model.getFiles().remove(fileReference);
-        // FIXME: 12/17/15
-//        model.addFileReference(persistentWork.reload(fileReference));//ensure it is saved
-//        if (fileReference.getId() > 0) {
-//          return;
-//        }
-//        fileStore.scheduleCopy(fileReference, file);
-
-        log.info("Adding file reference {}", fileReference);
-
-//        // FIXME: 12/17/15 
-//        persistentWork.persist(fileReference);
-      } catch (InterruptedException | ExecutionException e) {
-        log.error("Could not get fileReference for file {}", entry.getKey());
-        throw new RuntimeException(e);
-      }
-    });
+    for (File file : files) {
+      model.addFile(file.toPath());
+    }
   }
 }
