@@ -14,11 +14,10 @@
  */
 package de.ks.launch;
 
-import de.ks.blogging.grav.entity.GravBlog;
 import de.ks.flatjsondb.PersistentWork;
-import de.ks.fxcontrols.weekview.WeekHelper;
-import de.ks.gallery.entity.GalleryFavorite;
-import de.ks.idnadrev.entity.*;
+import de.ks.idnadrev.entity.Context;
+import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.entity.Thought;
 import de.ks.idnadrev.entity.information.DiaryInfo;
 import de.ks.idnadrev.entity.information.TextInfo;
 import de.ks.standbein.application.FXApplicationExceptionHandler;
@@ -27,14 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.io.File;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Arrays;
 
 public class DummyData extends Service {
   private static final Logger log = LoggerFactory.getLogger(DummyData.class);
@@ -59,6 +52,7 @@ public class DummyData extends Service {
   @Override
   protected void doStart() {
     if (Boolean.getBoolean(CREATE_DUMMYDATA)) {
+      Arrays.asList(Thought.class, Context.class, Task.class, TextInfo.class, DiaryInfo.class).forEach(c -> persistentWork.removeAllOf(c));
       FXApplicationExceptionHandler.showExceptions = true;
       createData();
     }
@@ -75,89 +69,91 @@ public class DummyData extends Service {
     persistentWork.persist(new Thought("Go hiking").setDescription("maybe the CDT"));
 
     Context hiking = new Context("Hiking");
+    persistentWork.persist(hiking);
 
     Task backpack = new Task("Build a new backpack").setDescription("DIY").setProject(true);
     backpack.setContext(hiking);
     tasks.add(backpack);
-
-    Task sketch = new Task("Create a sketch").setDescription("sketchy\n\tsketchy");
-    sketch.setEstimatedTime(Duration.ofMinutes(42));
-    tasks.add(sketch);
-    Task sew = new Task("Sew the backpack").setDescription("no hussle please");
-    sew.setEstimatedTime(Duration.ofMinutes(60 * 3 + 32));
-    tasks.add(sew);
-    backpack.addChild(sketch);
-    backpack.addChild(sew);
-
-    Task task = new Task("Do some stuff").setContext(hiking).setEstimatedTime(Duration.ofMinutes(12));
-    WorkUnit workUnit = new WorkUnit(task);
-    workUnit.setStart(LocalDateTime.now().minus(5, ChronoUnit.MINUTES));
-    workUnit.stop();
-    tasks.add(task);
-
-    Context work = new Context("Work");
-    Task asciiDocSample = new Task("AsciiDocSample").setDescription(asciiDocString).setEstimatedTime(Duration.ofMinutes(1));
-    asciiDocSample.setContext(work);
-    asciiDocSample.getOutcome().setExpectedOutcome("= title\n\n== other\n");
-    tasks.add(asciiDocSample);
-
-    tasks.forEach((t) -> t.getPhysicalEffort().setAmount(ThreadLocalRandom.current().nextInt(0, 10)));
-    tasks.forEach((t) -> t.getMentalEffort().setAmount(ThreadLocalRandom.current().nextInt(0, 10)));
-    tasks.forEach((t) -> t.getFunFactor().setAmount(ThreadLocalRandom.current().nextInt(-5, 5)));
-
-    persistentWork.persist(hiking, work, backpack, sketch, sew, task, workUnit, asciiDocSample);
-
-    persistentWork.persist(new Context("Studying"), new Context("Music"));
-
-    Task effort = new Task("effort");
-    effort.getMentalEffort().setAmount(-3);
-    effort.getPhysicalEffort().setAmount(4);
-    effort.getFunFactor().setAmount(4);
-
-    persistentWork.persist(effort);
-
-    persistentWork.persist(new Task("finished task").setDescription("yes it is done").setFinished(true));
-
-
-    persistentWork.run(session -> {
-      Task longRunner = new Task("long runner");
-      longRunner.setDescription("= title\n\n== bla\n\nhello");
-      session.persist(longRunner);
-      LocalDateTime start = null;
-      for (int i = 0; i < 7; i++) {
-        WorkUnit unit = new WorkUnit(longRunner);
-        LocalDate startDate = new WeekHelper().getFirstDayOfWeek(LocalDate.now()).minusWeeks(1).plusDays(i);
-        start = LocalDateTime.of(startDate, LocalTime.of(12, 15));
-        unit.setStart(start);
-        unit.setEnd(start.plusHours(1));
-        session.persist(unit);
-      }
-      longRunner.setFinishTime(start);
-    });
-
-
-    Task proposed = new Task("proposed");
-    proposed.setSchedule(new Schedule().setProposedWeek(new WeekHelper().getWeek(LocalDate.now())));
-    persistentWork.persist(proposed);
-
-    Task scheduled = new Task("scheduled");
-    Schedule schedule = new Schedule();
-    schedule.setScheduledDate(new WeekHelper().getFirstDayOfWeek(LocalDate.now()).plusDays(1));
-    schedule.setScheduledTime(LocalTime.of(12, 0));
-
-    scheduled.setSchedule(schedule);
-    persistentWork.persist(scheduled);
-
-
-    persistentWork.persist(new DiaryInfo(LocalDate.now().minusDays(1)).setContent("wuza!"));
-
-    for (int i = 0; i < 5; i++) {
-      Tag tag = new Tag("tag" + i);
-      TextInfo info = new TextInfo("info" + i);
-      info.setContent(asciiDocString);
-      info.addTag(tag);
-      persistentWork.persist(tag, info);
-    }
+    persistentWork.persist(backpack);
+//
+//    Task sketch = new Task("Create a sketch").setDescription("sketchy\n\tsketchy");
+//    sketch.setEstimatedTime(Duration.ofMinutes(42));
+//    tasks.add(sketch);
+//    Task sew = new Task("Sew the backpack").setDescription("no hussle please");
+//    sew.setEstimatedTime(Duration.ofMinutes(60 * 3 + 32));
+//    tasks.add(sew);
+//    backpack.addChild(sketch);
+//    backpack.addChild(sew);
+//
+//    Task task = new Task("Do some stuff").setContext(hiking).setEstimatedTime(Duration.ofMinutes(12));
+//    WorkUnit workUnit = new WorkUnit(task);
+//    workUnit.setStart(LocalDateTime.now().minus(5, ChronoUnit.MINUTES));
+//    workUnit.stop();
+//    tasks.add(task);
+//
+//    Context work = new Context("Work");
+//    Task asciiDocSample = new Task("AsciiDocSample").setDescription(asciiDocString).setEstimatedTime(Duration.ofMinutes(1));
+//    asciiDocSample.setContext(work);
+//    asciiDocSample.getOutcome().setExpectedOutcome("= title\n\n== other\n");
+//    tasks.add(asciiDocSample);
+//
+//    tasks.forEach((t) -> t.getPhysicalEffort().setAmount(ThreadLocalRandom.current().nextInt(0, 10)));
+//    tasks.forEach((t) -> t.getMentalEffort().setAmount(ThreadLocalRandom.current().nextInt(0, 10)));
+//    tasks.forEach((t) -> t.getFunFactor().setAmount(ThreadLocalRandom.current().nextInt(-5, 5)));
+//
+//    persistentWork.persist(hiking, work, backpack, sketch, sew, task, asciiDocSample);
+//
+//    persistentWork.persist(new Context("Studying"), new Context("Music"));
+//
+//    Task effort = new Task("effort");
+//    effort.getMentalEffort().setAmount(-3);
+//    effort.getPhysicalEffort().setAmount(4);
+//    effort.getFunFactor().setAmount(4);
+//
+//    persistentWork.persist(effort);
+//
+//    persistentWork.persist(new Task("finished task").setDescription("yes it is done").setFinished(true));
+//
+//
+//    persistentWork.run(session -> {
+//      Task longRunner = new Task("long runner");
+//      longRunner.setDescription("= title\n\n== bla\n\nhello");
+//      session.persist(longRunner);
+//      LocalDateTime start = null;
+//      for (int i = 0; i < 7; i++) {
+//        WorkUnit unit = new WorkUnit(longRunner);
+//        LocalDate startDate = new WeekHelper().getFirstDayOfWeek(LocalDate.now()).minusWeeks(1).plusDays(i);
+//        start = LocalDateTime.of(startDate, LocalTime.of(12, 15));
+//        unit.setStart(start);
+//        unit.setEnd(start.plusHours(1));
+//        session.persist(unit);
+//      }
+//      longRunner.setFinishTime(start);
+//    });
+//
+//
+//    Task proposed = new Task("proposed");
+//    proposed.setSchedule(new Schedule().setProposedWeek(new WeekHelper().getWeek(LocalDate.now())));
+//    persistentWork.persist(proposed);
+//
+//    Task scheduled = new Task("scheduled");
+//    Schedule schedule = new Schedule();
+//    schedule.setScheduledDate(new WeekHelper().getFirstDayOfWeek(LocalDate.now()).plusDays(1));
+//    schedule.setScheduledTime(LocalTime.of(12, 0));
+//
+//    scheduled.setSchedule(schedule);
+//    persistentWork.persist(scheduled);
+//
+//
+//    persistentWork.persist(new DiaryInfo(LocalDate.now().minusDays(1)).setContent("wuza!"));
+//
+//    for (int i = 0; i < 5; i++) {
+//      Tag tag = new Tag("tag" + i);
+//      TextInfo info = new TextInfo("info" + i);
+//      info.setContent(asciiDocString);
+//      info.addTag(tag);
+//      persistentWork.persist(tag, info);
+//    }
 
 //
 //    Account account1 = new Account("testAccount1");
@@ -207,14 +203,14 @@ public class DummyData extends Service {
 //
 //    persistentWork.persist(pattern1, pattern2, pattern3);
 
-    GravBlog gravBlog = new GravBlog("grav-bk", "/home/scar/blog/grav-bk/user/pages");
-    persistentWork.persist(gravBlog);
-
-    persistentWork.persist(new GalleryFavorite(new File("/home/scar/downloads/images/pct")));
-    persistentWork.persist(new GalleryFavorite(new File("/home/scar/downloads/images/schottland2011")));
-    persistentWork.persist(new GalleryFavorite(new File("/home/scar/downloads/images/schottland2012")));
-    persistentWork.persist(new GalleryFavorite(new File("/home/scar/downloads/images/schottland2014")));
-    persistentWork.persist(new GalleryFavorite(new File("/tmp/galleryTest")));
+//    GravBlog gravBlog = new GravBlog("grav-bk", "/home/scar/blog/grav-bk/user/pages");
+//    persistentWork.persist(gravBlog);
+//
+//    persistentWork.persist(new GalleryFavorite(new File("/home/scar/downloads/images/pct")));
+//    persistentWork.persist(new GalleryFavorite(new File("/home/scar/downloads/images/schottland2011")));
+//    persistentWork.persist(new GalleryFavorite(new File("/home/scar/downloads/images/schottland2012")));
+//    persistentWork.persist(new GalleryFavorite(new File("/home/scar/downloads/images/schottland2014")));
+//    persistentWork.persist(new GalleryFavorite(new File("/tmp/galleryTest")));
   }
 
   @Override
