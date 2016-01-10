@@ -17,11 +17,11 @@ package de.ks.idnadrev.thought.view;
 
 import de.ks.flatadocdb.session.Session;
 import de.ks.idnadrev.ActivityTest;
+import de.ks.idnadrev.IdnadrevIntegrationTestModule;
 import de.ks.idnadrev.entity.Thought;
 import de.ks.idnadrev.entity.information.TextInfo;
 import de.ks.idnadrev.information.text.TextInfoActivity;
 import de.ks.idnadrev.information.text.TextInfoController;
-import de.ks.standbein.IntegrationTestModule;
 import de.ks.standbein.LoggingGuiceTestSupport;
 import de.ks.standbein.TempFileRule;
 import de.ks.standbein.activity.ActivityCfg;
@@ -43,7 +43,7 @@ public class ViewThoughtsTest extends ActivityTest {
   public TempFileRule testFiles = new TempFileRule(2);
 
   @Rule
-  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule());
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IdnadrevIntegrationTestModule()).launchServices();
   private ViewThoughts viewThoughts;
 
   @Override
@@ -76,6 +76,11 @@ public class ViewThoughtsTest extends ActivityTest {
 
     List<Thought> from = persistentWork.from(Thought.class);
     assertEquals(1, from.size());
+  }
+
+  @Test
+  public void testToTask() throws Exception {
+
   }
 
   @Test
