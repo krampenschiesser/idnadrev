@@ -19,8 +19,13 @@ import de.ks.flatadocdb.annotation.Entity;
 import de.ks.flatadocdb.annotation.Id;
 import de.ks.flatadocdb.annotation.PathInRepository;
 import de.ks.flatadocdb.annotation.Version;
+import de.ks.flatadocdb.annotation.lifecycle.PostRemove;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -28,6 +33,8 @@ import java.util.List;
 
 @Entity(persister = AdocPersister.class, fileGenerator = AdocFileNameGenerator.class)
 public class AdocFile {
+  private static final Logger log = LoggerFactory.getLogger(AdocFile.class);
+  public static final String TMP_SUFFIX = ".tmp.adoc";
   @Version
   protected long version;
   @Id
@@ -78,7 +85,7 @@ public class AdocFile {
    */
   public Path getTmpFile() {
     String fileName = pathInRepository.getFileName().toString();
-    fileName = StringUtils.replace(fileName, ".adoc", ".tmp.adoc");
+    fileName = StringUtils.replace(fileName, ".adoc", TMP_SUFFIX);
     return pathInRepository.getParent().resolve(fileName);
   }
 
@@ -117,7 +124,7 @@ public class AdocFile {
   }
 
   public String getContent() {
-    return content;
+    return content == null ? "" : content;
   }
 
   public AdocFile setContent(String content) {
@@ -131,5 +138,17 @@ public class AdocFile {
 
   public List<Path> getIncludedFiles() {
     return includedFiles;
+  }
+
+  @PostRemove
+  public void cleanup() {
+    Path tmpFile = getTmpFile();
+    Path renderingPath = getRenderingPath();
+    try {
+      Files.deleteIfExists(tmpFile);
+      Files.deleteIfExists(renderingPath);
+    } catch (IOException e) {
+      log.error("Could nto remove tmpFile {}", e);
+    }
   }
 }
