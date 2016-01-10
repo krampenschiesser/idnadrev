@@ -142,25 +142,27 @@ public class TextPreview implements Initializable {
       log.info("Alert {}", e.getData());
     });
     CompletableFuture<Path> pathFuture = preloaded.get(temporarySourceFile);
-    pathFuture.thenApplyAsync(path -> {
-      try {
-        String content = Files.readAllLines(path, StandardCharsets.UTF_8).stream().collect(Collectors.joining("\n"));
-        return content;
-      } catch (IOException e) {
-        return "";
-      }
-    }, executor).thenAcceptAsync(html::set, javaFXExecutor);
+    if (pathFuture != null) {
+      pathFuture.thenApplyAsync(path -> {
+        try {
+          String content = Files.readAllLines(path, StandardCharsets.UTF_8).stream().collect(Collectors.joining("\n"));
+          return content;
+        } catch (IOException e) {
+          return "";
+        }
+      }, executor).thenAcceptAsync(html::set, javaFXExecutor);
 
-    pathFuture.thenAcceptAsync(path -> {
-      try {
-        int scrollpos = (Integer) webView.getEngine().executeScript("document.body.scrollTop");
-        lastScrollPos.set(scrollpos);
-        URL url = path.toUri().toURL();
-        webView.getEngine().load(url.toExternalForm());
-      } catch (MalformedURLException e) {
-        //
-      }
-    }, javaFXExecutor);
+      pathFuture.thenAcceptAsync(path -> {
+        try {
+          int scrollpos = (Integer) webView.getEngine().executeScript("document.body.scrollTop");
+          lastScrollPos.set(scrollpos);
+          URL url = path.toUri().toURL();
+          webView.getEngine().load(url.toExternalForm());
+        } catch (MalformedURLException e) {
+          //
+        }
+      }, javaFXExecutor);
+    }
   }
 
   public StackPane getRoot() {
