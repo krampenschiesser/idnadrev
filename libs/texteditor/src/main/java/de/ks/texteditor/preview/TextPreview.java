@@ -50,11 +50,13 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class TextPreview implements Initializable {
+
   public static CompletableFuture<DefaultLoader<Node, TextPreview>> load(ActivityInitialization initialization, Consumer<StackPane> viewConsumer, Consumer<TextPreview> controllerConsumer) {
     return initialization.loadAdditionalControllerWithFuture(TextPreview.class)//
       .thenApply(loader -> {
-        viewConsumer.accept((StackPane) loader.getView());
-        controllerConsumer.accept(loader.getController());
+        TextPreview controller = loader.getController();
+        controllerConsumer.accept(controller);
+        viewConsumer.accept(controller.getRoot());
         return loader;
       });
   }
@@ -75,12 +77,28 @@ public class TextPreview implements Initializable {
   @Inject
   Localized localized;
 
+  //used for rendering when no path is given
+  private Path tmpDst;
+  private Path tmpSrc;
+
   @Inject
   public TextPreview(@Named(TextEditorModule.DEFAULT_RENDERER) String currentRenderer, Set<Renderer> renderers, ActivityJavaFXExecutor javaFXExecutor, ActivityExecutor executor) {
     this.javaFXExecutor = javaFXExecutor;
     this.executor = executor;
     this.currentRenderer.set(currentRenderer);
     this.renderers = renderers;
+    try {
+      if (tmpSrc == null) {
+        tmpSrc = Files.createTempFile("renderSrc", ".adoc");
+        tmpSrc.toFile().deleteOnExit();
+      }
+      if (tmpDst == null) {
+        tmpDst = Files.createTempFile("renderTarget", ".html");
+        tmpDst.toFile().deleteOnExit();
+      }
+    } catch (IOException e) {
+      log.info("Could not create rendering target and source ", e);
+    }
   }
 
   @Override
@@ -100,6 +118,12 @@ public class TextPreview implements Initializable {
   }
 
   public void preload(Path temporarySourceFile, Path targetFile, String content) {
+    if (temporarySourceFile == null && tmpSrc != null) {
+      temporarySourceFile = tmpSrc;
+    }
+    if (targetFile == null && tmpDst != null) {
+      targetFile = tmpDst;
+    }
     Renderer renderer = getRenderer();
     CompletableFuture<Path> future = CompletableFuture.supplyAsync(new PreviewTask(temporarySourceFile, targetFile, content, renderer), executor);
     preloaded.put(temporarySourceFile, future);
@@ -110,6 +134,9 @@ public class TextPreview implements Initializable {
   }
 
   public void show(Path temporarySourceFile) {
+    if (temporarySourceFile == null) {
+      temporarySourceFile = tmpSrc;
+    }
     WebView webView = this.webView.get();
     webView.getEngine().setOnAlert(e -> {
       log.info("Alert {}", e.getData());
@@ -168,4 +195,5 @@ public class TextPreview implements Initializable {
     preloaded.clear();
     webView.get().getEngine().loadContent("");
   }
+
 }
