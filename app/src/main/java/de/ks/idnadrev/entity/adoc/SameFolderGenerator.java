@@ -21,6 +21,9 @@ import de.ks.flatadocdb.defaults.JoinedRootFolderGenerator;
 import javax.annotation.Nullable;
 import java.nio.file.Path;
 
+/**
+ * Mainly used for mapping children
+ */
 public class SameFolderGenerator extends JoinedRootFolderGenerator {
   @Override
   public Path getFolder(Repository repository, @Nullable Path path, Object o) {
