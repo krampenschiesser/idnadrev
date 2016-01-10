@@ -15,8 +15,8 @@
 package de.ks.idnadrev.thought.add;
 
 import de.ks.idnadrev.ActivityTest;
+import de.ks.idnadrev.IdnadrevIntegrationTestModule;
 import de.ks.idnadrev.entity.Thought;
-import de.ks.standbein.IntegrationTestModule;
 import de.ks.standbein.LoggingGuiceTestSupport;
 import de.ks.standbein.TempFileRule;
 import de.ks.standbein.activity.ActivityCfg;
@@ -48,7 +48,7 @@ public class AddThoughtTest extends ActivityTest {
   public TempFileRule testFiles = new TempFileRule(2);
 
   @Rule
-  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule());
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IdnadrevIntegrationTestModule()).launchServices();
 
   private Scene scene;
 
@@ -62,7 +62,6 @@ public class AddThoughtTest extends ActivityTest {
   @Before
   public void setUp() throws Exception {
     addThought = activityController.getCurrentController();
-//    FXPlatform.invokeLater(() -> addThought.description.getPersistentStoreBack().delete());
     FXPlatform.invokeLater(() -> {
       Clipboard.getSystemClipboard().clear();
     });
@@ -76,7 +75,6 @@ public class AddThoughtTest extends ActivityTest {
     FXPlatform.waitForFX();
     assertEquals(clipboardText, addThought.description.getText());
     assertEquals("title", addThought.name.getText());
-//    assertTrue(addThought.save.isFocused()); doesn't work anymore since validation is there
 
     FXPlatform.invokeLater(() -> {
       Clipboard.getSystemClipboard().clear();
@@ -186,12 +184,11 @@ public class AddThoughtTest extends ActivityTest {
     activityController.waitForTasks();
     activityController.getExecutorService().waitForAllTasksDone();
 
-// FIXME: 12/23/15
-//    List<Thought> thoughts = persistentWork.from(Thought.class, thought -> thought.getFiles().size());
-//    assertEquals(1, thoughts.size());
+    List<Thought> thoughts = persistentWork.from(Thought.class);
+    assertEquals(1, thoughts.size());
 
-//    Thought thought = thoughts.get(0);
-//    assertEquals(2, thought.getFiles().size());
+    Thought thought = thoughts.get(0);
+    assertEquals(2, thought.getFiles().size());
   }
 
   @Test
@@ -222,19 +219,18 @@ public class AddThoughtTest extends ActivityTest {
       MultipleSelectionModel<File> selectionModel = addThought.fileViewController.getFileList().getSelectionModel();
       selectionModel.clearSelection();
       selectionModel.select(0);
-      addThought.fileViewController.removeFile(null);
+      addThought.fileViewController.removeFile();
       addThought.save.getOnAction().handle(new ActionEvent());
     });
     FXPlatform.waitForFX();
     activityController.waitForDataSource();
     activityController.waitForTasks();
 
-//// FIXME: 12/23/15
-//    List<Thought> thoughts = persistentWork.from(Thought.class, thought -> thought.getFiles().size());
-//    assertEquals(1, thoughts.size());
-//
-//    Thought thought = thoughts.get(0);
-//    assertEquals(1, thought.getFiles().size());
+    List<Thought> thoughts = persistentWork.from(Thought.class);
+    assertEquals(1, thoughts.size());
+
+    Thought thought = thoughts.get(0);
+    assertEquals(1, thought.getFiles().size());
   }
 
   @Test
@@ -250,24 +246,7 @@ public class AddThoughtTest extends ActivityTest {
       addThought.name.setText("test");
       addThought.fileViewController.addFiles(Arrays.asList(file));
     });
-//// FIXME: 1/10/16 
-//    InsertImage command = addThought.description.getCommand(InsertImage.class);
-//    command.collectImages();
-//    for (Future<?> future : command.getSelectImageController().getLoadingFutures()) {
-//      future.get();
-//    }
-//
-//    FXPlatform.invokeLater(() -> {
-//      GridPane grid = (GridPane) command.getSelectImageController().getImagePane().getChildren().get(0);
-//      Button node = (Button) grid.getChildren().get(0);
-//      node.getOnAction().handle(null);
-//    });
-//    Thread.sleep(200);
 
-    FXPlatform.waitForFX();
-    assertThat(addThought.description.getText(), containsString("test.jpg"));
-
-    Thread.sleep(100);
     activityController.save();
     activityController.waitForDataSource();
 
@@ -282,6 +261,11 @@ public class AddThoughtTest extends ActivityTest {
 
       assertThat(thought.getDescription(), not(containsString("file://" + file.getAbsolutePath())));
     });
+
+    Thought thought = persistentWork.from(Thought.class).iterator().next();
+    persistentWork.remove(thought);
+
+    assertFalse(thought.getPathInRepository().getParent().toFile().exists());
 
   }
 }
