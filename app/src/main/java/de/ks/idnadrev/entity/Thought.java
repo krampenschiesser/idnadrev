@@ -18,6 +18,7 @@ package de.ks.idnadrev.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.ks.flatadocdb.annotation.Child;
 import de.ks.flatadocdb.annotation.Entity;
+import de.ks.flatadocdb.annotation.lifecycle.PostRemove;
 import de.ks.flatadocdb.annotation.lifecycle.PostUpdate;
 import de.ks.flatadocdb.defaults.SingleFolderGenerator;
 import de.ks.flatadocdb.entity.NamedEntity;
@@ -63,7 +64,11 @@ public class Thought extends NamedEntity implements FileContainer<Thought> {
   @Override
   public void setName(String name) {
     super.setName(name);
-    adocFile.setName(name);
+    if (adocFile == null) {
+      adocFile = new AdocFile(name);
+    } else {
+      adocFile.setName(name);
+    }
   }
 
   public AdocFile getAdocFile() {
@@ -134,9 +139,22 @@ public class Thought extends NamedEntity implements FileContainer<Thought> {
     files.stream().filter(file -> !file.getParent().equals(parent)).forEach(file -> {
       try {
         Files.copy(file, parent.resolve(file.getFileName()));
+        log.debug("For Thought {} copied {} to {}", getName(), file, parent);
       } catch (IOException e) {
         log.error("Could not copy requested file {} to ", file, parent);
       }
     });
+  }
+
+  @PostRemove
+  public void cleanup() {
+    for (Path path : getFiles()) {
+      try {
+        Files.deleteIfExists(path);
+      } catch (IOException e) {
+        log.error("Could not remove {}", path, e);
+      }
+    }
+
   }
 }

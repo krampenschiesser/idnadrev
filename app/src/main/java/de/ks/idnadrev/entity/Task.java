@@ -90,9 +90,12 @@ public class Task extends TaggedEntity implements FileContainer<Task> {
   @Override
   public void setName(String name) {
     super.setName(name);
-    adocFile.setName(name);
+    if (adocFile == null) {
+      adocFile = new AdocFile(name);
+    } else {
+      adocFile.setName(name);
+    }
   }
-
 
   @Override
   public Set<Path> getFiles() {
