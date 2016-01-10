@@ -60,6 +60,12 @@ public class Thought extends NamedEntity implements FileContainer<Thought> {
     super(name);
   }
 
+  @Override
+  public void setName(String name) {
+    super.setName(name);
+    adocFile.setName(name);
+  }
+
   public AdocFile getAdocFile() {
     return adocFile;
   }

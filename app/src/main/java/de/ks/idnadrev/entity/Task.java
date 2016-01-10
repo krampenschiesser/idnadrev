@@ -88,6 +88,13 @@ public class Task extends TaggedEntity implements FileContainer<Task> {
   }
 
   @Override
+  public void setName(String name) {
+    super.setName(name);
+    adocFile.setName(name);
+  }
+
+
+  @Override
   public Set<Path> getFiles() {
     return files;
   }

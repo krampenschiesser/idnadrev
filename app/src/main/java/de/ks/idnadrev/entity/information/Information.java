@@ -45,6 +45,12 @@ public abstract class Information<E extends Information<E>> extends TaggedEntity
     super(name);
   }
 
+  @Override
+  public void setName(String name) {
+    super.setName(name);
+    adocFile.setName(name);
+  }
+
   public String getContent() {
     return adocFile.getContent();
   }
