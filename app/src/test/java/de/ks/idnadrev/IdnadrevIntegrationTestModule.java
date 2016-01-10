@@ -16,15 +16,15 @@
 package de.ks.idnadrev;
 
 import com.google.inject.AbstractModule;
-import de.ks.AsciiDoctorModule;
 import de.ks.idnadrev.module.IdnadrevModule;
 import de.ks.standbein.IntegrationTestModule;
+import de.ks.texteditor.module.TextEditorModule;
 
 public class IdnadrevIntegrationTestModule extends AbstractModule {
 
   @Override
   protected void configure() {
-    install(new AsciiDoctorModule());
+    install(new TextEditorModule());
     install(new IdnadrevModule() {
       @Override
       protected void bindInitialActivity() {

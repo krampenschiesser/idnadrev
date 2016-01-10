@@ -16,8 +16,8 @@ package de.ks.idnadrev.review.weeklydone;
 
 import de.ks.fxcontrols.weekview.WeekViewAppointment;
 import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.entity.adoc.AdocFile;
 import de.ks.standbein.BaseController;
-import de.ks.text.view.AsciiDocContent;
 import de.ks.texteditor.preview.TextPreview;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -32,7 +32,6 @@ import java.net.URL;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 public class WeeklyDoneAppointmentView extends BaseController<List<WeekViewAppointment<Task>>> {
   protected final SimpleObjectProperty<WeekViewAppointment<Task>> appointment = new SimpleObjectProperty<>();
@@ -70,7 +69,7 @@ public class WeeklyDoneAppointmentView extends BaseController<List<WeekViewAppoi
     startTime.setText(appointment.getStart().format(DateTimeFormatter.ISO_LOCAL_TIME));
     duration.setText(appointment.getDuration().toMinutes() + "min");
     endTime.setText(appointment.getEnd().format(DateTimeFormatter.ISO_LOCAL_TIME));
-    viewer.show(new AsciiDocContent(appointment.getTitle(), appointment.getUserData().getDescription()));
+    viewer.show(appointment.getUserData().getAdocFile().getTmpFile());
     Button btn = (Button) appointment.getControl();
     Node graphic = btn.getGraphic();
     if (graphic instanceof ImageView) {
@@ -89,7 +88,9 @@ public class WeeklyDoneAppointmentView extends BaseController<List<WeekViewAppoi
 
   @Override
   protected void onRefresh(List<WeekViewAppointment<Task>> model) {
-    List<AsciiDocContent> asciiDocContents = model.stream().map(appointment -> new AsciiDocContent(appointment.getTitle(), appointment.getUserData().getDescription())).collect(Collectors.toList());
-    viewer.preload(asciiDocContents);
+    model.forEach(t -> {
+      AdocFile adocFile = t.getUserData().getAdocFile();
+      viewer.preload(adocFile.getTmpFile(), adocFile.getRenderingPath(), adocFile.getContent());
+    });
   }
 }

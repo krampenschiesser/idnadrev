@@ -44,7 +44,7 @@ public class TextInfoActivityTest extends ActivityTest {
   @Before
   public void setUp() throws Exception {
     TextInfoController controller = activityController.getControllerInstance(TextInfoController.class);
-    FXPlatform.invokeLater(() -> controller.content.getPersistentStoreBack().delete());
+//    FXPlatform.invokeLater(() -> controller.content.getPersistentStoreBack().delete());
   }
 
   @Override

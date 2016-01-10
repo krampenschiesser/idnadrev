@@ -15,8 +15,8 @@
 package de.ks.idnadrev.task.finish;
 
 import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.entity.adoc.AdocFile;
 import de.ks.standbein.BaseController;
-import de.ks.text.view.AsciiDocContent;
 import de.ks.texteditor.TextEditor;
 import de.ks.texteditor.preview.TextPreview;
 import javafx.fxml.FXML;
@@ -25,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
-import java.util.Arrays;
 import java.util.ResourceBundle;
 
 public class FinishTask extends BaseController<Task> {
@@ -48,10 +47,9 @@ public class FinishTask extends BaseController<Task> {
 
   @Override
   public void duringLoad(Task model) {
-    AsciiDocContent content = new AsciiDocContent(model.getName(), model.getOutcome().getExpectedOutcome());
-    expectedOutcome.preload(Arrays.asList(content));
-
-    controller.getJavaFXExecutor().submit(() -> expectedOutcome.show(content));
+    AdocFile adocFile = model.getAdocFile();
+    expectedOutcome.preload(adocFile.getTmpFile(), adocFile.getRenderingPath(), adocFile.getContent());
+    controller.getJavaFXExecutor().submit(() -> expectedOutcome.show(adocFile.getTmpFile()));
 
     String outcome = model.getOutcome().getFinalOutcome();
     controller.getJavaFXExecutor().submit(() -> {

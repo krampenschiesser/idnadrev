@@ -24,7 +24,7 @@ import de.ks.idnadrev.file.FileViewController;
 import de.ks.standbein.IntegrationTestModule;
 import de.ks.standbein.LoggingGuiceTestSupport;
 import de.ks.standbein.activity.ActivityCfg;
-import de.ks.text.AsciiDocEditor;
+import de.ks.texteditor.TextEditor;
 import de.ks.util.FXPlatform;
 import org.junit.Before;
 import org.junit.Rule;
@@ -47,7 +47,7 @@ public class CreateTaskWithFilesTest extends ActivityTest {
   FileStore fileStore;
   private MainTaskInfo controller;
   private CreateTask createTask;
-  private AsciiDocEditor expectedOutcomeEditor;
+  private TextEditor expectedOutcomeEditor;
 
   @Override
   protected Class<? extends ActivityCfg> getActivityClass() {

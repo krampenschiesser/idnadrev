@@ -23,7 +23,7 @@ import de.ks.idnadrev.entity.WorkUnit;
 import de.ks.standbein.IntegrationTestModule;
 import de.ks.standbein.LoggingGuiceTestSupport;
 import de.ks.standbein.activity.ActivityCfg;
-import de.ks.text.AsciiDocEditor;
+import de.ks.texteditor.TextEditor;
 import de.ks.util.FXPlatform;
 import org.hamcrest.Matchers;
 import org.junit.Rule;
@@ -75,7 +75,7 @@ public class FastTrackActivityTest extends ActivityTest {
     activityController.waitForTasks();
     FXPlatform.waitForFX();
 
-    AsciiDocEditor description = fastTrack.description;
+    TextEditor description = fastTrack.description;
     assertEquals("desc", description.getText());
     FXPlatform.invokeLater(() -> description.setText(description.getText() + "\nnext"));
     FXPlatform.invokeLater(() -> fastTrack.finishTask());
@@ -104,7 +104,7 @@ public class FastTrackActivityTest extends ActivityTest {
     activityController.waitForTasks();
     FXPlatform.waitForFX();
 
-    AsciiDocEditor description = fastTrack.description;
+    TextEditor description = fastTrack.description;
     FXPlatform.invokeLater(() -> description.setText("blubber"));
     FXPlatform.invokeLater(() -> fastTrack.finishTask());
     activityController.waitForDataSource();
@@ -142,7 +142,7 @@ public class FastTrackActivityTest extends ActivityTest {
     activityController.waitForTasks();
     FXPlatform.waitForFX();
 
-    AsciiDocEditor description = fastTrack.description;
+    TextEditor description = fastTrack.description;
     assertEquals("", description.getText());
     assertEquals("bla", fastTrack.selection.getTextField().getText());
 

@@ -22,7 +22,7 @@ import de.ks.standbein.LoggingGuiceTestSupport;
 import de.ks.standbein.activity.ActivityCfg;
 import de.ks.standbein.activity.ActivityController;
 import de.ks.standbein.activity.context.ActivityStore;
-import de.ks.text.AsciiDocEditor;
+import de.ks.texteditor.TextEditor;
 import de.ks.util.FXPlatform;
 import org.junit.Before;
 import org.junit.Rule;
@@ -48,7 +48,7 @@ public class CreateTaskTest extends ActivityTest {
   ActivityStore store;
   private MainTaskInfo controller;
   private CreateTask createTask;
-  private AsciiDocEditor expectedOutcomeEditor;
+  private TextEditor expectedOutcomeEditor;
   private EffortInfo effortInfo;
   private TaskSchedule taskSchedule;
 

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,6 @@ import javafx.scene.layout.StackPane;
 
 import javax.inject.Inject;
 import java.net.URL;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -53,7 +52,6 @@ public class TextInfoPreview extends BaseController<List<InformationPreviewItem>
   @Override
   protected void onRefresh(List<InformationPreviewItem> model) {
     asciiDocViewer.clear();
-//    infos.keySet().retainAll(model.stream().map(InformationPreviewItem::getName).collect(Collectors.toSet()));
     infos.clear();
     model.stream()//
       .filter(preview -> preview.getType().equals(TextInfo.class))//
@@ -63,12 +61,11 @@ public class TextInfoPreview extends BaseController<List<InformationPreviewItem>
 
   protected void processLoadedTextInfo(TextInfo item) {
     if (item != null) {
-      AsciiDocContent content = new AsciiDocContent(item.getName(), item.getContent());
       infos.put(item.getName(), item);
       if (selectedItem != null && item.getName().equals(selectedItem.getName())) {
-        controller.getJavaFXExecutor().submit(() -> asciiDocViewer.show(content));
+        controller.getJavaFXExecutor().submit(() -> asciiDocViewer.show(item.getAdocFile().getTmpFile()));
       }
-      asciiDocViewer.preload(Collections.singleton(content));
+      asciiDocViewer.preload(item.getAdocFile().getTmpFile(), item.getAdocFile().getRenderingPath(), item.getAdocFile().getContent());
     }
   }
 
@@ -80,8 +77,7 @@ public class TextInfoPreview extends BaseController<List<InformationPreviewItem>
     this.selectedItem = item;
     TextInfo textInfo = infos.get(item.getName());
     if (textInfo != null) {
-      AsciiDocContent content = new AsciiDocContent(textInfo.getName(), textInfo.getContent());
-      asciiDocViewer.show(content);
+      asciiDocViewer.show(textInfo.getAdocFile().getTmpFile());
     }
     return adocContainer;
   }

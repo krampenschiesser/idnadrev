@@ -15,10 +15,14 @@
 
 package de.ks.idnadrev.entity.information;
 
+import de.ks.flatadocdb.annotation.Child;
 import de.ks.flatadocdb.annotation.ToMany;
 import de.ks.idnadrev.entity.Tag;
 import de.ks.idnadrev.entity.TaggedEntity;
 import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.entity.adoc.AdocFile;
+import de.ks.idnadrev.entity.adoc.AdocFileNameGenerator;
+import de.ks.idnadrev.entity.adoc.SameFolderGenerator;
 
 import java.util.Set;
 
@@ -27,7 +31,8 @@ public abstract class Information<E extends Information<E>> extends TaggedEntity
 
   private static final long serialVersionUID = 1L;
 
-  protected String content;
+  @Child(fileGenerator = AdocFileNameGenerator.class, folderGenerator = SameFolderGenerator.class)
+  protected AdocFile adocFile;
 
   @ToMany
   protected Set<Task> task;
@@ -41,13 +46,17 @@ public abstract class Information<E extends Information<E>> extends TaggedEntity
   }
 
   public String getContent() {
-    return content;
+    return adocFile.getContent();
   }
 
   @SuppressWarnings("unchecked")
   public E setContent(String content) {
-    this.content = content;
+    adocFile.setContent(content);
     return (E) this;
+  }
+
+  public AdocFile getAdocFile() {
+    return adocFile;
   }
 
   @Override

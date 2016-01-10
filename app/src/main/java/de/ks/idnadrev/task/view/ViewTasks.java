@@ -18,12 +18,12 @@ package de.ks.idnadrev.task.view;
 import de.ks.flatjsondb.PersistentWork;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.TaskState;
+import de.ks.idnadrev.entity.adoc.AdocFile;
 import de.ks.idnadrev.task.create.CreateTaskActivity;
 import de.ks.idnadrev.task.finish.FinishTaskActivity;
 import de.ks.idnadrev.task.work.WorkOnTaskActivity;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.activity.ActivityHint;
-import de.ks.text.view.AsciiDocContent;
 import de.ks.texteditor.preview.TextPreview;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -48,7 +48,6 @@ import java.time.Duration;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 public class ViewTasks extends BaseController<List<Task>> {
   private static final Logger log = LoggerFactory.getLogger(ViewTasks.class);
@@ -115,7 +114,7 @@ public class ViewTasks extends BaseController<List<Task>> {
       if (n == null) {
         asciiDocViewer.clear();
       } else {
-        asciiDocViewer.show(new AsciiDocContent(n.getValue().getName(), n.getValue().getDescription()));
+        asciiDocViewer.show(n.getValue().getAdocFile().getTmpFile());
       }
     });
 
@@ -160,7 +159,7 @@ public class ViewTasks extends BaseController<List<Task>> {
 
       task.getTags().forEach((tag) -> tagPane.getChildren().add(new Label(tag.getDisplayName())));
 
-      asciiDocViewer.show(new AsciiDocContent(task.getName(), task.getDescription()));
+      asciiDocViewer.show(task.getAdocFile().getTmpFile());
     }
   }
 
@@ -321,7 +320,9 @@ public class ViewTasks extends BaseController<List<Task>> {
 
   @Override
   protected void onRefresh(List<Task> loaded) {
-    List<AsciiDocContent> asciiDocContents = loaded.stream().map(t -> new AsciiDocContent(t.getName(), t.getDescription())).collect(Collectors.toList());
-    this.asciiDocViewer.preload(asciiDocContents);
+    loaded.forEach(t -> {
+      AdocFile adocFile = t.getAdocFile();
+      asciiDocViewer.preload(adocFile.getTmpFile(), adocFile.getRenderingPath(), adocFile.getContent());
+    });
   }
 }
