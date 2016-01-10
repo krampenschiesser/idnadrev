@@ -22,6 +22,7 @@ import de.ks.idnadrev.module.IdnadrevModule;
 import de.ks.idnadrev.module.RepositoryModule;
 import de.ks.standbein.launch.Launcher;
 import de.ks.standbein.module.ApplicationModule;
+import de.ks.texteditor.module.TextEditorModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +47,7 @@ public class Application {
 
     modules.add(new IdnadrevModule());
     modules.add(new RepositoryModule());
+    modules.add(new TextEditorModule());
     modules.add(new ApplicationModule());
 
     Injector injector = Guice.createInjector(modules);
