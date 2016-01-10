@@ -89,6 +89,7 @@ public class AdocPersister implements EntityPersister {
 
   @Override
   public boolean canParse(Path path, EntityDescriptor entityDescriptor) {
-    return path.getFileName().toString().endsWith(".adoc");
+    String fileName = path.getFileName().toString();
+    return fileName.endsWith(".adoc") && !fileName.endsWith(AdocFile.TMP_SUFFIX);
   }
 }
