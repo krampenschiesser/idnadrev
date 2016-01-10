@@ -80,6 +80,7 @@ public class TextPreview implements Initializable {
   //used for rendering when no path is given
   private Path tmpDst;
   private Path tmpSrc;
+  private volatile Path requestedShowPath;
 
   @Inject
   public TextPreview(@Named(TextEditorModule.DEFAULT_RENDERER) String currentRenderer, Set<Renderer> renderers, ActivityJavaFXExecutor javaFXExecutor, ActivityExecutor executor) {
@@ -127,6 +128,11 @@ public class TextPreview implements Initializable {
     Renderer renderer = getRenderer();
     CompletableFuture<Path> future = CompletableFuture.supplyAsync(new PreviewTask(temporarySourceFile, targetFile, content, renderer), executor);
     preloaded.put(temporarySourceFile, future);
+    if (requestedShowPath != null && requestedShowPath.equals(temporarySourceFile)) {
+      future.thenAcceptAsync(path -> {
+        show(requestedShowPath);
+      }, javaFXExecutor);
+    }
   }
 
   public Renderer getRenderer() {
@@ -162,6 +168,8 @@ public class TextPreview implements Initializable {
           //
         }
       }, javaFXExecutor);
+    } else {
+      requestedShowPath = temporarySourceFile;
     }
   }
 
