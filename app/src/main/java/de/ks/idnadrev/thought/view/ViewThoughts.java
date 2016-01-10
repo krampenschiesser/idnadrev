@@ -43,8 +43,6 @@ import java.util.ResourceBundle;
 
 public class ViewThoughts extends BaseController<List<Thought>> {
   private static final Logger log = LoggerFactory.getLogger(ViewThoughts.class);
-  //  @Inject
-//  FileStore fileStore;
   @Inject
   ActivityExecutor executor;
   @Inject
@@ -69,11 +67,10 @@ public class ViewThoughts extends BaseController<List<Thought>> {
   @FXML
   protected Button editBtn;
 
-  protected TextPreview asciiDocViewer;
+  protected volatile TextPreview asciiDocViewer;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-
     TextPreview.load(activityInitialization, view -> description.getChildren().add(view), ctrl -> asciiDocViewer = ctrl);
 
     thoughtTable.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
