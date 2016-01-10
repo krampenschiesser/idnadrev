@@ -23,11 +23,12 @@
           xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.idnadrev.thought.add.AddThought">
     <children>
         <Label text="%thought.name:" GridPane.columnIndex="0"/>
-        <Label text="%thought.description:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <Label text="%thought.description:" GridPane.columnSpan="2147483647" GridPane.halignment="LEFT"
+               GridPane.rowIndex="1"/>
         <TextField fx:id="name" onAction="#saveThought" prefWidth="200.0" GridPane.columnIndex="1"/>
-        <StackPane fx:id="descriptionContainer" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="1"
-                   GridPane.rowIndex="1"/>
-        <TitledPane expanded="false" text="%files" GridPane.columnIndex="1" GridPane.rowIndex="2">
+        <StackPane fx:id="descriptionContainer" prefHeight="150.0" prefWidth="200.0" GridPane.columnSpan="2147483647"
+                   GridPane.rowIndex="2"/>
+        <TitledPane expanded="false" text="%files" GridPane.columnSpan="2147483647" GridPane.rowIndex="3">
             <content>
                 <StackPane>
                     <children>
@@ -37,7 +38,7 @@
             </content>
         </TitledPane>
         <Button fx:id="save" defaultButton="true" mnemonicParsing="true" onAction="#onSave" text="%save.mnemonic"
-                GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.rowIndex="3">
+                GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.rowIndex="4">
             <GridPane.margin>
                 <Insets/>
             </GridPane.margin>
@@ -46,7 +47,7 @@
 
     </children>
     <columnConstraints>
-        <ColumnConstraints halignment="RIGHT" hgrow="NEVER" maxWidth="-Infinity" minWidth="10.0"/>
+        <ColumnConstraints halignment="LEFT" hgrow="NEVER" maxWidth="-Infinity" minWidth="10.0"/>
         <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
     </columnConstraints>
     <padding>
@@ -54,6 +55,7 @@
     </padding>
     <rowConstraints>
         <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="-1.0" vgrow="SOMETIMES"/>
+        <RowConstraints maxHeight="-Infinity" vgrow="SOMETIMES"/>
         <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" vgrow="SOMETIMES"/>
         <RowConstraints minHeight="10.0"/>
         <RowConstraints maxHeight="-Infinity" minHeight="10.0" vgrow="SOMETIMES"/>
