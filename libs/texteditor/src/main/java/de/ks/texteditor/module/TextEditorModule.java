@@ -20,6 +20,8 @@ import com.google.inject.Key;
 import com.google.inject.multibindings.Multibinder;
 import com.google.inject.name.Names;
 import de.ks.standbein.javafx.FxCss;
+import de.ks.standbein.launch.Service;
+import de.ks.texteditor.launch.AsciiDocService;
 import de.ks.texteditor.launch.MetaData;
 import de.ks.texteditor.render.AsciidocRenderer;
 import de.ks.texteditor.render.MarkdownRenderer;
@@ -42,6 +44,8 @@ public class TextEditorModule extends AbstractModule {
     binder().bind(Key.get(String.class, Names.named(DEFAULT_RENDERER))).toInstance(AsciidocRenderer.NAME);
 
     Multibinder.newSetBinder(binder(), String.class, FxCss.class).addBinding().toInstance("/de/ks/texteditor/markup/adoc/adoc.css");
+
+    Multibinder.newSetBinder(binder(), Service.class).addBinding().to(AsciiDocService.class);
 
     Multibinder<Renderer> rendererBinder = Multibinder.newSetBinder(binder(), Renderer.class);
     rendererBinder.addBinding().to(AsciidocRenderer.class);
