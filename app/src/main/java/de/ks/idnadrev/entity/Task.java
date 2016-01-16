@@ -16,6 +16,7 @@
 package de.ks.idnadrev.entity;
 
 import de.ks.flatadocdb.annotation.*;
+import de.ks.flatadocdb.defaults.SingleFolderGenerator;
 import de.ks.flatadocdb.query.Query;
 import de.ks.idnadrev.entity.adoc.AdocFile;
 import de.ks.idnadrev.entity.adoc.AdocFileNameGenerator;
@@ -32,14 +33,14 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-@Entity
+@Entity(folderGenerator = SingleFolderGenerator.class)
 public class Task extends TaggedEntity implements FileContainer<Task> {
   @QueryProvider
   public static Query<Task, Boolean> finishedQuery() {
     return Query.of(Task.class, Task::isFinished);
   }
 
-  @Child(fileGenerator = AdocFileNameGenerator.class, folderGenerator = SameFolderGenerator.class)
+  @Child(fileGenerator = AdocFileNameGenerator.class, folderGenerator = SameFolderGenerator.class, lazy = false)
   protected AdocFile adocFile;
 
   protected SortedSet<WorkUnit> workUnits = new TreeSet<>();
@@ -127,9 +128,10 @@ public class Task extends TaggedEntity implements FileContainer<Task> {
     return duration.toMinutes();
   }
 
-  public void start() {
-    WorkUnit workUnit = new WorkUnit(this);
+  public WorkUnit start() {
+    WorkUnit workUnit = new WorkUnit();
     getWorkUnits().add(workUnit);
+    return workUnit;
   }
 
   public void stop() {

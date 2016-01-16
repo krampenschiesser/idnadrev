@@ -22,6 +22,7 @@ import de.ks.flatadocdb.annotation.lifecycle.PostRemove;
 import de.ks.flatadocdb.annotation.lifecycle.PostUpdate;
 import de.ks.flatadocdb.defaults.SingleFolderGenerator;
 import de.ks.flatadocdb.entity.NamedEntity;
+import de.ks.flatadocdb.session.EntityDelete;
 import de.ks.idnadrev.entity.adoc.AdocFile;
 import de.ks.idnadrev.entity.adoc.AdocFileNameGenerator;
 import de.ks.idnadrev.entity.adoc.SameFolderGenerator;
@@ -111,7 +112,7 @@ public class Thought extends NamedEntity implements FileContainer<Thought> {
   protected FilenameFilter getFileFilter() {
     String ownFileName = getPathInRepository().getFileName().toString();
     String adocFileName = StringUtils.replace(ownFileName, ".json", ".adoc");
-    return (dir, fileName) -> !fileName.equals(ownFileName) && !fileName.equals(adocFileName);
+    return (dir, fileName) -> !fileName.equals(ownFileName) && !fileName.equals(adocFileName) && !fileName.endsWith(EntityDelete.DELETION_SUFFIX);
   }
 
   public void postPone(Options options) {

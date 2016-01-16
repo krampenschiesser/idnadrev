@@ -25,13 +25,21 @@ public class AdocFileNameGenerator extends DefaultFileGenerator {
   public String getFileName(Repository repository, EntityDescriptor entityDescriptor, Object o) {
     AdocFile adocFile = (AdocFile) o;
     String name = adocFile.getName();
-    return NameStripper.stripName(name) + ".adoc";
+    if (name.endsWith(".adoc")) {
+      return name;
+    } else {
+      return NameStripper.stripName(name) + ".adoc";
+    }
   }
 
   @Override
   public String getFlushFileName(Repository repository, EntityDescriptor entityDescriptor, Object o) {
     AdocFile adocFile = (AdocFile) o;
     String name = adocFile.getName();
-    return NameStripper.stripName(name) + ".adoc.flush";
+    if (name.endsWith(".adoc")) {
+      return name + ".flush";
+    } else {
+      return NameStripper.stripName(name) + ".adoc.flush";
+    }
   }
 }

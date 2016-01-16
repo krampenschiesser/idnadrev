@@ -84,14 +84,15 @@ public class WeeklyDoneDS implements ListDataSource<WeekViewAppointment<Task>> {
 //    }, unit -> unit.getTask().getName());
     log.debug("Found {} workunits for the given range {} - {}", workUnits.size(), beginDate, endDate);
 
-    return workUnits.stream().map(unit -> {
-      Duration duration = Duration.between(unit.getStart(), unit.getEnd());
-      WeekViewAppointment<Task> appointment = new WeekViewAppointment<>(unit.getTask().getName(), unit.getStart(), duration);
-      appointment.setNewTimePossiblePredicate((date, time) -> false);
-      appointment.setUserData(unit.getTask());
-      appointment.setAction((btn, task) -> doneView.appointment.set(appointment));
-      return appointment;
-    }).collect(Collectors.toList());
+//    return workUnits.stream().map(unit -> {
+//      Duration duration = Duration.between(unit.getStart(), unit.getEnd());
+//      WeekViewAppointment<Task> appointment = new WeekViewAppointment<>(unit.getTask().getName(), unit.getStart(), duration);
+//      appointment.setNewTimePossiblePredicate((date, time) -> false);
+//      appointment.setUserData(unit.getTask());
+//      appointment.setAction((btn, task) -> doneView.appointment.set(appointment));
+//      return appointment;
+//    }).collect(Collectors.toList());
+    return Collections.emptyList();
   }
 
   protected List<WeekViewAppointment<Task>> getFinshedTaskAppointments(List<WeekViewAppointment<Task>> appointments) {

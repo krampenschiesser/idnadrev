@@ -146,8 +146,7 @@ public class WorkOnTask extends BaseController<Task> {
         Task reloaded = persistentWork.reload(task);
         WorkUnit last = reloaded.getWorkUnits().isEmpty() ? null : reloaded.getWorkUnits().last();
         if (last == null || last.isFinished()) {
-          WorkUnit workUnit = new WorkUnit(reloaded);
-          persistentWork.persist(workUnit);
+          task.start();
         }
       });
     });

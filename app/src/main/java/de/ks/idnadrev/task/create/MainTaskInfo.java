@@ -83,7 +83,7 @@ public class MainTaskInfo extends BaseController<Task> {
     contextController.configure(Context.class);
     parentProjectController.configure(Task.class);
 
-    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(Task.class, t -> Objects.equals(t.getId(), store.<Task>getModel().getId()), persistentWork, localized));
+    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<Task>(Task.class, t -> Objects.equals(t.getId(), store.<Task>getModel().getId()), persistentWork, localized));
     StringProperty nameBinding = store.getBinding().getStringProperty(Task.class, t -> t.getName());
     name.textProperty().bindBidirectional(nameBinding);
     StringProperty descriptionBinding = store.getBinding().getStringProperty(Task.class, t -> t.getDescription());

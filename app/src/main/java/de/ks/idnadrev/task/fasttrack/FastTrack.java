@@ -149,14 +149,15 @@ public class FastTrack extends BaseController<Task> {
 
   @Override
   public void duringSave(Task model) {
-    super.duringSave(model);
-    WorkUnit workUnit = new WorkUnit(model);
-    workUnit.setStart(start.get());
-    workUnit.setEnd(LocalDateTime.now());
-    if (model.isFinished() || model.getId() == null) {
-      model.setFinished(true);
+    if (start.get() != null) {
+      WorkUnit workUnit = model.start();
+      workUnit.setStart(start.get());
+      workUnit.setEnd(LocalDateTime.now());
+      if (model.isFinished() || model.getId() == null) {
+        model.setFinished(true);
+      }
+      start.set(null);
     }
-    start.set(null);
   }
 
   public LocalDateTime getStart() {

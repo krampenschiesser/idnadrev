@@ -62,7 +62,7 @@ public class WeeklyDoneTest extends ActivityTest {
 
     LocalDateTime start = weekStart;
     for (int i = 0; i < 3; i++) {
-      WorkUnit workUnit = new WorkUnit(worker);
+      WorkUnit workUnit = worker.start();
       workUnit.setStart(start.plusDays(i));
       workUnit.setEnd(start.plusDays(i).plusHours(1));
       session.persist(workUnit);

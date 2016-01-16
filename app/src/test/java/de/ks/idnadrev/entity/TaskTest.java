@@ -16,9 +16,9 @@
 package de.ks.idnadrev.entity;
 
 import de.ks.flatjsondb.PersistentWork;
+import de.ks.idnadrev.IdnadrevIntegrationTestModule;
 import de.ks.idnadrev.entity.information.Information;
 import de.ks.idnadrev.entity.information.TextInfo;
-import de.ks.standbein.IntegrationTestModule;
 import de.ks.standbein.LoggingGuiceTestSupport;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,7 +34,7 @@ import static org.junit.Assert.*;
  */
 public class TaskTest {
   @Rule
-  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule());
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IdnadrevIntegrationTestModule()).launchServices();
   @Inject
   PersistentWork persistentWork;
 

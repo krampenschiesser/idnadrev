@@ -17,11 +17,11 @@ package de.ks.idnadrev.task.create;
 
 import de.ks.flatadocdb.session.Session;
 import de.ks.idnadrev.ActivityTest;
+import de.ks.idnadrev.IdnadrevIntegrationTestModule;
 import de.ks.idnadrev.entity.Context;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.Thought;
 import de.ks.idnadrev.file.FileViewController;
-import de.ks.standbein.IntegrationTestModule;
 import de.ks.standbein.LoggingGuiceTestSupport;
 import de.ks.standbein.activity.ActivityCfg;
 import de.ks.texteditor.TextEditor;
@@ -30,10 +30,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileStore;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,10 +39,8 @@ import static org.junit.Assert.*;
 
 public class CreateTaskWithFilesTest extends ActivityTest {
   @Rule
-  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule());
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IdnadrevIntegrationTestModule()).launchServices();
 
-  @Inject
-  FileStore fileStore;
   private MainTaskInfo controller;
   private CreateTask createTask;
   private TextEditor expectedOutcomeEditor;

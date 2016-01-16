@@ -61,7 +61,7 @@ public class WorkOnTaskTest {
     Context context = new Context("context");
     Task task = new Task("task").setProject(true);
     task.setContext(context);
-    WorkUnit workUnit = new WorkUnit(task);
+    WorkUnit workUnit = task.start();
     workUnit.setStart(LocalDateTime.now().minus(7, ChronoUnit.MINUTES));
     workUnit.stop();
     task.setEstimatedTime(Duration.ofMinutes(10));

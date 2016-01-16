@@ -16,8 +16,11 @@ package de.ks.idnadrev.task.create;
 
 import de.ks.flatadocdb.session.Session;
 import de.ks.idnadrev.ActivityTest;
-import de.ks.idnadrev.entity.*;
-import de.ks.standbein.IntegrationTestModule;
+import de.ks.idnadrev.IdnadrevIntegrationTestModule;
+import de.ks.idnadrev.entity.Context;
+import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.entity.TaskState;
+import de.ks.idnadrev.entity.Thought;
 import de.ks.standbein.LoggingGuiceTestSupport;
 import de.ks.standbein.activity.ActivityCfg;
 import de.ks.standbein.activity.ActivityController;
@@ -40,7 +43,7 @@ import static org.junit.Assert.*;
 
 public class CreateTaskTest extends ActivityTest {
   @Rule
-  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule());
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IdnadrevIntegrationTestModule()).launchServices();
 
   @Inject
   ActivityController activityController;
@@ -239,8 +242,6 @@ public class CreateTaskTest extends ActivityTest {
 
   @Test
   public void testTags() throws Exception {
-    persistentWork.persist(new Tag("tag1"));
-
     FXPlatform.invokeLater(() -> {
       controller.name.setText("name");
 

@@ -17,11 +17,11 @@ package de.ks.idnadrev.task.choosenext;
 
 import de.ks.flatadocdb.session.Session;
 import de.ks.flatjsondb.PersistentWork;
+import de.ks.idnadrev.IdnadrevIntegrationTestModule;
 import de.ks.idnadrev.entity.Context;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.TaskState;
 import de.ks.idnadrev.entity.WorkUnit;
-import de.ks.standbein.IntegrationTestModule;
 import de.ks.standbein.LoggingGuiceTestSupport;
 import org.junit.Before;
 import org.junit.Rule;
@@ -37,7 +37,7 @@ import static org.junit.Assert.assertEquals;
 
 public class NextTaskChooserTest {
   @Rule
-  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule());
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IdnadrevIntegrationTestModule()).launchServices();
   @Inject
   NextTaskChooser chooser;
   @Inject
@@ -67,7 +67,7 @@ public class NextTaskChooserTest {
     em.persist(new Task("workTask15Min").setEstimatedTime(Duration.ofMinutes(15)).setContext(workContext));
 
     Task taskWithWorkUnit = new Task("workTask9MinRemaining").setEstimatedTime(Duration.ofMinutes(20)).setContext(workContext);
-    WorkUnit workUnit = new WorkUnit(taskWithWorkUnit);
+    WorkUnit workUnit = taskWithWorkUnit.start();
     LocalDateTime start = LocalDateTime.now().minusDays(1);
     workUnit.setStart(start);
     workUnit.setEnd(start.plusMinutes(11));
@@ -75,7 +75,7 @@ public class NextTaskChooserTest {
     em.persist(taskWithWorkUnit);
 
     Task taskOverTime = new Task("taskOverTime").setEstimatedTime(Duration.ofMinutes(20)).setContext(workContext);
-    workUnit = new WorkUnit(taskOverTime);
+    workUnit = taskOverTime.start();
     workUnit.setStart(start.plusHours(1));
     workUnit.setEnd(start.plusHours(1).plusMinutes(60));
     taskOverTime.getWorkUnits().add(workUnit);

@@ -32,6 +32,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.WeekFields;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class TaskSchedule extends BaseController<Task> {
@@ -83,10 +84,7 @@ public class TaskSchedule extends BaseController<Task> {
 
   @Override
   public void duringSave(Task model) {
-    if (model.getSchedule() == null) {
-      model.setSchedule(new Schedule());
-    }
-    Schedule schedule = model.getSchedule();
+    Schedule schedule = Optional.ofNullable(model.getSchedule()).orElse(new Schedule());
 
     LocalDate date = this.dueDate.getValue();
     if (date != null) {
@@ -100,6 +98,7 @@ public class TaskSchedule extends BaseController<Task> {
           log.error("Could not parse local time {}", dueTime.getText(), e);
         }
       }
+      model.setSchedule(schedule);
     } else if (proposedWeek.getValue() != null) {
       LocalDate proposedWeekDay = proposedWeek.getValue();
       WeekFields weekFields = WeekFields.of(Locale.getDefault());
@@ -107,6 +106,7 @@ public class TaskSchedule extends BaseController<Task> {
       if (useProposedWeekDay.isSelected()) {
         schedule.setProposedWeekDay(proposedWeekDay.getDayOfWeek());
       }
+      model.setSchedule(schedule);
     }
   }
 }

@@ -235,7 +235,7 @@ public class WorkUnitController extends BaseController<List<Task>> {
         reload.setStart(startTime);
         reload.setEnd(endTime);
       });
-      controller.getJavaFXExecutor().submit(() -> reload(selectedItem.getTask()));
+      controller.getJavaFXExecutor().submit(() -> reload(task.get()));
     });
   }
 
@@ -261,7 +261,7 @@ public class WorkUnitController extends BaseController<List<Task>> {
       persistentWork.run(session -> {
         Task reload = persistentWork.reload(currentTask);
 
-        WorkUnit workUnit = new WorkUnit(reload);
+        WorkUnit workUnit = reload.start();
         workUnit.setStart(startTime);
         workUnit.setEnd(endTime);
 

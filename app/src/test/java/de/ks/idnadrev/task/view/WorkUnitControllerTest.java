@@ -15,6 +15,7 @@ import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.objenesis.ObjenesisStd;
 
 import javax.inject.Inject;
 import java.time.LocalDateTime;
@@ -54,8 +55,8 @@ public class WorkUnitControllerTest extends ActivityTest {
     start2 = time.minusHours(1);
     end2 = time.minusMinutes(1);
 
-    WorkUnit workUnit1 = new WorkUnit(task).setStart(start1).setEnd(end1);
-    WorkUnit workUnit2 = new WorkUnit(task).setStart(start2).setEnd(end2);
+    WorkUnit workUnit1 = task.start().setStart(start1).setEnd(end1);
+    WorkUnit workUnit2 = task.start().setStart(start2).setEnd(end2);
 
     task.getWorkUnits().add(workUnit1);
     task.getWorkUnits().add(workUnit2);
@@ -148,8 +149,8 @@ public class WorkUnitControllerTest extends ActivityTest {
 
   @Test
   public void testNewStartTimePossible() throws Exception {
-    WorkUnit workunit1 = new WorkUnit(null).setStart(LocalDateTime.of(2014, 10, 1, 12, 00, 13, 10)).setEnd(LocalDateTime.of(2014, 10, 1, 12, 13));
-    WorkUnit workunit2 = new WorkUnit(null).setStart(LocalDateTime.of(2014, 10, 1, 13, 00)).setEnd(LocalDateTime.of(2014, 10, 1, 14, 00));
+    WorkUnit workunit1 = new ObjenesisStd().newInstance(WorkUnit.class).setStart(LocalDateTime.of(2014, 10, 1, 12, 00, 13, 10)).setEnd(LocalDateTime.of(2014, 10, 1, 12, 13));
+    WorkUnit workunit2 = new ObjenesisStd().newInstance(WorkUnit.class).setStart(LocalDateTime.of(2014, 10, 1, 13, 00)).setEnd(LocalDateTime.of(2014, 10, 1, 14, 00));
     List<WorkUnit> workUnits = Arrays.asList(workunit1, workunit2);
 
     LocalDateTime time = LocalDateTime.of(2014, 10, 1, 12, 0);

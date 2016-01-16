@@ -18,13 +18,14 @@ package de.ks.idnadrev.task.fasttrack;
 import de.ks.executor.group.LastTextChange;
 import de.ks.flatadocdb.session.Session;
 import de.ks.idnadrev.ActivityTest;
+import de.ks.idnadrev.IdnadrevIntegrationTestModule;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.WorkUnit;
-import de.ks.standbein.IntegrationTestModule;
 import de.ks.standbein.LoggingGuiceTestSupport;
 import de.ks.standbein.activity.ActivityCfg;
 import de.ks.texteditor.TextEditor;
 import de.ks.util.FXPlatform;
+import javafx.event.ActionEvent;
 import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
@@ -43,7 +44,7 @@ public class FastTrackActivityTest extends ActivityTest {
   private static final Logger log = LoggerFactory.getLogger(FastTrackActivityTest.class);
 
   @Rule
-  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule());
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IdnadrevIntegrationTestModule()).launchServices();
 
   @Override
   protected Class<? extends ActivityCfg> getActivityClass() {
@@ -58,10 +59,9 @@ public class FastTrackActivityTest extends ActivityTest {
     existing.setFinishTime(LocalDateTime.now().minusDays(1).plusHours(2));
     em.persist(existing);
 
-    WorkUnit unit = new WorkUnit(existing);
+    WorkUnit unit = existing.start();
     unit.setStart(existing.getCreationTime().plusMinutes(15));
     unit.setEnd(existing.getFinishTime().minusMinutes(15));
-    em.persist(unit);
   }
 
   @Test
@@ -71,7 +71,7 @@ public class FastTrackActivityTest extends ActivityTest {
     assertNotNull(fastTrack.selection);
 
     FXPlatform.invokeLater(() -> fastTrack.selection.getTextField().setText("Existing"));
-    Thread.sleep(LastTextChange.WAIT_TIME);
+    FXPlatform.invokeLater(() -> fastTrack.selection.onActionProperty().get().handle(new ActionEvent()));
     activityController.waitForTasks();
     FXPlatform.waitForFX();
 

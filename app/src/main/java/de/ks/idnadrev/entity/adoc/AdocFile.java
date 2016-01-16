@@ -145,8 +145,12 @@ public class AdocFile {
     Path tmpFile = getTmpFile();
     Path renderingPath = getRenderingPath();
     try {
-      Files.deleteIfExists(tmpFile);
-      Files.deleteIfExists(renderingPath);
+      if (Files.deleteIfExists(tmpFile)) {
+        log.debug("Deleted {}", tmpFile);
+      }
+      if (Files.deleteIfExists(renderingPath)) {
+        log.debug("Deleted {}", renderingPath);
+      }
     } catch (IOException e) {
       log.error("Could nto remove tmpFile {}", e);
     }

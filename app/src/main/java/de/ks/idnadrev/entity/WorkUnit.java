@@ -35,19 +35,8 @@ public class WorkUnit extends BaseEntity implements Comparable<WorkUnit> {
   protected LocalDateTime start;
   protected LocalDateTime end;
 
-  //  @ToOne
-  protected Task task;
-
   protected WorkUnit() {
-    //
-  }
-
-  public WorkUnit(Task task) {
-    this.task = task;
     start = LocalDateTime.now();
-    if (task != null) {
-      task.getWorkUnits().add(this);
-    }
   }
 
   public WorkUnit setStart(LocalDateTime start) {
@@ -90,14 +79,6 @@ public class WorkUnit extends BaseEntity implements Comparable<WorkUnit> {
     return this.start.compareTo(o.start);
   }
 
-  public Task getTask() {
-    return task;
-  }
-
-  public void setTask(Task task) {
-    this.task = task;
-  }
-
   public WorkUnit setEnd(LocalDateTime time) {
     this.end = time;
     return this;
@@ -118,20 +99,17 @@ public class WorkUnit extends BaseEntity implements Comparable<WorkUnit> {
 
     WorkUnit workUnit = (WorkUnit) o;
 
-    if (start != null ? !start.equals(workUnit.start) : workUnit.start != null) {
+    if (!start.equals(workUnit.start)) {
       return false;
     }
-    if (task != null ? !task.equals(workUnit.task) : workUnit.task != null) {
-      return false;
-    }
+    return end.equals(workUnit.end);
 
-    return true;
   }
 
   @Override
   public int hashCode() {
-    int result = start != null ? start.hashCode() : 0;
-    result = 31 * result + (task != null ? task.hashCode() : 0);
+    int result = start.hashCode();
+    result = 31 * result + end.hashCode();
     return result;
   }
 
@@ -140,18 +118,7 @@ public class WorkUnit extends BaseEntity implements Comparable<WorkUnit> {
     final StringBuilder sb = new StringBuilder("WorkUnit{");
     sb.append("start=").append(start);
     sb.append(", end=").append(end);
-    sb.append(", task=").append(task);
     sb.append('}');
     return sb.toString();
   }
-
-//  @Override
-//  public String getIdPropertyName() {
-//    return "start";
-//  }
-//
-//  @Override
-//  public Object getIdValue() {
-//    return getStart();
-//  }
 }

@@ -23,6 +23,7 @@ import de.ks.flatjsondb.RegisteredEntity;
 import de.ks.idnadrev.IdnadrevWindow;
 import de.ks.idnadrev.context.view.ViewContextActivity;
 import de.ks.idnadrev.entity.Context;
+import de.ks.idnadrev.entity.Schedule;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.Thought;
 import de.ks.idnadrev.entity.adoc.AdocFile;
@@ -96,6 +97,7 @@ public class IdnadrevModule extends AbstractModule {
     entities.addBinding().toInstance(Thought.class);
     entities.addBinding().toInstance(TextInfo.class);
     entities.addBinding().toInstance(DiaryInfo.class);
+    entities.addBinding().toInstance(Schedule.class);
 
     entities.addBinding().toInstance(AdocFile.class);
   }
