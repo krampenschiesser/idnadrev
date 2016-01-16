@@ -20,6 +20,7 @@ import de.ks.idnadrev.entity.Context;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.TaskState;
 import de.ks.standbein.BaseController;
+import de.ks.standbein.application.fxml.DefaultLoader;
 import de.ks.standbein.datasource.DataSource;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
@@ -32,6 +33,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,12 +43,13 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class ViewTasksMaster extends BaseController<List<Task>> {
   private static final Logger log = LoggerFactory.getLogger(ViewTasksMaster.class);
+
+  @FXML
+  StackPane filterContainer;
   @FXML
   protected TreeTableView<Task> tasksView;
   @FXML
@@ -55,13 +58,11 @@ public class ViewTasksMaster extends BaseController<List<Task>> {
   protected TreeTableColumn<Task, String> taskViewEstimatedTimeColumn;
   @FXML
   protected TreeTableColumn<Task, String> taskViewCreationTimeColumn;
-  @FXML
-  protected Button moreBtn;
 
-  @FXML
-  protected TextField searchField;
-  @FXML
-  protected ComboBox<String> contextSelection;
+//  @FXML
+//  protected TextField searchField;
+//  @FXML
+//  protected ComboBox<String> contextSelection;
 
   @Inject
   PersistentWork persistentWork;
@@ -74,14 +75,19 @@ public class ViewTasksMaster extends BaseController<List<Task>> {
   // FIXME: 12/15/15
 //  private PopOver popOver;
   private ChangeListener<Boolean> hideOnFocusLeave;
+  protected TaskFilterView taskFilterView;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
+    DefaultLoader<Node, TaskFilterView> loader = activityInitialization.loadAdditionalController(TaskFilterView.class);
+    filterContainer.getChildren().add(loader.getView());
+    taskFilterView = loader.getController();
+
     ChangeListener<String> listener = (observable, oldValue, newValue) -> {
       refreshFilter();
     };
-    searchField.textProperty().addListener(listener);
-    contextSelection.getSelectionModel().selectedItemProperty().addListener(listener);
+    taskFilterView.searchField.textProperty().addListener(listener);
+//    contextSelection.getSelectionModel().selectedItemProperty().addListener(listener);
     dateFormat = DateTimeFormatter.ofPattern(localized.get("fullDate"));
 
     taskViewNameColumn.setCellFactory(param -> {
@@ -122,21 +128,21 @@ public class ViewTasksMaster extends BaseController<List<Task>> {
       return new SimpleStringProperty(formatted);
     });
 
-    CompletableFuture.supplyAsync(() -> persistentWork.from(Context.class).stream().map(c -> c.getName()).collect(Collectors.toList()), controller.getExecutorService())//
-      .thenAcceptAsync(contextNames -> {
-        ObservableList<String> items = FXCollections.observableArrayList(contextNames);
-        items.add(0, "");
-        items.add(1, localized.get("all"));
-        contextSelection.setItems(items);
-        contextSelection.getSelectionModel().select(1);
-      }, controller.getJavaFXExecutor());
-
-    searchField.setOnKeyReleased(e -> {
-      if (e.getCode() == KeyCode.ESCAPE) {
-        searchField.setText("");
-        e.consume();
-      }
-    });
+//    CompletableFuture.supplyAsync(() -> persistentWork.from(Context.class).stream().map(c -> c.getName()).collect(Collectors.toList()), controller.getExecutorService())//
+//      .thenAcceptAsync(contextNames -> {
+//        ObservableList<String> items = FXCollections.observableArrayList(contextNames);
+//        items.add(0, "");
+//        items.add(1, localized.get("all"));
+//        contextSelection.setItems(items);
+//        contextSelection.getSelectionModel().select(1);
+//      }, controller.getJavaFXExecutor());
+//
+//    searchField.setOnKeyReleased(e -> {
+//      if (e.getCode() == KeyCode.ESCAPE) {
+//        searchField.setText("");
+//        e.consume();
+//      }
+//    });
 
     // FIXME: 12/15/15
 //    this.hideOnFocusLeave = (fp, fo, fn) -> {
@@ -174,6 +180,7 @@ public class ViewTasksMaster extends BaseController<List<Task>> {
 
   protected Predicate<Task> createFilter() {
     return task -> {
+      ComboBox<String> contextSelection = taskFilterView.contextSelection;
       boolean forceNullFilter = contextSelection.getValue() != null && contextSelection.getValue().trim().isEmpty();
       Predicate<Context> filter;
       if (contextSelection.getValue() == null || contextSelection.getValue().trim().equals(localized.get("all"))) {
@@ -209,7 +216,7 @@ public class ViewTasksMaster extends BaseController<List<Task>> {
           return false;
         }
       }
-      String nameSearch = searchField.textProperty().getValueSafe().trim().toLowerCase(Locale.ROOT);
+      String nameSearch = taskFilterView.getSearchContent().trim().toLowerCase(Locale.ROOT);
       if (!nameSearch.isEmpty()) {
         if (task.getName().toLowerCase(Locale.ROOT).contains(nameSearch)) {
           return true;
@@ -341,12 +348,12 @@ public class ViewTasksMaster extends BaseController<List<Task>> {
   public ObservableList<Task> getTasks() {
     return tasks;
   }
-
-  public String getSelectedContext() {
-    return contextSelection.getSelectionModel().getSelectedItem();
-  }
-
-  public ComboBox<String> getContextSelection() {
-    return contextSelection;
-  }
+//
+//  public String getSelectedContext() {
+//    return contextSelection.getSelectionModel().getSelectedItem();
+//  }
+//
+//  public ComboBox<String> getContextSelection() {
+//    return contextSelection;
+//  }
 }

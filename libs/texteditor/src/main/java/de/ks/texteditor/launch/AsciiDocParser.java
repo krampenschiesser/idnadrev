@@ -50,6 +50,7 @@ public class AsciiDocParser {
       .sourceHighlighter("coderay")//
       .linkCss(true)//
       .experimental(true)//
+      .noFooter(true)//
       .stylesDir(dataDir.toUri().toString());
     return attributes;
   }

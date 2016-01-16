@@ -203,6 +203,10 @@ public class TextPreview implements Initializable {
 
   public void clear() {
     preloaded.clear();
+    clearContent();
+  }
+
+  public void clearContent() {
     webView.get().getEngine().loadContent("");
   }
 

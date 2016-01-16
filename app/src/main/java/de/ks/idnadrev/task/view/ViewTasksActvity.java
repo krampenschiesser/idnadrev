@@ -20,7 +20,6 @@ import de.ks.standbein.activity.ActivityCfg;
 public class ViewTasksActvity extends ActivityCfg {
   public ViewTasksActvity() {
     super(ViewTasksDS.class, ViewTasks.class);
-    addAdditionalController(TaskFilterView.class);
     addAdditionalController(WorkUnitController.class);
   }
 }

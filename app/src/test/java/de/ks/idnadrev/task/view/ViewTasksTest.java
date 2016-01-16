@@ -112,7 +112,7 @@ public class ViewTasksTest extends ActivityTest {
 
   @Test
   public void testFilter() throws Exception {
-    FXPlatform.invokeLater(() -> master.searchField.setText("4"));
+    FXPlatform.invokeLater(() -> master.taskFilterView.searchField.setText("4"));
 
     TreeItem<Task> root = tasksView.getRoot();
 
@@ -127,7 +127,7 @@ public class ViewTasksTest extends ActivityTest {
 
   @Test
   public void testContextFiltering() throws Exception {
-    FXPlatform.invokeLater(() -> master.contextSelection.setValue(localized.get("all")));
+    FXPlatform.invokeLater(() -> master.taskFilterView.contextSelection.setValue(localized.get("all")));
 
     TreeItem<Task> root = tasksView.getRoot();
 
@@ -135,13 +135,13 @@ public class ViewTasksTest extends ActivityTest {
     assertEquals(3, children.size());
 
     log.info("Filtering with context");
-    FXPlatform.invokeLater(() -> master.contextSelection.setValue("context"));
+    FXPlatform.invokeLater(() -> master.taskFilterView.contextSelection.setValue("context"));
     root = tasksView.getRoot();
     children = root.getChildren();
     assertEquals(children.toString(), 2, children.size());
 
     log.info("Filtering with NO context");
-    FXPlatform.invokeLater(() -> master.contextSelection.setValue(""));
+    FXPlatform.invokeLater(() -> master.taskFilterView.contextSelection.setValue(""));
     root = tasksView.getRoot();
     children = root.getChildren();
     assertEquals(children.toString(), 2, children.size());

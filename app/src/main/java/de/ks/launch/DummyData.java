@@ -18,6 +18,7 @@ import de.ks.flatjsondb.PersistentWork;
 import de.ks.idnadrev.entity.Context;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.Thought;
+import de.ks.idnadrev.entity.WorkUnit;
 import de.ks.idnadrev.entity.information.DiaryInfo;
 import de.ks.idnadrev.entity.information.TextInfo;
 import de.ks.standbein.application.FXApplicationExceptionHandler;
@@ -26,8 +27,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class DummyData extends Service {
   private static final Logger log = LoggerFactory.getLogger(DummyData.class);
@@ -76,43 +81,43 @@ public class DummyData extends Service {
     tasks.add(backpack);
     persistentWork.persist(backpack);
 //
-//    Task sketch = new Task("Create a sketch").setDescription("sketchy\n\tsketchy");
-//    sketch.setEstimatedTime(Duration.ofMinutes(42));
-//    tasks.add(sketch);
-//    Task sew = new Task("Sew the backpack").setDescription("no hussle please");
-//    sew.setEstimatedTime(Duration.ofMinutes(60 * 3 + 32));
-//    tasks.add(sew);
-//    backpack.addChild(sketch);
-//    backpack.addChild(sew);
+    Task sketch = new Task("Create a sketch").setDescription("sketchy\n\tsketchy");
+    sketch.setEstimatedTime(Duration.ofMinutes(42));
+    tasks.add(sketch);
+    Task sew = new Task("Sew the backpack").setDescription("no hussle please");
+    sew.setEstimatedTime(Duration.ofMinutes(60 * 3 + 32));
+    tasks.add(sew);
+    backpack.addChild(sketch);
+    backpack.addChild(sew);
 //
-//    Task task = new Task("Do some stuff").setContext(hiking).setEstimatedTime(Duration.ofMinutes(12));
-//    WorkUnit workUnit = new WorkUnit(task);
-//    workUnit.setStart(LocalDateTime.now().minus(5, ChronoUnit.MINUTES));
-//    workUnit.stop();
-//    tasks.add(task);
-//
-//    Context work = new Context("Work");
-//    Task asciiDocSample = new Task("AsciiDocSample").setDescription(asciiDocString).setEstimatedTime(Duration.ofMinutes(1));
-//    asciiDocSample.setContext(work);
-//    asciiDocSample.getOutcome().setExpectedOutcome("= title\n\n== other\n");
-//    tasks.add(asciiDocSample);
-//
-//    tasks.forEach((t) -> t.getPhysicalEffort().setAmount(ThreadLocalRandom.current().nextInt(0, 10)));
-//    tasks.forEach((t) -> t.getMentalEffort().setAmount(ThreadLocalRandom.current().nextInt(0, 10)));
-//    tasks.forEach((t) -> t.getFunFactor().setAmount(ThreadLocalRandom.current().nextInt(-5, 5)));
-//
-//    persistentWork.persist(hiking, work, backpack, sketch, sew, task, asciiDocSample);
-//
-//    persistentWork.persist(new Context("Studying"), new Context("Music"));
-//
-//    Task effort = new Task("effort");
-//    effort.getMentalEffort().setAmount(-3);
-//    effort.getPhysicalEffort().setAmount(4);
-//    effort.getFunFactor().setAmount(4);
-//
-//    persistentWork.persist(effort);
-//
-//    persistentWork.persist(new Task("finished task").setDescription("yes it is done").setFinished(true));
+    Task task = new Task("Do some stuff").setContext(hiking).setEstimatedTime(Duration.ofMinutes(12));
+    WorkUnit workUnit = task.start();
+    workUnit.setStart(LocalDateTime.now().minus(5, ChronoUnit.MINUTES));
+    workUnit.stop();
+    tasks.add(task);
+
+    Context work = new Context("Work");
+    Task asciiDocSample = new Task("AsciiDocSample").setDescription(asciiDocString).setEstimatedTime(Duration.ofMinutes(1));
+    asciiDocSample.setContext(work);
+    asciiDocSample.getOutcome().setExpectedOutcome("= title\n\n== other\n");
+    tasks.add(asciiDocSample);
+
+    tasks.forEach((t) -> t.getPhysicalEffort().setAmount(ThreadLocalRandom.current().nextInt(0, 10)));
+    tasks.forEach((t) -> t.getMentalEffort().setAmount(ThreadLocalRandom.current().nextInt(0, 10)));
+    tasks.forEach((t) -> t.getFunFactor().setAmount(ThreadLocalRandom.current().nextInt(-5, 5)));
+
+    persistentWork.persist(hiking, work, backpack, sketch, sew, task, asciiDocSample);
+
+    persistentWork.persist(new Context("Studying"), new Context("Music"));
+
+    Task effort = new Task("effort");
+    effort.getMentalEffort().setAmount(-3);
+    effort.getPhysicalEffort().setAmount(4);
+    effort.getFunFactor().setAmount(4);
+
+    persistentWork.persist(effort);
+
+    persistentWork.persist(new Task("finished task").setDescription("yes it is done").setFinished(true));
 //
 //
 //    persistentWork.run(session -> {

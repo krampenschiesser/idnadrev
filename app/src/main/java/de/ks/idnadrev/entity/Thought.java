@@ -42,7 +42,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-@Entity(folderGenerator = SingleFolderGenerator.class)
+@Entity(folderGenerator = SingleFolderGenerator.class, luceneDocExtractor = AdocContainerLuceneExtractor.class)
 public class Thought extends NamedEntity implements FileContainer<Thought> {
   private static final Logger log = LoggerFactory.getLogger(Thought.class);
 

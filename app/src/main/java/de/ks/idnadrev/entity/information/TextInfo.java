@@ -15,13 +15,14 @@
 package de.ks.idnadrev.entity.information;
 
 import de.ks.flatadocdb.annotation.Entity;
+import de.ks.idnadrev.entity.AdocContainerLuceneExtractor;
 import de.ks.idnadrev.entity.FileContainer;
 
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 
-@Entity
+@Entity(luceneDocExtractor = AdocContainerLuceneExtractor.class)
 public class TextInfo extends Information<TextInfo> implements FileContainer<TextInfo> {
   private static final long serialVersionUID = 1L;
   protected Set<Path> files = new HashSet<>();

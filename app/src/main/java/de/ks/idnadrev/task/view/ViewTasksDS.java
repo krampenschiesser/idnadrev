@@ -16,13 +16,13 @@ package de.ks.idnadrev.task.view;
 
 import de.ks.flatjsondb.PersistentWork;
 import de.ks.idnadrev.entity.Task;
-import de.ks.idnadrev.entity.WorkUnit;
 import de.ks.standbein.activity.initialization.ActivityInitialization;
 import de.ks.standbein.datasource.ListDataSource;
 
 import javax.inject.Inject;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Consumer;
 
 public class ViewTasksDS implements ListDataSource<Task> {
@@ -36,37 +36,19 @@ public class ViewTasksDS implements ListDataSource<Task> {
 
   @Override
   public List<Task> loadModel(Consumer<List<Task>> furtherProcessing) {
-    TaskFilterView taskFilterView = initialization.getControllerInstance(TaskFilterView.class);
-    taskFilterView.applyFilterOnDS(this);
 
-    return Collections.emptyList();
-    // FIXME: 12/15/15 
-//    return persistentWork.run(session -> {
-//      List<Task> from = persistentWork.read((em) -> {
-//        CriteriaBuilder builder = em.getCriteriaBuilder();
-//        CriteriaQuery<Task> query = builder.createQuery(Task.class);
-//
-//        Root<Task> root = query.from(Task.class);
-//        query.select(root);
-//
-//        if (filter != null) {
-//          filter.accept(root, query, builder);
-//        }
-//
-//        List<Task> resultList = em.createQuery(query).getResultList();
-//        Task parentTask = persistentWork.reload(taskFilterView.getParentTask());
-//        if (parentTask != null) {
-//          resultList = resultList.stream().filter(t -> t.hasParent(parentTask)).collect(Collectors.toList());
-//          if (!resultList.contains(parentTask)) {
-//            resultList.add(parentTask);
-//          }
-//        }
-//        resultList.forEach(this::loadChildren);
-//        return resultList;
-//      });
-//      furtherProcessing.accept(from);
-//      return from;
-//    });
+    TaskFilterView taskFilterView = initialization.getControllerInstance(TaskFilterView.class);
+    String searchContent = taskFilterView.getSearchContent().trim().toLowerCase(Locale.ROOT);
+    int maxResults = taskFilterView.getMaxResults();
+
+    List<Task> result = persistentWork.read(session -> {
+      List<Task> tasks = new ArrayList<Task>(persistentWork.multiQuery(Task.class, taskFilterView::applyFilterOnDS));
+      tasks.forEach(this::loadChildren);
+      furtherProcessing.accept(tasks);
+      return tasks;
+    });
+
+    return result;
   }
 
   protected void loadChildren(Task task) {
@@ -78,8 +60,6 @@ public class ViewTasksDS implements ListDataSource<Task> {
       task.getContext().getName();
     }
     task.getChildren().forEach(this::loadChildren);
-//    task.getTags().forEach(NamedPersistentObject::getName);// FIXME: 12/15/15 
-    task.getWorkUnits().forEach(WorkUnit::getDuration);
   }
 
   @Override
@@ -98,7 +78,7 @@ public class ViewTasksDS implements ListDataSource<Task> {
     return taskToSelect;
   }
 
-  // FIXME: 12/15/15 
+  // FIXME: 12/15/15
 //  public void setFilter(QueryConsumer<Task, Task> filter) {
 //    this.filter = filter;
 //  }

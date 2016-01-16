@@ -108,10 +108,11 @@ public class ViewTasks extends BaseController<List<Task>> {
     TextPreview.load(activityInitialization, view -> description.getChildren().add(view), ctrl -> asciiDocViewer = ctrl);
 
     tasksView.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
-      if (n == null) {
-        asciiDocViewer.clear();
+      if (n == null || n.getValue() == null || n.getValue().getAdocFile() == null) {
+        asciiDocViewer.clearContent();
       } else {
-        asciiDocViewer.show(n.getValue().getAdocFile().getTmpFile());
+        AdocFile adocFile = n.getValue().getAdocFile();
+        asciiDocViewer.show(adocFile.getTmpFile());
       }
     });
 
@@ -156,7 +157,10 @@ public class ViewTasks extends BaseController<List<Task>> {
 
       task.getTags().forEach((tag) -> tagPane.getChildren().add(new Label(tag.getDisplayName())));
 
-      asciiDocViewer.show(task.getAdocFile().getTmpFile());
+      AdocFile adocFile = task.getAdocFile();
+      if (adocFile != null) {
+        asciiDocViewer.show(adocFile.getTmpFile());
+      }
     }
   }
 
@@ -188,7 +192,7 @@ public class ViewTasks extends BaseController<List<Task>> {
   private void clear() {
     name.setText(null);
     spentTime.setText(null);
-    asciiDocViewer.clear();
+    asciiDocViewer.clearContent();
     parentProject.setText(null);
     context.setText(null);
     physicalEffort.setProgress(0);
@@ -319,7 +323,9 @@ public class ViewTasks extends BaseController<List<Task>> {
   protected void onRefresh(List<Task> loaded) {
     loaded.forEach(t -> {
       AdocFile adocFile = t.getAdocFile();
-      asciiDocViewer.preload(adocFile.getTmpFile(), adocFile.getRenderingPath(), adocFile.getContent());
+      if (adocFile != null) {
+        asciiDocViewer.preload(adocFile.getTmpFile(), adocFile.getRenderingPath(), adocFile.getContent());
+      }
     });
   }
 }

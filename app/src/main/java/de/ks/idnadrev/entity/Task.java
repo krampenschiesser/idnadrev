@@ -33,11 +33,21 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-@Entity(folderGenerator = SingleFolderGenerator.class)
+@Entity(folderGenerator = SingleFolderGenerator.class, luceneDocExtractor = AdocContainerLuceneExtractor.class)
 public class Task extends TaggedEntity implements FileContainer<Task> {
   @QueryProvider
   public static Query<Task, Boolean> finishedQuery() {
     return Query.of(Task.class, Task::isFinished);
+  }
+
+  @QueryProvider
+  public static Query<Task, TaskState> stateQuery() {
+    return Query.of(Task.class, Task::getState);
+  }
+
+  @QueryProvider
+  public static Query<Task, String> contextNameQuery() {
+    return Query.of(Task.class, t -> t.getContext().getName());
   }
 
   @Child(fileGenerator = AdocFileNameGenerator.class, folderGenerator = SameFolderGenerator.class, lazy = false)

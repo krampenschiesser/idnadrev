@@ -15,43 +15,64 @@
   ~ limitations under the License.
   -->
 
+
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<GridPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+<GridPane hgap="5.0" vgap="5.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1"
           fx:controller="de.ks.idnadrev.task.view.TaskFilterView">
     <columnConstraints>
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+        <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints minHeight="30.0" vgrow="SOMETIMES"/>
-        <RowConstraints minHeight="30.0" vgrow="SOMETIMES"/>
-        <RowConstraints minHeight="30.0" vgrow="SOMETIMES"/>
-        <RowConstraints minHeight="30.0" vgrow="SOMETIMES"/>
-        <RowConstraints minHeight="30.0" vgrow="SOMETIMES"/>
-        <RowConstraints minHeight="30.0" vgrow="SOMETIMES"/>
-        <RowConstraints minHeight="30.0"/>
+        <RowConstraints minHeight="10.0" vgrow="NEVER"/>
+        <RowConstraints minHeight="10.0" vgrow="NEVER"/>
     </rowConstraints>
     <children>
-        <CheckBox fx:id="showFinished" mnemonicParsing="false" text="%task.filter.showFinished"
-                  GridPane.columnIndex="1"/>
-        <Label text="%task.state" GridPane.rowIndex="1"/>
-        <CheckBox fx:id="showDefault" mnemonicParsing="false" selected="true" text="%task.state.default"
-                  GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-        <CheckBox fx:id="showAsap" mnemonicParsing="false" selected="true" text="%task.state.asapFilter"
-                  GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-        <CheckBox fx:id="showLater" mnemonicParsing="false" text="%task.state.laterFilter" GridPane.columnIndex="1"
-                  GridPane.rowIndex="3"/>
-        <CheckBox fx:id="showDelegated" mnemonicParsing="false" text="%task.state.delegatedFilter"
-                  GridPane.columnIndex="1" GridPane.rowIndex="4"/>
-        <Label text="%task.description" GridPane.rowIndex="5"/>
-        <TextField fx:id="description" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
-        <Label text="%task.parent.project" GridPane.rowIndex="6"/>
-        <StackPane GridPane.columnIndex="1" GridPane.rowIndex="6" GridPane.valignment="TOP" GridPane.vgrow="NEVER"
-                   fx:id="parentProjectContainer"/>
+        <Accordion GridPane.columnSpan="2147483647" GridPane.rowIndex="1">
+            <panes>
+                <TitledPane animated="false" text="%filter.more">
+                    <content>
+                        <GridPane>
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+                                <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+                                <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+                                <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+                                <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+                                <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+                            </rowConstraints>
+                            <children>
+                                <CheckBox fx:id="showFinished" mnemonicParsing="false" text="%task.filter.showFinished"
+                                          GridPane.columnIndex="1"/>
+                                <Label text="%task.state" GridPane.rowIndex="1"/>
+                                <CheckBox fx:id="showDefault" mnemonicParsing="false" selected="true"
+                                          text="%task.state.default" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                                <CheckBox fx:id="showAsap" mnemonicParsing="false" selected="true"
+                                          text="%task.state.asapFilter" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                                <CheckBox fx:id="showLater" mnemonicParsing="false" text="%task.state.laterFilter"
+                                          GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                                <CheckBox fx:id="showDelegated" mnemonicParsing="false"
+                                          text="%task.state.delegatedFilter" GridPane.columnIndex="1"
+                                          GridPane.rowIndex="4"/>
+                                <Label text="%task.parent.project" GridPane.rowIndex="5"/>
+                                <StackPane fx:id="parentProjectContainer" GridPane.columnIndex="1" GridPane.rowIndex="5"
+                                           GridPane.valignment="TOP" GridPane.vgrow="NEVER"/>
+                            </children>
+                            <padding>
+                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                            </padding>
+                        </GridPane>
+                    </content>
+                </TitledPane>
+            </panes>
+        </Accordion>
+        <TextField fx:id="searchField"/>
+        <ComboBox fx:id="contextSelection" prefWidth="150.0" GridPane.columnIndex="1"/>
     </children>
-    <padding>
-        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
-    </padding>
 </GridPane>
