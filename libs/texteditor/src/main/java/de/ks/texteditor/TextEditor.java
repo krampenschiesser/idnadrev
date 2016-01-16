@@ -94,7 +94,7 @@ public class TextEditor implements Initializable {
   @FXML
   protected HBox exportActions;
 
-  protected final SimpleStringProperty text = new SimpleStringProperty();
+  protected final SimpleStringProperty text = new SimpleStringProperty("");
   protected final ObservableList<SearchResult> searchResults = FXCollections.observableArrayList();
 
   @Inject
@@ -315,7 +315,6 @@ public class TextEditor implements Initializable {
     return codeArea;
   }
 
-
   public TextPreview getPreview() {
     return preview;
   }
@@ -337,7 +336,7 @@ public class TextEditor implements Initializable {
   }
 
   public String getText() {
-    return text.get();
+    return text.getValueSafe();
   }
 
   public SimpleStringProperty textProperty() {
@@ -345,6 +344,6 @@ public class TextEditor implements Initializable {
   }
 
   public void setText(String text) {
-    this.text.set(text);
+    this.text.set(text == null ? "" : text);
   }
 }
