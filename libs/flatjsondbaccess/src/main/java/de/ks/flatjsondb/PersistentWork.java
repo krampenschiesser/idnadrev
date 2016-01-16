@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -34,6 +35,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+@Singleton
 public class PersistentWork {
   private static final Logger log = LoggerFactory.getLogger(PersistentWork.class);
   private final ThreadLocal<Session> localSession = new ThreadLocal<>();
