@@ -43,7 +43,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.net.URL;
-import java.nio.file.FileStore;
 import java.time.Duration;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -96,8 +95,6 @@ public class ViewTasks extends BaseController<List<Task>> {
   @FXML
   protected Button asap;
 
-  @Inject
-  FileStore fileStore;
   @Inject
   PersistentWork persistentWork;
 

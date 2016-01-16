@@ -42,7 +42,8 @@ public class WorkOnTaskDS implements DataSource<Task> {
     persistentWork.run(session -> {
       Task reloaded = persistentWork.reload(model);
       beforeSaving.accept(reloaded);
-//      reloaded.getWorkUnits().last().stop();
+      reloaded.getWorkUnits().addAll(model.getWorkUnits());
+      reloaded.getWorkUnits().last().stop();
     });
   }
 

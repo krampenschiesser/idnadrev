@@ -16,6 +16,7 @@
 package de.ks.idnadrev.task.work;
 
 import de.ks.flatjsondb.PersistentWork;
+import de.ks.idnadrev.IdnadrevIntegrationTestModule;
 import de.ks.idnadrev.IdnadrevWindow;
 import de.ks.idnadrev.entity.Context;
 import de.ks.idnadrev.entity.Task;
@@ -24,7 +25,6 @@ import de.ks.idnadrev.entity.WorkUnit;
 import de.ks.idnadrev.task.view.ViewTasksActvity;
 import de.ks.idnadrev.thought.add.AddThought;
 import de.ks.idnadrev.thought.add.AddThoughtActivity;
-import de.ks.standbein.IntegrationTestModule;
 import de.ks.standbein.LoggingGuiceTestSupport;
 import de.ks.standbein.activity.ActivityController;
 import de.ks.standbein.activity.ActivityHint;
@@ -46,7 +46,7 @@ import static org.junit.Assert.*;
 
 public class WorkOnTaskTest {
   @Rule
-  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule());
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IdnadrevIntegrationTestModule()).launchServices();
   @Inject
   ActivityController activityController;
   @Inject
@@ -65,7 +65,7 @@ public class WorkOnTaskTest {
     workUnit.setStart(LocalDateTime.now().minus(7, ChronoUnit.MINUTES));
     workUnit.stop();
     task.setEstimatedTime(Duration.ofMinutes(10));
-    persistentWork.persist(context, task, workUnit);
+    persistentWork.persist(context, task);
 
     activityController.startOrResume(new ActivityHint(ViewTasksActvity.class));
     activityController.waitForTasks();
