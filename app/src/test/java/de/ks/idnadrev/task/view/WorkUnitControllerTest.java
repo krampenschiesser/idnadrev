@@ -19,9 +19,7 @@ import org.objenesis.ObjenesisStd;
 
 import javax.inject.Inject;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -94,9 +92,11 @@ public class WorkUnitControllerTest extends ActivityTest {
     });
 
     activityController.waitForDataSource();
-    List<WorkUnit> from = persistentWork.from(WorkUnit.class);
-    from.sort(Comparator.comparing(u -> u.getStart()));
-    assertEquals(end1.plusMinutes(1), from.get(0).getEnd());
+    List<Task> tasks = persistentWork.from(Task.class);
+    assertEquals(1, tasks.size());
+    List<WorkUnit> workUnits = new ArrayList<>(tasks.get(0).getWorkUnits());
+    workUnits.sort(Comparator.comparing(WorkUnit::getStart));
+    assertEquals(end1.plusMinutes(1), workUnits.get(0).getEnd());
   }
 
   @Test
@@ -112,8 +112,12 @@ public class WorkUnitControllerTest extends ActivityTest {
 
     activityController.waitForDataSource();
     FXPlatform.waitForFX();
-    List<WorkUnit> from = persistentWork.from(WorkUnit.class);
-    assertEquals(3, from.size());
+
+
+    List<Task> tasks = persistentWork.from(Task.class);
+    assertEquals(1, tasks.size());
+    SortedSet<WorkUnit> workUnits = tasks.get(0).getWorkUnits();
+    assertEquals(3, workUnits.size());
   }
 
   @Test
@@ -177,7 +181,9 @@ public class WorkUnitControllerTest extends ActivityTest {
     FXPlatform.invokeLater(() -> controller.onDelete());
     activityController.waitForDataSource();
 
-    List<WorkUnit> workUnits = persistentWork.from(WorkUnit.class);
+    List<Task> tasks = persistentWork.from(Task.class);
+    assertEquals(1, tasks.size());
+    SortedSet<WorkUnit> workUnits = tasks.get(0).getWorkUnits();
     assertEquals(1, workUnits.size());
 
     Condition.waitFor1s(() -> controller.workUnitTable.getItems(), Matchers.hasSize(1));

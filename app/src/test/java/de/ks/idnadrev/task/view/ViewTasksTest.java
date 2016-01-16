@@ -136,12 +136,14 @@ public class ViewTasksTest extends ActivityTest {
 
     log.info("Filtering with context");
     FXPlatform.invokeLater(() -> master.taskFilterView.contextSelection.setValue("context"));
+    activityController.waitForTasks();
     root = tasksView.getRoot();
     children = root.getChildren();
     assertEquals(children.toString(), 2, children.size());
 
     log.info("Filtering with NO context");
     FXPlatform.invokeLater(() -> master.taskFilterView.contextSelection.setValue(""));
+    activityController.waitForTasks();
     root = tasksView.getRoot();
     children = root.getChildren();
     assertEquals(children.toString(), 2, children.size());

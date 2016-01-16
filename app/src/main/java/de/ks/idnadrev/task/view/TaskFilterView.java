@@ -15,10 +15,14 @@
 package de.ks.idnadrev.task.view;
 
 import de.ks.flatadocdb.session.Session;
+import de.ks.flatjsondb.PersistentWork;
 import de.ks.flatjsondb.selection.NamedEntitySelection;
+import de.ks.idnadrev.entity.Context;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.TaskState;
 import de.ks.standbein.BaseController;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -27,7 +31,10 @@ import javafx.scene.layout.StackPane;
 
 import javax.inject.Inject;
 import java.net.URL;
+import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public class TaskFilterView extends BaseController<Void> {
   @FXML
@@ -49,6 +56,9 @@ public class TaskFilterView extends BaseController<Void> {
 
   @Inject
   NamedEntitySelection<Task> parentProjectController;
+  @Inject
+  PersistentWork persistentWork;
+  private String contextKeyAll;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -62,7 +72,10 @@ public class TaskFilterView extends BaseController<Void> {
     showFinished.selectedProperty().addListener((p, o, n) -> triggerFilter());
     showDefault.selectedProperty().addListener((p, o, n) -> triggerFilter());
 
+    contextSelection.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> triggerFilter());
 //    searchField.textProperty().addListener((p, o, n) -> triggerFilter());
+
+    contextKeyAll = localized.get("all");
   }
 
   // FIXME: 12/15/15 
@@ -84,6 +97,15 @@ public class TaskFilterView extends BaseController<Void> {
       valid = valid || state == TaskState.NONE && showDefault.isSelected();
       return valid;
     });
+
+    String contextString = contextSelection.getSelectionModel().getSelectedItem();
+    if (contextString != null && !contextString.isEmpty()) {
+      if (!contextString.equals(contextKeyAll)) {
+        builder.query(Task.contextNameQuery(), contextString::equals);
+      }
+    } else {
+      builder.query(Task.contextNameQuery(), Objects::isNull);
+    }
   }
 
   public String getSearchContent() {
@@ -103,4 +125,22 @@ public class TaskFilterView extends BaseController<Void> {
   public int getMaxResults() {
     return Integer.MAX_VALUE;
   }
+
+  @Override
+  public void onStart() {
+    onResume();
+  }
+
+  @Override
+  public void onResume() {
+    CompletableFuture.supplyAsync(() -> persistentWork.from(Context.class).stream().map(c -> c.getName()).collect(Collectors.toList()), controller.getExecutorService())//
+      .thenAcceptAsync(contextNames -> {
+        ObservableList<String> items = FXCollections.observableArrayList(contextNames);
+        items.add(0, "");
+        items.add(1, contextKeyAll);
+        contextSelection.setItems(items);
+        contextSelection.getSelectionModel().select(1);
+      }, controller.getJavaFXExecutor());
+  }
+
 }

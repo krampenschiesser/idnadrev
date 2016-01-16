@@ -229,11 +229,14 @@ public class WorkUnitController extends BaseController<List<Task>> {
     WorkUnit selectedItem = workUnitTable.getSelectionModel().getSelectedItem();
     LocalDateTime endTime = getEnteredDate(end.getText());
     LocalDateTime startTime = getEnteredDate(start.getText());
+    selectedItem.setStart(startTime);
+    selectedItem.setEnd(endTime);
+
     store.executeCustomRunnable(() -> {
       persistentWork.run(session -> {
-        WorkUnit reload = persistentWork.reload(selectedItem);
-        reload.setStart(startTime);
-        reload.setEnd(endTime);
+        Task currentTask = persistentWork.reload(this.task.get());
+        currentTask.getWorkUnits().clear();
+        currentTask.getWorkUnits().addAll(workUnitTable.getItems());
       });
       controller.getJavaFXExecutor().submit(() -> reload(task.get()));
     });
@@ -242,10 +245,13 @@ public class WorkUnitController extends BaseController<List<Task>> {
   @FXML
   public void onDelete() {
     WorkUnit selectedItem = workUnitTable.getSelectionModel().getSelectedItem();
+    workUnitTable.getItems().remove(selectedItem);
+
     store.executeCustomRunnable(() -> {
       persistentWork.run(em -> {
-        WorkUnit reload = persistentWork.reload(selectedItem);
-        em.remove(reload);
+        Task currentTask = persistentWork.reload(this.task.get());
+        currentTask.getWorkUnits().clear();
+        currentTask.getWorkUnits().addAll(workUnitTable.getItems());
       });
       controller.getJavaFXExecutor().submit(() -> reload(task.get()));
     });
@@ -265,7 +271,7 @@ public class WorkUnitController extends BaseController<List<Task>> {
         workUnit.setStart(startTime);
         workUnit.setEnd(endTime);
 
-        controller.getJavaFXExecutor().submit(() -> reload(currentTask));
+        controller.getJavaFXExecutor().submit(() -> reload(reload));
       });
     });
   }
