@@ -14,6 +14,7 @@
  */
 package de.ks.idnadrev.context.view;
 
+import de.ks.flatjsondb.PersistentWork;
 import de.ks.fxcontrols.cell.ConvertingListCell;
 import de.ks.idnadrev.context.create.CreateContextActivity;
 import de.ks.idnadrev.entity.Context;
@@ -31,6 +32,7 @@ import javafx.scene.input.KeyCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -46,6 +48,9 @@ public class ViewContextController extends BaseController<List<Context>> {
   protected Button create;
   @FXML
   protected Button delete;
+
+  @Inject
+  PersistentWork persistentWork;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -104,21 +109,7 @@ public class ViewContextController extends BaseController<List<Context>> {
   @FXML
   void onDelete() {
     Context item = contextList.getSelectionModel().getSelectedItem();
-    store.executeCustomRunnable(() -> {
-//      persistentWork.run(em -> {FIXME
-//        Context reload = persistentWork.reload(item);
-//
-//        CriteriaBuilder builder = em.getCriteriaBuilder();
-//        CriteriaUpdate<Task> update = builder.createCriteriaUpdate(Task.class);
-//        Root<Task> root = update.from(Task.class);
-//        Path<Context> contextPath = root.get(key_context);
-//        update.set(contextPath, builder.nullLiteral(Context.class));
-//        update.where(builder.equal(contextPath, reload));
-//
-//        em.createQuery(update).executeUpdate();
-//        em.remove(reload);
-//      });
-    });
+    store.executeCustomRunnable(() -> persistentWork.remove(item));
     store.reload();
   }
 }

@@ -74,7 +74,7 @@ public class Task extends TaggedEntity implements FileContainer<Task> {
   protected TaskState state = TaskState.NONE;
   protected String delegationReason;
 
-  @ToOne
+  @ToOne(lazy = false)
   protected Context context;
 
   protected final Effort physicalEffort = new Effort(Effort.EffortType.PHSYICAL);

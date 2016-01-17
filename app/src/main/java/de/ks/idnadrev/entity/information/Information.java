@@ -61,7 +61,11 @@ public abstract class Information<E extends Information<E>> extends TaggedEntity
 
   @SuppressWarnings("unchecked")
   public E setContent(String content) {
-    adocFile.setContent(content);
+    if (adocFile == null) {
+      adocFile = new AdocFile(getName()).setContent(content);
+    } else {
+      adocFile.setContent(content);
+    }
     return (E) this;
   }
 

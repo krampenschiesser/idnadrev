@@ -15,13 +15,18 @@
  */
 package de.ks.idnadrev.context.create;
 
+import de.ks.flatadocdb.entity.NamedEntity;
+import de.ks.flatjsondb.PersistentWork;
+import de.ks.flatjsondb.validator.NamedEntityMustNotExistValidator;
 import de.ks.idnadrev.entity.Context;
 import de.ks.standbein.BaseController;
+import de.ks.standbein.validation.validators.NotEmptyValidator;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
+import javax.inject.Inject;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -31,14 +36,16 @@ public class CreateContext extends BaseController<Context> {
   @FXML
   protected Button saveButton;
 
+  @Inject
+  PersistentWork persistentWork;
+
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    StringProperty nameProperty = store.getBinding().getStringProperty(Context.class, c -> c.getName());
+    StringProperty nameProperty = store.getBinding().getStringProperty(Context.class, NamedEntity::getName);
     name.textProperty().bindBidirectional(nameProperty);
 
-//    FIXME
-//    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(Context.class, t -> t.getId() == store.<Context>getModel().getId()));
-//    validationRegistry.registerBeanValidationValidator(name, Context.class, PropertyPath.property(Context.class, c -> c.getName()));
+    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<Context>(Context.class, context -> context.getId() == store.<Context>getModel().getId(), persistentWork, localized));
+    validationRegistry.registerValidator(name, new NotEmptyValidator(localized));
 
     saveButton.disableProperty().bind(validationRegistry.invalidProperty());
   }
