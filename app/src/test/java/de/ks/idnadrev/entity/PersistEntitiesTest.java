@@ -19,7 +19,7 @@ import com.google.common.collect.Sets;
 import de.ks.flatadocdb.entity.NamedEntity;
 import de.ks.flatjsondb.PersistentWork;
 import de.ks.idnadrev.IdnadrevIntegrationTestModule;
-import de.ks.idnadrev.entity.information.TextInfo;
+import de.ks.idnadrev.entity.information.Information;
 import de.ks.standbein.LoggingGuiceTestSupport;
 import org.junit.Rule;
 import org.junit.Test;
@@ -70,14 +70,14 @@ public class PersistEntitiesTest {
 
   @Test
   public void testPersistTextInfo() throws Exception {
-    TextInfo information = new TextInfo("myNote");
+    Information information = new Information("myNote");
 
     persistentWork.run((em) -> {
       em.persist(information);
     });
 
     persistentWork.run((em) -> {
-      TextInfo readInformation = persistentWork.reload(information);
+      Information readInformation = persistentWork.reload(information);
       assertEquals(information, readInformation);
     });
   }
@@ -90,8 +90,8 @@ public class PersistEntitiesTest {
     Tag tag4 = new Tag("tag4");
     Tag tag5 = new Tag("tag5");
     persistentWork.run(em -> {
-      TextInfo info1 = new TextInfo("bla");
-      TextInfo info2 = new TextInfo("blubb");
+      Information info1 = new Information("bla");
+      Information info2 = new Information("blubb");
       info1.addTag(tag1);
       info1.addTag(tag2);
       info1.addTag(tag3);
@@ -104,12 +104,12 @@ public class PersistEntitiesTest {
     });
 
     persistentWork.run(session -> {
-      List<TextInfo> textInfos = persistentWork.from(TextInfo.class);
+      List<Information> textInfos = persistentWork.from(Information.class);
       assertEquals(2, textInfos.size());
       assertEquals(3, textInfos.get(0).getTags().size());
     });
     persistentWork.run(em -> {
-      List<TextInfo> infos = getInfosByTag(tag1, tag2);
+      List<Information> infos = getInfosByTag(tag1, tag2);
       log.info("Found {}", infos);
       assertEquals(1, infos.size());
       assertEquals("bla", infos.get(0).getName());
@@ -130,10 +130,10 @@ public class PersistEntitiesTest {
   }
 
   @SuppressWarnings("varargs")
-  private List<TextInfo> getInfosByTag(Tag... tags) {
+  private List<Information> getInfosByTag(Tag... tags) {
     Set<Tag> givenTags = new HashSet<>(Arrays.asList(tags));
-    Collection<TextInfo> result = persistentWork.query(TextInfo.class, TaggedEntity.byTags(), current -> Sets.intersection(current, givenTags).size() > 0);
-    ArrayList<TextInfo> retval = new ArrayList<>(result);
+    Collection<Information> result = persistentWork.query(Information.class, TaggedEntity.byTags(), current -> Sets.intersection(current, givenTags).size() > 0);
+    ArrayList<Information> retval = new ArrayList<>(result);
     Collections.sort(retval, Comparator.comparing(NamedEntity::getName));
     return retval;
   }

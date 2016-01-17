@@ -14,7 +14,7 @@
  */
 package de.ks.idnadrev.information.text;
 
-import de.ks.idnadrev.entity.information.TextInfo;
+import de.ks.idnadrev.entity.information.Information;
 import de.ks.idnadrev.file.FileViewController;
 import de.ks.idnadrev.tag.TagContainer;
 import de.ks.standbein.BaseController;
@@ -29,7 +29,7 @@ import javafx.scene.layout.StackPane;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class TextInfoController extends BaseController<TextInfo> {
+public class TextInfoController extends BaseController<Information> {
   @FXML
   protected Button save;
   @FXML
@@ -54,10 +54,10 @@ public class TextInfoController extends BaseController<TextInfo> {
 //      editor.setPersistentStoreBack(getClass().getSimpleName(), new File(fileOptions.getFileStoreDir()));
     });
 
-    StringProperty nameProperty = store.getBinding().getStringProperty(TextInfo.class, t -> t.getName());
+    StringProperty nameProperty = store.getBinding().getStringProperty(Information.class, t -> t.getName());
     name.textProperty().bindBidirectional(nameProperty);
 
-    StringProperty contentProperty = store.getBinding().getStringProperty(TextInfo.class, t -> t.getContent());
+    StringProperty contentProperty = store.getBinding().getStringProperty(Information.class, t -> t.getContent());
     content.textProperty().bindBidirectional(contentProperty);
 
     validationRegistry.registerValidator(name, new NotEmptyValidator(localized));

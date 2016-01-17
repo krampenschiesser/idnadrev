@@ -17,7 +17,6 @@ package de.ks.idnadrev.information.view;
 
 import de.ks.executor.group.LastTextChange;
 import de.ks.idnadrev.entity.information.Information;
-import de.ks.idnadrev.entity.information.TextInfo;
 import de.ks.idnadrev.tag.TagContainer;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.reflection.PropertyPath;
@@ -106,21 +105,15 @@ public class InformationListView extends BaseController<List<InformationPreviewI
   }
 
   private InformationLoadingHint createLoadingHint() {
-    Class<? extends Information<?>> infoClass = TextInfo.class;
-    infoClass = infoClass.equals(NoInfo.class) ? null : infoClass;
     String name = nameSearch.textProperty().getValueSafe().toLowerCase(Locale.ROOT).trim();
 
-    InformationLoadingHint loadingHint = new InformationLoadingHint(infoClass, name);
+    InformationLoadingHint loadingHint = new InformationLoadingHint(Information.class, name);
     Set<String> tags = tagContainerController.getCurrentTags();
     loadingHint.setTags(tags);
     return loadingHint;
   }
 
-  protected static class NoInfo extends Information<NoInfo> {
-    //dummy because javafx can't handle null values in observable list
-  }
-
-  public void setFixedTypeFilter(Class<? extends Information<?>> type) {
+  public void setFixedTypeFilter(Class<Information> type) {
     controller.getJavaFXExecutor().submit(() -> {
       typeLabel.setVisible(false);
       root.getRowConstraints().get(1).setPrefHeight(0.0F);

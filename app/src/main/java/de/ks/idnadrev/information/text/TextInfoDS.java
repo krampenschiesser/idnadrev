@@ -19,17 +19,17 @@ import de.ks.flatadocdb.session.Session;
 import de.ks.flatjsondb.PersistentWork;
 import de.ks.flatjsondb.datasource.CreateEditDS;
 import de.ks.idnadrev.entity.Thought;
-import de.ks.idnadrev.entity.information.TextInfo;
+import de.ks.idnadrev.entity.information.Information;
 
 import javax.inject.Inject;
 
-public class TextInfoDS extends CreateEditDS<TextInfo> {
+public class TextInfoDS extends CreateEditDS<Information> {
   protected Thought fromThought = null;
   @Inject
   PersistentWork persistentWork;
 
   public TextInfoDS() {
-    super(TextInfo.class);
+    super(Information.class);
   }
 
   @Override
@@ -39,7 +39,7 @@ public class TextInfoDS extends CreateEditDS<TextInfo> {
       Thought thought = (Thought) dataSourceHint;
       fromThought = thought;
 
-      TextInfo textInfo = new TextInfo(thought.getName()).setContent(thought.getDescription());
+      Information textInfo = new Information(thought.getName()).setContent(thought.getDescription());
 //      textInfo.getFiles().addAll(thought.getFiles());// FIXME: 12/17/15
       hint = textInfo;
       return;
@@ -48,7 +48,7 @@ public class TextInfoDS extends CreateEditDS<TextInfo> {
   }
 
   @Override
-  protected void furtherSave(Session session, TextInfo reloaded) {
+  protected void furtherSave(Session session, Information reloaded) {
     if (fromThought != null) {
       Thought thought = persistentWork.reload(fromThought);
       session.remove(thought);

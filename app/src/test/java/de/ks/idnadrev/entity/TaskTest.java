@@ -18,7 +18,6 @@ package de.ks.idnadrev.entity;
 import de.ks.flatjsondb.PersistentWork;
 import de.ks.idnadrev.IdnadrevIntegrationTestModule;
 import de.ks.idnadrev.entity.information.Information;
-import de.ks.idnadrev.entity.information.TextInfo;
 import de.ks.standbein.LoggingGuiceTestSupport;
 import org.junit.Rule;
 import org.junit.Test;
@@ -75,7 +74,7 @@ public class TaskTest {
     final String fileName = "img.jpg";
     final String tagName = "bla";
 
-    TextInfo information = new TextInfo("a note");
+    Information information = new Information("a note");
     Task task = new Task("test");
     Tag tag = new Tag(tagName);
     information.addTag(tag);
@@ -88,13 +87,13 @@ public class TaskTest {
       Task readTask = em.findById(Task.class, task.getId());
 
       assertEquals(1, readTask.getInformation().size());
-      Information<?> readInformation = readTask.getInformation().iterator().next();
+      Information readInformation = readTask.getInformation().iterator().next();
       assertEquals(1, readInformation.getTags().size());
       assertEquals(tagName, readInformation.getTags().iterator().next().getDisplayName());
     });
 
     persistentWork.run((em) -> {
-      TextInfo readInformation = em.findById(TextInfo.class, information.getId());
+      Information readInformation = em.findById(Information.class, information.getId());
       em.remove(readInformation);
     });
 //    persistentWork.run((em) -> {

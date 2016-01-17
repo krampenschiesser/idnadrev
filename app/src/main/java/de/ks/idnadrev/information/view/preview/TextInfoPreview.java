@@ -16,7 +16,7 @@
 package de.ks.idnadrev.information.view.preview;
 
 import de.ks.flatjsondb.PersistentWork;
-import de.ks.idnadrev.entity.information.TextInfo;
+import de.ks.idnadrev.entity.information.Information;
 import de.ks.idnadrev.information.text.TextInfoActivity;
 import de.ks.idnadrev.information.view.InformationPreviewItem;
 import de.ks.standbein.BaseController;
@@ -34,14 +34,14 @@ import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class TextInfoPreview extends BaseController<List<InformationPreviewItem>> implements InformationPreview<TextInfo> {
+public class TextInfoPreview extends BaseController<List<TextInfoPreview>> {
   @FXML
   protected StackPane adocContainer;
   @Inject
   PersistentWork persistentWork;
 
   protected TextPreview asciiDocViewer;
-  protected final Map<String, TextInfo> infos = new ConcurrentHashMap<>();
+  protected final Map<String, Information> infos = new ConcurrentHashMap<>();
   protected volatile InformationPreviewItem selectedItem;
 
   @Override
@@ -49,17 +49,16 @@ public class TextInfoPreview extends BaseController<List<InformationPreviewItem>
     TextPreview.load(activityInitialization, root -> adocContainer.getChildren().add(root), viewer -> asciiDocViewer = viewer);
   }
 
-  @Override
   protected void onRefresh(List<InformationPreviewItem> model) {
     asciiDocViewer.clear();
     infos.clear();
     model.stream()//
-      .filter(preview -> preview.getType().equals(TextInfo.class))//
+      .filter(preview -> preview.getType().equals(Information.class))//
       .map(this::load)//
       .forEach(cf -> cf.thenAccept(this::processLoadedTextInfo));
   }
 
-  protected void processLoadedTextInfo(TextInfo item) {
+  protected void processLoadedTextInfo(Information item) {
     if (item != null) {
       infos.put(item.getName(), item);
       if (selectedItem != null && item.getName().equals(selectedItem.getName())) {
@@ -69,32 +68,30 @@ public class TextInfoPreview extends BaseController<List<InformationPreviewItem>
     }
   }
 
-  protected CompletableFuture<TextInfo> load(InformationPreviewItem preview) {
-    return CompletableFuture.supplyAsync(() -> persistentWork.forName(TextInfo.class, preview.getName()), controller.getExecutorService());
+  protected CompletableFuture<Information> load(InformationPreviewItem preview) {
+    return CompletableFuture.supplyAsync(() -> persistentWork.forName(Information.class, preview.getName()), controller.getExecutorService());
   }
 
   public Pane show(InformationPreviewItem item) {
     this.selectedItem = item;
-    TextInfo textInfo = infos.get(item.getName());
+    Information textInfo = infos.get(item.getName());
     if (textInfo != null) {
       asciiDocViewer.show(textInfo.getAdocFile().getTmpFile());
     }
     return adocContainer;
   }
 
-  @Override
   public void edit() {
     ActivityHint activityHint = new ActivityHint(TextInfoActivity.class, controller.getCurrentActivityId());
     String name = selectedItem.getName();
-    TextInfo textInfo = infos.get(name);
+    Information textInfo = infos.get(name);
     infos.remove(name);
 
     activityHint.setDataSourceHint(() -> textInfo);
     controller.startOrResume(activityHint);
   }
 
-  @Override
-  public TextInfo getCurrentItem() {
+  public Information getCurrentItem() {
     String name = selectedItem.getName();
     return infos.get(name);
   }

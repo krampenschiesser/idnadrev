@@ -19,7 +19,7 @@ import de.ks.flatadocdb.session.Session;
 import de.ks.idnadrev.ActivityTest;
 import de.ks.idnadrev.IdnadrevIntegrationTestModule;
 import de.ks.idnadrev.entity.Thought;
-import de.ks.idnadrev.entity.information.TextInfo;
+import de.ks.idnadrev.entity.information.Information;
 import de.ks.idnadrev.information.text.TextInfoActivity;
 import de.ks.idnadrev.information.text.TextInfoController;
 import de.ks.standbein.LoggingGuiceTestSupport;
@@ -101,9 +101,9 @@ public class ViewThoughtsTest extends ActivityTest {
     activityController.waitForTasks();
 
     persistentWork.run(session -> {
-      List<TextInfo> textInfos = persistentWork.from(TextInfo.class);
+      List<Information> textInfos = persistentWork.from(Information.class);
       assertEquals(1, textInfos.size());
-      TextInfo textInfo = textInfos.get(0);
+      Information textInfo = textInfos.get(0);
       assertEquals("test", textInfo.getName());
       assertEquals(1, textInfo.getFiles().size());
 

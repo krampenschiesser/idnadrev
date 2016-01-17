@@ -15,7 +15,7 @@
 package de.ks.idnadrev.information.diary;
 
 import de.ks.idnadrev.entity.information.DiaryInfo;
-import de.ks.idnadrev.entity.information.TextInfo;
+import de.ks.idnadrev.entity.information.Information;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.datasource.DataSource;
 import de.ks.texteditor.TextEditor;
@@ -47,7 +47,7 @@ public class DiaryController extends BaseController<DiaryInfo> {
       this.content = editor;
     });
 
-    StringProperty contentProperty = store.getBinding().getStringProperty(TextInfo.class, t -> t.getContent());
+    StringProperty contentProperty = store.getBinding().getStringProperty(Information.class, Information::getContent);
     content.textProperty().bindBidirectional(contentProperty);
     dateEditor.setValue(LocalDate.now());
 

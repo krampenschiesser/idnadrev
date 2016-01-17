@@ -15,12 +15,19 @@
 package de.ks.idnadrev.entity.information;
 
 import de.ks.flatadocdb.annotation.Entity;
+import de.ks.flatadocdb.annotation.QueryProvider;
+import de.ks.flatadocdb.query.Query;
+import de.ks.idnadrev.entity.AdocContainerLuceneExtractor;
 
 import java.time.LocalDate;
 
-@Entity
-public class DiaryInfo extends Information<DiaryInfo> {
-  private static final long serialVersionUID = 1L;
+@Entity(luceneDocExtractor = AdocContainerLuceneExtractor.class)
+public class DiaryInfo extends Information {
+  @QueryProvider
+  public static Query<DiaryInfo, LocalDate> dateQuery() {
+    return Query.of(DiaryInfo.class, DiaryInfo::getDate);
+  }
+
   protected LocalDate date;
 
   protected DiaryInfo() {

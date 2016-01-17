@@ -20,7 +20,7 @@ import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.Thought;
 import de.ks.idnadrev.entity.WorkUnit;
 import de.ks.idnadrev.entity.information.DiaryInfo;
-import de.ks.idnadrev.entity.information.TextInfo;
+import de.ks.idnadrev.entity.information.Information;
 import de.ks.standbein.application.FXApplicationExceptionHandler;
 import de.ks.standbein.launch.Service;
 import org.slf4j.Logger;
@@ -57,7 +57,7 @@ public class DummyData extends Service {
   @Override
   protected void doStart() {
     if (Boolean.getBoolean(CREATE_DUMMYDATA)) {
-      Arrays.asList(Thought.class, Context.class, Task.class, TextInfo.class, DiaryInfo.class).forEach(c -> persistentWork.removeAllOf(c));
+      Arrays.asList(Thought.class, Context.class, Task.class, Information.class, DiaryInfo.class).forEach(c -> persistentWork.removeAllOf(c));
       FXApplicationExceptionHandler.showExceptions = true;
       createData();
     }

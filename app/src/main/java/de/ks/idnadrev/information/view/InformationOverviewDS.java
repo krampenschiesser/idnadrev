@@ -18,7 +18,6 @@ package de.ks.idnadrev.information.view;
 import de.ks.flatadocdb.entity.BaseEntity;
 import de.ks.flatadocdb.entity.NamedEntity;
 import de.ks.idnadrev.entity.information.Information;
-import de.ks.idnadrev.entity.information.TextInfo;
 import de.ks.standbein.datasource.ListDataSource;
 import de.ks.standbein.reflection.PropertyPath;
 import org.apache.commons.lang3.StringUtils;
@@ -39,7 +38,7 @@ public class InformationOverviewDS implements ListDataSource<InformationPreviewI
 
   @Override
   public List<InformationPreviewItem> loadModel(Consumer<List<InformationPreviewItem>> furtherProcessing) {
-    List<Class<? extends Information<?>>> classes = new ArrayList<>(Arrays.asList(TextInfo.class));
+    List<Class<Information>> classes = new ArrayList<>(Arrays.asList(Information.class));
     if (loadingHint.getType() != null) {
       classes.clear();
       classes.add(loadingHint.getType());

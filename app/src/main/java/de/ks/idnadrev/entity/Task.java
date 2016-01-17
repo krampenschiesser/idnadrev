@@ -21,7 +21,7 @@ import de.ks.flatadocdb.query.Query;
 import de.ks.idnadrev.entity.adoc.AdocFile;
 import de.ks.idnadrev.entity.adoc.AdocFileNameGenerator;
 import de.ks.idnadrev.entity.adoc.SameFolderGenerator;
-import de.ks.idnadrev.entity.information.TextInfo;
+import de.ks.idnadrev.entity.information.Information;
 
 import java.nio.file.Path;
 import java.time.Duration;
@@ -88,7 +88,7 @@ public class Task extends TaggedEntity implements FileContainer<Task> {
   protected Set<Path> files = new HashSet<>();
 
   @ToMany
-  protected Set<TextInfo> information = new HashSet<>();
+  protected Set<Information> information = new HashSet<>();
 
   protected Task() {
     super(null);
@@ -322,11 +322,11 @@ public class Task extends TaggedEntity implements FileContainer<Task> {
     return this;
   }
 
-  public Set<TextInfo> getInformation() {
+  public Set<Information> getInformation() {
     return information;
   }
 
-  public Task addInformation(TextInfo info) {
+  public Task addInformation(Information info) {
     information.add(info);
     return this;
   }

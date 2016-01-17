@@ -28,7 +28,7 @@ import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.Thought;
 import de.ks.idnadrev.entity.adoc.AdocFile;
 import de.ks.idnadrev.entity.information.DiaryInfo;
-import de.ks.idnadrev.entity.information.TextInfo;
+import de.ks.idnadrev.entity.information.Information;
 import de.ks.idnadrev.information.diary.DiaryActivity;
 import de.ks.idnadrev.information.text.TextInfoActivity;
 import de.ks.idnadrev.information.view.InformationOverviewActivity;
@@ -95,7 +95,7 @@ public class IdnadrevModule extends AbstractModule {
     entities.addBinding().toInstance(Context.class);
     entities.addBinding().toInstance(Task.class);
     entities.addBinding().toInstance(Thought.class);
-    entities.addBinding().toInstance(TextInfo.class);
+    entities.addBinding().toInstance(Information.class);
     entities.addBinding().toInstance(DiaryInfo.class);
     entities.addBinding().toInstance(Schedule.class);
 

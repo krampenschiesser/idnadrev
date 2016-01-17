@@ -26,16 +26,16 @@ import javafx.scene.input.KeyCode;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public abstract class BaseInfoSelectionController<T extends Information<T>> extends BaseInformationOverviewController {
+public abstract class BaseInfoSelectionController extends BaseInformationOverviewController {
   @FXML
   protected Button select;
   @FXML
   protected Button close;
-  protected Information<?> selectedItem;
+  protected Information selectedItem;
 
-  protected final Class<T> clazz;
+  protected final Class<Information> clazz;
 
-  public BaseInfoSelectionController(Class<T> clazz) {
+  public BaseInfoSelectionController(Class<Information> clazz) {
     this.clazz = clazz;
   }
 
@@ -74,7 +74,7 @@ public abstract class BaseInfoSelectionController<T extends Information<T>> exte
     controller.stopCurrent();
   }
 
-  public T getSelectedItem() {
-    return (T) selectedItem;
+  public Information getSelectedItem() {
+    return selectedItem;
   }
 }

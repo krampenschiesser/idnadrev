@@ -18,7 +18,7 @@ package de.ks.idnadrev.information.text;
 import de.ks.flatadocdb.session.Session;
 import de.ks.idnadrev.ActivityTest;
 import de.ks.idnadrev.entity.Tag;
-import de.ks.idnadrev.entity.information.TextInfo;
+import de.ks.idnadrev.entity.information.Information;
 import de.ks.standbein.IntegrationTestModule;
 import de.ks.standbein.LoggingGuiceTestSupport;
 import de.ks.standbein.activity.ActivityCfg;
@@ -65,7 +65,7 @@ public class TextInfoActivityTest extends ActivityTest {
     activityController.waitForDataSource();
 
     persistentWork.run(session -> {
-      TextInfo textInfo = persistentWork.forName(TextInfo.class, "test");
+      Information textInfo = persistentWork.forName(Information.class, "test");
       assertNotNull(textInfo);
 
 
@@ -80,8 +80,8 @@ public class TextInfoActivityTest extends ActivityTest {
   @Test
   public void testEdit() throws Exception {
     TextInfoDS datasource = (TextInfoDS) store.getDatasource();
-    TextInfo model = persistentWork.read(em -> {
-      TextInfo textInfo = new TextInfo("test").setContent("desc");
+    Information model = persistentWork.read(em -> {
+      Information textInfo = new Information("test").setContent("desc");
       textInfo.addTag("tag");
       em.persist(textInfo);
       return textInfo;
@@ -101,9 +101,9 @@ public class TextInfoActivityTest extends ActivityTest {
     activityController.waitForDataSource();
 
     persistentWork.run(session -> {
-      List<TextInfo> from = persistentWork.from(TextInfo.class);
+      List<Information> from = persistentWork.from(Information.class);
       assertEquals(1, from.size());
-      TextInfo info = from.get(0);
+      Information info = from.get(0);
       assertEquals("other", info.getContent());
     });
   }

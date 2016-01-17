@@ -16,20 +16,20 @@
 package de.ks.idnadrev.entity.information;
 
 import de.ks.flatadocdb.annotation.Child;
+import de.ks.flatadocdb.annotation.Entity;
 import de.ks.flatadocdb.annotation.ToMany;
-import de.ks.idnadrev.entity.Tag;
-import de.ks.idnadrev.entity.TaggedEntity;
-import de.ks.idnadrev.entity.Task;
+import de.ks.idnadrev.entity.*;
 import de.ks.idnadrev.entity.adoc.AdocFile;
 import de.ks.idnadrev.entity.adoc.AdocFileNameGenerator;
 import de.ks.idnadrev.entity.adoc.SameFolderGenerator;
 
+import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.Set;
 
-public abstract class Information<E extends Information<E>> extends TaggedEntity {
-  public static final String INFORMATION_TAG_JOINTABLE = "information_tag";
-
-  private static final long serialVersionUID = 1L;
+@Entity(luceneDocExtractor = AdocContainerLuceneExtractor.class)
+public class Information extends TaggedEntity implements FileContainer<Information> {
+  protected Set<Path> files = new HashSet<>();
 
   @Child(fileGenerator = AdocFileNameGenerator.class, folderGenerator = SameFolderGenerator.class)
   protected AdocFile adocFile;
@@ -56,17 +56,16 @@ public abstract class Information<E extends Information<E>> extends TaggedEntity
   }
 
   public String getContent() {
-    return adocFile.getContent();
+    return adocFile == null ? null : adocFile.getContent();
   }
 
-  @SuppressWarnings("unchecked")
-  public E setContent(String content) {
+  public Information setContent(String content) {
     if (adocFile == null) {
       adocFile = new AdocFile(getName()).setContent(content);
     } else {
       adocFile.setContent(content);
     }
-    return (E) this;
+    return this;
   }
 
   public AdocFile getAdocFile() {
@@ -76,5 +75,10 @@ public abstract class Information<E extends Information<E>> extends TaggedEntity
   @Override
   public Set<Tag> getTags() {
     return tags;
+  }
+
+  @Override
+  public Set<Path> getFiles() {
+    return files;
   }
 }

@@ -17,7 +17,7 @@ package de.ks.idnadrev.entity;
 
 import de.ks.flatadocdb.entity.NamedEntity;
 import de.ks.flatadocdb.ifc.LuceneDocumentExtractor;
-import de.ks.idnadrev.entity.information.TextInfo;
+import de.ks.idnadrev.entity.information.Information;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
@@ -42,8 +42,8 @@ public class AdocContainerLuceneExtractor implements LuceneDocumentExtractor<Obj
     if (instance instanceof Thought) {
       description = ((Thought) instance).getDescription();
     }
-    if (instance instanceof TextInfo) {
-      description = ((TextInfo) instance).getContent();
+    if (instance instanceof Information) {
+      description = ((Information) instance).getContent();
     }
 
     if (description != null || name != null) {

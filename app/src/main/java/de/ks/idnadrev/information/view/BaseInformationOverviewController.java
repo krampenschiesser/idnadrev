@@ -15,8 +15,7 @@
  */
 package de.ks.idnadrev.information.view;
 
-import de.ks.idnadrev.entity.information.TextInfo;
-import de.ks.idnadrev.information.view.preview.InformationPreview;
+import de.ks.idnadrev.entity.information.Information;
 import de.ks.idnadrev.information.view.preview.TextInfoPreview;
 import de.ks.standbein.BaseController;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -33,7 +32,7 @@ public class BaseInformationOverviewController extends BaseController<List<Infor
   protected InformationListView listController;
   @FXML
   protected StackPane previewContainer;
-  protected InformationPreview<?> currentPreview;
+  protected TextInfoPreview currentPreview;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -42,7 +41,7 @@ public class BaseInformationOverviewController extends BaseController<List<Infor
     selectedItemProperty.addListener((p, o, n) -> {
       previewContainer.getChildren().clear();
       if (n != null) {
-        if (n.getType().equals(TextInfo.class)) {
+        if (n.getType().equals(Information.class)) {
           TextInfoPreview preview = activityInitialization.getControllerInstance(TextInfoPreview.class);
           currentPreview = preview;
           previewContainer.getChildren().add(preview.show(n));

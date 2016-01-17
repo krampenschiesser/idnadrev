@@ -23,11 +23,11 @@ import java.util.Set;
 
 public class InformationLoadingHint {
   protected final List<String> tags = new ArrayList<>();
-  protected final Class<? extends Information<?>> type;
+  protected final Class<Information> type;
   protected final String name;
 //  protected final Category category;
 
-  public InformationLoadingHint(Class<? extends Information<?>> type, String name) {
+  public InformationLoadingHint(Class<Information> type, String name) {
     this.type = type;
     this.name = name;
 //    this.category = category;
@@ -37,7 +37,7 @@ public class InformationLoadingHint {
     return tags;
   }
 
-  public Class<? extends Information<?>> getType() {
+  public Class<Information> getType() {
     return type;
   }
 
