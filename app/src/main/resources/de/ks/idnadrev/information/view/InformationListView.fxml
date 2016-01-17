@@ -12,28 +12,20 @@
     <rowConstraints>
         <RowConstraints minHeight="10.0" vgrow="NEVER"/>
         <RowConstraints minHeight="10.0" vgrow="NEVER"/>
-        <RowConstraints minHeight="10.0" vgrow="NEVER"/>
         <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
     </rowConstraints>
     <children>
         <Label text="%name:"/>
         <Label text="%tags:" GridPane.rowIndex="1"/>
         <TextField fx:id="nameSearch" GridPane.columnIndex="1"/>
-        <Label text="%category:" GridPane.rowIndex="2"/>
         <StackPane GridPane.columnIndex="1" GridPane.rowIndex="1">
             <children>
                 <fx:include fx:id="tagContainer" source="../../tag/TagContainer.fxml"/>
             </children>
         </StackPane>
-        <StackPane GridPane.columnIndex="1" GridPane.rowIndex="2">
-            <children>
-                <fx:include fx:id="categorySelection" source="../../category/CategorySelection.fxml"/>
-            </children>
-        </StackPane>
-        <TableView fx:id="informationList" GridPane.columnSpan="2147483647" GridPane.rowIndex="3">
+        <TableView fx:id="informationList" GridPane.columnSpan="2147483647" GridPane.rowIndex="2">
             <columns>
                 <TableColumn fx:id="nameColumn" minWidth="200.0" prefWidth="300.0" text="%name"/>
-                <TableColumn fx:id="typeColumn" prefWidth="98.0" text="%type"/>
                 <TableColumn fx:id="creationDateColumn" prefWidth="161.0" text="%creationDate"/>
             </columns>
         </TableView>

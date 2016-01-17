@@ -16,9 +16,9 @@
 package de.ks.idnadrev.information.view.preview;
 
 import de.ks.flatjsondb.PersistentWork;
+import de.ks.idnadrev.entity.adoc.AdocFile;
 import de.ks.idnadrev.entity.information.Information;
 import de.ks.idnadrev.information.text.TextInfoActivity;
-import de.ks.idnadrev.information.view.InformationPreviewItem;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.activity.ActivityHint;
 import de.ks.texteditor.preview.TextPreview;
@@ -31,10 +31,9 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class TextInfoPreview extends BaseController<List<TextInfoPreview>> {
+public class TextInfoPreview extends BaseController<List<Information>> {
   @FXML
   protected StackPane adocContainer;
   @Inject
@@ -42,41 +41,47 @@ public class TextInfoPreview extends BaseController<List<TextInfoPreview>> {
 
   protected TextPreview asciiDocViewer;
   protected final Map<String, Information> infos = new ConcurrentHashMap<>();
-  protected volatile InformationPreviewItem selectedItem;
+  protected volatile Information selectedItem;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     TextPreview.load(activityInitialization, root -> adocContainer.getChildren().add(root), viewer -> asciiDocViewer = viewer);
   }
 
-  protected void onRefresh(List<InformationPreviewItem> model) {
+  @Override
+  protected void onRefresh(List<Information> model) {
     asciiDocViewer.clear();
     infos.clear();
-    model.stream()//
-      .filter(preview -> preview.getType().equals(Information.class))//
-      .map(this::load)//
-      .forEach(cf -> cf.thenAccept(this::processLoadedTextInfo));
+    model.stream().forEach(this::processTextInfo);
   }
 
-  protected void processLoadedTextInfo(Information item) {
+  protected void processTextInfo(Information item) {
     if (item != null) {
       infos.put(item.getName(), item);
-      if (selectedItem != null && item.getName().equals(selectedItem.getName())) {
-        controller.getJavaFXExecutor().submit(() -> asciiDocViewer.show(item.getAdocFile().getTmpFile()));
+      AdocFile adocFile = item.getAdocFile();
+      if (adocFile != null) {
+        if (selectedItem != null && item.getName().equals(selectedItem.getName())) {
+          controller.getJavaFXExecutor().submit(() -> asciiDocViewer.show(adocFile.getTmpFile()));
+        }
+        asciiDocViewer.preload(adocFile.getTmpFile(), adocFile.getRenderingPath(), adocFile.getContent());
       }
-      asciiDocViewer.preload(item.getAdocFile().getTmpFile(), item.getAdocFile().getRenderingPath(), item.getAdocFile().getContent());
     }
   }
 
-  protected CompletableFuture<Information> load(InformationPreviewItem preview) {
-    return CompletableFuture.supplyAsync(() -> persistentWork.forName(Information.class, preview.getName()), controller.getExecutorService());
-  }
-
-  public Pane show(InformationPreviewItem item) {
-    this.selectedItem = item;
-    Information textInfo = infos.get(item.getName());
-    if (textInfo != null) {
-      asciiDocViewer.show(textInfo.getAdocFile().getTmpFile());
+  public Pane show(Information item) {
+    if (item == null) {
+      asciiDocViewer.clearContent();
+    } else {
+      this.selectedItem = item;
+      Information textInfo = infos.get(item.getName());
+      if (textInfo != null) {
+        AdocFile adocFile = textInfo.getAdocFile();
+        if (adocFile != null) {
+          asciiDocViewer.show(adocFile.getTmpFile());
+        } else {
+          asciiDocViewer.clearContent();
+        }
+      }
     }
     return adocContainer;
   }

@@ -15,19 +15,18 @@
 package de.ks.launch;
 
 import de.ks.flatjsondb.PersistentWork;
-import de.ks.idnadrev.entity.Context;
-import de.ks.idnadrev.entity.Task;
-import de.ks.idnadrev.entity.Thought;
-import de.ks.idnadrev.entity.WorkUnit;
+import de.ks.idnadrev.entity.*;
 import de.ks.idnadrev.entity.information.DiaryInfo;
 import de.ks.idnadrev.entity.information.Information;
 import de.ks.standbein.application.FXApplicationExceptionHandler;
 import de.ks.standbein.launch.Service;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -150,15 +149,16 @@ public class DummyData extends Service {
 //    persistentWork.persist(scheduled);
 //
 //
-//    persistentWork.persist(new DiaryInfo(LocalDate.now().minusDays(1)).setContent("wuza!"));
-//
-//    for (int i = 0; i < 5; i++) {
-//      Tag tag = new Tag("tag" + i);
-//      TextInfo info = new TextInfo("info" + i);
-//      info.setContent(asciiDocString);
-//      info.addTag(tag);
-//      persistentWork.persist(tag, info);
-//    }
+    persistentWork.persist(new DiaryInfo(LocalDate.now().minusDays(1)).setContent("wuza!"));
+
+    for (int i = 0; i < 5; i++) {
+      Tag tag = new Tag("tag" + i);
+      Information info = new Information("info" + i);
+      info.setContent(StringUtils.replace(asciiDocString, "The Article Title", "Text info " + i));
+      info.addTag(tag);
+      persistentWork.persist(info);
+    }
+    persistentWork.persist(new Information("empty"));
 
 //
 //    Account account1 = new Account("testAccount1");
@@ -223,8 +223,7 @@ public class DummyData extends Service {
 
   }
 
-  private static final String asciiDocString = "The Article Title\n" +
-    "=================\n" +
+  private static final String asciiDocString = "= The Article Title\n" +
     "Author's Name <authors@email.address>\n" +
     "v $version, 2003-12\n" +
     "\n" +
@@ -239,8 +238,7 @@ public class DummyData extends Service {
     "\n" +
     ":numbered!:\n" +
     "[abstract]\n" +
-    "Example Abstract\n" +
-    "----------------\n" +
+    "== Example Abstract\n" +
     "The optional abstract (one or more paragraphs) goes here.\n" +
     "\n" +
     "This document is an AsciiDoc article skeleton containing briefly\n" +
@@ -249,8 +247,7 @@ public class DummyData extends Service {
     "\n" +
     ":numbered:\n" +
     "\n" +
-    "The First Section\n" +
-    "-----------------\n" +
+    "== The First Section\n" +
     "Article sections start at level 1 and can be nested up to four levels\n" +
     "deep.\n" +
     "footnote:[An example footnote.]\n" +
@@ -286,8 +283,7 @@ public class DummyData extends Service {
     "===============================================\n" +
     "\n" +
     "[[X1]]\n" +
-    "Sub-section with Anchor\n" +
-    "~~~~~~~~~~~~~~~~~~~~~~~\n" +
+    "=== Sub-section with Anchor\n" +
     "Sub-section at level 2.\n" +
     "\n" +
     "[source,java]\n" +

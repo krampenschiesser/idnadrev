@@ -62,7 +62,7 @@ public class TextInfoController extends BaseController<Information> {
     content.textProperty().bindBidirectional(contentProperty);
 
     validationRegistry.registerValidator(name, new NotEmptyValidator(localized));
-    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<Information>(Information.class, t -> t.getId() == store.<Information>getModel().getId(), persistentWork, localized));
+    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<Information>(Information.class, t -> t.getId() != null && t.getId().equals(store.<Information>getModel().getId()), persistentWork, localized));
 
     save.disableProperty().bind(validationRegistry.invalidProperty());
   }

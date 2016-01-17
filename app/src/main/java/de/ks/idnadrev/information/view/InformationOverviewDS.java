@@ -15,91 +15,48 @@
  */
 package de.ks.idnadrev.information.view;
 
-import de.ks.flatadocdb.entity.BaseEntity;
+import com.google.common.collect.Sets;
 import de.ks.flatadocdb.entity.NamedEntity;
+import de.ks.flatjsondb.PersistentWork;
+import de.ks.idnadrev.entity.Tag;
+import de.ks.idnadrev.entity.TaggedEntity;
+import de.ks.idnadrev.entity.information.DiaryInfo;
 import de.ks.idnadrev.entity.information.Information;
 import de.ks.standbein.datasource.ListDataSource;
-import de.ks.standbein.reflection.PropertyPath;
-import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import javax.inject.Inject;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
-public class InformationOverviewDS implements ListDataSource<InformationPreviewItem> {
-  private static final String KEY_NAME = PropertyPath.property(Information.class, NamedEntity::getName);
-  private static final String KEY_CREATIONTIME = PropertyPath.property(Information.class, BaseEntity::getCreationTime);
-  private static final String KEY_TAGS = PropertyPath.property(Information.class, Information::getTags);
-//  private static final String KEY_CATEGORY = PropertyPath.property(Information.class, Information::getCategory);
+public class InformationOverviewDS implements ListDataSource<Information> {
+  protected volatile InformationLoadingHint loadingHint = new InformationLoadingHint("");
 
-  protected volatile InformationLoadingHint loadingHint = new InformationLoadingHint(null, "");
+  @Inject
+  PersistentWork persistentWork;
 
   @Override
-  public List<InformationPreviewItem> loadModel(Consumer<List<InformationPreviewItem>> furtherProcessing) {
-    List<Class<Information>> classes = new ArrayList<>(Arrays.asList(Information.class));
-    if (loadingHint.getType() != null) {
-      classes.clear();
-      classes.add(loadingHint.getType());
-    }
-    String name = "%" + StringUtils.replace(loadingHint.getName(), "*", "%") + "%";
-    List<String> tags = loadingHint.getTags();
-//    Category category = loadingHint.getCategory();
-// FIXME: 12/17/15 
-//    List<InformationPreviewItem> retval = persistentWork.read(em -> {
-//      CriteriaBuilder builder = em.getCriteriaBuilder();
-//
-//      List<InformationPreviewItem> items = new ArrayList<>();
-//
-//      for (Class<? extends Information<?>> clazz : classes) {
-//        List<InformationPreviewItem> results = getResults(name, tags, category, em, builder, clazz);
-//        results.forEach(r -> r.setType(clazz));
-//        items.addAll(results);
-//      }
-//      furtherProcessing.accept(items);
-//      return items;
-//    });
+  public List<Information> loadModel(Consumer<List<Information>> furtherProcessing) {
+    String name = loadingHint.getName();
+    Set<String> tags = loadingHint.getTags();
 
-//    return retval;
-    return Collections.emptyList();
+    return persistentWork.read(session -> {
+      Collection<Information> information = persistentWork.multiQuery(Information.class, builder -> {
+        if (!tags.isEmpty()) {
+          builder.query(TaggedEntity.byTags(), current -> {
+            Set<String> currentTagStrings = current.stream().map(Tag::getReducedName).collect(Collectors.toSet());
+            return !Sets.intersection(tags, currentTagStrings).isEmpty();
+          });
+        }
+        builder.query(NamedEntity.nameQuery(), current -> current.trim().toLowerCase(Locale.ROOT).contains(name));
+      });
+      List<Information> sorted = information.stream().filter(i -> !(i instanceof DiaryInfo)).collect(Collectors.toList());
+      Collections.sort(sorted, Comparator.comparing(NamedEntity::getName));
+      furtherProcessing.accept(sorted);
+
+      return sorted;
+    });
   }
-
-  // FIXME: 12/17/15 
-//  private List<InformationPreviewItem> getResults(String name, List<String> tagNames, Category category, EntityManager em, CriteriaBuilder builder, Class<? extends Information<?>> clazz) {
-//    CriteriaQuery<InformationPreviewItem> query = builder.createQuery(InformationPreviewItem.class);
-//    Root<? extends Information<?>> root = query.from(clazz);
-//
-//    ArrayList<Predicate> filters = new ArrayList<>();
-//    if (!name.isEmpty()) {
-//      filters.add(builder.like(builder.lower(root.<String>get(KEY_NAME)), name));
-//    }
-//    if (!tagNames.isEmpty()) {
-//      List<Tag> tags = getTags(tagNames, em);
-//      SetJoin<TextInfo, Tag> tagJoin = root.joinSet(KEY_TAGS);
-//      filters.add(tagJoin.in(tags));
-//    }
-//    if (category != null) {
-//      filters.add(builder.equal(root.get(KEY_CATEGORY), category));
-//    }
-//    query.distinct(true);
-//
-//    query.where(filters.toArray(new Predicate[filters.size()]));
-//    query.select(builder.construct(InformationPreviewItem.class, root.get(KEY_NAME), root.get(KEY_CREATIONTIME)));
-//    List<InformationPreviewItem> resultList = em.createQuery(query).getResultList();
-//    return resultList;
-//  }
-//
-//  protected List<Tag> getTags(List<String> tagNames, EntityManager em) {
-//    CriteriaBuilder builder = em.getCriteriaBuilder();
-//    CriteriaQuery<Tag> query = builder.createQuery(Tag.class);
-//    Root<Tag> root = query.from(Tag.class);
-//    Path<String> namePath = root.get(KEY_NAME);
-//    query.select(root);
-//    query.where(namePath.in(tagNames));
-//
-//    return em.createQuery(query).getResultList();
-//  }
 
   @Override
   public void setLoadingHint(Object dataSourceHint) {
@@ -109,7 +66,7 @@ public class InformationOverviewDS implements ListDataSource<InformationPreviewI
   }
 
   @Override
-  public void saveModel(List<InformationPreviewItem> model, Consumer<List<InformationPreviewItem>> beforeSaving) {
+  public void saveModel(List<Information> model, Consumer<List<Information>> beforeSaving) {
 
   }
 }

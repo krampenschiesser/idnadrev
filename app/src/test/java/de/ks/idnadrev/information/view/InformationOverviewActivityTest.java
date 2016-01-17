@@ -2,9 +2,9 @@ package de.ks.idnadrev.information.view;
 
 import de.ks.flatadocdb.session.Session;
 import de.ks.idnadrev.ActivityTest;
+import de.ks.idnadrev.IdnadrevIntegrationTestModule;
 import de.ks.idnadrev.entity.Tag;
 import de.ks.idnadrev.entity.information.Information;
-import de.ks.standbein.IntegrationTestModule;
 import de.ks.standbein.LoggingGuiceTestSupport;
 import de.ks.standbein.activity.ActivityCfg;
 import de.ks.util.FXPlatform;
@@ -16,7 +16,7 @@ import static org.junit.Assert.assertEquals;
 
 public class InformationOverviewActivityTest extends ActivityTest {
   @Rule
-  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule());
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IdnadrevIntegrationTestModule()).launchServices();
 
   private InformationListView listView;
 
@@ -36,7 +36,7 @@ public class InformationOverviewActivityTest extends ActivityTest {
       Tag tag = new Tag("tag" + i);
       Information info = new Information("info" + i);
       info.addTag(tag);
-      persistentWork.persist(tag, info);
+      persistentWork.persist(info);
     }
   }
 
@@ -52,21 +52,6 @@ public class InformationOverviewActivityTest extends ActivityTest {
     FXPlatform.invokeLater(() -> listView.tagContainerController.removeTag("tag1"));
     activityController.waitForDataSource();
     expectItemCount(5);
-
-//    FXPlatform.invokeLater(() -> listView.categorySelectionController.getInput().setText("category3"));
-//    Thread.sleep(LastTextChange.WAIT_TIME + 150);
-//    activityController.waitForDataSource();
-//    FXPlatform.waitForFX();
-//    expectItemCount(1);
-//    expectItem(0, "info3");
-//
-//    FXPlatform.invokeLater(() -> listView.categorySelectionController.getInput().setText(""));
-//    FXPlatform.invokeLater(() -> listView.nameSearch.setText("4"));
-//    Thread.sleep(LastTextChange.WAIT_TIME + 150);
-//    activityController.waitForDataSource();
-//    FXPlatform.waitForFX();
-//    expectItemCount(1);
-//    expectItem(0, "info4");
   }
 
   private void expectItemCount(int expected) {
@@ -74,7 +59,7 @@ public class InformationOverviewActivityTest extends ActivityTest {
   }
 
   private void expectItem(int index, String name) {
-    InformationPreviewItem item = listView.informationList.getItems().get(index);
+    Information item = listView.informationList.getItems().get(index);
     assertEquals(name, item.getName());
   }
 }

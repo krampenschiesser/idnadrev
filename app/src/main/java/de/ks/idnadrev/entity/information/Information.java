@@ -31,7 +31,7 @@ import java.util.Set;
 public class Information extends TaggedEntity implements FileContainer<Information> {
   protected Set<Path> files = new HashSet<>();
 
-  @Child(fileGenerator = AdocFileNameGenerator.class, folderGenerator = SameFolderGenerator.class)
+  @Child(fileGenerator = AdocFileNameGenerator.class, folderGenerator = SameFolderGenerator.class, lazy = false)
   protected AdocFile adocFile;
 
   @ToMany

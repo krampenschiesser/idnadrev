@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,41 +15,29 @@
  */
 package de.ks.idnadrev.information.view;
 
-import de.ks.idnadrev.entity.information.Information;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 public class InformationLoadingHint {
-  protected final List<String> tags = new ArrayList<>();
-  protected final Class<Information> type;
+  protected final Set<String> tags = new HashSet<>();
   protected final String name;
-//  protected final Category category;
 
-  public InformationLoadingHint(Class<Information> type, String name) {
-    this.type = type;
-    this.name = name;
-//    this.category = category;
+  public InformationLoadingHint(String name) {
+    this.name = name.toLowerCase(Locale.ROOT);
   }
 
-  public List<String> getTags() {
+  public Set<String> getTags() {
     return tags;
-  }
-
-  public Class<Information> getType() {
-    return type;
   }
 
   public String getName() {
     return name;
   }
 
-//  public Category getCategory() {
-//    return category;
-//  }
-
   public void setTags(Set<String> tags) {
-    this.tags.addAll(tags);
+    for (String tag : tags) {
+      this.tags.add(tag.trim().toLowerCase(Locale.ROOT));
+    }
   }
 }
