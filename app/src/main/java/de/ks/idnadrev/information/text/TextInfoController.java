@@ -14,6 +14,8 @@
  */
 package de.ks.idnadrev.information.text;
 
+import de.ks.flatjsondb.PersistentWork;
+import de.ks.flatjsondb.validator.NamedEntityMustNotExistValidator;
 import de.ks.idnadrev.entity.information.Information;
 import de.ks.idnadrev.file.FileViewController;
 import de.ks.idnadrev.tag.TagContainer;
@@ -26,6 +28,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 
+import javax.inject.Inject;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -40,8 +43,9 @@ public class TextInfoController extends BaseController<Information> {
   protected FileViewController filesController;
   @FXML
   protected TagContainer tagContainerController;
-//  @FXML
-//  protected CategorySelection categorySelectionController;
+
+  @Inject
+  PersistentWork persistentWork;
 
   protected TextEditor content;
 
@@ -49,9 +53,6 @@ public class TextInfoController extends BaseController<Information> {
   public void initialize(URL location, ResourceBundle resources) {
     TextEditor.load(activityInitialization, pane -> adocContainer.getChildren().add(pane), editor -> {
       this.content = editor;
-// FIXME: 12/17/15
-//      FileOptions fileOptions = Options.get(FileOptions.class);
-//      editor.setPersistentStoreBack(getClass().getSimpleName(), new File(fileOptions.getFileStoreDir()));
     });
 
     StringProperty nameProperty = store.getBinding().getStringProperty(Information.class, t -> t.getName());
@@ -61,8 +62,7 @@ public class TextInfoController extends BaseController<Information> {
     content.textProperty().bindBidirectional(contentProperty);
 
     validationRegistry.registerValidator(name, new NotEmptyValidator(localized));
-    // FIXME: 12/17/15 
-//    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<>(TextInfo.class, t -> t.getId() == store.<TextInfo>getModel().getId()));
+    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<Information>(Information.class, t -> t.getId() == store.<Information>getModel().getId(), persistentWork, localized));
 
     save.disableProperty().bind(validationRegistry.invalidProperty());
   }

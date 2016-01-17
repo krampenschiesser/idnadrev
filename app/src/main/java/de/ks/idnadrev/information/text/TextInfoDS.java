@@ -40,7 +40,7 @@ public class TextInfoDS extends CreateEditDS<Information> {
       fromThought = thought;
 
       Information textInfo = new Information(thought.getName()).setContent(thought.getDescription());
-//      textInfo.getFiles().addAll(thought.getFiles());// FIXME: 12/17/15
+      textInfo.getFiles().addAll(thought.getFiles());// FIXME: 12/17/15
       hint = textInfo;
       return;
     }
