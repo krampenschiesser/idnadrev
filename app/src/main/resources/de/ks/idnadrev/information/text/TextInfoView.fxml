@@ -18,12 +18,9 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<GridPane hgap="5.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity"
-          minWidth="-Infinity" vgap="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+<GridPane hgap="5.0" vgap="10.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1"
           fx:controller="de.ks.idnadrev.information.text.TextInfoController">
     <columnConstraints>
-        <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
         <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
         <ColumnConstraints/>
@@ -46,18 +43,11 @@
             </children>
         </StackPane>
 
-        <Label text="%category:" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
-        <StackPane GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.rowIndex="1">
-            <children>
-                <fx:include fx:id="categorySelection" source="../../category/CategorySelection.fxml"/>
-            </children>
-        </StackPane>
-
         <StackPane fx:id="adocContainer" GridPane.columnSpan="2147483647" GridPane.rowIndex="2"/>
 
         <Accordion GridPane.columnSpan="2147483647" GridPane.rowIndex="3">
             <panes>
-                <TitledPane mnemonicParsing="true" animated="false" style="-fx-font-size: 13px;" text="%files.mnemonic">
+                <TitledPane animated="false" mnemonicParsing="true" style="-fx-font-size: 13px;" text="%files.mnemonic">
                 <content>
                         <StackPane>
                             <children>

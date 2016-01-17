@@ -17,9 +17,9 @@ package de.ks.idnadrev.information.text;
 
 import de.ks.flatadocdb.session.Session;
 import de.ks.idnadrev.ActivityTest;
+import de.ks.idnadrev.IdnadrevIntegrationTestModule;
 import de.ks.idnadrev.entity.Tag;
 import de.ks.idnadrev.entity.information.Information;
-import de.ks.standbein.IntegrationTestModule;
 import de.ks.standbein.LoggingGuiceTestSupport;
 import de.ks.standbein.activity.ActivityCfg;
 import de.ks.util.FXPlatform;
@@ -34,7 +34,7 @@ import static org.junit.Assert.*;
 
 public class TextInfoActivityTest extends ActivityTest {
   @Rule
-  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule());
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IdnadrevIntegrationTestModule()).launchServices();
 
   @Override
   protected Class<? extends ActivityCfg> getActivityClass() {
