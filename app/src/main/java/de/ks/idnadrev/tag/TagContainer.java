@@ -64,7 +64,6 @@ public class TagContainer extends BaseController<TaggedEntity> {
     });
     tagSelectionContainer.getChildren().add(tagSelection.getRoot());
     currentTags.addListener(this::onTagsChanged);
-    currentTags.addListener(this::onTagsChanged);
   }
 
   private void onTagsChanged(SetChangeListener.Change<? extends String> change) {

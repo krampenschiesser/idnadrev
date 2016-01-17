@@ -16,10 +16,8 @@
 package de.ks.idnadrev.tag;
 
 import de.ks.executor.group.LastTextChange;
-import de.ks.flatadocdb.session.Session;
 import de.ks.idnadrev.ActivityTest;
-import de.ks.idnadrev.entity.Tag;
-import de.ks.standbein.IntegrationTestModule;
+import de.ks.idnadrev.IdnadrevIntegrationTestModule;
 import de.ks.standbein.LoggingGuiceTestSupport;
 import de.ks.standbein.activity.ActivityCfg;
 import de.ks.util.FXPlatform;
@@ -32,17 +30,11 @@ import static org.junit.Assert.*;
 
 public class TagContainerTest extends ActivityTest {
   @Rule
-  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule());
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IdnadrevIntegrationTestModule()).launchServices();
 
   @Override
   protected Class<? extends ActivityCfg> getActivityClass() {
     return TestTagActivity.class;
-  }
-
-  @Override
-  protected void createTestData(Session session) {
-    session.persist(new Tag("tag1"));
-    session.persist(new Tag("tag2"));
   }
 
   @Test
