@@ -32,6 +32,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import static de.ks.standbein.JunitMatchers.withRetry;
@@ -53,11 +56,14 @@ public class ViewThoughtsTest extends ActivityTest {
 
   @Override
   protected void createTestData(Session session) {
-//    FileReference fileReference = new FileReference("test", "blubb");
-//    session.persist(fileReference);
-    Thought thought = new Thought("test");
-//    thought.addFile(fileReference);
-    thought.setDescription("desc");
+    Thought thought = new Thought("test").setDescription("desc");
+
+    try {
+      Path fileToCopy = Paths.get(Thought.class.getResource("img.jpg").toURI());
+      thought.addFile(fileToCopy);
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
     session.persist(thought);
     session.persist(new Thought("testWithLink").setDescription("goto www.krampenschiesser.de"));
   }

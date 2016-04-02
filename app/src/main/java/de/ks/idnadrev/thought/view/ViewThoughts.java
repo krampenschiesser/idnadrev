@@ -193,7 +193,11 @@ public class ViewThoughts extends BaseController<List<Thought>> {
     thoughtTable.setItems(FXCollections.observableList(thoughts));
     thoughts.forEach(t -> {
       AdocFile adocFile = t.getAdocFile();
-      asciiDocViewer.preload(adocFile.getTmpFile(), adocFile.getRenderingPath(), adocFile.getContent());
+      if (adocFile == null) {
+        asciiDocViewer.clearContent();
+      } else {
+        asciiDocViewer.preload(adocFile.getTmpFile(), adocFile.getRenderingPath(), adocFile.getContent());
+      }
     });
     thoughtTable.requestFocus();
     controller.getJavaFXExecutor().submit(() -> thoughtTable.getSelectionModel().select(0));

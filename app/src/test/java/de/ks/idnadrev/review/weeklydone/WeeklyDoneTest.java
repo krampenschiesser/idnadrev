@@ -19,9 +19,9 @@ import de.ks.flatadocdb.session.Session;
 import de.ks.fxcontrols.weekview.WeekHelper;
 import de.ks.fxcontrols.weekview.WeekViewAppointment;
 import de.ks.idnadrev.ActivityTest;
+import de.ks.idnadrev.IdnadrevIntegrationTestModule;
 import de.ks.idnadrev.entity.Task;
 import de.ks.idnadrev.entity.WorkUnit;
-import de.ks.standbein.IntegrationTestModule;
 import de.ks.standbein.LoggingGuiceTestSupport;
 import de.ks.standbein.activity.ActivityCfg;
 import de.ks.util.FXPlatform;
@@ -39,7 +39,7 @@ import static org.junit.Assert.assertEquals;
 
 public class WeeklyDoneTest extends ActivityTest {
   @Rule
-  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule());
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IdnadrevIntegrationTestModule()).launchServices();
 
   private LocalDateTime weekStart;
   private WeeklyDone weeklyDone;

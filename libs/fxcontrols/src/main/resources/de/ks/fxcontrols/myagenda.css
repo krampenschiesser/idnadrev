@@ -1,0 +1,20 @@
+
+.Agenda .DayHeader {
+	-fx-fill: red;
+	-fx-text-fill: red;
+	-fx-font-weight: bold;
+
+}
+.Agenda .DayHeader .today {
+}
+.Agenda .today {
+	-fx-fill: red;
+	-fx-text-fill: red;
+	//-fx-background-color: #ede8bf;
+	-fx-background-color: lemonchiffon;
+}
+
+.Agenda {
+ -fx-font-family: "sans-serif";
+ -fx-font-style: normal;
+}

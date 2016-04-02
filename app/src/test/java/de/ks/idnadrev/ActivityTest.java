@@ -41,7 +41,7 @@ public abstract class ActivityTest {
   public void startActivity() throws Exception {
     cleanup();
 
-    persistentWork.run(em -> createTestData(em));
+    persistentWork.run(this::createTestData);
 
     activityController.startOrResume(new ActivityHint(getActivityClass()));
     activityController.waitForTasks();

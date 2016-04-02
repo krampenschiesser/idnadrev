@@ -70,10 +70,10 @@ public abstract class CreateEditDS<T extends BaseEntity> implements DataSource<T
     persistentWork.run(session -> {
       T reloaded = persistentWork.reload(model);
       beforeSaving.accept(reloaded);
-      furtherSave(session, reloaded);
       if (reloaded.getId() == null) {
         session.persist(reloaded);
       }
+      furtherSave(session, reloaded);
     });
     hint = null;
   }

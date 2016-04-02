@@ -39,7 +39,11 @@ public class RepositoryLoader {
 
   private static String discoverDataDir() {
     String workingDir = StandardSystemProperty.USER_DIR.value();
+    log.info("##USERDIR={}", workingDir);
     Path dataDir = Paths.get(workingDir, "data");
+    if (!Files.exists(dataDir)) {
+      dataDir = Paths.get(workingDir).getParent().resolve("data");
+    }
     if (!Files.exists(dataDir)) {
       throw new IllegalStateException("No data dir");
     } else {

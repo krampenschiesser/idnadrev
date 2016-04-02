@@ -16,6 +16,7 @@
 package de.ks.idnadrev.overview;
 
 import de.ks.flatjsondb.PersistentWork;
+import de.ks.flatjsondb.validator.NamedEntityMustNotExistValidator;
 import de.ks.idnadrev.entity.Thought;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.validation.validators.NotEmptyValidator;
@@ -52,8 +53,8 @@ public class OverviewAddThoughtController extends BaseController<OverviewModel> 
     TextEditor.load(activityInitialization, descriptionContainer.getChildren()::add, this::setDescription);
 
     validationRegistry.registerValidator(name, new NotEmptyValidator(localized));
-//    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator(Thought.class));
-//FIXME
+
+    validationRegistry.registerValidator(name, new NamedEntityMustNotExistValidator<Thought>(Thought.class, persistentWork, localized));
     save.disableProperty().bind(validationRegistry.invalidProperty());
 
   }

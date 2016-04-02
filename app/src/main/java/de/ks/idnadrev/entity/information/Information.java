@@ -15,20 +15,36 @@
 
 package de.ks.idnadrev.entity.information;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.ks.flatadocdb.annotation.Child;
 import de.ks.flatadocdb.annotation.Entity;
 import de.ks.flatadocdb.annotation.ToMany;
+import de.ks.flatadocdb.annotation.lifecycle.PostRemove;
+import de.ks.flatadocdb.annotation.lifecycle.PostUpdate;
+import de.ks.flatadocdb.defaults.SingleFolderGenerator;
+import de.ks.flatadocdb.session.EntityDelete;
 import de.ks.idnadrev.entity.*;
 import de.ks.idnadrev.entity.adoc.AdocFile;
 import de.ks.idnadrev.entity.adoc.AdocFileNameGenerator;
 import de.ks.idnadrev.entity.adoc.SameFolderGenerator;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-@Entity(luceneDocExtractor = AdocContainerLuceneExtractor.class)
+@Entity(folderGenerator = SingleFolderGenerator.class, luceneDocExtractor = AdocContainerLuceneExtractor.class)
 public class Information extends TaggedEntity implements FileContainer<Information> {
+  private static final Logger log = LoggerFactory.getLogger(Information.class);
+
+  @JsonIgnore
   protected Set<Path> files = new HashSet<>();
 
   @Child(fileGenerator = AdocFileNameGenerator.class, folderGenerator = SameFolderGenerator.class, lazy = false)
@@ -79,6 +95,44 @@ public class Information extends TaggedEntity implements FileContainer<Informati
 
   @Override
   public Set<Path> getFiles() {
+    if (files.isEmpty() && getPathInRepository() != null) {
+      FilenameFilter filenameFilter = getFileFilter();
+      File[] files = getPathInRepository().getParent().toFile().listFiles(filenameFilter);
+      if (files != null) {
+        Arrays.asList(files).stream().map(File::toPath).forEach(this.files::add);
+      }
+    }
     return files;
+  }
+
+  protected FilenameFilter getFileFilter() {
+    String ownFileName = getPathInRepository().getFileName().toString();
+    String adocFileName = StringUtils.replace(ownFileName, ".json", ".adoc");
+    return (dir, fileName) -> !fileName.equals(ownFileName) && !fileName.equals(adocFileName) && !fileName.endsWith(EntityDelete.DELETION_SUFFIX);
+  }
+
+  @PostUpdate
+  public void copyFiles() {
+    Path parent = getPathInRepository().getParent();
+
+    files.stream().filter(file -> !file.getParent().equals(parent)).forEach(file -> {
+      try {
+        Files.copy(file, parent.resolve(file.getFileName()));
+        log.debug("For Information {} copied {} to {}", getName(), file, parent);
+      } catch (IOException e) {
+        log.error("Could not copy requested file {} to {}", file, parent, e);
+      }
+    });
+  }
+
+  @PostRemove
+  public void cleanup() {
+    for (Path path : getFiles()) {
+      try {
+        Files.deleteIfExists(path);
+      } catch (IOException e) {
+        log.error("Could not remove {}", path, e);
+      }
+    }
   }
 }

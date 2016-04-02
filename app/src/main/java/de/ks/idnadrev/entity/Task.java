@@ -41,6 +41,21 @@ public class Task extends TaggedEntity implements FileContainer<Task> {
   }
 
   @QueryProvider
+  public static Query<Task, LocalDateTime> scheduledTime() {
+    return Query.of(Task.class, t -> t.getSchedule().getScheduledDateTime());
+  }
+
+  @QueryProvider
+  public static Query<Task, Integer> proposedWeek() {
+    return Query.of(Task.class, t -> t.getSchedule().getProposedWeek());
+  }
+
+  @QueryProvider
+  public static Query<Task, Integer> proposedYear() {
+    return Query.of(Task.class, t -> t.getSchedule().getProposedYear());
+  }
+
+  @QueryProvider
   public static Query<Task, TaskState> stateQuery() {
     return Query.of(Task.class, Task::getState);
   }

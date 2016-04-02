@@ -81,7 +81,7 @@ public class TaskTest {
     task.addInformation(information);
 //    information.setTask(task);
 
-    persistentWork.persist(task, tag, information);
+    persistentWork.persist(task, information);
 
     persistentWork.run((em) -> {
       Task readTask = em.findById(Task.class, task.getId());

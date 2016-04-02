@@ -1,0 +1,3 @@
+I want a steak please
+
+link:test.adoc[link to adoc file]

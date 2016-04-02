@@ -1,11 +1,12 @@
 package de.ks.idnadrev.overview;
 
+import de.ks.flatadocdb.entity.NamedEntity;
 import de.ks.flatadocdb.session.Session;
 import de.ks.flatjsondb.PersistentWork;
 import de.ks.fxcontrols.weekview.WeekHelper;
+import de.ks.idnadrev.IdnadrevIntegrationTestModule;
 import de.ks.idnadrev.entity.Schedule;
 import de.ks.idnadrev.entity.Task;
-import de.ks.standbein.IntegrationTestModule;
 import de.ks.standbein.LoggingGuiceTestSupport;
 import org.junit.Before;
 import org.junit.Rule;
@@ -27,16 +28,16 @@ public class OverviewDSTest {
   public static final String SCHEDULED_TODAY_NOON = "scheduledTodayNoon";
   public static final String SCHEDULED_TODAY = "scheduledToday";
   @Rule
-  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IntegrationTestModule());
+  public LoggingGuiceTestSupport support = new LoggingGuiceTestSupport(this, new IdnadrevIntegrationTestModule()).launchServices();
 
   @Inject
   PersistentWork persistentWork;
+  @Inject
+  OverviewDS overviewDS;
 
   @Before
   public void setUp() throws Exception {
-    persistentWork.run(em -> {
-      createTestData(em);
-    });
+    persistentWork.run(this::createTestData);
   }
 
   protected void createTestData(Session session) {
@@ -73,29 +74,25 @@ public class OverviewDSTest {
 
   @Test
   public void testProposedTasks() throws Exception {
-    OverviewDS datasource = new OverviewDS();
-
     persistentWork.run(sesion -> {
-      List<Task> proposedTasks = datasource.getProposedTasks(sesion, LocalDate.now());
+      List<Task> proposedTasks = overviewDS.getProposedTasks(sesion, LocalDate.now());
       assertEquals(2, proposedTasks.size());
-      Set<String> tasknames = proposedTasks.stream().map(t -> t.getName()).collect(Collectors.toSet());
+      Set<String> tasknames = proposedTasks.stream().map(NamedEntity::getName).collect(Collectors.toSet());
 
-      assertTrue(tasknames.contains("proposedThisWeek"));
-      assertTrue(tasknames.contains("proposedThisWeekDay"));
+      assertTrue(tasknames.contains(PROPOSED_THIS_WEEK_DAY));
+      assertTrue(tasknames.contains(PROPOSED_THIS_WEEK));
     });
   }
 
   @Test
   public void testScheduledTasks() throws Exception {
-    OverviewDS datasource = new OverviewDS();
-
     persistentWork.run(sesion -> {
-      List<Task> proposedTasks = datasource.getScheduledTasks(sesion, LocalDate.now());
+      List<Task> proposedTasks = overviewDS.getScheduledTasks(sesion, LocalDate.now());
       assertEquals(2, proposedTasks.size());
-      Set<String> tasknames = proposedTasks.stream().map(t -> t.getName()).collect(Collectors.toSet());
+      Set<String> tasknames = proposedTasks.stream().map(NamedEntity::getName).collect(Collectors.toSet());
 
-      assertTrue(tasknames.contains("scheduledTodayNoon"));
-      assertTrue(tasknames.contains("scheduledToday"));
+      assertTrue(tasknames.contains(SCHEDULED_TODAY_NOON));
+      assertTrue(tasknames.contains(SCHEDULED_TODAY));
     });
   }
 }

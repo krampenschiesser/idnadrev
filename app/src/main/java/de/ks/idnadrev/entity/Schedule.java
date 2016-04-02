@@ -96,9 +96,11 @@ public class Schedule extends BaseEntity {
   public LocalDateTime getScheduledDateTime() {
     if (scheduledTime != null) {
       return LocalDateTime.of(scheduledDate, scheduledTime);
-    } else {
+    } else if (scheduledDate != null) {
       LocalTime now = LocalTime.now();
       return LocalDateTime.of(scheduledDate, now);
+    } else {
+      return null;
     }
   }
 

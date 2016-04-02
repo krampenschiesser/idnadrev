@@ -14,6 +14,7 @@
  */
 package de.ks.idnadrev.task.choosenext;
 
+import de.ks.flatadocdb.session.Session;
 import de.ks.flatjsondb.PersistentWork;
 import de.ks.idnadrev.entity.Context;
 import de.ks.idnadrev.entity.Task;
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Chooses the next best task according to the following rules:
@@ -119,36 +121,22 @@ public class NextTaskChooser {
   }
 
   protected List<Task> getAllPossibleTasks(int minutes, String selectedContext) {
-    // FIXME: 12/15/15
-//    List<Task> retval = persistentWork.wrap(() -> {
-//      List<Task> tasks = persistentWork.from(Task.class, (root, query, builder) -> {
-//        ArrayList<Predicate> predicates = new ArrayList<>();
-//
-//        if (selectedContext != null) {
-//          Join<Task, Context> join = root.join(KEY_CONTEXT);
-//          join.on(builder.equal(join.get(KEY_CONTEXT_NAME), selectedContext));
-//        } else {
-//          predicates.add(builder.isNull(root.get(KEY_CONTEXT)));
-//        }
-//
-//        Path<Object> state = root.get(KEY_STATE);
-//        predicates.add(builder.notEqual(state, TaskState.LATER));
-//        predicates.add(builder.notEqual(state, TaskState.DELEGATED));
-//        predicates.add(builder.isNull(root.get(KEY_FINISHTIME)));
-//
-//        query.where(predicates.toArray(new Predicate[predicates.size()]));
-//      }, null);
-//
-//      return tasks.stream()//super ugly, need to evict to save heap
-//        .sorted(Comparator.comparing(c -> c.getEstimatedTime().toMinutes() - c.getSpentMinutes()))//
-//        .filter(t -> {
-//          long timeRemaining = t.getRemainingTime().toMinutes();
-//          log.info("Remaining time: {}", timeRemaining);
-//          return timeRemaining < minutes && timeRemaining > 2;
-//        })//
-//        .collect(Collectors.toList());
-//    });
-    return Collections.emptyList();
+    ArrayList<Task> tasks = persistentWork.read(s -> {
+      Session.MultiQueyBuilder<Task> builder = s.multiQuery(Task.class);
+      builder.query(Task.stateQuery(), state -> state != TaskState.DELEGATED && state != TaskState.LATER);
+      builder.query(Task.finishedQuery(), b -> !b);
+      builder.query(Task.contextNameQuery(), name -> (selectedContext == null && name == null) || (selectedContext != null && selectedContext.equals(name)));
+      return new ArrayList<>(builder.find());
+    });
+
+    return tasks.stream()//super ugly, need to evict to save heap
+      .sorted(Comparator.comparing(c -> c.getEstimatedTime().toMinutes() - c.getSpentMinutes()))//
+      .filter(t -> {
+        long timeRemaining = t.getRemainingTime().toMinutes();
+        log.info("Remaining time: {}", timeRemaining);
+        return timeRemaining < minutes && timeRemaining > 2;
+      })//
+      .collect(Collectors.toList());
   }
 }
 

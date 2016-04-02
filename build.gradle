@@ -35,15 +35,15 @@ allprojects {
             url = "https://oss.sonatype.org/content/repositories/snapshots/"
         }
     }
-
-    sourceSets {
-        main {
-            output.resourcesDir = "build/classes/main"
-        }
-        test {
-            output.resourcesDir = "build/classes/test"
-        }
-    }
+//
+//    sourceSets {
+//        main {
+//            output.resourcesDir = "build/classes/main"
+//        }
+//        test {
+//            output.resourcesDir = "build/classes/test"
+//        }
+//    }
 
     jar {
         manifest {

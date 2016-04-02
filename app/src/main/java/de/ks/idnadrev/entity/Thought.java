@@ -142,7 +142,7 @@ public class Thought extends NamedEntity implements FileContainer<Thought> {
         Files.copy(file, parent.resolve(file.getFileName()));
         log.debug("For Thought {} copied {} to {}", getName(), file, parent);
       } catch (IOException e) {
-        log.error("Could not copy requested file {} to ", file, parent);
+        log.error("Could not copy requested file {} to {}", file, parent, e);
       }
     });
   }
@@ -156,6 +156,5 @@ public class Thought extends NamedEntity implements FileContainer<Thought> {
         log.error("Could not remove {}", path, e);
       }
     }
-
   }
 }

@@ -17,6 +17,7 @@ package de.ks.idnadrev.overview;
 
 import de.ks.flatadocdb.session.Session;
 import de.ks.flatjsondb.PersistentWork;
+import de.ks.fxcontrols.weekview.WeekHelper;
 import de.ks.idnadrev.entity.Context;
 import de.ks.idnadrev.entity.Schedule;
 import de.ks.idnadrev.entity.Task;
@@ -24,10 +25,14 @@ import de.ks.standbein.datasource.DataSource;
 import de.ks.standbein.reflection.PropertyPath;
 
 import javax.inject.Inject;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class OverviewDS implements DataSource<OverviewModel> {
   protected static final String KEY_SCHEDULE = PropertyPath.property(Task.class, t -> t.getSchedule());
@@ -55,52 +60,31 @@ public class OverviewDS implements DataSource<OverviewModel> {
   }
 
   protected List<Task> getProposedTasks(Session sesion, LocalDate now) {
-//    CriteriaBuilder builder = em.getCriteriaBuilder();
-//    CriteriaQuery<Task> query = builder.createQuery(Task.class);
-//    Root<Task> root = query.from(Task.class);
-//    Path<Schedule> schedule = root.get(KEY_SCHEDULE);
-//
-//    WeekHelper helper = new WeekHelper();
-//    int week = helper.getWeek(now);
-//    int year = now.getYear();
-//
-//    query.select(root);
-//    Predicate correctYear = builder.equal(schedule.get(KEY_PROPOSEDYEAR), year);
-//    Predicate correctWeek = builder.equal(schedule.get(KEY_PROPOSEDWEEK), week);
-//    query.where(correctWeek, correctYear);
-//
-//    List<Task> results = em.createQuery(query).getResultList();
-//    List<Task> retval = results.stream().filter(r -> !r.isFinished()).filter(t -> {
-//      DayOfWeek proposedWeekDay = t.getSchedule().getProposedWeekDay();
-//      if (proposedWeekDay != null) {
-//        return proposedWeekDay.equals(now.getDayOfWeek());
-//      }
-//      return true;
-//    }).collect(Collectors.toList());
-//
-//    Collections.sort(retval, Comparator.comparing(t -> t.getRemainingTime()));
-//    // FIXME: 12/15/15
-    return Collections.emptyList();
+    WeekHelper helper = new WeekHelper();
+    final Integer week = helper.getWeek(now);
+    final Integer year = now.getYear();
+
+    Session.MultiQueyBuilder<Task> b = sesion.multiQuery(Task.class);
+    b.query(Task.proposedWeek(), t -> t != null && t.intValue() == week);
+    b.query(Task.proposedYear(), t -> t != null && t.intValue() == year);
+    Set<Task> results = b.find();
+    List<Task> retval = results.stream().filter(r -> !r.isFinished()).filter(t -> {
+      DayOfWeek proposedWeekDay = t.getSchedule().getProposedWeekDay();
+      if (proposedWeekDay != null) {
+        return proposedWeekDay.equals(now.getDayOfWeek());
+      }
+      return true;
+    }).collect(Collectors.toList());
+
+    Collections.sort(retval, Comparator.comparing(Task::getRemainingTime).thenComparing(Task::getName));
+    return retval;
   }
 
   protected List<Task> getScheduledTasks(Session sesion, LocalDate now) {
-//    CriteriaBuilder builder = em.getCriteriaBuilder();
-//    CriteriaQuery<Task> query = builder.createQuery(Task.class);
-//    Root<Task> root = query.from(Task.class);
-//    Path<Schedule> schedule = root.get(KEY_SCHEDULE);
-//
-//    WeekHelper helper = new WeekHelper();
-//
-//    query.select(root);
-//    Predicate correctDate = builder.equal(schedule.get(KEY_SCHEDULEDDATE), now);
-//    query.where(correctDate);
-//
-//    List<Task> results = em.createQuery(query).getResultList();
-//    List<Task> retval = results.stream().filter(r -> !r.isFinished()).collect(Collectors.toList());
-//
-//    return retval;
-    //FIXME
-    return Collections.emptyList();
+    List<Task> retval = persistentWork.query(Task.class, Task.scheduledTime(),//
+      t -> t != null && t.toLocalDate().equals(now))//
+      .stream().filter(t -> !t.isFinished()).collect(Collectors.toList());
+    return retval;
   }
 
   @Override
