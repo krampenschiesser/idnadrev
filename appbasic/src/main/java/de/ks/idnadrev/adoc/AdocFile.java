@@ -20,6 +20,7 @@ import de.ks.idnadrev.repository.Repository;
 import org.apache.commons.lang3.StringUtils;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -36,7 +37,7 @@ public class AdocFile {
   protected Set<CompanionFile> files;
   protected Header header;
   protected String title;
-  protected List<String> lines;
+  protected List<String> lines = new ArrayList<>();
 
   public AdocFile(Path path, Repository repository) {
     this.repository = repository;
@@ -88,5 +89,15 @@ public class AdocFile {
 
   public Path getPath() {
     return path;
+  }
+
+  public String writeBack() {
+    StringBuilder b = new StringBuilder();
+    b.append(header.writeBack());
+    if (!lines.isEmpty()) {
+      b.append(newLine);
+      b.append(getContent());
+    }
+    return b.toString();
   }
 }

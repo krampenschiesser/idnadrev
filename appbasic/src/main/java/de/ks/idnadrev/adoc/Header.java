@@ -15,26 +15,40 @@
  */
 package de.ks.idnadrev.adoc;
 
+import de.ks.idnadrev.GenericDateTimeParser;
+import de.ks.idnadrev.repository.Repository;
+
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Header {
   public static final String AUTHOR_LINE = "authorLine";
   public static final String REVISION_LINE = "revLine";
   public static final String TITLE = "title";
-  protected Set<String> tags;
+  protected Set<String> tags = new HashSet<>();
   protected LocalDateTime fileTime;
   protected LocalDateTime revDate;
   protected LinkedHashMap<String, String> headerElements = new LinkedHashMap<>();
   protected int firstLine, lastLine;
+  protected Repository repository;
+
+  public Header(Repository repository) {
+    this.repository = repository;
+  }
 
   public Set<String> getTags() {
     return tags;
   }
 
   public Header setTags(Set<String> tags) {
+    boolean wasEmpty = this.tags.isEmpty();
     this.tags = tags;
+    if (!wasEmpty) {
+      headerElements.replace("keywords", tags.stream().collect(Collectors.joining(", ")));
+    }
     return this;
   }
 
@@ -42,7 +56,7 @@ public class Header {
     return fileTime;
   }
 
-  public Header setFileTime(LocalDateTime fileTime) {
+  Header setFileTime(LocalDateTime fileTime) {
     this.fileTime = fileTime;
     return this;
   }
@@ -51,8 +65,14 @@ public class Header {
     return revDate;
   }
 
-  public Header setRevDate(LocalDateTime revDate) {
+  Header setRevDate(LocalDateTime revDate) {
     this.revDate = revDate;
+    return this;
+  }
+
+  public Header setRevDate(LocalDateTime revDate, GenericDateTimeParser dateTimeParser) {
+    this.revDate = revDate;
+    setHeaderElement("revdate", dateTimeParser.parse(revDate, repository));
     return this;
   }
 
@@ -62,6 +82,10 @@ public class Header {
 
   public String getTitle() {
     return getHeaderElement("title");
+  }
+
+  public void setHeaderElement(String key, String value) {
+    headerElements.replace(key, value);
   }
 
   public void setHeaderElements(LinkedHashMap<String, String> headerElements) {
@@ -93,19 +117,19 @@ public class Header {
   public String writeBack() {
     StringBuilder b = new StringBuilder();
     if (headerElements.containsKey(TITLE)) {
-      b.append("= ").append(headerElements.get(TITLE)).append("\n");
+      b.append("= ").append(headerElements.get(TITLE)).append(AdocFile.newLine);
     }
     if (headerElements.containsKey(AUTHOR_LINE)) {
-      b.append(headerElements.get(AUTHOR_LINE)).append("\n");
+      b.append(headerElements.get(AUTHOR_LINE)).append(AdocFile.newLine);
     }
     if (headerElements.containsKey(REVISION_LINE)) {
-      b.append(headerElements.get(REVISION_LINE)).append("\n");
+      b.append(headerElements.get(REVISION_LINE)).append(AdocFile.newLine);
     }
     LinkedHashMap<String, String> copy = new LinkedHashMap<>(headerElements);
     copy.remove(TITLE);
     copy.remove(AUTHOR_LINE);
     copy.remove(REVISION_LINE);
-    copy.forEach((option, value) -> b.append(":").append(option).append(": ").append(value).append("\n"));
+    copy.forEach((option, value) -> b.append(":").append(option).append(": ").append(value).append(AdocFile.newLine));
     return b.toString();
   }
 }

@@ -49,4 +49,10 @@ public class GenericDateTimeParser {
     }
     return LocalDateTime.of(date, time);
   }
+
+  public String parse(LocalDateTime localDateTime, Repository repository) {
+    String dateString = repository.getDateFormatter().format(localDateTime);
+    String timeString = repository.getTimeFormatter().format(localDateTime);
+    return dateString + " " + timeString;
+  }
 }

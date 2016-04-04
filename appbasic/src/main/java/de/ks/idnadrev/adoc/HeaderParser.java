@@ -41,7 +41,7 @@ public class HeaderParser {
   }
 
   public ParseResult parse(List<String> lines, Path path, Repository repository) {
-    Header header = new Header();
+    Header header = new Header(repository);
     header.setFileTime(getLastModifiedTime(path));
 
     int titleIdx = getTitleIndex(lines);

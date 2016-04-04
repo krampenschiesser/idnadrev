@@ -22,22 +22,31 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 
 public class AdocFileParserTest {
   private Repository repo;
   private AdocFileParser adocFileParser;
+  private GenericDateTimeParser dateTimeParser;
 
   @Before
   public void setUp() throws Exception {
     repo = Mockito.mock(Repository.class);
     Mockito.when(repo.getDateFormatter()).thenReturn(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
     Mockito.when(repo.getTimeFormatter()).thenReturn(DateTimeFormatter.ofPattern("HH:mm:ss"));
-    HeaderParser headerParser = new HeaderParser(new GenericDateTimeParser());
+    dateTimeParser = new GenericDateTimeParser();
+    HeaderParser headerParser = new HeaderParser(dateTimeParser);
     adocFileParser = new AdocFileParser(headerParser);
   }
 
@@ -51,5 +60,47 @@ public class AdocFileParserTest {
     assertEquals(21, adocFile.getLines().size());
     assertEquals("A simple http://asciidoc.org[AsciiDoc] document.", adocFile.getLines().get(0));
     assertEquals("Document Title", adocFile.getHeader().getTitle());
+  }
+
+  @Test
+  public void testWriteBack() throws Exception {
+    Path path = Paths.get(getClass().getResource("basic.adoc").toURI().getPath());
+    AdocFile adocFile = adocFileParser.parse(path, repo);
+
+    List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
+    String expected = lines.stream().collect(Collectors.joining("\n"));
+
+    String output = adocFile.writeBack();
+    assertEquals(expected, output);
+  }
+
+  @Test
+  public void testWriteBackHeader() throws Exception {
+    List<String> lines = Arrays.asList(//
+      "= Title",//
+      ":author: scar",//
+      ":revdate: 20.01.2015 20:30",//
+      ":keywords: hello, sauerland", "");
+
+    AdocFile adocFile = adocFileParser.parse(null, repo, new HashSet<CompanionFile>(), lines);
+
+    String expected = lines.stream().collect(Collectors.joining("\n"));
+    assertEquals(expected, adocFile.writeBack());
+  }
+
+  @Test
+  public void testWriteBackHeaderDate() throws Exception {
+    List<String> lines = Arrays.asList(//
+      "= Title",//
+      ":author: scar",//
+      ":revdate: 20.01.2015 20:30",//
+      ":keywords: hello, sauerland", "");
+
+    AdocFile adocFile = adocFileParser.parse(null, repo, new HashSet<CompanionFile>(), lines);
+
+    lines.set(2, ":revdate: 25.02.2015 20:10:00");
+    String expected = lines.stream().collect(Collectors.joining("\n"));
+    adocFile.getHeader().setRevDate(LocalDateTime.of(2015, 2, 25, 20, 10), dateTimeParser);
+    assertEquals(expected, adocFile.writeBack());
   }
 }

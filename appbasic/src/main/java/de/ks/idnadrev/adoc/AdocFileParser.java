@@ -36,24 +36,28 @@ public class AdocFileParser {
   }
 
   public AdocFile parse(Path path, Repository repository) {
-    AdocFile adocFile = new AdocFile(path, repository);
-
     try {
       Stream<Path> paths = Files.list(path.getParent());
       Set<CompanionFile> files = paths.filter(p -> p != path && !Files.isDirectory(p)).map(CompanionFile::new).collect(Collectors.toSet());
-
       List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
-      HeaderParser.ParseResult result = headerParser.parse(lines, path, repository);
-      Header header = result.getHeader();
-      String title = getTitle(lines);
-      adocFile.setHeader(header);
-      adocFile.setTitle(title);
-      adocFile.setFiles(files);
-      adocFile.setLines(lines.subList(header.getLastLine() + 1, lines.size()));
+      return parse(path, repository, files, lines);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
 
+  }
+
+  public AdocFile parse(Path path, Repository repository, Set<CompanionFile> files, List<String> lines) {
+    AdocFile adocFile = new AdocFile(path, repository);
+    HeaderParser.ParseResult result = headerParser.parse(lines, path, repository);
+    Header header = result.getHeader();
+    String title = getTitle(lines);
+    adocFile.setHeader(header);
+    adocFile.setTitle(title);
+    adocFile.setFiles(files);
+    if (header.getLastLine() < lines.size()) {
+      adocFile.setLines(lines.subList(header.getLastLine() + 1, lines.size()));
+    }
     return adocFile;
   }
 
