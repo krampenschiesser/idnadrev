@@ -39,7 +39,7 @@ public class AdocFile {
   protected String title;
   protected List<String> lines = new ArrayList<>();
 
-  public AdocFile(Path path, Repository repository) {
+  public AdocFile(Path path, Repository repository, Header header) {
     this.repository = repository;
     this.path = path;
   }
@@ -55,11 +55,6 @@ public class AdocFile {
 
   public Header getHeader() {
     return header;
-  }
-
-  public AdocFile setHeader(Header header) {
-    this.header = header;
-    return this;
   }
 
   public String getTitle() {

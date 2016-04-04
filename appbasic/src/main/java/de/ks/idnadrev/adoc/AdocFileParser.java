@@ -16,6 +16,7 @@
 package de.ks.idnadrev.adoc;
 
 import de.ks.idnadrev.repository.Repository;
+import de.ks.idnadrev.task.Task;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -48,17 +49,24 @@ public class AdocFileParser {
   }
 
   public AdocFile parse(Path path, Repository repository, Set<CompanionFile> files, List<String> lines) {
-    AdocFile adocFile = new AdocFile(path, repository);
     HeaderParser.ParseResult result = headerParser.parse(lines, path, repository);
     Header header = result.getHeader();
+    AdocFile adocFile = createAdocFile(header, path, repository);
     String title = getTitle(lines);
-    adocFile.setHeader(header);
     adocFile.setTitle(title);
     adocFile.setFiles(files);
     if (header.getLastLine() < lines.size()) {
       adocFile.setLines(lines.subList(header.getLastLine() + 1, lines.size()));
     }
     return adocFile;
+  }
+
+  private AdocFile createAdocFile(Header header, Path path, Repository repository) {
+    if (header.isTask()) {
+      return new Task(path, repository, header);
+    } else {
+      return new AdocFile(path, repository, header);
+    }
   }
 
   protected String getTitle(List<String> lines) {

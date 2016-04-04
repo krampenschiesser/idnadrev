@@ -18,6 +18,8 @@ package de.ks.idnadrev.adoc;
 
 import de.ks.idnadrev.GenericDateTimeParser;
 import de.ks.idnadrev.repository.Repository;
+import de.ks.idnadrev.task.Task;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -33,7 +35,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class AdocFileParserTest {
   private Repository repo;
@@ -102,5 +104,18 @@ public class AdocFileParserTest {
     String expected = lines.stream().collect(Collectors.joining("\n"));
     adocFile.getHeader().setRevDate(LocalDateTime.of(2015, 2, 25, 20, 10), dateTimeParser);
     assertEquals(expected, adocFile.writeBack());
+  }
+
+  @Test
+  public void testParseTask() throws Exception {
+    List<String> lines = Arrays.asList(//
+      "= Title",//
+      ":author: scar",//
+      ":revdate: 20.01.2015 20:30",//
+      ":kstype: task",//
+      ":keywords: hello, sauerland", "");
+    AdocFile adocFile = adocFileParser.parse(null, repo, new HashSet<CompanionFile>(), lines);
+
+    assertThat(adocFile, Matchers.instanceOf(Task.class));
   }
 }

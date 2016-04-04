@@ -16,6 +16,7 @@
 package de.ks.idnadrev.task;
 
 import de.ks.idnadrev.adoc.AdocFile;
+import de.ks.idnadrev.adoc.Header;
 import de.ks.idnadrev.repository.Repository;
 import de.ks.idnadrev.task.cron.CronTab;
 
@@ -25,14 +26,14 @@ import java.time.LocalDateTime;
 
 public class Task extends AdocFile {
   protected String context;
-  protected TaskState state;
+  protected TaskState state = TaskState.NONE;
   protected Duration estimatedTime;
   protected CronTab cronTab;
   protected LocalDateTime finishTime;
   protected String delegation;
 
-  public Task(Path path, Repository repository) {
-    super(path, repository);
+  public Task(Path path, Repository repository, Header header) {
+    super(path, repository, header);
   }
 
   static enum TaskState {

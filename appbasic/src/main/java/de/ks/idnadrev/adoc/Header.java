@@ -28,6 +28,7 @@ public class Header {
   public static final String AUTHOR_LINE = "authorLine";
   public static final String REVISION_LINE = "revLine";
   public static final String TITLE = "title";
+  public static final String TYPE = "kstype";
   protected Set<String> tags = new HashSet<>();
   protected LocalDateTime fileTime;
   protected LocalDateTime revDate;
@@ -131,5 +132,9 @@ public class Header {
     copy.remove(REVISION_LINE);
     copy.forEach((option, value) -> b.append(":").append(option).append(": ").append(value).append(AdocFile.newLine));
     return b.toString();
+  }
+
+  public boolean isTask() {
+    return "task".equals(getHeaderElement(TYPE));
   }
 }
