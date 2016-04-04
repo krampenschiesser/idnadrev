@@ -100,4 +100,21 @@ public class HeaderParserTest {
     assertEquals(description, header.getHeaderElement("description"));
     assertEquals("book", header.getHeaderElement("doctype"));
   }
+
+  @Test
+  public void testWriteBack() throws Exception {
+    String original = "= The Dangerous & _Thrilling_ Documentation Chronicles: Based on True Events\n" +
+      "Kismet Caméléon; Lazarus het_Draeke\n" +
+      "v1.0, 01.01.2014: The first incarnation of {doctitle}\n" +
+      ":description: This story chronicles the inexplicable hazards and vicious beasts a +\n" +
+      "team must conquer and vanquish on their journey to discovering open source's true +\n" +
+      "power.\n" +
+      ":doctype: book\n";
+
+    List<String> lines = new ArrayList<>(Arrays.asList(StringUtils.split(original, "\n")));
+    lines.add("");
+    Header header = headerParser.parse(lines, null, repo).getHeader();
+    String output = header.writeBack();
+    assertEquals(original, output);
+  }
 }

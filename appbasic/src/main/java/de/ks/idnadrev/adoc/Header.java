@@ -89,4 +89,23 @@ public class Header {
     this.firstLine = firstLine;
     return this;
   }
+
+  public String writeBack() {
+    StringBuilder b = new StringBuilder();
+    if (headerElements.containsKey(TITLE)) {
+      b.append("= ").append(headerElements.get(TITLE)).append("\n");
+    }
+    if (headerElements.containsKey(AUTHOR_LINE)) {
+      b.append(headerElements.get(AUTHOR_LINE)).append("\n");
+    }
+    if (headerElements.containsKey(REVISION_LINE)) {
+      b.append(headerElements.get(REVISION_LINE)).append("\n");
+    }
+    LinkedHashMap<String, String> copy = new LinkedHashMap<>(headerElements);
+    copy.remove(TITLE);
+    copy.remove(AUTHOR_LINE);
+    copy.remove(REVISION_LINE);
+    copy.forEach((option, value) -> b.append(":").append(option).append(": ").append(value).append("\n"));
+    return b.toString();
+  }
 }
