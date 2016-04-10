@@ -22,6 +22,8 @@ import de.ks.standbein.imagecache.Images;
 import javafx.beans.binding.BooleanBinding;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.SplitPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -35,6 +37,8 @@ public class ViewThoughtsController extends BaseController<List<Task>> {
 
   @FXML
   private VBox root;
+  @FXML
+  private SplitPane split;
   @FXML
   private StackPane crudContainer;
   @FXML
@@ -67,8 +71,8 @@ public class ViewThoughtsController extends BaseController<List<Task>> {
     toTask.disableProperty().bind(itemSelected);
     toDocument.setText(localized.get("toDocument"));
     toDocument.setGraphic(createImageView("toDocument.png"));
+    toDocument.setContentDisplay(ContentDisplay.RIGHT);
     toDocument.disableProperty().bind(itemSelected);
-
   }
 
   protected ImageView createImageView(String imagePath) {
