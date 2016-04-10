@@ -47,4 +47,15 @@ public class CompanionFile {
     }
   }
 
+  public FileType getFileType() {
+    return fileType;
+  }
+
+  public Path getPath() {
+    return path;
+  }
+
+  public String getName() {
+    return name;
+  }
 }

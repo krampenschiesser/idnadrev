@@ -59,7 +59,7 @@ public class AdocFileParserTest {
 
     assertEquals(path, adocFile.getPath());
 
-    assertEquals(21, adocFile.getLines().size());
+    assertEquals(32, adocFile.getLines().size());
     assertEquals("A simple http://asciidoc.org[AsciiDoc] document.", adocFile.getLines().get(0));
     assertEquals("Document Title", adocFile.getHeader().getTitle());
   }

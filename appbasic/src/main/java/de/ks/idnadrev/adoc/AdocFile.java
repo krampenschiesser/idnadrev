@@ -42,6 +42,7 @@ public class AdocFile {
   public AdocFile(Path path, Repository repository, Header header) {
     this.repository = repository;
     this.path = path;
+    this.header = header;
   }
 
   public Set<CompanionFile> getFiles() {
@@ -94,5 +95,22 @@ public class AdocFile {
       b.append(getContent());
     }
     return b.toString();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof AdocFile)) {
+      return false;
+    }
+    AdocFile adocFile = (AdocFile) o;
+    return path.equals(adocFile.path);
+  }
+
+  @Override
+  public int hashCode() {
+    return path.hashCode();
   }
 }

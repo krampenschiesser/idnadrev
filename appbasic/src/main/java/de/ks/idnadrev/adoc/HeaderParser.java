@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.concurrent.ThreadSafe;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -30,6 +31,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 
+@ThreadSafe
 public class HeaderParser {
   private static final Logger log = LoggerFactory.getLogger(HeaderParser.class);
   public static final int MAX_HEADER_LINES = 50;

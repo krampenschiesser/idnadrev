@@ -27,3 +27,14 @@ Prawn::Document.generate 'example.pdf' do
   text 'Hello, World!'
 end
 ----
+
+== Table
+
+[format="csv", options="header"]
+|===
+include::data.csv[]
+|===
+
+== Image
+
+image::test.jpg[]

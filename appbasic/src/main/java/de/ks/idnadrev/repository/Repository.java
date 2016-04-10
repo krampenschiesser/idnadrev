@@ -15,14 +15,38 @@
  */
 package de.ks.idnadrev.repository;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import de.ks.idnadrev.adoc.AdocFile;
+
+import javax.annotation.Nullable;
 import java.nio.file.Path;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Repository {
   protected Path path;
   protected String name;
   protected String dateFormat;
   protected String timeFormat;
+
+  @JsonIgnore
+  protected DateTimeFormatter timeFormatter;
+  @JsonIgnore
+  protected DateTimeFormatter dateFormatter;
+
+  @JsonIgnore
+  protected Map<Path, AdocFile> adocFiles = new ConcurrentHashMap<>();
+
+  public Repository(@Nullable String name, Path path) {
+    this.path = path;
+    this.name = name;
+    if (name == null) {
+      this.name = path.getFileName().toString();
+    }
+    setDateFormat("dd.MM.yyyy");
+    setTimeFormat("HH:mm:ss");
+  }
 
   public String getName() {
     return name;
@@ -48,6 +72,7 @@ public class Repository {
 
   public Repository setDateFormat(String dateFormat) {
     this.dateFormat = dateFormat;
+    dateFormatter = DateTimeFormatter.ofPattern(dateFormat);
     return this;
   }
 
@@ -57,15 +82,20 @@ public class Repository {
 
   public Repository setTimeFormat(String timeFormat) {
     this.timeFormat = timeFormat;
+    timeFormatter = DateTimeFormatter.ofPattern(timeFormat);
     return this;
   }
 
   public DateTimeFormatter getDateFormatter() {
-    return null;
+    return dateFormatter;
   }
 
   public DateTimeFormatter getTimeFormatter() {
-    return null;
+    return timeFormatter;
   }
 
+  public Repository addAdocFile(AdocFile file) {
+    adocFiles.put(file.getPath(), file);
+    return this;
+  }
 }

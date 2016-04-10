@@ -36,10 +36,6 @@ public class Task extends AdocFile {
     super(path, repository, header);
   }
 
-  static enum TaskState {
-    UNPROCESSED, NONE, LATER, ASAP;
-  }
-
   public boolean isFinished() {
     return finishTime != null;
   }
@@ -54,5 +50,29 @@ public class Task extends AdocFile {
 
   public boolean isThought() {
     return state == TaskState.UNPROCESSED;
+  }
+
+  public CronTab getCronTab() {
+    return cronTab;
+  }
+
+  public String getContext() {
+    return context;
+  }
+
+  public Duration getEstimatedTime() {
+    return estimatedTime;
+  }
+
+  public String getDelegation() {
+    return delegation;
+  }
+
+  public LocalDateTime getFinishTime() {
+    return finishTime;
+  }
+
+  public TaskState getState() {
+    return state;
   }
 }

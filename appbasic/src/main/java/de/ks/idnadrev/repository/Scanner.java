@@ -15,5 +15,70 @@
  */
 package de.ks.idnadrev.repository;
 
+import de.ks.idnadrev.adoc.AdocFileParser;
+import de.ks.idnadrev.index.Index;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
+import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.stream.Collectors;
+
 public class Scanner {
+  private static final Logger log = LoggerFactory.getLogger(Scanner.class);
+
+  public static final String FILE_EXTENSION_ADOC = ".adoc";
+  public static final String FILE_EXTENSION_ASCCIDOC = ".asciidoc";
+  public static final String FILE_EXTENSION_ASC = ".asc";
+
+  final AdocFileParser parser;
+  final Index index;
+  final ExecutorService executorService;
+
+  @Inject
+  public Scanner(AdocFileParser parser, Index index, ExecutorService executorService) {
+    this.parser = parser;
+    this.index = index;
+    this.executorService = executorService;
+  }
+
+  public void scan(Repository repository) {
+    Path path = repository.getPath();
+
+    HashSet<Path> adocFiles = new HashSet<>();
+
+    try {
+      Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+        @Override
+        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+          String fileName = file.getFileName().toString().toLowerCase(Locale.ROOT);
+          if (fileName.endsWith(FILE_EXTENSION_ADOC) || fileName.endsWith(FILE_EXTENSION_ASCCIDOC) || fileName.endsWith(FILE_EXTENSION_ASC)) {
+            adocFiles.add(file);
+          }
+          return super.visitFile(file, attrs);
+        }
+      });
+    } catch (IOException e) {
+      log.error("Could not parse repository {}", path, e);
+    }
+
+
+    List<CompletableFuture<Void>> futures = adocFiles.stream().map(p -> CompletableFuture.supplyAsync(() -> parser.parse(p, repository), executorService)//
+      .thenAccept(adocFile -> {
+        index.add(adocFile);
+        repository.addAdocFile(adocFile);
+      })).collect(Collectors.toList());
+
+    futures.forEach(CompletableFuture::join);
+  }
 }

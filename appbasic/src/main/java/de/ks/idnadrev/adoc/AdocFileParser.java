@@ -18,6 +18,7 @@ package de.ks.idnadrev.adoc;
 import de.ks.idnadrev.repository.Repository;
 import de.ks.idnadrev.task.Task;
 
+import javax.annotation.concurrent.ThreadSafe;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -28,6 +29,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@ThreadSafe
 public class AdocFileParser {
   private final HeaderParser headerParser;
 
@@ -39,7 +41,7 @@ public class AdocFileParser {
   public AdocFile parse(Path path, Repository repository) {
     try {
       Stream<Path> paths = Files.list(path.getParent());
-      Set<CompanionFile> files = paths.filter(p -> p != path && !Files.isDirectory(p)).map(CompanionFile::new).collect(Collectors.toSet());
+      Set<CompanionFile> files = paths.filter(p -> !p.equals(path) && !Files.isDirectory(p)).map(CompanionFile::new).collect(Collectors.toSet());
       List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
       return parse(path, repository, files, lines);
     } catch (IOException e) {

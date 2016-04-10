@@ -85,8 +85,17 @@ public class Header {
     return getHeaderElement("title");
   }
 
+  public Header setTitle(String title) {
+    setHeaderElement("title", title);
+    return this;
+  }
+
   public void setHeaderElement(String key, String value) {
-    headerElements.replace(key, value);
+    if (headerElements.containsKey(key)) {
+      headerElements.replace(key, value);
+    } else {
+      headerElements.put(key, value);
+    }
   }
 
   public void setHeaderElements(LinkedHashMap<String, String> headerElements) {
