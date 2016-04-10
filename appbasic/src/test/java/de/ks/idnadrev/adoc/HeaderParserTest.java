@@ -16,8 +16,8 @@
 
 package de.ks.idnadrev.adoc;
 
-import de.ks.idnadrev.GenericDateTimeParser;
 import de.ks.idnadrev.repository.Repository;
+import de.ks.idnadrev.util.GenericDateTimeParser;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;

@@ -16,9 +16,9 @@
 
 package de.ks.idnadrev.adoc;
 
-import de.ks.idnadrev.GenericDateTimeParser;
 import de.ks.idnadrev.repository.Repository;
 import de.ks.idnadrev.task.Task;
+import de.ks.idnadrev.util.GenericDateTimeParser;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;

@@ -24,7 +24,6 @@ import de.ks.standbein.launch.Service;
 import de.ks.texteditor.launch.AsciiDocService;
 import de.ks.texteditor.launch.MetaData;
 import de.ks.texteditor.render.AsciidocRenderer;
-import de.ks.texteditor.render.MarkdownRenderer;
 import de.ks.texteditor.render.Renderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +48,6 @@ public class TextEditorModule extends AbstractModule {
 
     Multibinder<Renderer> rendererBinder = Multibinder.newSetBinder(binder(), Renderer.class);
     rendererBinder.addBinding().to(AsciidocRenderer.class);
-    rendererBinder.addBinding().to(MarkdownRenderer.class);
   }
 
   public static File discoverDataDir() {

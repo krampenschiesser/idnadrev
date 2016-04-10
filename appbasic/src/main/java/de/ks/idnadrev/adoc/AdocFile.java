@@ -87,6 +87,10 @@ public class AdocFile {
     return path;
   }
 
+  public Repository getRepository() {
+    return repository;
+  }
+
   public String writeBack() {
     StringBuilder b = new StringBuilder();
     b.append(header.writeBack());

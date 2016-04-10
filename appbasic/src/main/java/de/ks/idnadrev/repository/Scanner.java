@@ -20,6 +20,7 @@ import de.ks.idnadrev.index.Index;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -32,6 +33,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class Scanner {
@@ -52,11 +54,31 @@ public class Scanner {
     this.executorService = executorService;
   }
 
-  public void scan(Repository repository) {
+  public void scan(Repository repository, @Nullable ProgressCallback progress) {
     Path path = repository.getPath();
 
     HashSet<Path> adocFiles = new HashSet<>();
 
+    getFiles(path, adocFiles);
+    if (progress != null) {
+      progress.progress(0, adocFiles.size());
+    }
+    AtomicInteger count = new AtomicInteger();
+    List<CompletableFuture<Void>> futures = adocFiles.stream().map(p -> CompletableFuture.supplyAsync(() -> parser.parse(p, repository), executorService)//
+      .thenAccept(adocFile -> {
+        index.add(adocFile);
+        repository.addAdocFile(adocFile);
+
+        count.incrementAndGet();
+        if (progress != null) {
+          progress.progress(count.get(), adocFiles.size());
+        }
+      })).collect(Collectors.toList());
+
+    futures.forEach(CompletableFuture::join);
+  }
+
+  protected void getFiles(Path path, final HashSet<Path> adocFiles) {
     try {
       Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
         @Override
@@ -71,14 +93,5 @@ public class Scanner {
     } catch (IOException e) {
       log.error("Could not parse repository {}", path, e);
     }
-
-
-    List<CompletableFuture<Void>> futures = adocFiles.stream().map(p -> CompletableFuture.supplyAsync(() -> parser.parse(p, repository), executorService)//
-      .thenAccept(adocFile -> {
-        index.add(adocFile);
-        repository.addAdocFile(adocFile);
-      })).collect(Collectors.toList());
-
-    futures.forEach(CompletableFuture::join);
   }
 }

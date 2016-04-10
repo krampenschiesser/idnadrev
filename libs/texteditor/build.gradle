@@ -25,11 +25,12 @@ dependencies {
     compile("org.asciidoctor:asciidoctorj-diagram:$asciidocDiagram") {
         transitive = false;
     }
-    compile "com.github.rjeschke:txtmark:$txtMark"
-
     compile "org.fxmisc.richtext:richtextfx:$richtextfx"
+    compile "commons-codec:commons-codec:$commonscodec"
 
-    runtime group: 'org.fxmisc.wellbehaved', name: 'wellbehavedfx', version: '0.2'
+
+    runtime 'org.fxmisc.wellbehaved:wellbehavedfx:0.2'
+
 
     runtime "org.jruby:jruby-complete:$jruby"
     runtime "com.beust:jcommander:$jcommander"

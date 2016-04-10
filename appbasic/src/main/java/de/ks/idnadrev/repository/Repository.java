@@ -38,6 +38,10 @@ public class Repository {
   @JsonIgnore
   protected Map<Path, AdocFile> adocFiles = new ConcurrentHashMap<>();
 
+  public Repository(Path path) {
+    this(null, path);
+  }
+
   public Repository(@Nullable String name, Path path) {
     this.path = path;
     this.name = name;

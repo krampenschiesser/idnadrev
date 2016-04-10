@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev;
+
+package de.ks.idnadrev.util;
 
 import de.ks.idnadrev.repository.Repository;
 import org.apache.commons.lang3.StringUtils;

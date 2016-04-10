@@ -1,0 +1,111 @@
+.pageTitle {
+    -fx-font-size: 1.5em;
+}
+
+.negativeFunFactor {
+    -fx-accent: orange;
+}
+
+.recoveringEffortFactor {
+    -fx-accent: green;
+}
+
+.buttonBar {
+    -fx-background-color: linear-gradient(to right, -fx-background, derive(-fx-background, -15%) 65%, derive(-fx-background, -45%) 100%)
+}
+
+.week-bg-even {
+    -fx-background-color: derive(-fx-background, 100%);
+}
+.week-bg-odd {
+    -fx-background-color: derive(-fx-background, 0%);/*maybe use 95% later*/
+}
+
+.activeDateCell {
+    -fx-background-color: derive(-fx-accent, 80%);
+}
+
+.week-weekfield {
+  -fx-font-weight: bold;
+}
+
+.webviewContainer {
+    -fx-border-color: darkgrey;
+    -fx-border-radius: 4;
+}
+
+.editorViewLabel {
+    -fx-font-size: 1.25em;
+    -fx-font-weight: bold;
+}
+
+.taskViewFinished {
+    -fx-font-style: italic;
+    -fx-text-fill: derive(black, 10%);
+}
+
+.taskViewAsap {
+    -fx-font-weight: bold;
+    -fx-text-fill: derive(black, 10%);
+}
+
+.fullScreenBg {
+    -fx-background-color: -fx-control-inner-background;
+}
+
+.fullScreenChart {
+    -fx-font-size: 1.5em;
+}
+
+.asciidocEditor {
+    -fx-font-family: monospace;
+}
+
+.quickNavigationContainer {
+    -fx-background-color: linear-gradient(to bottom, -fx-background, derive(-fx-background, -15%) 65%, derive(-fx-background, -45%) 100%);
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.7), 10, 0, 10, 10);
+
+    -fx-border-color: black;
+    -fx-border-radius: 15;
+    -fx-border-width: 1px;
+}
+
+.fadingContent {
+    -fx-opacity: 0.2;
+}
+
+.categoryBrowseItem {
+    -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.7), 10, 0, 3, 3);
+}
+
+.categoryBrowseItem.armed {
+    -fx-font-size: 1.5em;
+}
+
+
+.categoryBrowseItemContainer {
+    -fx-background-radius: 5, 4, 3;
+    -fx-opacity: 0.8;
+}
+
+.contentContainer {
+    -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.7), 10, 0, 3, 3);
+    -fx-background-color: -fx-background;
+    -fx-background-radius: 8;
+    /*-fx-border-color: black;
+    -fx-border-radius: 15 10 1 10;
+    -fx-border-width: 1px;
+    -fx-border-style: outset;*/
+}
+
+
+.bookingNegative {
+    -fx-text-fill: red;
+    -fx-text-alignment: left;
+}
+
+.bookingPositive {
+    -fx-text-fill: green;
+    -fx-text-alignment: right;
+}

@@ -17,9 +17,9 @@
 package de.ks.idnadrev.repository;
 
 import com.google.common.util.concurrent.MoreExecutors;
-import de.ks.idnadrev.GenericDateTimeParser;
 import de.ks.idnadrev.adoc.*;
 import de.ks.idnadrev.index.Index;
+import de.ks.idnadrev.util.GenericDateTimeParser;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,7 +59,7 @@ public class ScannerTest {
 
   @Test
   public void scanBasicRepo() throws Exception {
-    scanner.scan(repo);
+    scanner.scan(repo, null);
 
     ArgumentCaptor<AdocFile> argumentCaptor = ArgumentCaptor.forClass(AdocFile.class);
     Mockito.verify(repo).addAdocFile(argumentCaptor.capture());
