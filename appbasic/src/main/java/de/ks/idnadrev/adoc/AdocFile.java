@@ -36,7 +36,6 @@ public class AdocFile {
   protected Path path;
   protected Set<CompanionFile> files;
   protected Header header;
-  protected String title;
   protected List<String> lines = new ArrayList<>();
 
   public AdocFile(Path path, Repository repository, Header header) {
@@ -59,11 +58,11 @@ public class AdocFile {
   }
 
   public String getTitle() {
-    return title;
+    return header.getTitle();
   }
 
   public AdocFile setTitle(String title) {
-    this.title = title;
+    header.setTitle(title);
     return this;
   }
 

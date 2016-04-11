@@ -15,7 +15,7 @@
  */
 package de.ks.idnadrev.index;
 
-import de.ks.reflection.PropertyPath;
+import de.ks.standbein.reflection.PropertyPath;
 
 import java.util.function.Function;
 

@@ -57,7 +57,12 @@ public class Task extends AdocFile {
   }
 
   public String getContext() {
-    return context;
+    return getHeader().getHeaderElement("context");
+  }
+
+  public Task setContext(String context) {
+    getHeader().setHeaderElement("context", context);
+    return this;
   }
 
   public Duration getEstimatedTime() {

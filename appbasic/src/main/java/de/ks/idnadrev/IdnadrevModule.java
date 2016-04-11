@@ -18,6 +18,7 @@ package de.ks.idnadrev;
 import com.google.inject.AbstractModule;
 import com.google.inject.Key;
 import com.google.inject.multibindings.Multibinder;
+import de.ks.idnadrev.thought.add.AddThoughtActivity;
 import de.ks.idnadrev.thought.view.ViewThoughtsActivity;
 import de.ks.standbein.application.ApplicationCfg;
 import de.ks.standbein.application.MainWindow;
@@ -49,7 +50,7 @@ public class IdnadrevModule extends AbstractModule {
   protected void registerMenuItems() {
     Multibinder<MenuEntry> menuBinder = Multibinder.newSetBinder(binder(), MenuEntry.class);
 //    menuBinder.addBinding().toInstance(new MenuEntry("/main/overview", "overview", new StartActivityAction(OverviewActivity.class)).setOrder(100));
-//    menuBinder.addBinding().toInstance(new MenuEntry("/main/thought", "edit", new StartActivityAction(AddThoughtActivity.class)).setOrder(200));
+    menuBinder.addBinding().toInstance(new MenuEntry("/main/thought", "edit", new StartActivityAction(AddThoughtActivity.class)).setOrder(200));
     menuBinder.addBinding().toInstance(new MenuEntry("/main/thought", "view", new StartActivityAction(ViewThoughtsActivity.class)).setOrder(201));
 //    menuBinder.addBinding().toInstance(new MenuEntry("/main/task", "add", new StartActivityAction(CreateTaskActivity.class)).setOrder(300));
 //    menuBinder.addBinding().toInstance(new MenuEntry("/main/task", "view", new StartActivityAction(ViewTasksActvity.class)).setOrder(301));

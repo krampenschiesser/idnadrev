@@ -18,6 +18,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
@@ -32,11 +33,12 @@
     </columnConstraints>
     <rowConstraints>
         <RowConstraints minHeight="10.0" vgrow="NEVER"/>
+        <RowConstraints vgrow="NEVER"/>
     </rowConstraints>
     <children>
         <Button fx:id="back" mnemonicParsing="false" text="%back">
             <graphic>
-                <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                     <image>
                         <Image url="@../../standbein/images/back.png"/>
                     </image>
@@ -45,7 +47,7 @@
         </Button>
         <Button fx:id="delete" mnemonicParsing="false" text="%delete" GridPane.columnIndex="4">
             <graphic>
-                <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                     <image>
                         <Image url="@../../standbein/images/delete.png"/>
                     </image>
@@ -53,6 +55,11 @@
             </graphic>
         </Button>
         <HBox fx:id="centerButtonContainer" spacing="10.0" GridPane.columnIndex="2"/>
+        <Separator GridPane.columnSpan="2147483647" GridPane.rowIndex="1">
+            <padding>
+                <Insets top="5.0"/>
+            </padding>
+        </Separator>
     </children>
     <padding>
         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>

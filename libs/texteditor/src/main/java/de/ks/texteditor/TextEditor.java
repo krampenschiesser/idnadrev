@@ -128,7 +128,6 @@ public class TextEditor implements Initializable {
     preview = initialization.loadAdditionalController(TextPreview.class).getController();
     previewContainer.getChildren().add(preview.getRoot());
     htmlEditor.textProperty().bind(preview.htmlProperty());
-    focusEditor();
 
     LastExecutionGroup<RichTextChange<Collection<String>>> markupGeneration = new LastExecutionGroup<>("MarkupGeneration", 300, executorService);
     final AtomicBoolean richtTextFXMurksGuardMarkup = new AtomicBoolean();//needed because sometimes richtextfx is stuck in a loop/stackoverflow (when replacing styles)
@@ -300,7 +299,7 @@ public class TextEditor implements Initializable {
     return new AdocMarkup();
   }
 
-  protected void focusEditor() {
+  public void focusEditor() {
     executorService.submit(() -> {
       try {
         Thread.sleep(100);

@@ -16,7 +16,6 @@
 package de.ks.idnadrev.ui;
 
 import de.ks.standbein.BaseController;
-import de.ks.standbein.activity.ActivityCfg;
 import de.ks.standbein.activity.context.ActivityContext;
 import de.ks.standbein.activity.initialization.ActivityInitialization;
 import de.ks.standbein.application.fxml.DefaultLoader;
@@ -71,8 +70,7 @@ public class CRUDController extends BaseController<Object> {
 
   @Override
   public void onResume() {
-    ActivityCfg currentActivity = controller.getCurrentActivity();
-    if (context.isMainActivity(currentActivity.getId())) {
+    if (context.getActivities().size() == 2) {
       back.setDisable(true);
     } else {
       back.setDisable(false);

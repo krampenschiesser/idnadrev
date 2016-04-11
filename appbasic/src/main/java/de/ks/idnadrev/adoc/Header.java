@@ -17,8 +17,10 @@ package de.ks.idnadrev.adoc;
 
 import de.ks.idnadrev.repository.Repository;
 import de.ks.idnadrev.util.GenericDateTimeParser;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Set;
@@ -44,11 +46,24 @@ public class Header {
     return tags;
   }
 
+  public String getTagString() {
+    return tags.stream().collect(Collectors.joining(", "));
+  }
+
+  public Header setTagString(String tagString) {
+    this.tags.clear();
+    setHeaderElement("keywords", tagString);
+
+    String[] split = StringUtils.split(tagString, ",");
+    Arrays.asList(split).forEach(s -> tags.add(s.trim()));
+    return this;
+  }
+
   public Header setTags(Set<String> tags) {
     boolean wasEmpty = this.tags.isEmpty();
     this.tags = tags;
     if (!wasEmpty) {
-      headerElements.replace("keywords", tags.stream().collect(Collectors.joining(", ")));
+      setHeaderElement("keywords", tags.stream().collect(Collectors.joining(", ")));
     }
     return this;
   }
