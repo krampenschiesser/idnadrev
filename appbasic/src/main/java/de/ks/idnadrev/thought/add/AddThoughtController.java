@@ -84,13 +84,15 @@ public class AddThoughtController extends BaseController<Task> {
         }
       });
     }
-    ObservableList<Repository> items = repository.getItems();
-    items.clear();
-    items.addAll(repositoryService.getRepositories());
-    if (repository.getSelectionModel().isEmpty() && !items.isEmpty()) {
-      repository.getSelectionModel().select(0);
-    } else if (!items.contains(repository.getSelectionModel().getSelectedItem())) {
-      repository.getSelectionModel().select(0);
-    }
+    controller.getJavaFXExecutor().submit(() -> {
+      ObservableList<Repository> items = repository.getItems();
+      items.clear();
+      items.addAll(repositoryService.getRepositories());
+      if (repository.getSelectionModel().isEmpty() && !items.isEmpty()) {
+        repository.getSelectionModel().select(0);
+      } else if (!items.contains(repository.getSelectionModel().getSelectedItem())) {
+        repository.getSelectionModel().select(0);
+      }
+    });
   }
 }
