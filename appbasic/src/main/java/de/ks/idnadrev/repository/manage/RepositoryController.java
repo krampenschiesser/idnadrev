@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.repository.ui;
+package de.ks.idnadrev.repository.manage;
 
-import de.ks.idnadrev.ui.CRUDController;
+import de.ks.idnadrev.crud.CRUDController;
 import de.ks.idnadrev.util.ButtonHelper;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.activity.context.ActivityContext;

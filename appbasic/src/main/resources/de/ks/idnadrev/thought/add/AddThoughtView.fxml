@@ -24,7 +24,7 @@
     <children>
         <StackPane>
             <children>
-                <fx:include fx:id="crud" source="../../ui/CRUDView.fxml"/>
+                <fx:include fx:id="crud" source="../../crud/CRUDView.fxml"/>
             </children>
         </StackPane>
         <GridPane fx:id="editorGrid" hgap="5.0" vgap="5.0" VBox.vgrow="ALWAYS">
@@ -47,7 +47,11 @@
                 <TextField fx:id="tags" GridPane.columnIndex="5"/>
                 <StackPane fx:id="editorContainer" GridPane.columnSpan="2147483647" GridPane.rowIndex="1"/>
                 <Label text="%repository" GridPane.columnIndex="2"/>
-                <ComboBox fx:id="repository" prefWidth="150.0" GridPane.columnIndex="3"/>
+                <StackPane GridPane.columnIndex="3">
+                    <children>
+                        <fx:include fx:id="repository" source="../../repository/active/ActiveRepositoryView.fxml"/>
+                    </children>
+                </StackPane>
             </children>
             <padding>
                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>

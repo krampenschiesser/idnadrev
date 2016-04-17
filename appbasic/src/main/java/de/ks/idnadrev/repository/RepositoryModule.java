@@ -18,7 +18,7 @@ package de.ks.idnadrev.repository;
 import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.Multibinder;
 import com.google.inject.multibindings.OptionalBinder;
-import de.ks.idnadrev.repository.ui.RepositoryActivity;
+import de.ks.idnadrev.repository.manage.RepositoryActivity;
 import de.ks.standbein.activity.InitialActivity;
 import de.ks.standbein.launch.Service;
 

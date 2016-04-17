@@ -19,11 +19,11 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <VBox xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="de.ks.idnadrev.repository.ui.RepositoryController">
+      fx:controller="de.ks.idnadrev.repository.manage.RepositoryController">
     <children>
         <StackPane>
             <children>
-                <fx:include fx:id="crud" source="../../ui/CRUDView.fxml"/>
+                <fx:include fx:id="crud" source="../../crud/CRUDView.fxml"/>
             </children>
         </StackPane>
         <GridPane hgap="5.0" vgap="5.0" VBox.vgrow="ALWAYS">

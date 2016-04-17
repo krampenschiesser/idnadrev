@@ -15,8 +15,8 @@
  */
 package de.ks.idnadrev.thought.view;
 
+import de.ks.idnadrev.crud.CRUDController;
 import de.ks.idnadrev.task.Task;
-import de.ks.idnadrev.ui.CRUDController;
 import de.ks.idnadrev.util.ButtonHelper;
 import de.ks.standbein.BaseController;
 import javafx.beans.binding.BooleanBinding;

@@ -15,18 +15,15 @@
  */
 package de.ks.idnadrev.thought.add;
 
-import de.ks.idnadrev.repository.Repository;
+import de.ks.idnadrev.crud.CRUDController;
 import de.ks.idnadrev.repository.RepositoryService;
+import de.ks.idnadrev.repository.active.ActiveRepositoryController;
 import de.ks.idnadrev.task.Task;
-import de.ks.idnadrev.ui.CRUDController;
-import de.ks.idnadrev.util.NamedConverter;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.validation.validators.NotEmptyValidator;
 import de.ks.texteditor.TextEditor;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -44,13 +41,13 @@ public class AddThoughtController extends BaseController<Task> {
   @FXML
   private TextField title;
   @FXML
-  private ComboBox<Repository> repository;//// FIXME: 4/17/16 Refactor to active repo controller
-  @FXML
   private TextField tags;
   @FXML
   private StackPane editorContainer;
   @FXML
   private CRUDController crudController;
+  @FXML
+  private ActiveRepositoryController repositoryController;
 
   private TextEditor editor;
 
@@ -72,13 +69,6 @@ public class AddThoughtController extends BaseController<Task> {
     tags.textProperty().bindBidirectional(store.getBinding().getStringProperty(Task.class, t -> t.getHeader().getTagString()));
 
     validationRegistry.registerValidator(title, new NotEmptyValidator(localized));
-    repository.setConverter(new NamedConverter<>(name -> repositoryService.getRepositories().stream().filter(r -> r.getName().equals(name)).findAny().get()));
-
-    repository.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
-      if (n != null) {
-        repositoryService.setActiveRepository(n);
-      }
-    });
   }
 
   @Override
@@ -98,15 +88,5 @@ public class AddThoughtController extends BaseController<Task> {
         }
       });
     }
-    controller.getJavaFXExecutor().submit(() -> {
-      ObservableList<Repository> items = repository.getItems();
-      items.clear();
-      items.addAll(repositoryService.getRepositories());
-      if (repository.getSelectionModel().isEmpty() && !items.isEmpty()) {
-        repository.getSelectionModel().select(repositoryService.getActiveRepository());
-      } else if (!items.contains(repository.getSelectionModel().getSelectedItem())) {
-        repository.getSelectionModel().select(repositoryService.getActiveRepository());
-      }
-    });
   }
 }

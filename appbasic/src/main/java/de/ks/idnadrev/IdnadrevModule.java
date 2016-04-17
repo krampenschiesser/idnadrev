@@ -18,7 +18,7 @@ package de.ks.idnadrev;
 import com.google.inject.AbstractModule;
 import com.google.inject.Key;
 import com.google.inject.multibindings.Multibinder;
-import de.ks.idnadrev.repository.ui.RepositoryActivity;
+import de.ks.idnadrev.repository.manage.RepositoryActivity;
 import de.ks.idnadrev.thought.add.AddThoughtActivity;
 import de.ks.idnadrev.thought.view.ViewThoughtsActivity;
 import de.ks.standbein.application.ApplicationCfg;
