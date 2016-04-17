@@ -15,6 +15,8 @@
  */
 package de.ks.idnadrev.repository.ui;
 
+import de.ks.idnadrev.ui.CRUDController;
+import de.ks.idnadrev.util.ButtonHelper;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.activity.context.ActivityContext;
 import de.ks.standbein.validation.validators.FileExistsValidator;
@@ -41,36 +43,39 @@ public class RepositoryController extends BaseController<List<Path>> {
   @FXML
   private Button add;
   @FXML
-  private Button save;
-  @FXML
-  private Button cancel;
-  @FXML
-  private Button deleteSelected;
-  @FXML
   private TextField repositoryText;
   @FXML
   private Button select;
+  @FXML
+  private CRUDController crudController;
 
   @Inject
   ActivityContext context;
+  @Inject
+  ButtonHelper buttonHelper;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     validationRegistry.registerValidator(repositoryText, new FileExistsValidator(localized));
     validationRegistry.registerValidator(repositoryText, new NotEmptyValidator(localized));
+    Button saveButton = crudController.getSaveButton();
+    saveButton.setVisible(true);
 
     list.getItems().addListener((ListChangeListener<Path>) c -> {
       if (c.getList().isEmpty()) {
-        cancel.setDisable(true);
-        save.setDisable(true);
+        crudController.backDisabledProperty().set(true);
+        saveButton.setDisable(true);
       } else {
-        cancel.setDisable(false);
-        save.setDisable(false);
+        crudController.backDisabledProperty().set(false);
+        saveButton.setDisable(false);
       }
     });
 
-    deleteSelected.disableProperty().bind(list.getSelectionModel().selectedItemProperty().isNull());
+
+    crudController.getDeleteButton().disableProperty().bind(list.getSelectionModel().selectedItemProperty().isNull());
     add.disableProperty().bind(validationRegistry.invalidProperty());
+    buttonHelper.enhanceButton(add, "add.png", 24);
+    buttonHelper.enhanceButton(select, "open.png", 24);
 
 
     list.setCellFactory(new Callback<ListView<Path>, ListCell<Path>>() {
@@ -142,8 +147,8 @@ public class RepositoryController extends BaseController<List<Path>> {
     list.getItems().clear();
     list.getItems().addAll(model);
     if (model.isEmpty()) {
-      cancel.setDisable(true);
-      save.setDisable(true);
+      crudController.backDisabledProperty().set(true);
+      crudController.getSaveButton().setDisable(true);
     }
   }
 

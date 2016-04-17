@@ -57,4 +57,11 @@ public class ButtonHelper {
     imageView.setFitWidth(iconSize);
     return new Button(title, imageView);
   }
+
+  public void enhanceButton(Button button, String image, int iconSize) {
+    ImageView imageView = new ImageView(images.get(image));
+    imageView.setFitHeight(iconSize);
+    imageView.setFitWidth(iconSize);
+    button.setGraphic(imageView);
+  }
 }

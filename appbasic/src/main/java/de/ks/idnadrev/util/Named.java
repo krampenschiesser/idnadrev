@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.repository;
+package de.ks.idnadrev.util;
 
-public class RepositorySelector {
-
+public interface Named {
+  String getName();
 }

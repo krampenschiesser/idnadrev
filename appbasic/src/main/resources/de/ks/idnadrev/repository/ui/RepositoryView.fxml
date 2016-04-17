@@ -18,33 +18,35 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<GridPane hgap="5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-          prefHeight="400.0" prefWidth="600.0" vgap="5.0" xmlns:fx="http://javafx.com/fxml/1"
-          xmlns="http://javafx.com/javafx/8.0.60" fx:controller="de.ks.idnadrev.repository.ui.RepositoryController">
-    <columnConstraints>
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
-        <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
-        <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
-    </columnConstraints>
-    <rowConstraints>
-        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
-        <RowConstraints minHeight="30.0" vgrow="SOMETIMES"/>
-        <RowConstraints minHeight="30.0" vgrow="NEVER"/>
-    </rowConstraints>
+<VBox xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="de.ks.idnadrev.repository.ui.RepositoryController">
     <children>
-        <TextField fx:id="repositoryText" onAction="#onAdd"/>
-        <Button fx:id="select" onAction="#onSelect" text="%select.repository.mnemonic" GridPane.columnIndex="1"/>
-        <Button fx:id="add" mnemonicParsing="true" onAction="#onAdd" text="%add.mnemonic" GridPane.columnIndex="2"/>
-
-        <ListView fx:id="list" GridPane.columnSpan="2147483647" GridPane.rowIndex="1"/>
-
-        <HBox maxWidth="-Infinity" spacing="10.0" GridPane.columnSpan="2147483647" GridPane.halignment="CENTER"
-              GridPane.rowIndex="2">
+        <StackPane>
             <children>
-                <Button fx:id="save" defaultButton="true" onAction="#onSave" text="%save.mnemonic"/>
-                <Button fx:id="cancel" cancelButton="true" onAction="#onCancel" text="%cancel.mnemonic"/>
-                <Button fx:id="deleteSelected" onAction="#onDeleteSelected" text="%delete.selected.mnemonic"/>
+                <fx:include fx:id="crud" source="../../ui/CRUDView.fxml"/>
             </children>
-        </HBox>
+        </StackPane>
+        <GridPane hgap="5.0" vgap="5.0" VBox.vgrow="ALWAYS">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+                <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
+                <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="30.0" vgrow="NEVER"/>
+                <RowConstraints vgrow="NEVER"/>
+                <RowConstraints minHeight="30.0" vgrow="SOMETIMES"/>
+            </rowConstraints>
+            <children>
+                <Separator GridPane.columnSpan="2147483647" GridPane.rowIndex="1"/>
+                <TextField fx:id="repositoryText" onAction="#onAdd"/>
+                <Button fx:id="select" onAction="#onSelect" text="%select.repository.mnemonic"
+                        GridPane.columnIndex="1"/>
+                <Button fx:id="add" mnemonicParsing="true" onAction="#onAdd" text="%add.mnemonic"
+                        GridPane.columnIndex="2"/>
+
+                <ListView fx:id="list" GridPane.columnSpan="2147483647" GridPane.rowIndex="2"/>
+            </children>
+        </GridPane>
     </children>
-</GridPane>
+</VBox>

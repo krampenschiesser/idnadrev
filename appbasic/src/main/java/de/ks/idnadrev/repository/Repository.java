@@ -17,6 +17,7 @@ package de.ks.idnadrev.repository;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.ks.idnadrev.adoc.AdocFile;
+import de.ks.idnadrev.util.Named;
 
 import javax.annotation.Nullable;
 import java.nio.file.Path;
@@ -24,7 +25,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Repository {
+public class Repository implements Named {
   protected Path path;
   protected String name;
   protected String dateFormat;
@@ -52,6 +53,7 @@ public class Repository {
     setTimeFormat("HH:mm:ss");
   }
 
+  @Override
   public String getName() {
     return name;
   }

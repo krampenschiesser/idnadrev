@@ -17,8 +17,7 @@
   -->
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <VBox fx:id="root" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="de.ks.idnadrev.thought.add.AddThoughtController">
@@ -31,10 +30,11 @@
         <GridPane fx:id="editorGrid" hgap="5.0" vgap="5.0" VBox.vgrow="ALWAYS">
             <columnConstraints>
                 <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="10.0"/>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="40.0"/>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+                <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
+                <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
                 <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="10.0"/>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="40.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
             </columnConstraints>
             <rowConstraints>
                 <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
@@ -42,10 +42,12 @@
             </rowConstraints>
             <children>
                 <Label text="%title:"/>
-                <Label text="%tags:" GridPane.columnIndex="3"/>
+                <Label text="%tags:" GridPane.columnIndex="4"/>
                 <TextField fx:id="title" GridPane.columnIndex="1"/>
-                <TextField fx:id="tags" GridPane.columnIndex="4"/>
+                <TextField fx:id="tags" GridPane.columnIndex="5"/>
                 <StackPane fx:id="editorContainer" GridPane.columnSpan="2147483647" GridPane.rowIndex="1"/>
+                <Label text="%repository" GridPane.columnIndex="2"/>
+                <ComboBox fx:id="repository" prefWidth="150.0" GridPane.columnIndex="3"/>
             </children>
             <padding>
                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>

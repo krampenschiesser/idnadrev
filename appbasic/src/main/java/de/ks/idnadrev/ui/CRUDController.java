@@ -15,10 +15,12 @@
  */
 package de.ks.idnadrev.ui;
 
+import de.ks.idnadrev.util.ButtonHelper;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.activity.context.ActivityContext;
 import de.ks.standbein.activity.initialization.ActivityInitialization;
 import de.ks.standbein.application.fxml.DefaultLoader;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -48,19 +50,29 @@ public class CRUDController extends BaseController<Object> {
   @FXML
   protected Button back;
   @FXML
+  protected Button save;
+  @FXML
   protected GridPane root;
   @FXML
   protected HBox centerButtonContainer;
 
   @Inject
   ActivityContext context;
+  @Inject
+  ButtonHelper buttonHelper;
+
+  protected SimpleBooleanProperty backDisabled = new SimpleBooleanProperty();
+  protected SimpleBooleanProperty backDisabledInternal = new SimpleBooleanProperty();
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     back.setOnAction(e -> {
-      controller.save();
+      if (validationRegistry.isValid()) {
+        controller.save();
+      }
       controller.stopCurrent();
     });
+    back.disableProperty().bind(backDisabled.or(backDisabledInternal));
   }
 
   @Override
@@ -71,9 +83,9 @@ public class CRUDController extends BaseController<Object> {
   @Override
   public void onResume() {
     if (context.getActivities().size() == 2) {
-      back.setDisable(true);
+      backDisabledInternal.set(true);
     } else {
-      back.setDisable(false);
+      backDisabledInternal.set(false);
     }
   }
 
@@ -85,11 +97,27 @@ public class CRUDController extends BaseController<Object> {
     return back;
   }
 
+  public Button getSaveButton() {
+    return save;
+  }
+
   public GridPane getRoot() {
     return root;
   }
 
   public HBox getCenterButtonContainer() {
     return centerButtonContainer;
+  }
+
+  public boolean getBackDisabled() {
+    return backDisabled.get();
+  }
+
+  public SimpleBooleanProperty backDisabledProperty() {
+    return backDisabled;
+  }
+
+  public void setBackDisabled(boolean backDisabled) {
+    this.backDisabled.set(backDisabled);
   }
 }

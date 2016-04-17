@@ -18,6 +18,7 @@ package de.ks.idnadrev;
 import com.google.inject.AbstractModule;
 import com.google.inject.Key;
 import com.google.inject.multibindings.Multibinder;
+import de.ks.idnadrev.repository.ui.RepositoryActivity;
 import de.ks.idnadrev.thought.add.AddThoughtActivity;
 import de.ks.idnadrev.thought.view.ViewThoughtsActivity;
 import de.ks.standbein.application.ApplicationCfg;
@@ -59,6 +60,8 @@ public class IdnadrevModule extends AbstractModule {
 //    menuBinder.addBinding().toInstance(new MenuEntry("/main/info", "view", new StartActivityAction(InformationOverviewActivity.class)).setOrder(400));
 //    menuBinder.addBinding().toInstance(new MenuEntry("/main/info", "document", new StartActivityAction(TextInfoActivity.class)).setOrder(401));
 //    menuBinder.addBinding().toInstance(new MenuEntry("/main/info", "diary", new StartActivityAction(DiaryActivity.class)).setOrder(402));
+    menuBinder.addBinding().toInstance(new MenuEntry("/main/repository", "manage", new StartActivityAction(RepositoryActivity.class)).setOrder(401));
+
 //    //costs are 500
 //    menuBinder.addBinding().toInstance(new MenuEntry("/main/review", "planWeek", new StartActivityAction(PlanWeekActivity.class)).setOrder(600));
 //    menuBinder.addBinding().toInstance(new MenuEntry("/main/review", "weekReview", new StartActivityAction(WeeklyDoneActivity.class)).setOrder(601));
