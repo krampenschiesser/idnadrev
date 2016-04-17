@@ -80,4 +80,9 @@ public class Task extends AdocFile {
   public TaskState getState() {
     return state;
   }
+
+  public Task setState(TaskState state) {
+    this.state = state;
+    return this;
+  }
 }

@@ -21,11 +21,13 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Singleton
 public class RepositoryService extends Service {
 
   final Set<Repository> repositories = new HashSet<>();
+  final AtomicReference<Repository> activeRepository = new AtomicReference<>();
   final RepositoryLoader loader;
 
   @Inject
@@ -36,6 +38,9 @@ public class RepositoryService extends Service {
   @Override
   protected void doStart() {
     repositories.addAll(loader.loadRepositories());
+    if (!repositories.isEmpty()) {
+      setActiveRepository(repositories.iterator().next());
+    }
   }
 
   @Override
@@ -65,5 +70,14 @@ public class RepositoryService extends Service {
   public void reload() {
     repositories.clear();
     repositories.addAll(loader.loadRepositories());
+  }
+
+  public RepositoryService setActiveRepository(Repository activeRepository) {
+    this.activeRepository.set(activeRepository);
+    return this;
+  }
+
+  public Repository getActiveRepository() {
+    return activeRepository.get();
   }
 }

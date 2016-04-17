@@ -25,6 +25,7 @@ import de.ks.standbein.validation.validators.NotEmptyValidator;
 import de.ks.texteditor.TextEditor;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
@@ -43,7 +44,7 @@ public class AddThoughtController extends BaseController<Task> {
   @FXML
   private TextField title;
   @FXML
-  private ComboBox<Repository> repository;
+  private ComboBox<Repository> repository;//// FIXME: 4/17/16 Refactor to active repo controller
   @FXML
   private TextField tags;
   @FXML
@@ -59,12 +60,25 @@ public class AddThoughtController extends BaseController<Task> {
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     TextEditor.load(activityInitialization, editorContainer.getChildren()::add, ctrl -> editor = ctrl);
-    crudController.getSaveButton().setVisible(true);
+    Button saveButton = crudController.getSaveButton();
+    saveButton.setVisible(true);
+    saveButton.setOnAction(e -> {
+      controller.save();
+      controller.reload();
+    });
 
     editor.textProperty().bindBidirectional(store.getBinding().getStringProperty(Task.class, Task::getContent));
+    title.textProperty().bindBidirectional(store.getBinding().getStringProperty(Task.class, t -> t.getHeader().getTitle()));
+    tags.textProperty().bindBidirectional(store.getBinding().getStringProperty(Task.class, t -> t.getHeader().getTagString()));
 
     validationRegistry.registerValidator(title, new NotEmptyValidator(localized));
     repository.setConverter(new NamedConverter<>(name -> repositoryService.getRepositories().stream().filter(r -> r.getName().equals(name)).findAny().get()));
+
+    repository.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
+      if (n != null) {
+        repositoryService.setActiveRepository(n);
+      }
+    });
   }
 
   @Override
@@ -89,9 +103,9 @@ public class AddThoughtController extends BaseController<Task> {
       items.clear();
       items.addAll(repositoryService.getRepositories());
       if (repository.getSelectionModel().isEmpty() && !items.isEmpty()) {
-        repository.getSelectionModel().select(0);
+        repository.getSelectionModel().select(repositoryService.getActiveRepository());
       } else if (!items.contains(repository.getSelectionModel().getSelectedItem())) {
-        repository.getSelectionModel().select(0);
+        repository.getSelectionModel().select(repositoryService.getActiveRepository());
       }
     });
   }

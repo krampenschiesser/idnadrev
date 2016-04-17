@@ -15,19 +15,17 @@
  */
 package de.ks.idnadrev.thought.add;
 
+import de.ks.idnadrev.adoc.Header;
+import de.ks.idnadrev.repository.RepositoryService;
 import de.ks.idnadrev.task.Task;
-import de.ks.standbein.datasource.DataSource;
+import de.ks.idnadrev.task.TaskState;
+import de.ks.idnadrev.util.AdocFileCreateEditDs;
 
-import java.util.function.Consumer;
+import javax.inject.Inject;
 
-public class AddThoughtDs implements DataSource<Task> {
-  @Override
-  public Task loadModel(Consumer<Task> furtherProcessing) {
-    return null;
-  }
-
-  @Override
-  public void saveModel(Task model, Consumer<Task> beforeSaving) {
-
+public class AddThoughtDs extends AdocFileCreateEditDs<Task> {
+  @Inject
+  public AddThoughtDs(RepositoryService repositoryService) {
+    super(Task.class, "Thought", p -> new Task(p, null, new Header(null)).setState(TaskState.UNPROCESSED), repositoryService);
   }
 }
