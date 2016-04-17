@@ -73,6 +73,7 @@ public class CRUDController extends BaseController<Object> {
       controller.stopCurrent();
     });
     back.disableProperty().bind(backDisabled.or(backDisabledInternal));
+    save.disableProperty().bind(validationRegistry.invalidProperty());
   }
 
   @Override
