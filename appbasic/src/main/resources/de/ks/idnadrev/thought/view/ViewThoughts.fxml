@@ -22,7 +22,7 @@
       fx:controller="de.ks.idnadrev.thought.view.ViewThoughtsController">
     <children>
         <StackPane fx:id="crudContainer"/>
-        <SplitPane fx:id="split" dividerPositions="0.5" VBox.vgrow="ALWAYS">
+        <SplitPane fx:id="split" dividerPositions="0.36" VBox.vgrow="ALWAYS">
             <items>
                 <StackPane fx:id="tableContainer" prefHeight="150.0" prefWidth="200.0"/>
                 <StackPane fx:id="previewContainer" prefHeight="150.0" prefWidth="200.0"/>
