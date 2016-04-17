@@ -60,6 +60,7 @@ public class RepositoryController extends BaseController<List<Path>> {
     validationRegistry.registerValidator(repositoryText, new NotEmptyValidator(localized));
     Button saveButton = crudController.getSaveButton();
     saveButton.setVisible(true);
+    saveButton.disableProperty().unbind();
 
     list.getItems().addListener((ListChangeListener<Path>) c -> {
       if (c.getList().isEmpty()) {
@@ -70,7 +71,6 @@ public class RepositoryController extends BaseController<List<Path>> {
         saveButton.setDisable(false);
       }
     });
-
 
     crudController.getDeleteButton().disableProperty().bind(list.getSelectionModel().selectedItemProperty().isNull());
     add.disableProperty().bind(validationRegistry.invalidProperty());
