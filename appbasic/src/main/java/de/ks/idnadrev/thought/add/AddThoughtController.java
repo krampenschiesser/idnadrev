@@ -61,7 +61,12 @@ public class AddThoughtController extends BaseController<Task> {
     saveButton.setVisible(true);
     saveButton.setOnAction(e -> {
       controller.save();
-      controller.reload();
+      AddThoughtDs datasource = (AddThoughtDs) store.getDatasource();
+      if (datasource.hasHint()) {
+        controller.stopCurrent();
+      } else {
+        controller.reload();
+      }
     });
 
     editor.textProperty().bindBidirectional(store.getBinding().getStringProperty(Task.class, Task::getContent));

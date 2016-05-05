@@ -17,9 +17,12 @@ package de.ks.idnadrev.thought.view;
 
 import de.ks.idnadrev.crud.CRUDController;
 import de.ks.idnadrev.task.Task;
+import de.ks.idnadrev.thought.add.AddThoughtActivity;
 import de.ks.idnadrev.util.ButtonHelper;
 import de.ks.standbein.BaseController;
+import de.ks.standbein.activity.ActivityHint;
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
@@ -54,6 +57,7 @@ public class ViewThoughtsController extends BaseController<List<Task>> {
 
   @Inject
   ButtonHelper buttonHelper;
+  private Button edit;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -61,16 +65,27 @@ public class ViewThoughtsController extends BaseController<List<Task>> {
     activityInitialization.loadAdditionalController(ThoughtTable.class, v -> tableContainer.getChildren().add(v), ctrl -> this.thoughtTableController = ctrl);
     activityInitialization.loadAdditionalController(ThoughtPreview.class, v -> previewContainer.getChildren().add(v), ctrl -> this.thoughtPreviewController = ctrl);
 
-    BooleanBinding itemSelected = thoughtTableController.getThoughtTable().getSelectionModel().selectedItemProperty().isNull();
+    ReadOnlyObjectProperty<Task> selectedItemProperty = thoughtTableController.getThoughtTable().getSelectionModel().selectedItemProperty();
+    BooleanBinding itemSelected = selectedItemProperty.isNull();
     crud.getDeleteButton().disableProperty().bind(itemSelected);
 
     toTask = buttonHelper.createImageButton(localized.get("toTask"), "toTask.png", 24);
     toTask.disableProperty().bind(itemSelected);
+    edit = buttonHelper.createImageButton(localized.get("edit"), "edit.png", 24);
+    edit.disableProperty().bind(itemSelected);
     toDocument = buttonHelper.createImageButton(localized.get("toDocument"), "toDocument.png", 24);
     toDocument.setContentDisplay(ContentDisplay.RIGHT);
     toDocument.disableProperty().bind(itemSelected);
-    crud.getCenterButtonContainer().getChildren().addAll(toTask, toDocument);
+    crud.getCenterButtonContainer().getChildren().addAll(toTask, edit, toDocument);
 
-    thoughtPreviewController.selectedTask.bind(thoughtTableController.getThoughtTable().getSelectionModel().selectedItemProperty());
+    thoughtPreviewController.selectedTask.bind(selectedItemProperty);
+
+    edit.setOnAction(e -> edit(selectedItemProperty.get()));
+  }
+
+  private void edit(Task task) {
+    ActivityHint hint = new ActivityHint(AddThoughtActivity.class, controller.getCurrentActivityId()).setDataSourceHint(() -> task);
+    controller.startOrResume(hint);
+
   }
 }

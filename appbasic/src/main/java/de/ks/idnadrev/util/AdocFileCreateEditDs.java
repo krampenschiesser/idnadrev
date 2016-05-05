@@ -125,4 +125,8 @@ public abstract class AdocFileCreateEditDs<E extends AdocFile> implements DataSo
     }
   }
 
+  public boolean hasHint() {
+    return hint != null;
+  }
+
 }
