@@ -115,6 +115,7 @@ public class HeaderParserTest {
     lines.add("");
     Header header = headerParser.parse(lines, null, repo).getHeader();
     String output = header.writeBack();
-    assertEquals(original, output);
+    String replace = StringUtils.replace(output, "\r\n", "\n");
+    assertEquals(original, replace);
   }
 }

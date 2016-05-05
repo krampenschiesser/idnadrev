@@ -19,6 +19,7 @@ package de.ks.idnadrev;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import de.ks.idnadrev.index.IndexModule;
 import de.ks.idnadrev.repository.RepositoryModule;
 import de.ks.standbein.launch.Launcher;
 import de.ks.standbein.module.ApplicationModule;
@@ -46,6 +47,7 @@ public class ApplicationBasic {
     }
 
     modules.add(new IdnadrevModule());
+    modules.add(new IndexModule());
     modules.add(new RepositoryModule());
     modules.add(new TextEditorModule());
     modules.add(new ApplicationModule());

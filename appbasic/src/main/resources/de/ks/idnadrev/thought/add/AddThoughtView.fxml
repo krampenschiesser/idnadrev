@@ -46,7 +46,7 @@
                 <TextField fx:id="title" GridPane.columnIndex="1"/>
                 <TextField fx:id="tags" GridPane.columnIndex="5"/>
                 <StackPane fx:id="editorContainer" GridPane.columnSpan="2147483647" GridPane.rowIndex="1"/>
-                <Label text="%repository" GridPane.columnIndex="2"/>
+                <Label text="%repository:" GridPane.columnIndex="2"/>
                 <StackPane GridPane.columnIndex="3">
                     <children>
                         <fx:include fx:id="repository" source="../../repository/active/ActiveRepositoryView.fxml"/>

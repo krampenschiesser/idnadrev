@@ -118,6 +118,20 @@ public class TextPreview implements Initializable {
 
   }
 
+  public void preload(Path adocFile, Path renderTarget) {
+    if (adocFile == null) {
+      return;
+    }
+    Renderer renderer = getRenderer();
+    CompletableFuture<Path> future = CompletableFuture.supplyAsync(new ViewTask(adocFile, renderTarget, renderer), executor);
+    preloaded.put(adocFile, future);
+    if (requestedShowPath != null && requestedShowPath.equals(adocFile)) {
+      future.thenAcceptAsync(path -> {
+        show(requestedShowPath);
+      }, javaFXExecutor);
+    }
+  }
+
   public void preload(Path temporarySourceFile, Path targetFile, String content) {
     if (temporarySourceFile == null && tmpSrc != null) {
       temporarySourceFile = tmpSrc;

@@ -60,12 +60,13 @@ public class Header {
   }
 
   public Header setTags(Set<String> tags) {
-    boolean wasEmpty = this.tags.isEmpty();
     this.tags = tags;
-    if (!wasEmpty) {
-      setHeaderElement("keywords", tags.stream().collect(Collectors.joining(", ")));
-    }
+    setHeaderElement("keywords", tags.stream().collect(Collectors.joining(", ")));
     return this;
+  }
+
+  void setTagsInternally(Set<String> keywords) {
+    this.tags = keywords;
   }
 
   public LocalDateTime getFileTime() {
@@ -105,12 +106,13 @@ public class Header {
     return this;
   }
 
-  public void setHeaderElement(String key, String value) {
+  public Header setHeaderElement(String key, String value) {
     if (headerElements.containsKey(key)) {
       headerElements.replace(key, value);
     } else {
       headerElements.put(key, value);
     }
+    return this;
   }
 
   public void setHeaderElements(LinkedHashMap<String, String> headerElements) {
@@ -161,4 +163,5 @@ public class Header {
   public boolean isTask() {
     return "task".equals(getHeaderElement(TYPE));
   }
+
 }

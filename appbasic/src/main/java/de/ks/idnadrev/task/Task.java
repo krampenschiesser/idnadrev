@@ -36,6 +36,12 @@ public class Task extends AdocFile {
     super(path, repository, header);
   }
 
+  @Override
+  public Task setFileName(String fileName) {
+    super.setFileName(fileName);
+    return this;
+  }
+
   public boolean isFinished() {
     return finishTime != null;
   }
@@ -78,11 +84,16 @@ public class Task extends AdocFile {
   }
 
   public TaskState getState() {
-    return state;
+    String state = header.getHeaderElement("state");
+    if (state == null) {
+      return TaskState.NONE;
+    } else {
+      return TaskState.valueOf(state);
+    }
   }
 
   public Task setState(TaskState state) {
-    this.state = state;
+    header.setHeaderElement("state", state.name());
     return this;
   }
 }

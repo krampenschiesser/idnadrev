@@ -20,10 +20,12 @@ import de.ks.idnadrev.adoc.AdocFile;
 import de.ks.idnadrev.task.Task;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 
+@Singleton
 public class Index {
   final ConcurrentHashMap<Query, ConcurrentHashMap<AdocFile, Optional<Object>>> queryElements = new ConcurrentHashMap<>();
 
@@ -31,19 +33,22 @@ public class Index {
   final Set<Task> tasks = Collections.synchronizedSet(new HashSet<>());
 
   @Inject
-  public Index(Collection<Query> queries) {
+  public Index(Set<Query> queries) {
     this.queries = queries;
   }
 
+  @SuppressWarnings("unchecked")
   public Index add(AdocFile adocFile) {
     if (adocFile instanceof Task) {
       tasks.add((Task) adocFile);
     }
     for (Query query : queries) {
-      @SuppressWarnings("unchecked")
-      Object value = query.getValue(adocFile);
-      ConcurrentHashMap<AdocFile, Optional<Object>> map = queryElements.computeIfAbsent(query, q -> new ConcurrentHashMap<>());
-      map.put(adocFile, Optional.ofNullable(value));
+      if (query.getOwnerClass().isAssignableFrom(adocFile.getClass())) {
+        @SuppressWarnings("unchecked")
+        Object value = query.getValue(adocFile);
+        ConcurrentHashMap<AdocFile, Optional<Object>> map = queryElements.computeIfAbsent(query, q -> new ConcurrentHashMap<>());
+        map.put(adocFile, Optional.ofNullable(value));
+      }
     }
     return this;
   }

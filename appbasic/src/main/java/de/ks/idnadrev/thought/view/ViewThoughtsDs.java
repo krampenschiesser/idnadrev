@@ -15,16 +15,29 @@
  */
 package de.ks.idnadrev.thought.view;
 
+import de.ks.idnadrev.adoc.AdocFile;
+import de.ks.idnadrev.index.Index;
+import de.ks.idnadrev.index.StandardQueries;
 import de.ks.idnadrev.task.Task;
+import de.ks.idnadrev.task.TaskState;
 import de.ks.standbein.datasource.ListDataSource;
 
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 
 public class ViewThoughtsDs implements ListDataSource<Task> {
+  @Inject
+  Index index;
+
   @Override
   public List<Task> loadModel(Consumer<List<Task>> furtherProcessing) {
-    return null;
+    ArrayList<Task> tasks = new ArrayList<>(index.query(Task.class, StandardQueries.stateQuery(), s -> s == TaskState.UNPROCESSED));
+    Collections.sort(tasks, Comparator.comparing(AdocFile::getTitle));
+    return tasks;
   }
 
   @Override

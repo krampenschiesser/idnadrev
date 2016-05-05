@@ -16,10 +16,17 @@
 package de.ks.idnadrev.index;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.multibindings.Multibinder;
 
 public class IndexModule extends AbstractModule {
   @Override
   protected void configure() {
-
+    Multibinder<Query> queryBinder = Multibinder.newSetBinder(binder(), Query.class);
+    queryBinder.addBinding().toInstance(StandardQueries.byTagsQuery());
+    queryBinder.addBinding().toInstance(StandardQueries.contextQuery());
+    queryBinder.addBinding().toInstance(StandardQueries.crontabQuery());
+    queryBinder.addBinding().toInstance(StandardQueries.finishedQuery());
+    queryBinder.addBinding().toInstance(StandardQueries.stateQuery());
+    queryBinder.addBinding().toInstance(StandardQueries.titleQuery());
   }
 }

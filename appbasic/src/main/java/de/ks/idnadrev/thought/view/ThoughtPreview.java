@@ -17,14 +17,48 @@ package de.ks.idnadrev.thought.view;
 
 import de.ks.idnadrev.task.Task;
 import de.ks.standbein.BaseController;
+import de.ks.texteditor.preview.TextPreview;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.fxml.FXML;
+import javafx.scene.layout.StackPane;
 
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.ResourceBundle;
 
 public class ThoughtPreview extends BaseController<List<Task>> {
+  @FXML
+  protected StackPane root;
+
+  protected final SimpleObjectProperty<Task> selectedTask = new SimpleObjectProperty<>();
+  private TextPreview textPreview;
+
   @Override
   public void initialize(URL location, ResourceBundle resources) {
+    TextPreview.load(activityInitialization, pane -> root.getChildren().add(pane), p -> this.textPreview = p);
+    selectedTask.addListener((p, o, n) -> {
+      if (n != null) {
+        textPreview.show(n.getPath());
+      } else {
+        textPreview.clearContent();
+      }
+    });
+  }
 
+  public TextPreview getTextPreview() {
+    return textPreview;
+  }
+
+  @Override
+  protected void onRefresh(List<Task> model) {
+    for (Task task : model) {
+      Path parent = task.getPath().getParent();
+
+      String fileName = task.getPath().getFileName().toString();
+      fileName = fileName.substring(0, fileName.lastIndexOf('.')) + ".html";
+      Path renderTarget = parent.resolve(fileName);
+      textPreview.preload(task.getPath(), renderTarget);
+    }
   }
 }

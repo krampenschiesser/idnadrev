@@ -48,7 +48,7 @@ public class ScannerTest {
     Mockito.when(repo.getTimeFormatter()).thenReturn(DateTimeFormatter.ofPattern("HH:mm:ss"));
 
     URL resource = AdocFileParserTest.class.getResource("basic.adoc");
-    filePath = Paths.get(resource.toURI().getPath());
+    filePath = Paths.get(resource.toURI());
     Path repoPath = filePath.getParent();
     Mockito.when(repo.getPath()).thenReturn(repoPath);
 

@@ -47,4 +47,10 @@ public class ThoughtTable extends BaseController<List<Task>> {
   public TableView<Task> getThoughtTable() {
     return thoughtTable;
   }
+
+  @Override
+  protected void onRefresh(List<Task> model) {
+    thoughtTable.getItems().clear();
+    thoughtTable.getItems().addAll(model);
+  }
 }

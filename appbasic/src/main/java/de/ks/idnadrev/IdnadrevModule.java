@@ -51,8 +51,8 @@ public class IdnadrevModule extends AbstractModule {
   protected void registerMenuItems() {
     Multibinder<MenuEntry> menuBinder = Multibinder.newSetBinder(binder(), MenuEntry.class);
 //    menuBinder.addBinding().toInstance(new MenuEntry("/main/overview", "overview", new StartActivityAction(OverviewActivity.class)).setOrder(100));
-    menuBinder.addBinding().toInstance(new MenuEntry("/main/thought", "edit", new StartActivityAction(AddThoughtActivity.class)).setOrder(200));
-    menuBinder.addBinding().toInstance(new MenuEntry("/main/thought", "view", new StartActivityAction(ViewThoughtsActivity.class)).setOrder(201));
+    menuBinder.addBinding().toInstance(new MenuEntry("/main/thought", "create", new StartActivityAction(AddThoughtActivity.class)).setOrder(200).setLocalized(true));
+    menuBinder.addBinding().toInstance(new MenuEntry("/main/thought", "view", new StartActivityAction(ViewThoughtsActivity.class)).setOrder(201).setLocalized(true));
 //    menuBinder.addBinding().toInstance(new MenuEntry("/main/task", "add", new StartActivityAction(CreateTaskActivity.class)).setOrder(300));
 //    menuBinder.addBinding().toInstance(new MenuEntry("/main/task", "view", new StartActivityAction(ViewTasksActvity.class)).setOrder(301));
 //    menuBinder.addBinding().toInstance(new MenuEntry("/main/task", "fastTrack", new StartActivityAction(FastTrackActivity.class)).setOrder(302));
@@ -60,7 +60,7 @@ public class IdnadrevModule extends AbstractModule {
 //    menuBinder.addBinding().toInstance(new MenuEntry("/main/info", "view", new StartActivityAction(InformationOverviewActivity.class)).setOrder(400));
 //    menuBinder.addBinding().toInstance(new MenuEntry("/main/info", "document", new StartActivityAction(TextInfoActivity.class)).setOrder(401));
 //    menuBinder.addBinding().toInstance(new MenuEntry("/main/info", "diary", new StartActivityAction(DiaryActivity.class)).setOrder(402));
-    menuBinder.addBinding().toInstance(new MenuEntry("/main/repository", "manage", new StartActivityAction(RepositoryActivity.class)).setOrder(401));
+    menuBinder.addBinding().toInstance(new MenuEntry("/main/repository", "manage", new StartActivityAction(RepositoryActivity.class)).setOrder(401).setLocalized(true));
 
 //    //costs are 500
 //    menuBinder.addBinding().toInstance(new MenuEntry("/main/review", "planWeek", new StartActivityAction(PlanWeekActivity.class)).setOrder(600));

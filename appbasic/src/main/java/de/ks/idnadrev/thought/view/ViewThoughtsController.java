@@ -64,11 +64,13 @@ public class ViewThoughtsController extends BaseController<List<Task>> {
     BooleanBinding itemSelected = thoughtTableController.getThoughtTable().getSelectionModel().selectedItemProperty().isNull();
     crud.getDeleteButton().disableProperty().bind(itemSelected);
 
-    toTask = buttonHelper.createImageButton("toTask", "toTask.png", 24);
+    toTask = buttonHelper.createImageButton(localized.get("toTask"), "toTask.png", 24);
     toTask.disableProperty().bind(itemSelected);
-    toDocument = buttonHelper.createImageButton("toDocument", "toDocument.png", 24);
+    toDocument = buttonHelper.createImageButton(localized.get("toDocument"), "toDocument.png", 24);
     toDocument.setContentDisplay(ContentDisplay.RIGHT);
     toDocument.disableProperty().bind(itemSelected);
     crud.getCenterButtonContainer().getChildren().addAll(toTask, toDocument);
+
+    thoughtPreviewController.selectedTask.bind(thoughtTableController.getThoughtTable().getSelectionModel().selectedItemProperty());
   }
 }

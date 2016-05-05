@@ -54,7 +54,7 @@ public class HeaderParser {
     header.setFirstLine(titleIdx).setLastLine(endIdx);
 
     LinkedHashMap<String, String> headerElements = parseHeader(lines, titleIdx, endIdx);
-    header.setTags(parseKeywords(headerElements.get("keywords")));
+    header.setTagsInternally(parseKeywords(headerElements.get("keywords")));
 
     if (!headerElements.containsKey("revdate") && headerElements.containsKey(Header.REVISION_LINE)) {
       String line = headerElements.get(Header.REVISION_LINE);

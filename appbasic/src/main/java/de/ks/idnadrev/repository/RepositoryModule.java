@@ -16,6 +16,7 @@
 package de.ks.idnadrev.repository;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
 import com.google.inject.multibindings.Multibinder;
 import com.google.inject.multibindings.OptionalBinder;
 import de.ks.idnadrev.repository.manage.RepositoryActivity;
@@ -36,4 +37,11 @@ public class RepositoryModule extends AbstractModule {
       OptionalBinder.newOptionalBinder(binder(), InitialActivity.class).setBinding().toInstance(new InitialActivity(RepositoryActivity.class));
     }
   }
+
+  @Provides
+  @ActiveRepository
+  Repository getActiveRepo(RepositoryService repositoryService) {
+    return repositoryService.getActiveRepository();
+  }
+
 }

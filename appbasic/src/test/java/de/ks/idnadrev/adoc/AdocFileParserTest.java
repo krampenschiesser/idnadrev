@@ -19,6 +19,7 @@ package de.ks.idnadrev.adoc;
 import de.ks.idnadrev.repository.Repository;
 import de.ks.idnadrev.task.Task;
 import de.ks.idnadrev.util.GenericDateTimeParser;
+import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,7 +55,7 @@ public class AdocFileParserTest {
 
   @Test
   public void testParseAdocFile() throws Exception {
-    Path path = Paths.get(getClass().getResource("basic.adoc").toURI().getPath());
+    Path path = Paths.get(getClass().getResource("basic.adoc").toURI());
     AdocFile adocFile = adocFileParser.parse(path, repo);
 
     assertEquals(path, adocFile.getPath());
@@ -66,14 +67,16 @@ public class AdocFileParserTest {
 
   @Test
   public void testWriteBack() throws Exception {
-    Path path = Paths.get(getClass().getResource("basic.adoc").toURI().getPath());
+
+    Path path = Paths.get(getClass().getResource("basic.adoc").toURI());
     AdocFile adocFile = adocFileParser.parse(path, repo);
 
     List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
     String expected = lines.stream().collect(Collectors.joining("\n"));
 
     String output = adocFile.writeBack();
-    assertEquals(expected, output);
+    String replace = StringUtils.replace(output, "\r\n", "\n");
+    assertEquals(expected, replace);
   }
 
   @Test
@@ -87,7 +90,9 @@ public class AdocFileParserTest {
     AdocFile adocFile = adocFileParser.parse(null, repo, new HashSet<CompanionFile>(), lines);
 
     String expected = lines.stream().collect(Collectors.joining("\n"));
-    assertEquals(expected, adocFile.writeBack());
+    String output = adocFile.writeBack();
+    String replace = StringUtils.replace(output, "\r\n", "\n");
+    assertEquals(expected, replace);
   }
 
   @Test
@@ -103,7 +108,10 @@ public class AdocFileParserTest {
     lines.set(2, ":revdate: 25.02.2015 20:10:00");
     String expected = lines.stream().collect(Collectors.joining("\n"));
     adocFile.getHeader().setRevDate(LocalDateTime.of(2015, 2, 25, 20, 10), dateTimeParser);
-    assertEquals(expected, adocFile.writeBack());
+
+    String output = adocFile.writeBack();
+    String replace = StringUtils.replace(output, "\r\n", "\n");
+    assertEquals(expected, replace);
   }
 
   @Test

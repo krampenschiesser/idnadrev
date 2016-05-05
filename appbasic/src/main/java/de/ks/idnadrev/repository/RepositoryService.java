@@ -16,6 +16,8 @@
 package de.ks.idnadrev.repository;
 
 import de.ks.standbein.launch.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -25,14 +27,16 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @Singleton
 public class RepositoryService extends Service {
-
+  private static final Logger log = LoggerFactory.getLogger(RepositoryService.class);
   final Set<Repository> repositories = new HashSet<>();
   final AtomicReference<Repository> activeRepository = new AtomicReference<>();
   final RepositoryLoader loader;
+  private final Scanner scanner;
 
   @Inject
-  public RepositoryService(RepositoryLoader loader) {
+  public RepositoryService(RepositoryLoader loader, Scanner scanner) {
     this.loader = loader;
+    this.scanner = scanner;
   }
 
   @Override
@@ -41,6 +45,7 @@ public class RepositoryService extends Service {
     if (!repositories.isEmpty()) {
       setActiveRepository(repositories.iterator().next());
     }
+    repositories.forEach(r -> scanner.scan(r, (ProgressCallback) (count, max) -> log.info("Scanned {}/{} repositories", count, max)));
   }
 
   @Override

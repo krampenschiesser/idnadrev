@@ -37,11 +37,24 @@ public class AdocFile {
   protected Set<CompanionFile> files;
   protected Header header;
   protected List<String> lines = new ArrayList<>();
+  protected String fileName;
 
   public AdocFile(Path path, Repository repository, Header header) {
     this.repository = repository;
     this.path = path;
     this.header = header;
+    if (path != null && path.getFileName() != null) {
+      this.fileName = path.getFileName().toString();
+    }
+  }
+
+  public String getFileName() {
+    return fileName;
+  }
+
+  public AdocFile setFileName(String fileName) {
+    this.fileName = fileName;
+    return this;
   }
 
   public Set<CompanionFile> getFiles() {
