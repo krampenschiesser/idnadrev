@@ -15,6 +15,7 @@
  */
 package de.ks.idnadrev.thought.view;
 
+import de.ks.idnadrev.adoc.AdocAccessor;
 import de.ks.idnadrev.crud.CRUDController;
 import de.ks.idnadrev.task.Task;
 import de.ks.idnadrev.thought.add.AddThoughtActivity;
@@ -27,8 +28,11 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.SplitPane;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import org.reactfx.EventStreams;
 
 import javax.inject.Inject;
 import java.net.URL;
@@ -57,6 +61,8 @@ public class ViewThoughtsController extends BaseController<List<Task>> {
 
   @Inject
   ButtonHelper buttonHelper;
+  @Inject
+  AdocAccessor adocAccessor;
   private Button edit;
 
   @Override
@@ -81,6 +87,16 @@ public class ViewThoughtsController extends BaseController<List<Task>> {
     thoughtPreviewController.selectedTask.bind(selectedItemProperty);
 
     edit.setOnAction(e -> edit(selectedItemProperty.get()));
+    crud.getDeleteButton().setOnAction(e -> delete(selectedItemProperty.get()));
+
+    EventStreams.eventsOf(thoughtTableController.getThoughtTable(), KeyEvent.KEY_RELEASED)//
+      .filter(e -> e.getCode() == KeyCode.DELETE)//
+      .subscribe(e -> delete(selectedItemProperty.get()));
+  }
+
+  private void delete(Task task) {
+    adocAccessor.delete(task);
+    controller.reload();
   }
 
   private void edit(Task task) {

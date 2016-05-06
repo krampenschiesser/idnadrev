@@ -28,6 +28,7 @@ import javafx.concurrent.Worker;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
+import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -221,7 +222,11 @@ public class TextPreview implements Initializable {
   }
 
   public void clearContent() {
-    webView.get().getEngine().loadContent("");
+    WebView webView = this.webView.get();
+    if (webView != null) {
+      WebEngine engine = webView.getEngine();
+      engine.loadContent("");
+    }
   }
 
 }

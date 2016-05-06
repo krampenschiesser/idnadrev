@@ -15,35 +15,33 @@
  */
 package de.ks.idnadrev.thought.view;
 
-import de.ks.idnadrev.task.Task;
+import de.ks.idnadrev.adoc.AdocFile;
 import de.ks.standbein.BaseController;
 import de.ks.texteditor.preview.TextPreview;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.scene.layout.StackPane;
+import org.reactfx.EventStreams;
 
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
-public class ThoughtPreview extends BaseController<List<Task>> {
+public class ThoughtPreview extends BaseController<List<AdocFile>> {
   @FXML
   protected StackPane root;
 
-  protected final SimpleObjectProperty<Task> selectedTask = new SimpleObjectProperty<>();
+  protected final SimpleObjectProperty<AdocFile> selectedTask = new SimpleObjectProperty<>();
   private TextPreview textPreview;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     TextPreview.load(activityInitialization, pane -> root.getChildren().add(pane), p -> this.textPreview = p);
-    selectedTask.addListener((p, o, n) -> {
-      if (n != null) {
-        textPreview.show(n.getPath());
-      } else {
-        textPreview.clearContent();
-      }
-    });
+
+    EventStreams.valuesOf(selectedTask).filter(Objects::nonNull).subscribe(f -> textPreview.show(f.getPath()));
+    EventStreams.valuesOf(selectedTask).filter(Objects::isNull).subscribe(f -> textPreview.clearContent());
   }
 
   public TextPreview getTextPreview() {
@@ -51,14 +49,15 @@ public class ThoughtPreview extends BaseController<List<Task>> {
   }
 
   @Override
-  protected void onRefresh(List<Task> model) {
-    for (Task task : model) {
-      Path parent = task.getPath().getParent();
+  protected void onRefresh(List<AdocFile> model) {
+    textPreview.clear();
+    for (AdocFile adocFile : model) {
+      Path parent = adocFile.getPath().getParent();
 
-      String fileName = task.getPath().getFileName().toString();
+      String fileName = adocFile.getPath().getFileName().toString();
       fileName = fileName.substring(0, fileName.lastIndexOf('.')) + ".html";
       Path renderTarget = parent.resolve(fileName);
-      textPreview.preload(task.getPath(), renderTarget);
+      textPreview.preload(adocFile.getPath(), renderTarget);
     }
   }
 }
