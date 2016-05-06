@@ -16,6 +16,7 @@
 package de.ks.idnadrev.thought.view;
 
 import de.ks.idnadrev.adoc.AdocAccessor;
+import de.ks.idnadrev.adoc.view.AdocPreview;
 import de.ks.idnadrev.crud.CRUDController;
 import de.ks.idnadrev.task.Task;
 import de.ks.idnadrev.thought.add.AddThoughtActivity;
@@ -54,7 +55,7 @@ public class ViewThoughtsController extends BaseController<List<Task>> {
 
   private CRUDController crud;
   private ThoughtTable thoughtTableController;
-  private ThoughtPreview thoughtPreviewController;
+  private AdocPreview thoughtPreviewController;
 
   private Button toTask;
   private Button toDocument;
@@ -69,22 +70,22 @@ public class ViewThoughtsController extends BaseController<List<Task>> {
   public void initialize(URL location, ResourceBundle resources) {
     CRUDController.load(activityInitialization, v -> crudContainer.getChildren().add(v), ctrl -> this.crud = ctrl);
     activityInitialization.loadAdditionalController(ThoughtTable.class, v -> tableContainer.getChildren().add(v), ctrl -> this.thoughtTableController = ctrl);
-    activityInitialization.loadAdditionalController(ThoughtPreview.class, v -> previewContainer.getChildren().add(v), ctrl -> this.thoughtPreviewController = ctrl);
+    activityInitialization.loadAdditionalController(AdocPreview.class, v -> previewContainer.getChildren().add(v), ctrl -> this.thoughtPreviewController = ctrl);
 
     ReadOnlyObjectProperty<Task> selectedItemProperty = thoughtTableController.getThoughtTable().getSelectionModel().selectedItemProperty();
-    BooleanBinding itemSelected = selectedItemProperty.isNull();
-    crud.getDeleteButton().disableProperty().bind(itemSelected);
+    BooleanBinding itemIsNull = selectedItemProperty.isNull();
+    crud.getDeleteButton().disableProperty().bind(itemIsNull);
 
     toTask = buttonHelper.createImageButton(localized.get("toTask"), "toTask.png", 24);
-    toTask.disableProperty().bind(itemSelected);
+    toTask.disableProperty().bind(itemIsNull);
     edit = buttonHelper.createImageButton(localized.get("edit"), "edit.png", 24);
-    edit.disableProperty().bind(itemSelected);
+    edit.disableProperty().bind(itemIsNull);
     toDocument = buttonHelper.createImageButton(localized.get("toDocument"), "toDocument.png", 24);
     toDocument.setContentDisplay(ContentDisplay.RIGHT);
-    toDocument.disableProperty().bind(itemSelected);
+    toDocument.disableProperty().bind(itemIsNull);
     crud.getCenterButtonContainer().getChildren().addAll(toTask, edit, toDocument);
 
-    thoughtPreviewController.selectedTask.bind(selectedItemProperty);
+    thoughtPreviewController.selectedTaskProperty().bind(selectedItemProperty);
 
     edit.setOnAction(e -> edit(selectedItemProperty.get()));
     crud.getDeleteButton().setOnAction(e -> delete(selectedItemProperty.get()));
@@ -102,6 +103,5 @@ public class ViewThoughtsController extends BaseController<List<Task>> {
   private void edit(Task task) {
     ActivityHint hint = new ActivityHint(AddThoughtActivity.class, controller.getCurrentActivityId()).setDataSourceHint(() -> task);
     controller.startOrResume(hint);
-
   }
 }

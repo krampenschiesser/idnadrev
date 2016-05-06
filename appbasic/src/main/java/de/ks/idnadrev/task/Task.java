@@ -75,6 +75,13 @@ public class Task extends AdocFile {
     return estimatedTime;
   }
 
+  public int getEstimatedTimeInMinutes() {
+    if (estimatedTime == null) {
+      return 0;
+    }
+    return (int) estimatedTime.toMinutes();
+  }
+
   public String getDelegation() {
     return delegation;
   }

@@ -21,6 +21,7 @@ import de.ks.idnadrev.task.Task;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
@@ -31,6 +32,8 @@ public class Index {
 
   final Collection<Query> queries;
   final Set<Task> tasks = Collections.synchronizedSet(new HashSet<>());
+  final Set<AdocFile> adocFiles = Collections.synchronizedSet(new HashSet<>());
+  final Map<Path, AdocFile> adocPaths = new ConcurrentHashMap<>();
 
   @Inject
   public Index(Set<Query> queries) {
@@ -39,6 +42,8 @@ public class Index {
 
   @SuppressWarnings("unchecked")
   public Index add(AdocFile adocFile) {
+    adocFiles.add(adocFile);
+    adocPaths.put(adocFile.getPath(), adocFile);
     if (adocFile instanceof Task) {
       tasks.add((Task) adocFile);
     }
@@ -85,6 +90,14 @@ public class Index {
 
   public <E extends AdocFile> MultiQueyBuilder<E> multiQuery(Class<E> resultClass) {
     return new MultiQueyBuilder<>(this, resultClass);
+  }
+
+  public boolean containsAdocPath(Path path) {
+    return adocPaths.containsKey(path);
+  }
+
+  public AdocFile getAdocFile(Path path) {
+    return adocPaths.get(path);
   }
 
 }

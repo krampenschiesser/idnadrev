@@ -18,4 +18,4 @@
 
 <?import javafx.scene.layout.StackPane?>
 <StackPane id="StackPane" fx:id="root" minHeight="15.0" minWidth="15.0" xmlns="http://javafx.com/javafx/8.0.60"
-           xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.idnadrev.thought.view.ThoughtPreview"/>
+           xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.idnadrev.adoc.view.AdocPreview"/>

@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.thought.view;
+
+package de.ks.idnadrev.adoc.view;
 
 import de.ks.idnadrev.adoc.AdocFile;
 import de.ks.standbein.BaseController;
@@ -29,7 +30,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-public class ThoughtPreview extends BaseController<List<AdocFile>> {
+public class AdocPreview extends BaseController<List<AdocFile>> {
   @FXML
   protected StackPane root;
 
@@ -46,6 +47,19 @@ public class ThoughtPreview extends BaseController<List<AdocFile>> {
 
   public TextPreview getTextPreview() {
     return textPreview;
+  }
+
+  public AdocFile getSelectedTask() {
+    return selectedTask.get();
+  }
+
+  public SimpleObjectProperty<AdocFile> selectedTaskProperty() {
+    return selectedTask;
+  }
+
+  public AdocPreview setSelectedTask(AdocFile selectedTask) {
+    this.selectedTask.set(selectedTask);
+    return this;
   }
 
   @Override
