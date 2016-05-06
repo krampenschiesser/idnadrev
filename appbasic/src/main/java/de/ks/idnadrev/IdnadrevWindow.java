@@ -16,21 +16,18 @@
 
 package de.ks.idnadrev;
 
-import de.ks.standbein.activity.ActivityController;
 import de.ks.standbein.application.ApplicationRoot;
 import de.ks.standbein.application.MainWindow;
 import de.ks.standbein.application.fxml.DefaultLoader;
 import de.ks.standbein.javafx.NodeLookup;
-import de.ks.standbein.menu.MenuBarCreator;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.Control;
-import javafx.scene.control.MenuBar;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,46 +39,26 @@ import java.util.Set;
 public class IdnadrevWindow extends MainWindow {
   private static final Logger log = LoggerFactory.getLogger(IdnadrevWindow.class);
 
-  @Inject
-  ActivityController activityController;
-  @Inject
-  MenuBarCreator menuBarCreator;
-
   //  @Inject
 //  protected Provider<WorkingOnTaskLink> workingOnTaskLinkProvider;
   @Inject
   private DefaultLoader<BorderPane, Object> rootLoader;
-  @Inject
-  private DefaultLoader<GridPane, ButtonBar> buttonBarLoader;
 
-  private BorderPane borderPane;
-  //  private ButtonBar buttonBar;
-  private GridPane buttonBarView;
-  private StackPane contentPane;
-  protected HBox progressBox;
+  BorderPane borderPane;
+  StackPane contentPane;
+  HBox progressBox;
 //  private WorkingOnTaskLink workingOnTaskLink;
 
   @Override
   public ApplicationRoot getRoot() {
     rootLoader.load(getClass().getResource(getClass().getSimpleName() + ".fxml"));
     borderPane = rootLoader.getView();
-    VBox vBox = new VBox();
-    vBox.setMinSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
-    vBox.setMaxSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
-    MenuBar menu = menuBarCreator.createMenu("/main");
-    menu.setMinSize(Control.USE_COMPUTED_SIZE, Control.USE_COMPUTED_SIZE);
-    vBox.getChildren().add(menu);
 
 //    workingOnTaskLink = workingOnTaskLinkProvider.get();
 
     StackPane topPane = (StackPane) borderPane.getTop();
     progressBox = (HBox) topPane.getChildren().get(0);
 //    progressBox.getChildren().add(workingOnTaskLink.getHyperlink());
-    topPane.getChildren().add(0, menu);
-
-    buttonBarLoader.load(ButtonBar.class);
-//    buttonBar = buttonBarLoader.getController();
-    buttonBarView = buttonBarLoader.getView();
 
     contentPane = new StackPane();
     borderPane.setCenter(contentPane);
@@ -98,50 +75,6 @@ public class IdnadrevWindow extends MainWindow {
   }
 
   private void checkShortcut(KeyEvent event) {
-    KeyCode code = event.getCode();
-//
-//    if (code == KeyCode.F1) {
-//      if (buttonBar.isShowing()) {
-//        buttonBar.hide();
-//      } else {
-//        buttonBar.show(borderPane);
-//      }
-//      event.consume();
-//    } else if (code == KeyCode.F2) {
-//      buttonBar.overview();
-//      event.consume();
-//    } else if (code == KeyCode.F3) {
-//      buttonBar.addThought();
-//      event.consume();
-//    } else if (code == KeyCode.F4) {
-//      buttonBar.createTask();
-//      event.consume();
-//    } else if (code == KeyCode.F5) {
-//      buttonBar.createTextInfo();
-//      event.consume();
-//    } else if (code == KeyCode.F6) {
-//      buttonBar.viewThoughts();
-//      event.consume();
-//    } else if (code == KeyCode.F7) {
-//      buttonBar.viewTasks();
-//      event.consume();
-//    } else if (code == KeyCode.F8) {
-//      buttonBar.informationOverview();
-//      event.consume();
-//    } else if (code == KeyCode.F9) {
-//      buttonBar.planWeek();
-//      event.consume();
-//    } else if (code == KeyCode.F10) {
-//      buttonBar.weeklyDone();
-//      event.consume();
-//    } else if (code == KeyCode.F11) {
-//      buttonBar.chooseNextTask();
-//      event.consume();
-//    } else if (code == KeyCode.F12) {
-//      buttonBar.fastTrack();
-//      event.consume();
-//    }
-
     if (event.isControlDown() && event.getCode() == KeyCode.ENTER) {
       Set<Node> defaultButtons = NodeLookup.getAllNodes(borderPane, n -> n.isVisible() && n instanceof Button && ((Button) n).isDefaultButton());
       if (!defaultButtons.isEmpty()) {

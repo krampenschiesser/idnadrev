@@ -15,6 +15,7 @@
  */
 package de.ks.idnadrev.crud;
 
+import de.ks.idnadrev.menu.GlobalMenu;
 import de.ks.idnadrev.util.ButtonHelper;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.activity.context.ActivityContext;
@@ -24,8 +25,12 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import org.reactfx.EventStreams;
+import org.reactfx.Subscription;
 
 import javax.inject.Inject;
 import java.net.URL;
@@ -34,6 +39,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public class CRUDController extends BaseController<Object> {
+
+  private Subscription subscription;
 
   public static CompletableFuture<DefaultLoader<Node, CRUDController>> load(ActivityInitialization initialization, Consumer<GridPane> viewConsumer, Consumer<CRUDController> controllerConsumer) {
     return initialization.loadAdditionalControllerWithFuture(CRUDController.class)//
@@ -48,6 +55,8 @@ public class CRUDController extends BaseController<Object> {
   @FXML
   protected Button delete;
   @FXML
+  protected Button menu;
+  @FXML
   protected Button back;
   @FXML
   protected Button save;
@@ -55,11 +64,15 @@ public class CRUDController extends BaseController<Object> {
   protected GridPane root;
   @FXML
   protected HBox centerButtonContainer;
+  @FXML
+  protected HBox leftButtonContainer;
 
   @Inject
   ActivityContext context;
   @Inject
   ButtonHelper buttonHelper;
+  @Inject
+  GlobalMenu globalMenu;
 
   protected SimpleBooleanProperty backDisabled = new SimpleBooleanProperty();
   protected SimpleBooleanProperty backDisabledInternal = new SimpleBooleanProperty();
@@ -74,6 +87,7 @@ public class CRUDController extends BaseController<Object> {
     });
     back.disableProperty().bind(backDisabled.or(backDisabledInternal));
     save.disableProperty().bind(validationRegistry.invalidProperty());
+    menu.setOnAction(e -> globalMenu.show(menu));
   }
 
   @Override
@@ -88,6 +102,21 @@ public class CRUDController extends BaseController<Object> {
     } else {
       backDisabledInternal.set(false);
     }
+
+
+    subscription = EventStreams.eventsOf(menu.getScene(), KeyEvent.KEY_RELEASED).filter(e -> e.getCode() == KeyCode.F1).subscribe(e -> globalMenu.show(menu));
+  }
+
+  @Override
+  public void onSuspend() {
+    if (subscription != null) {
+      subscription.unsubscribe();
+    }
+  }
+
+  @Override
+  public void onStop() {
+    onSuspend();
   }
 
   public Button getDeleteButton() {

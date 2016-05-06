@@ -93,10 +93,6 @@
     -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.7), 10, 0, 3, 3);
     -fx-background-color: -fx-background;
     -fx-background-radius: 8;
-    /*-fx-border-color: black;
-    -fx-border-radius: 15 10 1 10;
-    -fx-border-width: 1px;
-    -fx-border-style: outset;*/
 }
 
 
@@ -108,4 +104,10 @@
 .bookingPositive {
     -fx-text-fill: green;
     -fx-text-alignment: right;
+}
+
+.globalMenu {
+    -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.7), 10, 0, 3, 3);
+    -fx-background-color: white;
+    -fx-background-radius: 8;
 }
