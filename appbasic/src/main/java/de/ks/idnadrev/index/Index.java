@@ -62,6 +62,11 @@ public class Index {
     }
   }
 
+  public void update(AdocFile adocFile) {
+    remove(adocFile);
+    add(adocFile);
+  }
+
   public <E extends AdocFile, V> Map<E, Optional<V>> getQueryElements(Query<E, V> query) {
     @SuppressWarnings("unchecked")
     ConcurrentHashMap<E, Optional<V>> retval = (ConcurrentHashMap) queryElements.get(query);
@@ -81,4 +86,5 @@ public class Index {
   public <E extends AdocFile> MultiQueyBuilder<E> multiQuery(Class<E> resultClass) {
     return new MultiQueyBuilder<>(this, resultClass);
   }
+
 }

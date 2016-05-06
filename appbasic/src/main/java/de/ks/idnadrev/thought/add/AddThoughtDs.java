@@ -17,6 +17,7 @@ package de.ks.idnadrev.thought.add;
 
 import de.ks.idnadrev.adoc.Header;
 import de.ks.idnadrev.adoc.NameStripper;
+import de.ks.idnadrev.index.Index;
 import de.ks.idnadrev.repository.ActiveRepository;
 import de.ks.idnadrev.repository.Repository;
 import de.ks.idnadrev.task.Task;
@@ -28,7 +29,7 @@ import javax.inject.Provider;
 
 public class AddThoughtDs extends AdocFileCreateEditDs<Task> {
   @Inject
-  public AddThoughtDs(@ActiveRepository Provider<Repository> activeRepositoryProvider, NameStripper nameStripper) {
-    super(Task.class, "Thought", "Thought.adoc", p -> new Task(p, null, new Header(null).setHeaderElement("kstype", "task")).setState(TaskState.UNPROCESSED), activeRepositoryProvider, nameStripper);
+  public AddThoughtDs(@ActiveRepository Provider<Repository> activeRepositoryProvider, NameStripper nameStripper, Index index) {
+    super(Task.class, "Thought", "Thought.adoc", p -> new Task(p, null, new Header(null).setHeaderElement("kstype", "task")).setState(TaskState.UNPROCESSED), activeRepositoryProvider, nameStripper, index);
   }
 }

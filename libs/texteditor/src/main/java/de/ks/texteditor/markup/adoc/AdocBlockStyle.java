@@ -27,7 +27,7 @@ public class AdocBlockStyle implements StyleDetector {
 
   @Override
   public List<DetectionResult> detect(Line line) {
-    boolean isBlockStart = detectedBlock == null && line.getText().startsWith("---");
+    boolean isBlockStart = detectedBlock == null && (line.getText().startsWith("---") || line.getText().startsWith("|==="));
     boolean isBlockEnd = detectedBlock != null && line.getText().equals(detectedBlock);
 
     if (isBlockStart) {

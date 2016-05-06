@@ -17,6 +17,7 @@ package de.ks.idnadrev.thought.view;
 
 import de.ks.idnadrev.task.Task;
 import de.ks.standbein.BaseController;
+import de.ks.standbein.table.TableColumnBuilder;
 import de.ks.standbein.table.TableConfigurator;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
@@ -26,6 +27,7 @@ import javax.inject.Inject;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.function.Function;
 
 public class ThoughtTable extends BaseController<List<Task>> {
 
@@ -40,7 +42,9 @@ public class ThoughtTable extends BaseController<List<Task>> {
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     tableConfigurator.addText(Task.class, Task::getTitle).setWidth(250);
-    tableConfigurator.addText(Task.class, t -> t.getRepository().getName()).setWidth(200);
+    Function<Task, String> taskStringFunction = t -> t.getRepository().getName();
+    TableColumnBuilder<Task> taskTableColumnBuilder = tableConfigurator.addText(Task.class, taskStringFunction);
+    taskTableColumnBuilder.setWidth(200);
     tableConfigurator.configureTable(thoughtTable);
   }
 

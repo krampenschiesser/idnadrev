@@ -99,8 +99,18 @@ public class AdocFile {
     return path;
   }
 
+  public AdocFile setPath(Path path) {
+    this.path = path;
+    return this;
+  }
+
   public Repository getRepository() {
     return repository;
+  }
+
+  public AdocFile setRepository(Repository repository) {
+    this.repository = repository;
+    return this;
   }
 
   public String writeBack() {

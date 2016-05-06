@@ -18,6 +18,7 @@ package de.ks.idnadrev.util;
 import com.google.common.base.StandardSystemProperty;
 import de.ks.idnadrev.adoc.AdocFile;
 import de.ks.idnadrev.adoc.NameStripper;
+import de.ks.idnadrev.index.Index;
 import de.ks.idnadrev.repository.ActiveRepository;
 import de.ks.idnadrev.repository.Repository;
 import de.ks.standbein.datasource.DataSource;
@@ -45,15 +46,17 @@ public abstract class AdocFileCreateEditDs<E extends AdocFile> implements DataSo
   private final Function<Path, E> newInstance;
   private final Provider<Repository> activeRepositoryProvider;
   private final NameStripper nameStripper;
+  private final Index index;
   protected E hint;
   private final Path tempFolder;
 
-  public AdocFileCreateEditDs(Class<E> clazz, String tempFolderName, String fileName, Function<Path, E> newInstance, @ActiveRepository Provider<Repository> activeRepositoryProvider, NameStripper nameStripper) {
+  public AdocFileCreateEditDs(Class<E> clazz, String tempFolderName, String fileName, Function<Path, E> newInstance, @ActiveRepository Provider<Repository> activeRepositoryProvider, NameStripper nameStripper, Index index) {
     this.clazz = clazz;
     this.fileName = fileName;
     this.newInstance = newInstance;
     this.activeRepositoryProvider = activeRepositoryProvider;
     this.nameStripper = nameStripper;
+    this.index = index;
     String tmpDir = StandardSystemProperty.JAVA_IO_TMPDIR.value();
     tempFolder = Paths.get(tmpDir, tempFolderName);
     cleanupTempDir();
@@ -113,6 +116,9 @@ public abstract class AdocFileCreateEditDs<E extends AdocFile> implements DataSo
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+    model.setPath(targetFolder.resolve(model.getPath().getFileName()));
+    model.setRepository(activeRepository);
+    index.update(model);
   }
 
   @Override
