@@ -26,13 +26,22 @@
                 <fx:include fx:id="crud" source="../../crud/CRUDView.fxml"/>
             </children>
         </StackPane>
-        <SplitPane fx:id="split" dividerPositions="0.36" VBox.vgrow="ALWAYS">
+        <SplitPane fx:id="split" dividerPositions="0.45" VBox.vgrow="ALWAYS">
             <items>
-                <StackPane>
+                <VBox fillWidth="true">
                     <children>
-                        <fx:include fx:id="taskTable" source="TaskTable.fxml"/>
+                        <StackPane>
+                            <children>
+                                <fx:include fx:id="taskFilter" source="TaskFilter.fxml"/>
+                            </children>
+                        </StackPane>
+                        <StackPane VBox.vgrow="ALWAYS">
+                            <children>
+                                <fx:include fx:id="taskTable" source="TaskTable.fxml"/>
+                            </children>
+                        </StackPane>
                     </children>
-                </StackPane>
+                </VBox>
                 <StackPane>
                     <children>
                         <fx:include fx:id="preview" source="../../adoc/view/AdocPreview.fxml"/>

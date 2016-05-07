@@ -16,7 +16,7 @@
 package de.ks.idnadrev.task.view;
 
 import de.ks.idnadrev.adoc.AdocAccessor;
-import de.ks.idnadrev.adoc.view.AdocPreview;
+import de.ks.idnadrev.adoc.ui.AdocPreview;
 import de.ks.idnadrev.crud.CRUDController;
 import de.ks.idnadrev.task.Task;
 import de.ks.idnadrev.util.ButtonHelper;
@@ -47,6 +47,8 @@ public class ViewTasksController extends BaseController<List<Task>> {
   @FXML
   TaskTable taskTableController;
   @FXML
+  TaskFilter taskFilterController;
+  @FXML
   VBox root;
 
   @Inject
@@ -58,7 +60,6 @@ public class ViewTasksController extends BaseController<List<Task>> {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-
     ReadOnlyObjectProperty<TreeItem<Task>> selectedTreeItem = taskTableController.getTaskTable().getSelectionModel().selectedItemProperty();
     ReadOnlyObjectProperty<TreeItem<Task>> selectedItemProperty = selectedTreeItem;
     BooleanBinding itemIsNull = Bindings.createBooleanBinding(() -> selectedItemProperty.getValue() == null, selectedItemProperty);
@@ -73,7 +74,8 @@ public class ViewTasksController extends BaseController<List<Task>> {
     EventStreams.nonNullValuesOf(selectedItemProperty).map(TreeItem::getValue).filter(Objects::nonNull).subscribe(previewController::setSelectedTask);
   }
 
-  private void edit(Task value) {
-
+  private void edit(Task task) {
+//    ActivityHint hint = new ActivityHint(AddTaskActivity.class, controller.getCurrentActivityId()).setDataSourceHint(() -> task);
+//    controller.startOrResume(hint);
   }
 }

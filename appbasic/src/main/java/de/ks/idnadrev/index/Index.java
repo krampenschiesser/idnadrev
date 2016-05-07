@@ -25,6 +25,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Singleton
 public class Index {
@@ -86,6 +87,19 @@ public class Index {
   public <R extends AdocFile, V> Collection<R> query(Class<R> resultClass, Query<R, V> query, Predicate<V> filter) {
     MultiQueyBuilder<R> builder = multiQuery(resultClass);
     return builder.query(query, filter).find();
+  }
+
+  public <E extends AdocFile, V> Set<V> queryValues(Query<E, V> query, Predicate<V> filter) {
+    Map<E, Optional<V>> elements = getQueryElements(query);
+    Set<Object> collected = elements.entrySet().stream()//
+      .filter((entry) -> entry.getValue().isPresent())//
+      .filter((entry) -> filter.test(entry.getValue().get()))//
+      .map((entry) -> ((Optional) entry.getValue()).get())//
+      .collect(Collectors.toSet());
+
+    @SuppressWarnings("unchecked")
+    Set<V> retval = (Set<V>) collected;
+    return retval;
   }
 
   public <E extends AdocFile> MultiQueyBuilder<E> multiQuery(Class<E> resultClass) {

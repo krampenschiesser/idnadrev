@@ -18,6 +18,6 @@
 
 
 <?import javafx.scene.control.ComboBox?>
-<ComboBox fx:id="repository" prefWidth="150.0" xmlns:fx="http://javafx.com/fxml/1"
+<ComboBox fx:id="repository" xmlns:fx="http://javafx.com/fxml/1"
           xmlns="http://javafx.com/javafx/8.0.60"
-          fx:controller="de.ks.idnadrev.repository.active.ActiveRepositoryController"/>
+          fx:controller="de.ks.idnadrev.repository.ui.ActiveRepositoryController"/>

@@ -45,11 +45,11 @@ public class TaskTable extends BaseController<List<Task>> {
   public void initialize(URL location, ResourceBundle resources) {
     tableConfigurator.addText(Task.class, Task::getTitle).setWidth(250);
     tableConfigurator.addNumber(Task.class, Task::getEstimatedTimeInMinutes).setWidth(100);
-    tableConfigurator.addDateTime(Task.class, t -> t.getHeader().getRevDate());
+    tableConfigurator.addDateTime(Task.class, t -> t.getHeader().getRevDate()).setWidth(120);
 
     Function<Task, String> taskStringFunction = t -> t.getRepository().getName();
     TableColumnBuilder<Task> taskTableColumnBuilder = tableConfigurator.addText(Task.class, taskStringFunction);
-    taskTableColumnBuilder.setWidth(200);
+    taskTableColumnBuilder.setWidth(100);
     tableConfigurator.configureTreeTable(taskTable);
     taskTable.setShowRoot(false);
   }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.ks.idnadrev.adoc.view;
+package de.ks.idnadrev.adoc.ui;
 
 import de.ks.idnadrev.adoc.AdocFile;
 import de.ks.standbein.BaseController;

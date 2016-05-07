@@ -16,7 +16,7 @@
 package de.ks.idnadrev.thought.view;
 
 import de.ks.idnadrev.adoc.AdocAccessor;
-import de.ks.idnadrev.adoc.view.AdocPreview;
+import de.ks.idnadrev.adoc.ui.AdocPreview;
 import de.ks.idnadrev.crud.CRUDController;
 import de.ks.idnadrev.task.Task;
 import de.ks.idnadrev.thought.add.AddThoughtActivity;

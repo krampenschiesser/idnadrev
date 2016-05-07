@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.ks.idnadrev.repository.active;
+package de.ks.idnadrev.repository.ui;
 
 import de.ks.idnadrev.repository.Repository;
 import de.ks.idnadrev.repository.RepositoryService;

@@ -17,7 +17,7 @@ package de.ks.idnadrev.thought.add;
 
 import de.ks.idnadrev.crud.CRUDController;
 import de.ks.idnadrev.repository.RepositoryService;
-import de.ks.idnadrev.repository.active.ActiveRepositoryController;
+import de.ks.idnadrev.repository.ui.ActiveRepositoryController;
 import de.ks.idnadrev.task.Task;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.validation.validators.NotEmptyValidator;
