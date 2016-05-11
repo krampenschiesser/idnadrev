@@ -24,22 +24,26 @@ import de.ks.idnadrev.task.TaskState;
 import de.ks.standbein.datasource.ListDataSource;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class ViewTasksDs implements ListDataSource<Task> {
   @Inject
   Index index;
+  private volatile Predicate<Task> filter;
 
   @Override
   public List<Task> loadModel(Consumer<List<Task>> furtherProcessing) {
     MultiQueyBuilder<Task> query = index.multiQuery(Task.class);
     query.query(StandardQueries.finishedQuery(), s -> !s);
     query.query(StandardQueries.stateQuery(), s -> s != TaskState.UNPROCESSED);
-    ArrayList<Task> tasks = new ArrayList<>(query.find());
+    Set<Task> found = query.find();
+    if (filter != null) {
+      found = found.parallelStream().filter(filter).collect(Collectors.toSet());
+    }
+    List<Task> tasks = new ArrayList<>(found);
     Collections.sort(tasks, Comparator.comparing(AdocFile::getTitle));
     return tasks;
   }
@@ -47,5 +51,13 @@ public class ViewTasksDs implements ListDataSource<Task> {
   @Override
   public void saveModel(List<Task> model, Consumer<List<Task>> beforeSaving) {
 
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public void setLoadingHint(Object dataSourceHint) {
+    if (dataSourceHint instanceof Predicate) {
+      filter = (Predicate<Task>) dataSourceHint;
+    }
   }
 }
