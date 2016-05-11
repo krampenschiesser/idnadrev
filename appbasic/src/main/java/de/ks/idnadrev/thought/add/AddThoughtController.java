@@ -15,6 +15,7 @@
  */
 package de.ks.idnadrev.thought.add;
 
+import de.ks.idnadrev.adoc.ui.TagSelection;
 import de.ks.idnadrev.crud.CRUDController;
 import de.ks.idnadrev.repository.RepositoryService;
 import de.ks.idnadrev.repository.ui.ActiveRepositoryController;
@@ -31,6 +32,7 @@ import javafx.scene.layout.VBox;
 
 import javax.inject.Inject;
 import java.net.URL;
+import java.util.LinkedHashSet;
 import java.util.ResourceBundle;
 
 public class AddThoughtController extends BaseController<Task> {
@@ -41,7 +43,7 @@ public class AddThoughtController extends BaseController<Task> {
   @FXML
   private TextField title;
   @FXML
-  private TextField tags;
+  private TagSelection tagsController;
   @FXML
   private StackPane editorContainer;
   @FXML
@@ -68,10 +70,12 @@ public class AddThoughtController extends BaseController<Task> {
         controller.reload();
       }
     });
+    tagsController.setEditable(true);
 
     editor.textProperty().bindBidirectional(store.getBinding().getStringProperty(Task.class, Task::getContent));
     title.textProperty().bindBidirectional(store.getBinding().getStringProperty(Task.class, t -> t.getHeader().getTitle()));
-    tags.textProperty().bindBidirectional(store.getBinding().getStringProperty(Task.class, t -> t.getHeader().getTagString()));
+
+//    tags.textProperty().bindBidirectional(store.getBinding().getStringProperty(Task.class, t -> t.getHeader().getTagString()));
 
     validationRegistry.registerValidator(title, new NotEmptyValidator(localized));
   }
@@ -93,5 +97,17 @@ public class AddThoughtController extends BaseController<Task> {
         }
       });
     }
+  }
+
+  @Override
+  protected void onRefresh(Task model) {
+    tagsController.getSelectedTags().clear();
+    tagsController.getSelectedTags().addAll(model.getHeader().getTags());
+  }
+
+  @Override
+  public void duringSave(Task model) {
+    LinkedHashSet<String> tags = new LinkedHashSet<>(tagsController.getSelectedTags());
+    model.getHeader().setTags(tags);
   }
 }

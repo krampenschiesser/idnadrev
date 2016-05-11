@@ -86,4 +86,8 @@ public class TagSelection implements Initializable {
   public void onClear() {
     selectedTags.clear();
   }
+
+  public void setEditable(boolean editable) {
+    autoCompletionTextField.setEditable(editable);
+  }
 }

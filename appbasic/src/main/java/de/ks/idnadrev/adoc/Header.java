@@ -21,8 +21,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,7 +31,7 @@ public class Header {
   public static final String REVISION_LINE = "revLine";
   public static final String TITLE = "title";
   public static final String TYPE = "kstype";
-  protected Set<String> tags = new HashSet<>();
+  protected Set<String> tags = new LinkedHashSet<>();
   protected LocalDateTime fileTime;
   protected LocalDateTime revDate;
   protected LinkedHashMap<String, String> headerElements = new LinkedHashMap<>();

@@ -135,7 +135,7 @@ public class HeaderParser {
   }
 
   private Set<String> parseKeywords(String input) {
-    HashSet<String> retval = new HashSet<>();
+    HashSet<String> retval = new LinkedHashSet<>();
     if (input != null) {
       for (String s : StringUtils.split(input, ",")) {
         retval.add(s.trim());

@@ -20,6 +20,7 @@ import com.google.inject.Key;
 import com.google.inject.multibindings.Multibinder;
 import com.google.inject.multibindings.OptionalBinder;
 import de.ks.idnadrev.repository.manage.RepositoryActivity;
+import de.ks.idnadrev.task.add.AddTaskActivity;
 import de.ks.idnadrev.task.view.ViewTasksActivity;
 import de.ks.idnadrev.thought.add.AddThoughtActivity;
 import de.ks.idnadrev.thought.view.ViewThoughtsActivity;
@@ -56,7 +57,7 @@ public class IdnadrevModule extends AbstractModule {
 //    menuBinder.addBinding().toInstance(new MenuEntry("/main/overview", "overview", new StartActivityAction(OverviewActivity.class)).setOrder(100));
     menuBinder.addBinding().toInstance(new MenuEntry("/main/thought", "create", new StartActivityAction(AddThoughtActivity.class)).setOrder(200).setLocalized(true).setIconPath("add_menu.png"));
     menuBinder.addBinding().toInstance(new MenuEntry("/main/thought", "view", new StartActivityAction(ViewThoughtsActivity.class)).setOrder(201).setLocalized(true).setIconPath("view.png"));
-//    menuBinder.addBinding().toInstance(new MenuEntry("/main/task", "add", new StartActivityAction(CreateTaskActivity.class)).setOrder(300));
+    menuBinder.addBinding().toInstance(new MenuEntry("/main/task", "create", new StartActivityAction(AddTaskActivity.class)).setOrder(300).setLocalized(true).setIconPath("add_menu.png"));
     menuBinder.addBinding().toInstance(new MenuEntry("/main/task", "view", new StartActivityAction(ViewTasksActivity.class)).setOrder(301).setLocalized(true).setIconPath("view.png"));
 //    menuBinder.addBinding().toInstance(new MenuEntry("/main/task", "fastTrack", new StartActivityAction(FastTrackActivity.class)).setOrder(302));
 //    menuBinder.addBinding().toInstance(new MenuEntry("/main/task", "nextProposal", new StartActivityAction(ChooseNextTaskActivity.class)).setOrder(303));
