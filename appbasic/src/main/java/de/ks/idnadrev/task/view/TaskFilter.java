@@ -18,9 +18,7 @@ package de.ks.idnadrev.task.view;
 import de.ks.idnadrev.adoc.ui.TagSelection;
 import de.ks.idnadrev.index.Index;
 import de.ks.idnadrev.index.StandardQueries;
-import de.ks.idnadrev.repository.Repository;
 import de.ks.idnadrev.repository.ui.RepositorySeletor;
-import de.ks.idnadrev.task.Task;
 import de.ks.idnadrev.task.TaskState;
 import de.ks.standbein.BaseController;
 import javafx.collections.ListChangeListener;
@@ -39,7 +37,6 @@ import javax.inject.Inject;
 import java.net.URL;
 import java.time.Duration;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -85,39 +82,8 @@ public class TaskFilter extends BaseController<Object> {
     String repository = Optional.ofNullable(this.repositoryController.getRepositoryCombo().getValue()).orElse("").toLowerCase(Locale.ROOT).trim();
     String state = Optional.ofNullable(this.state.getValue()).orElse("").toLowerCase(Locale.ROOT).trim();
 
-
-    ArrayList<Predicate<Task>> filters = new ArrayList<>();
-    if (!title.isEmpty()) {
-      filters.add(t -> t.getTitle().toLowerCase(Locale.ROOT).trim().contains(title));
-    }
-    if (!context.isEmpty() && !isWildcard(context)) {
-      filters.add(t -> Optional.ofNullable(t.getContext()).map(s -> s.toLowerCase(Locale.ROOT).trim()).orElse("").equals(context));
-    }
-    if (!selectedTags.isEmpty()) {
-      filters.add(t -> !Collections.disjoint(t.getHeader().getTags(), selectedTags));
-    }
-    if (!repository.isEmpty() && !isWildcard(repository)) {
-      filters.add(t -> Optional.ofNullable(t.getRepository()).map(Repository::getName).map(s -> s.toLowerCase(Locale.ROOT).trim()).orElse("").equals(repository));
-    }
-    if (!state.isEmpty() && !isWildcard(state)) {
-      filters.add(t -> Optional.ofNullable(t.getState()).map(s -> s.name().toLowerCase(Locale.ROOT).trim()).orElse("").equals(state));
-    }
-    store.getDatasource().setLoadingHint(new Predicate<Task>() {
-      @Override
-      public boolean test(Task task) {
-        for (Predicate<Task> filter : filters) {
-          if (!filter.test(task)) {
-            return false;
-          }
-        }
-        return true;
-      }
-    });
+    store.getDatasource().setLoadingHint(new ViewTasksDs.TaskDsFilter(title, context, state, selectedTags, repository, wildCard.toLowerCase(Locale.ROOT)));
     store.reload();
-  }
-
-  private boolean isWildcard(String context) {
-    return wildCard != null && wildCard.toLowerCase(Locale.ROOT).equals(context);
   }
 
   @Override
