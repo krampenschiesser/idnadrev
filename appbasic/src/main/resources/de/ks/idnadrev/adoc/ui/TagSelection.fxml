@@ -40,7 +40,7 @@
                         <Insets top="2.5"/>
                     </HBox.margin>
                     <graphic>
-                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                             <image>
                                 <Image url="@../../../standbein/images/clear.png"/>
                             </image>
