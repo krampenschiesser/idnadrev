@@ -76,7 +76,7 @@ public class RepositoryController extends BaseController<List<Path>> {
     add.disableProperty().bind(validationRegistry.invalidProperty());
     buttonHelper.enhanceButton(add, "add.png", 24);
     buttonHelper.enhanceButton(select, "open.png", 24);
-
+    crudController.getSaveButton().setOnAction(e -> onSave());
 
     list.setCellFactory(new Callback<ListView<Path>, ListCell<Path>>() {
       @Override

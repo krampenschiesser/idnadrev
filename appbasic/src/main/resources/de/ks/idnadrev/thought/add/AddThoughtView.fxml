@@ -48,8 +48,8 @@
                 <StackPane fx:id="editorContainer" GridPane.columnSpan="2147483647" GridPane.rowIndex="1"/>
                 <Label text="%repository:" GridPane.columnIndex="2"/>
                 <StackPane GridPane.columnIndex="3">
+                    <fx:include fx:id="repository" source="../../repository/ui/ActiveRepositoryView.fxml"/>
                     <children>
-                        <fx:include fx:id="repository" source="../../repository/active/ActiveRepositoryView.fxml"/>
                     </children>
                 </StackPane>
             </children>

@@ -111,3 +111,12 @@
     -fx-background-color: white;
     -fx-background-radius: 8;
 }
+
+.tag {
+    -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.7), 10, 0, 3, 3);
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-padding: 5;
+    -fx-text-fill: orange;
+    -fx-font-weight: bold;
+}

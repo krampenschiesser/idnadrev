@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright [2016] [Christian Loehnert]
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="de.ks.idnadrev.adoc.ui.TagSelection">
+    <children>
+        <TextField fx:id="textField"/>
+        <HBox VBox.vgrow="SOMETIMES">
+            <children>
+                <FlowPane fx:id="tagContainer" hgap="5.0" minHeight="30.0" prefWidth="150.0" vgap="5.0"
+                          HBox.hgrow="ALWAYS">
+                    <padding>
+                        <Insets left="5.0" top="5.0"/>
+                    </padding>
+                </FlowPane>
+                <Button fx:id="clear" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" mnemonicParsing="false"
+                        onAction="#onClear" text="Clear" HBox.hgrow="SOMETIMES">
+                    <HBox.margin>
+                        <Insets top="2.5"/>
+                    </HBox.margin>
+                    <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../../../standbein/images/clear.png"/>
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </Button>
+            </children>
+        </HBox>
+    </children>
+</VBox>

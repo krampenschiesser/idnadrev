@@ -18,6 +18,5 @@
 
 
 <?import javafx.scene.control.ComboBox?>
-<ComboBox fx:id="repository" xmlns:fx="http://javafx.com/fxml/1"
-          xmlns="http://javafx.com/javafx/8.0.60"
-          fx:controller="de.ks.idnadrev.repository.ui.RepositorySeletor"/>
+<ComboBox fx:id="repository" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/8.0.40"
+          xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ks.idnadrev.repository.ui.RepositorySeletor"/>

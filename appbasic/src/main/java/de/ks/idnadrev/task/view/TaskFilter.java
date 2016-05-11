@@ -39,8 +39,6 @@ public class TaskFilter extends BaseController<Object> {
   @FXML
   TextField title;
   @FXML
-  TextField tags;
-  @FXML
   ComboBox<String> context;
   @FXML
   RepositorySeletor repositoryController;
@@ -63,7 +61,7 @@ public class TaskFilter extends BaseController<Object> {
   }
 
   @Override
-  protected void onRefresh(Object model) {
+  public void onResume() {
     List<String> contexts = index.queryValues(StandardQueries.contextQuery(), s -> true).stream().map(s -> s.toLowerCase(Locale.ROOT)).collect(Collectors.toList());
     Collections.sort(contexts);
     ObservableList<String> items = context.getItems();
@@ -72,4 +70,5 @@ public class TaskFilter extends BaseController<Object> {
     items.addAll(contexts);
     context.getSelectionModel().select(0);
   }
+
 }

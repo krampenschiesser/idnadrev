@@ -41,8 +41,8 @@ public class AdocPreview extends BaseController<List<AdocFile>> {
   public void initialize(URL location, ResourceBundle resources) {
     TextPreview.load(activityInitialization, pane -> root.getChildren().add(pane), p -> this.textPreview = p);
 
-    EventStreams.valuesOf(selectedTask).filter(Objects::nonNull).subscribe(f -> textPreview.show(f.getPath()));
-    EventStreams.valuesOf(selectedTask).filter(Objects::isNull).subscribe(f -> textPreview.clearContent());
+    EventStreams.valuesOf(selectedTask).filter(Objects::nonNull).subscribe(f -> controller.getJavaFXExecutor().submit(() -> textPreview.show(f.getPath())));
+    EventStreams.valuesOf(selectedTask).filter(Objects::isNull).subscribe(f -> controller.getJavaFXExecutor().submit(() -> textPreview.clearContent()));
   }
 
   public TextPreview getTextPreview() {

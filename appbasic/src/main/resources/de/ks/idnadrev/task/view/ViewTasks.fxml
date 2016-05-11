@@ -44,7 +44,7 @@
                 </VBox>
                 <StackPane>
                     <children>
-                        <fx:include fx:id="preview" source="../../adoc/view/AdocPreview.fxml"/>
+                        <fx:include fx:id="preview" source="../../adoc/ui/AdocPreview.fxml"/>
                     </children>
                 </StackPane>
             </items>
