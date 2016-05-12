@@ -16,6 +16,7 @@
 package de.ks.idnadrev.task.add;
 
 import de.ks.idnadrev.adoc.ui.TagSelection;
+import de.ks.idnadrev.crud.CRUDController;
 import de.ks.idnadrev.index.Index;
 import de.ks.idnadrev.index.MultiQueyBuilder;
 import de.ks.idnadrev.index.StandardQueries;
@@ -24,24 +25,28 @@ import de.ks.idnadrev.task.Task;
 import de.ks.idnadrev.task.TaskState;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.autocomp.AutoCompletionTextField;
+import de.ks.standbein.validation.validators.NotEmptyValidator;
 import de.ks.texteditor.TextEditor;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
+import javafx.util.converter.NumberStringConverter;
 
 import javax.inject.Inject;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class AddTaskController extends BaseController<Task> {
   @FXML
-  ComboBox state;
+  TextField estimatedTime;
+  @FXML
+  CRUDController crudController;
+  @FXML
+  ComboBox<String> state;
   @FXML
   StackPane parentContainer;
   @FXML
@@ -71,6 +76,18 @@ public class AddTaskController extends BaseController<Task> {
   public void initialize(URL location, ResourceBundle resources) {
     TextEditor.load(activityInitialization, editorContainer.getChildren()::add, ctrl -> editor = ctrl);
 
+    Button saveButton = crudController.getSaveButton();
+    saveButton.setVisible(true);
+    saveButton.setOnAction(e -> {
+      controller.save();
+      AddTaskDs datasource = (AddTaskDs) store.getDatasource();
+      if (datasource.hasHint()) {
+        controller.stopCurrent();
+      } else {
+        controller.reload();
+      }
+    });
+
     context.setEditable(true);
     context.configure(this::getContexts);
     parent.configure(this::getParents);
@@ -78,15 +95,20 @@ public class AddTaskController extends BaseController<Task> {
     contextContainer.getChildren().add(context.getTextField());
     parentContainer.getChildren().add(parent.getTextField());
 
-
     state.getItems().addAll(Stream.of(TaskState.values()).filter(s -> s != TaskState.UNPROCESSED).map(TaskState::name).collect(Collectors.toList()));
     state.getSelectionModel().select(0);
+
+    tagsController.setEditable(true);
+    editor.textProperty().bindBidirectional(store.getBinding().getStringProperty(Task.class, Task::getContent));
+    title.textProperty().bindBidirectional(store.getBinding().getStringProperty(Task.class, t -> t.getHeader().getTitle()));
+    context.getTextField().textProperty().bindBidirectional(store.getBinding().getStringProperty(Task.class, Task::getContext));
+
+    estimatedTime.textProperty().bindBidirectional(store.getBinding().getIntegerProperty(Task.class, Task::getEstimatedTimeInMinutes), new NumberStringConverter());
+    validationRegistry.registerValidator(title, new NotEmptyValidator(localized));
   }
 
   @Override
   protected void onRefresh(Task model) {
-    super.onRefresh(model);
-
     projects.clear();
     contexts.clear();
 
@@ -97,6 +119,15 @@ public class AddTaskController extends BaseController<Task> {
 
     MultiQueyBuilder<Task> contextQuery = index.multiQuery(Task.class);
     contexts.addAll(contextQuery.find().stream().map(Task::getContext).distinct().sorted().collect(Collectors.toList()));
+
+    tagsController.getSelectedTags().clear();
+    tagsController.getSelectedTags().addAll(model.getHeader().getTags());
+  }
+
+  @Override
+  public void duringSave(Task model) {
+    LinkedHashSet<String> tags = new LinkedHashSet<>(tagsController.getSelectedTags());
+    model.getHeader().setTags(tags);
   }
 
   private List<String> getContexts(String s) {
