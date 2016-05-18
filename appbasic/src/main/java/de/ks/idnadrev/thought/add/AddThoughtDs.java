@@ -30,6 +30,6 @@ import javax.inject.Provider;
 public class AddThoughtDs extends AdocFileCreateEditDs<Task> {
   @Inject
   public AddThoughtDs(@ActiveRepository Provider<Repository> activeRepositoryProvider, NameStripper nameStripper, Index index) {
-    super(Task.class, "Thought", "Thought.adoc", p -> new Task(p, null, new Header(null).setHeaderElement("kstype", "task")).setState(TaskState.UNPROCESSED), activeRepositoryProvider, nameStripper, index);
+    super(Task.class, "Thought", "Thought.adoc", p -> new Task(p, null, new Header(null)).setState(TaskState.UNPROCESSED), activeRepositoryProvider, nameStripper, index);
   }
 }

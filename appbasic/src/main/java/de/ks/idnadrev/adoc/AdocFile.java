@@ -88,7 +88,7 @@ public class AdocFile {
   }
 
   public void setContent(String content) {
-    lines = Arrays.asList(StringUtils.split(content, newLine));
+    lines = Arrays.asList(StringUtils.splitPreserveAllTokens(content, newLine));
   }
 
   public String getContent() {

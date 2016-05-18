@@ -23,6 +23,7 @@ import de.ks.idnadrev.index.StandardQueries;
 import de.ks.idnadrev.repository.ui.ActiveRepositoryController;
 import de.ks.idnadrev.task.Task;
 import de.ks.idnadrev.task.TaskState;
+import de.ks.idnadrev.util.HasToExistValidator;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.autocomp.AutoCompletionTextField;
 import de.ks.standbein.validation.validators.NotEmptyValidator;
@@ -91,6 +92,7 @@ public class AddTaskController extends BaseController<Task> {
     context.setEditable(true);
     context.configure(this::getContexts);
     parent.configure(this::getParents);
+    validationRegistry.registerValidator(parent.getTextField(), new HasToExistValidator(index, localized));
 
     contextContainer.getChildren().add(context.getTextField());
     parentContainer.getChildren().add(parent.getTextField());
@@ -118,16 +120,22 @@ public class AddTaskController extends BaseController<Task> {
     projects.addAll(projectQuery.find().stream().map(Task::getTitle).sorted().collect(Collectors.toList()));
 
     MultiQueyBuilder<Task> contextQuery = index.multiQuery(Task.class);
+    contextQuery.query(StandardQueries.stateQuery(), s -> s != TaskState.UNPROCESSED);
+    contextQuery.query(StandardQueries.contextQuery(), Objects::nonNull);
     contexts.addAll(contextQuery.find().stream().map(Task::getContext).distinct().sorted().collect(Collectors.toList()));
 
     tagsController.getSelectedTags().clear();
     tagsController.getSelectedTags().addAll(model.getHeader().getTags());
+
+    state.getSelectionModel().select(model.getState().name());
   }
 
   @Override
   public void duringSave(Task model) {
     LinkedHashSet<String> tags = new LinkedHashSet<>(tagsController.getSelectedTags());
     model.getHeader().setTags(tags);
+    TaskState taskState = TaskState.valueOf(state.getValue());
+    model.setState(taskState);
   }
 
   private List<String> getContexts(String s) {

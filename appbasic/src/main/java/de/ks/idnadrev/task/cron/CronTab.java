@@ -31,7 +31,7 @@ public class CronTab {
   private CronValue weekOfYear = new CronValue(1, 53, true);//only together with weekOfYear
   private CronValue dayOfWeek = new CronValue(0, 6, true);//only together with weekOfYear
 
-  public void parse(String input) {
+  public CronTab parse(String input) {
     String[] split = StringUtils.split(input, " ");
     if (split.length < 5 || split.length > 7) {
       throw new IllegalArgumentException("Wrong cron length");
@@ -49,6 +49,7 @@ public class CronTab {
     if (split.length >= 7) {
       dayOfWeek.parse(split[6].trim());
     }
+    return this;
   }
 
   /**

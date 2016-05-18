@@ -18,6 +18,7 @@ package de.ks.idnadrev.thought.add;
 
 import com.google.common.base.StandardSystemProperty;
 import de.ks.idnadrev.adoc.NameStripper;
+import de.ks.idnadrev.index.Index;
 import de.ks.idnadrev.repository.Repository;
 import de.ks.idnadrev.task.Task;
 import de.ks.idnadrev.task.TaskState;
@@ -55,8 +56,9 @@ public class AddThoughtDsTest {
 
     Repository repository = Mockito.mock(Repository.class);
     Mockito.when(repository.getPath()).thenReturn(myRepo);
+    Index index = Mockito.mock(Index.class);
 
-    addThoughtDs = new AddThoughtDs(() -> repository, new NameStripper());
+    addThoughtDs = new AddThoughtDs(() -> repository, new NameStripper(), index);
 
   }
 

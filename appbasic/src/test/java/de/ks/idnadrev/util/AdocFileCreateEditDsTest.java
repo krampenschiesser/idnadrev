@@ -20,6 +20,7 @@ import com.google.common.base.StandardSystemProperty;
 import de.ks.idnadrev.adoc.AdocFile;
 import de.ks.idnadrev.adoc.Header;
 import de.ks.idnadrev.adoc.NameStripper;
+import de.ks.idnadrev.index.Index;
 import de.ks.idnadrev.repository.Repository;
 import de.ks.util.DeleteDir;
 import org.junit.Before;
@@ -60,8 +61,9 @@ public class AdocFileCreateEditDsTest {
 
     Repository repository = Mockito.mock(Repository.class);
     Mockito.when(repository.getPath()).thenReturn(myRepo);
+    Index index = Mockito.mock(Index.class);
 
-    datasource = new TestDs(() -> repository, new NameStripper());
+    datasource = new TestDs(() -> repository, new NameStripper(), index);
   }
 
   @Test
@@ -89,8 +91,8 @@ public class AdocFileCreateEditDsTest {
   }
 
   static class TestDs extends AdocFileCreateEditDs<AdocFile> {
-    public TestDs(Provider<Repository> repositoryService, NameStripper nameStripper) {
-      super(AdocFile.class, AdocFileCreateEditDsTest.class.getSimpleName(), "test.adoc", p -> new AdocFile(p, null, new Header(null)), repositoryService, nameStripper);
+    public TestDs(Provider<Repository> repositoryService, NameStripper nameStripper, Index index) {
+      super(AdocFile.class, AdocFileCreateEditDsTest.class.getSimpleName(), "test.adoc", p -> new AdocFile(p, null, new Header(null)), repositoryService, nameStripper, index);
     }
   }
 }

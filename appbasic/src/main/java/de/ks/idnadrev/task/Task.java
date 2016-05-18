@@ -19,21 +19,25 @@ import de.ks.idnadrev.adoc.AdocFile;
 import de.ks.idnadrev.adoc.Header;
 import de.ks.idnadrev.repository.Repository;
 import de.ks.idnadrev.task.cron.CronTab;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class Task extends AdocFile {
-  protected String context;
-  protected TaskState state = TaskState.NONE;
-  protected Duration estimatedTime;
-  protected CronTab cronTab;
+  private static final Logger log = LoggerFactory.getLogger(Task.class);
+  public static final String ESTIMATEDTIME = "estimatedtime";
+  public static final String DELEGATION = "delegation";
+  public static final String STATE = "state";
+  public static final String CONTEXT = "context";
+  public static final String KSTYPE = "kstype";
   protected LocalDateTime finishTime;
-  protected String delegation;
 
   public Task(Path path, Repository repository, Header header) {
-    super(path, repository, header);
+    super(path, repository, header.setHeaderElement(KSTYPE, "task"));
   }
 
   @Override
@@ -47,43 +51,71 @@ public class Task extends AdocFile {
   }
 
   public boolean isProject() {
-    return estimatedTime == null;
+    return getEstimatedTime() == null;
   }
 
   public boolean isDelegated() {
-    return delegation != null;
+    return getDelegation() != null;
   }
 
   public boolean isThought() {
-    return state == TaskState.UNPROCESSED;
+    return getState() == TaskState.UNPROCESSED;
   }
 
   public CronTab getCronTab() {
-    return cronTab;
+    String cron = getHeader().getHeaderElement("cron");
+    if (cron == null) {
+      return null;
+    } else {
+      try {
+        return new CronTab().parse(cron);
+      } catch (IllegalArgumentException e) {
+        log.error("Could not parse crontab {}", cron, e);
+        return null;
+      }
+    }
   }
 
   public String getContext() {
-    return getHeader().getHeaderElement("context");
+    return getHeader().getHeaderElement(CONTEXT);
   }
 
   public Task setContext(String context) {
-    getHeader().setHeaderElement("context", context);
+    getHeader().setHeaderElement(CONTEXT, context);
+    return this;
+  }
+
+  public Task setEstimatedTime(@Nullable Integer minutes) {
+    getHeader().setHeaderElement(ESTIMATEDTIME, minutes == null ? null : String.valueOf(minutes));
     return this;
   }
 
   public Duration getEstimatedTime() {
-    return estimatedTime;
+    String estimatedtime = getHeader().getHeaderElement(ESTIMATEDTIME);
+    if (estimatedtime == null) {
+      return null;
+    } else {
+      try {
+        int i = Integer.parseInt(estimatedtime);
+        return Duration.ofMinutes(i);
+      } catch (NumberFormatException e) {
+        log.error("Could not parse duration {}", estimatedtime, e);
+        return null;
+      }
+    }
   }
 
   public int getEstimatedTimeInMinutes() {
+    Duration estimatedTime = getEstimatedTime();
     if (estimatedTime == null) {
       return 0;
+    } else {
+      return (int) estimatedTime.toMinutes();
     }
-    return (int) estimatedTime.toMinutes();
   }
 
   public String getDelegation() {
-    return delegation;
+    return getHeader().getHeaderElement(DELEGATION);
   }
 
   public LocalDateTime getFinishTime() {
@@ -91,7 +123,7 @@ public class Task extends AdocFile {
   }
 
   public TaskState getState() {
-    String state = header.getHeaderElement("state");
+    String state = header.getHeaderElement(STATE);
     if (state == null) {
       return TaskState.NONE;
     } else {
@@ -100,7 +132,7 @@ public class Task extends AdocFile {
   }
 
   public Task setState(TaskState state) {
-    header.setHeaderElement("state", state.name());
+    header.setHeaderElement(STATE, state.name());
     return this;
   }
 }

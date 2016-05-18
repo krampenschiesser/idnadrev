@@ -15,6 +15,7 @@
  */
 package de.ks.idnadrev.adoc;
 
+import com.google.common.collect.ImmutableSet;
 import de.ks.idnadrev.repository.Repository;
 import de.ks.idnadrev.util.GenericDateTimeParser;
 import org.apache.commons.lang3.StringUtils;
@@ -42,8 +43,8 @@ public class Header {
     this.repository = repository;
   }
 
-  public Set<String> getTags() {
-    return tags;
+  public ImmutableSet<String> getTags() {
+    return ImmutableSet.<String>copyOf(tags);
   }
 
   public String getTagString() {

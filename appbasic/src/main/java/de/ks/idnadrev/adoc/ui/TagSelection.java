@@ -72,7 +72,7 @@ public class TagSelection implements Initializable {
   }
 
   private List<String> getItems(String input) {
-    List<String> tags = index.queryValues(StandardQueries.byTagsQuery(), s -> !s.isEmpty()).stream().flatMap(Collection::stream).filter(tag -> tag.toLowerCase(Locale.ROOT).startsWith(input.toLowerCase(Locale.ROOT))).collect(Collectors.toList());
+    List<String> tags = index.queryValues(StandardQueries.byTagsQuery(), s -> !s.isEmpty()).stream().flatMap(Collection::stream).distinct().filter(tag -> tag.toLowerCase(Locale.ROOT).startsWith(input.toLowerCase(Locale.ROOT))).collect(Collectors.toList());
     Collections.sort(tags);
     tags.removeAll(selectedTags);
     return tags;
