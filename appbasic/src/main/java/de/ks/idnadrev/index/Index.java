@@ -114,4 +114,8 @@ public class Index {
     return adocPaths.get(path);
   }
 
+  public List<AdocFile> getAdocFiles() {
+    return new ArrayList<>(adocFiles);
+  }
+
 }
