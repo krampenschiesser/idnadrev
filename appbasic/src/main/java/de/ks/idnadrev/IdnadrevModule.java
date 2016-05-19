@@ -42,12 +42,7 @@ public class IdnadrevModule extends AbstractModule {
 
     Multibinder.newSetBinder(binder(), Key.get(String.class, FxCss.class)).addBinding().toInstance("/de/ks/idnadrev/idnadrev.css");
 
-    configureEntities();
     registerMenuItems();
-
-//    if (System.getProperty(DummyData.CREATE_DUMMYDATA) != null) {
-//      Multibinder.newSetBinder(binder(), Service.class).addBinding().to(DummyData.class);
-//    }
   }
 
   protected void bindInitialActivity() {
@@ -74,17 +69,5 @@ public class IdnadrevModule extends AbstractModule {
 //    menuBinder.addBinding().toInstance(new MenuEntry("/main/review", "weekReview", new StartActivityAction(WeeklyDoneActivity.class)).setOrder(601));
 //    //blogging is 700
 //    menuBinder.addBinding().toInstance(new MenuEntry("/main/context", "contexts", new StartActivityAction(ViewContextActivity.class)).setOrder(800));
-  }
-
-  protected void configureEntities() {
-//    Multibinder<Class> entities = Multibinder.newSetBinder(binder(), Class.class, RegisteredEntity.class);
-//    entities.addBinding().toInstance(Context.class);
-//    entities.addBinding().toInstance(Task.class);
-//    entities.addBinding().toInstance(Thought.class);
-//    entities.addBinding().toInstance(Information.class);
-//    entities.addBinding().toInstance(DiaryInfo.class);
-//    entities.addBinding().toInstance(Schedule.class);
-//
-//    entities.addBinding().toInstance(AdocFile.class);
   }
 }
