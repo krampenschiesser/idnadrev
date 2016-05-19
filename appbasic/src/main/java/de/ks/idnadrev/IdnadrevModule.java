@@ -19,6 +19,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Key;
 import com.google.inject.multibindings.Multibinder;
 import com.google.inject.multibindings.OptionalBinder;
+import de.ks.idnadrev.adoc.add.AddAdocActivity;
 import de.ks.idnadrev.adoc.view.ViewAdocActivity;
 import de.ks.idnadrev.repository.manage.RepositoryActivity;
 import de.ks.idnadrev.task.add.AddTaskActivity;
@@ -62,7 +63,8 @@ public class IdnadrevModule extends AbstractModule {
     menuBinder.addBinding().toInstance(new MenuEntry("/main/task", "view", new StartActivityAction(ViewTasksActivity.class)).setOrder(301).setLocalized(true).setIconPath("view.png"));
 //    menuBinder.addBinding().toInstance(new MenuEntry("/main/task", "fastTrack", new StartActivityAction(FastTrackActivity.class)).setOrder(302));
 //    menuBinder.addBinding().toInstance(new MenuEntry("/main/task", "nextProposal", new StartActivityAction(ChooseNextTaskActivity.class)).setOrder(303));
-    menuBinder.addBinding().toInstance(new MenuEntry("/main/document", "view", new StartActivityAction(ViewAdocActivity.class)).setOrder(400).setLocalized(true).setIconPath("view.png"));
+    menuBinder.addBinding().toInstance(new MenuEntry("/main/document", "create", new StartActivityAction(AddAdocActivity.class)).setOrder(400).setLocalized(true).setIconPath("add_menu.png"));
+    menuBinder.addBinding().toInstance(new MenuEntry("/main/document", "view", new StartActivityAction(ViewAdocActivity.class)).setOrder(401).setLocalized(true).setIconPath("view.png"));
 //    menuBinder.addBinding().toInstance(new MenuEntry("/main/info", "document", new StartActivityAction(TextInfoActivity.class)).setOrder(401));
 //    menuBinder.addBinding().toInstance(new MenuEntry("/main/info", "diary", new StartActivityAction(DiaryActivity.class)).setOrder(402));
     menuBinder.addBinding().toInstance(new MenuEntry("/main/repository", "manage", new StartActivityAction(RepositoryActivity.class)).setOrder(401).setLocalized(true));
