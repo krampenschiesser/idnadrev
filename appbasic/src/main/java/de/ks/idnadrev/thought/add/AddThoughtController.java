@@ -75,8 +75,6 @@ public class AddThoughtController extends BaseController<Task> {
     editor.textProperty().bindBidirectional(store.getBinding().getStringProperty(Task.class, Task::getContent));
     title.textProperty().bindBidirectional(store.getBinding().getStringProperty(Task.class, t -> t.getHeader().getTitle()));
 
-//    tags.textProperty().bindBidirectional(store.getBinding().getStringProperty(Task.class, t -> t.getHeader().getTagString()));
-
     validationRegistry.registerValidator(title, new NotEmptyValidator(localized));
   }
 

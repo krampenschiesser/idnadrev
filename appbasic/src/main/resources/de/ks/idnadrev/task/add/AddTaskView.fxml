@@ -61,20 +61,24 @@
                     </children>
                 </StackPane>
 
-                <StackPane fx:id="editorContainer" GridPane.columnSpan="2147483647" GridPane.rowIndex="3"/>
-                <Label text="%estimatedTime:" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
                 <Label text="%context:" GridPane.rowIndex="1"/>
-                <Label text="%state:" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
-                <Label text="%parent:" GridPane.rowIndex="2"/>
                 <StackPane fx:id="contextContainer" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+                <Label text="%state:" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+                <ComboBox fx:id="state" maxWidth="1.7976931348623157E308" GridPane.columnIndex="3"
+                          GridPane.rowIndex="1"/>
+
+                <Label text="%parent:" GridPane.rowIndex="2"/>
+                <StackPane fx:id="parentContainer" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+                <Label text="%estimatedTime:" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
                 <TextField fx:id="estimatedTime" GridPane.columnIndex="3" GridPane.rowIndex="2">
                     <tooltip>
                         <Tooltip text="%duration.in.min"/>
                     </tooltip>
                 </TextField>
-                <ComboBox fx:id="state" maxWidth="1.7976931348623157E308" GridPane.columnIndex="3"
-                          GridPane.rowIndex="1"/>
-                <StackPane fx:id="parentContainer" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+                <StackPane fx:id="editorContainer" GridPane.columnSpan="2147483647" GridPane.rowIndex="3"/>
             </children>
             <padding>
                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
