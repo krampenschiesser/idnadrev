@@ -63,6 +63,8 @@ public class Index {
     if (adocFile instanceof Task) {
       tasks.remove(adocFile);
     }
+    adocFiles.remove(adocFile);
+    adocPaths.remove(adocFile.getPath());
     for (ConcurrentHashMap<AdocFile, Optional<Object>> map : queryElements.values()) {
       map.remove(adocFile);
     }
