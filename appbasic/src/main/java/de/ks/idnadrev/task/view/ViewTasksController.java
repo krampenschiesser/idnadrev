@@ -19,8 +19,10 @@ import de.ks.idnadrev.adoc.AdocAccessor;
 import de.ks.idnadrev.adoc.ui.AdocPreview;
 import de.ks.idnadrev.crud.CRUDController;
 import de.ks.idnadrev.task.Task;
+import de.ks.idnadrev.task.add.AddTaskActivity;
 import de.ks.idnadrev.util.ButtonHelper;
 import de.ks.standbein.BaseController;
+import de.ks.standbein.activity.ActivityHint;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -75,7 +77,7 @@ public class ViewTasksController extends BaseController<List<Task>> {
   }
 
   private void edit(Task task) {
-//    ActivityHint hint = new ActivityHint(AddTaskActivity.class, controller.getCurrentActivityId()).setDataSourceHint(() -> task);
-//    controller.startOrResume(hint);
+    ActivityHint hint = new ActivityHint(AddTaskActivity.class, controller.getCurrentActivityId()).setDataSourceHint(() -> task);
+    controller.startOrResume(hint);
   }
 }

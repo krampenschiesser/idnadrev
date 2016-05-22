@@ -17,10 +17,12 @@ package de.ks.idnadrev.adoc.view;
 
 import de.ks.idnadrev.adoc.AdocAccessor;
 import de.ks.idnadrev.adoc.AdocFile;
+import de.ks.idnadrev.adoc.add.AddAdocActivity;
 import de.ks.idnadrev.adoc.ui.AdocPreview;
 import de.ks.idnadrev.crud.CRUDController;
 import de.ks.idnadrev.util.ButtonHelper;
 import de.ks.standbein.BaseController;
+import de.ks.standbein.activity.ActivityHint;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.fxml.FXML;
@@ -83,7 +85,7 @@ public class ViewAdocController extends BaseController<List<AdocFile>> {
   }
 
   private void edit(AdocFile task) {
-//    ActivityHint hint = new ActivityHint(AddAdocFileActivity.class, controller.getCurrentActivityId()).setDataSourceHint(() -> task);
-//    controller.startOrResume(hint);
+    ActivityHint hint = new ActivityHint(AddAdocActivity.class, controller.getCurrentActivityId()).setDataSourceHint(() -> task);
+    controller.startOrResume(hint);
   }
 }

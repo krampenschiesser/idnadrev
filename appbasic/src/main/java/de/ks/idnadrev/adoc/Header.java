@@ -165,4 +165,7 @@ public class Header {
     return "task".equals(getHeaderElement(TYPE));
   }
 
+  public void remove(String property) {
+    headerElements.remove(property);
+  }
 }

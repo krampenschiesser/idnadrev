@@ -79,7 +79,7 @@ public class TaskTest {
     task.setContent("content line 1\nline 2");
     task.setState(TaskState.ASAP);
     task.setContext("context");
-    task.setEstimatedTime(10);
+    task.setEstimatedTimeInMinuntes(10);
     task.getHeader().setTags(new HashSet<>(Arrays.asList("tag1", "tag2", "tag3")));
     task.getHeader().setRevDate(date, dateTimeParser);
 
@@ -102,6 +102,8 @@ public class TaskTest {
     assertEquals("context", parsed.getContext());
     assertEquals(new LinkedHashSet<>(Arrays.asList("tag1", "tag2", "tag3")), parsed.getHeader().getTags());
     assertEquals(date, parsed.getHeader().getRevDate());
+    assertEquals(10, parsed.getEstimatedTimeInMinutes());
+    assertEquals(10, parsed.getEstimatedTime().toMinutes());
   }
 
   @Test

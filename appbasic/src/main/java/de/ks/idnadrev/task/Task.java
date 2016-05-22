@@ -85,7 +85,7 @@ public class Task extends AdocFile {
     return this;
   }
 
-  public Task setEstimatedTime(@Nullable Integer minutes) {
+  public Task setEstimatedTimeInMinutes(@Nullable Integer minutes) {
     getHeader().setHeaderElement(ESTIMATEDTIME, minutes == null ? null : String.valueOf(minutes));
     return this;
   }

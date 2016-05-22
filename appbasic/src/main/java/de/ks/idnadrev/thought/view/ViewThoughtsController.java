@@ -16,9 +16,11 @@
 package de.ks.idnadrev.thought.view;
 
 import de.ks.idnadrev.adoc.AdocAccessor;
+import de.ks.idnadrev.adoc.add.AddAdocActivity;
 import de.ks.idnadrev.adoc.ui.AdocPreview;
 import de.ks.idnadrev.crud.CRUDController;
 import de.ks.idnadrev.task.Task;
+import de.ks.idnadrev.task.add.AddTaskActivity;
 import de.ks.idnadrev.thought.add.AddThoughtActivity;
 import de.ks.idnadrev.util.ButtonHelper;
 import de.ks.standbein.BaseController;
@@ -78,11 +80,13 @@ public class ViewThoughtsController extends BaseController<List<Task>> {
 
     toTask = buttonHelper.createImageButton(localized.get("toTask"), "toTask.png", 24);
     toTask.disableProperty().bind(itemIsNull);
+    toTask.setOnAction(e -> toTask(thoughtTableController.getThoughtTable().getSelectionModel().getSelectedItem()));
     edit = buttonHelper.createImageButton(localized.get("edit"), "edit.png", 24);
     edit.disableProperty().bind(itemIsNull);
     toDocument = buttonHelper.createImageButton(localized.get("toDocument"), "toDocument.png", 24);
     toDocument.setContentDisplay(ContentDisplay.RIGHT);
     toDocument.disableProperty().bind(itemIsNull);
+    toDocument.setOnAction(e -> toDocument(thoughtTableController.getThoughtTable().getSelectionModel().getSelectedItem()));
     crud.getCenterButtonContainer().getChildren().addAll(toTask, edit, toDocument);
 
     thoughtPreviewController.selectedTaskProperty().bind(selectedItemProperty);
@@ -93,6 +97,16 @@ public class ViewThoughtsController extends BaseController<List<Task>> {
     EventStreams.eventsOf(thoughtTableController.getThoughtTable(), KeyEvent.KEY_RELEASED)//
       .filter(e -> e.getCode() == KeyCode.DELETE)//
       .subscribe(e -> delete(selectedItemProperty.get()));
+  }
+
+  private void toDocument(Task task) {
+    ActivityHint hint = new ActivityHint(AddAdocActivity.class, controller.getCurrentActivityId()).setDataSourceHint(() -> task);
+    controller.startOrResume(hint);
+  }
+
+  private void toTask(Task task) {
+    ActivityHint hint = new ActivityHint(AddTaskActivity.class, controller.getCurrentActivityId()).setDataSourceHint(() -> task);
+    controller.startOrResume(hint);
   }
 
   private void delete(Task task) {

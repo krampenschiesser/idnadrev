@@ -95,11 +95,13 @@ public class TaskFilter extends BaseController<Object> {
   public void onResume() {
     List<String> contexts = index.queryValues(StandardQueries.contextQuery(), s -> true).stream().map(s -> s.toLowerCase(Locale.ROOT)).collect(Collectors.toList());
     Collections.sort(contexts);
-    ObservableList<String> items = context.getItems();
-    items.clear();
-    items.addAll(wildCard);
-    items.addAll(contexts);
-    context.getSelectionModel().select(0);
+    controller.getJavaFXExecutor().submit(() -> {
+      ObservableList<String> items = context.getItems();
+      items.clear();
+      items.addAll(wildCard);
+      items.addAll(contexts);
+      context.getSelectionModel().select(0);
+    });
   }
 
 }

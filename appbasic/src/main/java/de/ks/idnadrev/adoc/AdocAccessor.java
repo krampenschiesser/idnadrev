@@ -16,6 +16,7 @@
 package de.ks.idnadrev.adoc;
 
 import de.ks.idnadrev.index.Index;
+import de.ks.idnadrev.task.Task;
 import de.ks.util.DeleteDir;
 
 import javax.inject.Inject;
@@ -31,5 +32,18 @@ public class AdocAccessor {
   public void delete(AdocFile adocFile) {
     index.remove(adocFile);
     new DeleteDir(adocFile.getPath().getParent()).delete();
+  }
+
+  public AdocFile convertToAdocFile(Task task) {
+    AdocFile adocFile = new AdocFile(task.getPath(), task.getRepository(), task.getHeader());
+    index.remove(task);
+    adocFile.getHeader().remove(Task.KSTYPE);
+    adocFile.getHeader().remove(Task.CONTEXT);
+    adocFile.getHeader().remove(Task.DELEGATION);
+    adocFile.getHeader().remove(Task.ESTIMATEDTIME);
+    adocFile.getHeader().remove(Task.STATE);
+    adocFile.setLines(task.getLines());
+    index.add(adocFile);
+    return adocFile;
   }
 }

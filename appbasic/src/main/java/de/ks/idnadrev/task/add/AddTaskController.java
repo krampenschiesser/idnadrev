@@ -127,7 +127,13 @@ public class AddTaskController extends BaseController<Task> {
     tagsController.getSelectedTags().clear();
     tagsController.getSelectedTags().addAll(model.getHeader().getTags());
 
-    state.getSelectionModel().select(model.getState().name());
+    if (model.getState() == TaskState.UNPROCESSED) {
+      state.getSelectionModel().select(0);
+    } else {
+      state.getSelectionModel().select(model.getState().name());
+    }
+    parent.reload();
+    context.reload();
   }
 
   @Override
