@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.ServiceLoader;
 import java.util.concurrent.ExecutionException;
 
@@ -39,6 +40,7 @@ public class ApplicationBasic {
   private static final Logger log = LoggerFactory.getLogger(ApplicationBasic.class);
 
   public static void main(String[] args) throws ExecutionException, InterruptedException {
+    Locale.setDefault(Locale.GERMAN);
     HashSet<Module> modules = new HashSet<>();
     ServiceLoader<Module> loader = ServiceLoader.load(Module.class);
     loader.forEach(modules::add);

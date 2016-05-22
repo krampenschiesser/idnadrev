@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class AddTaskController extends BaseController<Task> {
+
   @FXML
   TextField estimatedTime;
   @FXML
@@ -60,6 +61,8 @@ public class AddTaskController extends BaseController<Task> {
   TagSelection tagsController;
   @FXML
   ActiveRepositoryController repositoryController;
+  @FXML
+  AddTaskDetails detailsController;
 
   @Inject
   AutoCompletionTextField context;

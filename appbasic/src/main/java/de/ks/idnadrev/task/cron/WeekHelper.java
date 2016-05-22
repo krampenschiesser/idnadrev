@@ -16,26 +16,23 @@
 package de.ks.idnadrev.task.cron;
 
 import java.time.LocalDate;
+import java.time.temporal.TemporalField;
+import java.time.temporal.WeekFields;
+import java.util.Locale;
 
-public class ProposedWeek {
-  final int year;
-  final int week;
+public class WeekHelper {
+  WeekFields weekFields = WeekFields.of(Locale.getDefault());
 
-  public ProposedWeek(int year, int week) {
-    this.year = year;
-    this.week = week;
+  public int getWeek(LocalDate date) {
+    TemporalField temporalField = weekFields.weekOfWeekBasedYear();
+    return date.get(temporalField);
   }
 
-  public int getYear() {
-    return year;
-  }
-
-  public int getWeek() {
-    return week;
-  }
-
-  public LocalDate getMonday() {
-    return new WeekHelper().getFirstDayOfWeek(year, week);
-
+  public LocalDate getFirstDayOfWeek(int year, int week) {
+    TemporalField temporalField = weekFields.weekOfYear();
+    LocalDate date = LocalDate.ofYearDay(year, 1);
+    date = date.with(temporalField, week);
+    date = date.with(weekFields.dayOfWeek(), 1);
+    return date;
   }
 }

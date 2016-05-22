@@ -79,7 +79,7 @@ public class TaskTest {
     task.setContent("content line 1\nline 2");
     task.setState(TaskState.ASAP);
     task.setContext("context");
-    task.setEstimatedTimeInMinuntes(10);
+    task.setEstimatedTimeInMinutes(10);
     task.getHeader().setTags(new HashSet<>(Arrays.asList("tag1", "tag2", "tag3")));
     task.getHeader().setRevDate(date, dateTimeParser);
 
