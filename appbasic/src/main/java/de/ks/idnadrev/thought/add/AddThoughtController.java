@@ -20,6 +20,7 @@ import de.ks.idnadrev.crud.CRUDController;
 import de.ks.idnadrev.repository.RepositoryService;
 import de.ks.idnadrev.repository.ui.ActiveRepositoryController;
 import de.ks.idnadrev.task.Task;
+import de.ks.idnadrev.util.AdocTransformer;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.validation.validators.NotEmptyValidator;
 import de.ks.texteditor.TextEditor;
@@ -55,6 +56,8 @@ public class AddThoughtController extends BaseController<Task> {
 
   @Inject
   RepositoryService repositoryService;
+  @Inject
+  AdocTransformer transformer;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -72,18 +75,11 @@ public class AddThoughtController extends BaseController<Task> {
     });
     tagsController.setEditable(true);
 
-    editor.setInputTransformer(this::transformInput);
+    editor.setInputTransformer(transformer.createTransformer(title));
     editor.textProperty().bindBidirectional(store.getBinding().getStringProperty(Task.class, Task::getContent));
     title.textProperty().bindBidirectional(store.getBinding().getStringProperty(Task.class, t -> t.getHeader().getTitle()));
 
     validationRegistry.registerValidator(title, new NotEmptyValidator(localized));
-  }
-
-  private String transformInput(String input) {
-    Task model = store.getModel();
-    model.setTitle(title.getText());
-    model.setContent(input);
-    return model.writeBack();
   }
 
   @Override

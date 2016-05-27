@@ -23,6 +23,7 @@ import de.ks.idnadrev.index.StandardQueries;
 import de.ks.idnadrev.repository.ui.ActiveRepositoryController;
 import de.ks.idnadrev.task.Task;
 import de.ks.idnadrev.task.TaskState;
+import de.ks.idnadrev.util.AdocTransformer;
 import de.ks.idnadrev.util.HasToExistValidator;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.autocomp.AutoCompletionTextField;
@@ -72,6 +73,9 @@ public class AddTaskController extends BaseController<Task> {
 
   @Inject
   Index index;
+  @Inject
+  AdocTransformer transformer;
+
 
   private final List<String> projects = new ArrayList<>();
   private final List<String> contexts = new ArrayList<>();
@@ -111,14 +115,7 @@ public class AddTaskController extends BaseController<Task> {
     estimatedTime.textProperty().bindBidirectional(store.getBinding().getIntegerProperty(Task.class, Task::getEstimatedTimeInMinutes), new NumberStringConverter());
     validationRegistry.registerValidator(title, new NotEmptyValidator(localized));
 
-    editor.setInputTransformer(this::transformInput);
-  }
-
-  private String transformInput(String input) {
-    Task model = store.getModel();
-    model.setTitle(title.getText());
-    model.setContent(input);
-    return model.writeBack();
+    editor.setInputTransformer(transformer.createTransformer(title));
   }
 
   @Override

@@ -21,6 +21,7 @@ import de.ks.idnadrev.adoc.ui.TagSelection;
 import de.ks.idnadrev.crud.CRUDController;
 import de.ks.idnadrev.repository.RepositoryService;
 import de.ks.idnadrev.repository.ui.ActiveRepositoryController;
+import de.ks.idnadrev.util.AdocTransformer;
 import de.ks.standbein.BaseController;
 import de.ks.standbein.validation.validators.NotEmptyValidator;
 import de.ks.texteditor.TextEditor;
@@ -56,6 +57,8 @@ public class AddAdocController extends BaseController<AdocFile> {
 
   @Inject
   RepositoryService repositoryService;
+  @Inject
+  AdocTransformer transformer;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -78,16 +81,8 @@ public class AddAdocController extends BaseController<AdocFile> {
 
     validationRegistry.registerValidator(title, new NotEmptyValidator(localized));
 
-    editor.setInputTransformer(this::transformInput);
+    editor.setInputTransformer(transformer.createTransformer(title));
   }
-
-  private String transformInput(String input) {
-    AdocFile model = store.getModel();
-    model.setTitle(title.getText());
-    model.setContent(input);
-    return model.writeBack();
-  }
-
 
   @Override
   public void onStart() {

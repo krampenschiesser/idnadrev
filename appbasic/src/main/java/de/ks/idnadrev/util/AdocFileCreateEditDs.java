@@ -107,7 +107,11 @@ public abstract class AdocFileCreateEditDs<E extends AdocFile> implements DataSo
       Stream<Path> list = Files.list(model.getPath().getParent());
       list.forEach(path -> {
         try {
-          Files.copy(path, targetFolder.resolve(path.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+          if (path.equals(model.getPath())) {
+            Files.copy(path, targetFolder.resolve(targetFolder.resolve(targetFolderName + ".adoc")), StandardCopyOption.REPLACE_EXISTING);
+          } else {
+            Files.copy(path, targetFolder.resolve(path.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+          }
         } catch (IOException e) {
           log.error("Could not store file {}", path, e);
         }
@@ -116,7 +120,7 @@ public abstract class AdocFileCreateEditDs<E extends AdocFile> implements DataSo
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-    model.setPath(targetFolder.resolve(model.getPath().getFileName()));
+    model.setPath(targetFolder.resolve(targetFolderName + ".adoc"));
     model.setRepository(activeRepository);
     index.update(model);
   }
