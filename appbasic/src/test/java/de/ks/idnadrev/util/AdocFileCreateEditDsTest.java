@@ -45,6 +45,7 @@ public class AdocFileCreateEditDsTest {
   private TestDs datasource;
   private Path tmp;
   private Path dsDir;
+  private NameStripper nameStripper;
 
   @Before
   public void setUp() {
@@ -63,7 +64,8 @@ public class AdocFileCreateEditDsTest {
     Mockito.when(repository.getPath()).thenReturn(myRepo);
     Index index = Mockito.mock(Index.class);
 
-    datasource = new TestDs(() -> repository, new NameStripper(), index);
+    nameStripper = new NameStripper();
+    datasource = new TestDs(() -> repository, nameStripper, index);
   }
 
   @Test
@@ -81,7 +83,7 @@ public class AdocFileCreateEditDsTest {
 
     Path targetFolder = myRepo.resolve(new NameStripper().stripName("Hello World"));
     assertTrue(Files.exists(targetFolder));
-    Path adocFilePath = targetFolder.resolve("test.adoc");
+    Path adocFilePath = targetFolder.resolve(nameStripper.stripName(adocFile.getTitle()) + ".adoc");
     assertTrue(Files.exists(adocFilePath));
 
     List<String> lines = Files.readAllLines(adocFilePath, StandardCharsets.UTF_8);
