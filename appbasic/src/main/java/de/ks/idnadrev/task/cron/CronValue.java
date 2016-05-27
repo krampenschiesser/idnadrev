@@ -20,10 +20,11 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 class CronValue {
   int min, max;
-  List<Integer> values = new ArrayList<>();
+  final List<Integer> values = new ArrayList<>();
   boolean any;
   boolean all;
   boolean noValue;
@@ -41,6 +42,22 @@ class CronValue {
 
   public CronValue setNoValue(boolean noValue) {
     this.noValue = noValue;
+    all = false;
+    any = false;
+    return this;
+  }
+
+  public CronValue setAll(boolean all) {
+    this.all = all;
+    noValue = false;
+    any = false;
+    return this;
+  }
+
+  public CronValue setAny(boolean any) {
+    this.any = any;
+    noValue = false;
+    all = false;
     return this;
   }
 
@@ -62,6 +79,14 @@ class CronValue {
 
   public List<Integer> getValues() {
     return values;
+  }
+
+  public CronValue addValue(int value) {
+    all = false;
+    any = false;
+    noValue = false;
+    values.add(value);
+    return this;
   }
 
   public int getValue() {
@@ -104,4 +129,18 @@ class CronValue {
       }
     }
   }
+
+  @Override
+  public String toString() {
+    if (any) {
+      return "?";
+    } else if (all) {
+      return "*";
+    } else if (noValue) {
+      return "_";
+    } else {
+      return values.stream().map(String::valueOf).collect(Collectors.joining(","));
+    }
+  }
 }
+

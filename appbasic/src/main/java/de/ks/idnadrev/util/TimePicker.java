@@ -24,6 +24,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Control;
 import javafx.scene.control.TextField;
+import org.reactfx.EventStreams;
 
 import javax.inject.Inject;
 import java.net.URL;
@@ -54,6 +55,7 @@ public class TimePicker implements Initializable {
     });
     TimeValidator validator = new TimeValidator(localized, formatter, time);
     validationRegistry.registerValidator(timeEditor, validator);
+    EventStreams.valuesOf(time).subscribe(time -> timeEditor.setText(time == null ? "" : time.getHour() + ":" + time.getMinute()));
   }
 
   public TextField getTimeEditor() {

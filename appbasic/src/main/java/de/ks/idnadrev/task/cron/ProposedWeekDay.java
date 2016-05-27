@@ -27,4 +27,36 @@ public class ProposedWeekDay extends ProposedWeek {
   public int getDayOfWeek() {
     return dayOfWeek;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof ProposedWeekDay)) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+
+    ProposedWeekDay that = (ProposedWeekDay) o;
+    if (dayOfWeek != that.dayOfWeek) {
+      return false;
+    }
+    if (year != that.year) {
+      return false;
+    }
+    return week == that.week;
+
+  }
+
+  @Override
+  public int hashCode() {
+    int result = super.hashCode();
+    result = 31 * result + dayOfWeek;
+    result = 31 * result + year;
+    result = 31 * result + week;
+    return result;
+  }
 }

@@ -34,6 +34,7 @@ public class Task extends AdocFile {
   public static final String STATE = "state";
   public static final String CONTEXT = "context";
   public static final String KSTYPE = "kstype";
+  public static final String CRON = "cron";
   protected LocalDateTime finishTime;
 
   public Task(Path path, Repository repository, Header header) {
@@ -62,8 +63,13 @@ public class Task extends AdocFile {
     return getState() == TaskState.UNPROCESSED;
   }
 
+  public Task setCronTab(CronTab crontab) {
+    getHeader().setHeaderElement(CRON, crontab.toString());
+    return this;
+  }
+
   public CronTab getCronTab() {
-    String cron = getHeader().getHeaderElement("cron");
+    String cron = getHeader().getHeaderElement(CRON);
     if (cron == null) {
       return null;
     } else {

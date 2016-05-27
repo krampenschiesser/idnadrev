@@ -36,6 +36,27 @@ public class ProposedWeek {
 
   public LocalDate getMonday() {
     return new WeekHelper().getFirstDayOfWeek(year, week);
+  }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof ProposedWeek)) {
+      return false;
+    }
+    ProposedWeek that = (ProposedWeek) o;
+    if (year != that.year) {
+      return false;
+    }
+    return week == that.week;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = year;
+    result = 31 * result + week;
+    return result;
   }
 }

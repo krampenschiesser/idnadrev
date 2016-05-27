@@ -35,6 +35,7 @@ import java.net.URL;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -137,6 +138,35 @@ public class AddTaskDetails extends BaseController<Task> {
   public void duringSave(Task model) {
     super.duringSave(model);
 
-//    model.getCronTab().
+    LocalDate proposedWeek = this.proposedWeek.getValue();
+    DayOfWeek dayOfWeek = this.dayOfWeek.getValue();
+    LocalDate proposedDay = this.proposedDay.getValue();
+    LocalDate scheduledDate = this.scheduledDate.getValue();
+    LocalTime scheduledTime = this.scheduledTimeController.getTime();
+
+    CronTab cronTab = null;
+    if (proposedWeek != null && dayOfWeek != null) {
+      cronTab = new CronTab();
+      int week = new WeekHelper().getWeek(proposedWeek);
+      ProposedWeekDay proposedWeekDay = new ProposedWeekDay(proposedWeek.getYear(), week, dayOfWeek.getValue());
+      cronTab.setProposedWeekDay(proposedWeekDay);
+    } else if (proposedWeek != null) {
+      cronTab = new CronTab();
+      int week = new WeekHelper().getWeek(proposedWeek);
+      ProposedWeek proposed = new ProposedWeek(proposedWeek.getYear(), week);
+      cronTab.setProposedWeek(proposed);
+    } else if (proposedDay != null) {
+      cronTab = new CronTab();
+      cronTab.setProposedDate(proposedDay);
+    } else if (scheduledDate != null && scheduledTime != null) {
+      cronTab = new CronTab();
+      cronTab.setScheduledDateTime(LocalDateTime.of(scheduledDate, scheduledTime));
+    } else if (scheduledDate != null) {
+      cronTab = new CronTab();
+      cronTab.setScheduledDate(scheduledDate);
+    }
+    if (cronTab != null) {
+      model.setCronTab(cronTab);
+    }
   }
 }

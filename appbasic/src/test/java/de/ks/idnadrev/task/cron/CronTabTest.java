@@ -82,4 +82,58 @@ public class CronTabTest {
     assertTrue(nextProposedDate.isPresent());
     assertEquals(LocalDate.of(2016, 12, 5), nextProposedDate.get());
   }
+
+  @Test
+  public void testParseBackDateTime() throws Exception {
+    CronTab cronTab = new CronTab();
+    LocalDateTime expectedDate = LocalDateTime.of(2016, 11, 12, 13, 14, 15, 888);
+    cronTab.setScheduledDateTime(expectedDate);
+    String string = cronTab.toString();
+    cronTab.parse(string);
+
+    Optional<LocalDateTime> dateTime = cronTab.getDateTime();
+    assertTrue(dateTime.isPresent());
+    assertEquals(expectedDate.withSecond(0).withNano(0), dateTime.get());
+  }
+
+  @Test
+  public void testParseBackProposedDate() throws Exception {
+    CronTab cronTab = new CronTab();
+    LocalDate expectedDate = LocalDate.of(2016, 11, 12);
+    cronTab.setProposedDate(expectedDate);
+    String string = cronTab.toString();
+    cronTab.parse(string);
+
+    Optional<LocalDate> dateTime = cronTab.getProposedDate();
+    assertTrue(dateTime.isPresent());
+    assertEquals(expectedDate, dateTime.get());
+  }
+
+  @Test
+  public void testParseBackProposedWeekDay() throws Exception {
+    CronTab cronTab = new CronTab();
+
+    ProposedWeekDay expected = new ProposedWeekDay(2016, 42, 3);
+    cronTab.setProposedWeekDay(expected);
+    String string = cronTab.toString();
+    cronTab.parse(string);
+
+    Optional<ProposedWeekDay> proposedWeekDay = cronTab.getProposedWeekDay();
+    assertTrue(proposedWeekDay.isPresent());
+    assertEquals(expected, proposedWeekDay.get());
+  }
+
+  @Test
+  public void testParseBackProposedWeek() throws Exception {
+    CronTab cronTab = new CronTab();
+
+    ProposedWeek expected = new ProposedWeek(2016, 42);
+    cronTab.setProposedWeek(expected);
+    String string = cronTab.toString();
+    cronTab.parse(string);
+
+    Optional<ProposedWeek> proposedWeek = cronTab.getProposedWeek();
+    assertTrue(proposedWeek.isPresent());
+    assertEquals(expected, proposedWeek.get());
+  }
 }

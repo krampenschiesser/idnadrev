@@ -32,6 +32,7 @@ public class CronTab {
   private CronValue dayOfWeek = new CronValue(0, 6, true);//only together with weekOfYear
 
   public CronTab parse(String input) {
+    reset();
     String[] split = StringUtils.split(input, " ");
     if (split.length < 5 || split.length > 7) {
       throw new IllegalArgumentException("Wrong cron length");
@@ -50,6 +51,16 @@ public class CronTab {
       dayOfWeek.parse(split[6].trim());
     }
     return this;
+  }
+
+  void reset() {
+    minute.noValue = true;
+    hour.noValue = true;
+    dayOfMonth.noValue = true;
+    month.noValue = true;
+    year.noValue = true;
+    weekOfYear.noValue = true;
+    dayOfWeek.noValue = true;
   }
 
   /**
@@ -136,4 +147,65 @@ public class CronTab {
     return Optional.empty();
   }
 
+  public CronTab setProposedWeekDay(ProposedWeekDay proposedWeekDay) {
+    reset();
+    year.addValue(proposedWeekDay.getYear());
+    weekOfYear.addValue(proposedWeekDay.getWeek());
+    dayOfWeek.addValue(proposedWeekDay.getDayOfWeek());
+    return this;
+  }
+
+  public CronTab setProposedWeek(ProposedWeek proposedWeek) {
+    reset();
+    year.addValue(proposedWeek.getYear());
+    weekOfYear.addValue(proposedWeek.getWeek());
+    return this;
+  }
+
+  public CronTab setProposedDate(LocalDate date) {
+    reset();
+    minute.setAny(true);
+    hour.setAny(true);
+    dayOfMonth.addValue(date.getDayOfMonth());
+    month.addValue(date.getMonthValue());
+    year.addValue(date.getYear());
+    return this;
+  }
+
+  public CronTab setScheduledDate(LocalDate date) {
+    reset();
+    minute.setAny(true);
+    hour.setAny(true);
+    dayOfMonth.addValue(date.getDayOfMonth());
+    month.addValue(date.getMonthValue());
+    year.addValue(date.getYear());
+    return this;
+  }
+
+  public CronTab setScheduledDateTime(LocalDateTime dateTime) {
+    reset();
+    minute.addValue(dateTime.getMinute());
+    hour.addValue(dateTime.getHour());
+    dayOfMonth.addValue(dateTime.getDayOfMonth());
+    month.addValue(dateTime.getMonthValue());
+    year.addValue(dateTime.getYear());
+    return this;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder b = new StringBuilder();
+    b.append(minute.toString()).append(" ");
+    b.append(hour.toString()).append(" ");
+    b.append(dayOfMonth.toString()).append(" ");
+    b.append(month.toString()).append(" ");
+    b.append(year.toString());
+    if (!weekOfYear.isNoValue()) {
+      b.append(" ").append(weekOfYear.toString());
+      if (!dayOfWeek.isNoValue()) {
+        b.append(" ").append(dayOfWeek.toString());
+      }
+    }
+    return b.toString();
+  }
 }
