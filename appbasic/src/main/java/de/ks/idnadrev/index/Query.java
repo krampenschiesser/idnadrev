@@ -22,7 +22,7 @@ import java.util.function.Function;
 public class Query<E, V> {
   @SuppressWarnings("unchecked")
   public static <E, V> Query<E, V> of(Class<E> clazz, Function<E, V> result) {
-    return new Query(clazz, PropertyPath.ofTypeSafe(clazz, result::apply));
+    return new Query(clazz, PropertyPath.ofTypeSafe(clazz, result));
   }
 
   protected Class<E> clazz;

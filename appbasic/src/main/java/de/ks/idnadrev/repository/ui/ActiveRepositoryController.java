@@ -38,9 +38,11 @@ public class ActiveRepositoryController implements Initializable, ActivityCallba
   @Inject
   ActivityController controller;
 
+  @SuppressWarnings("OptionalGetWithoutIsPresent")
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    repository.setConverter(new NamedConverter<>(name -> repositoryService.getRepositories().stream().filter(r -> r.getName().equals(name)).findAny().get()));
+    repository.setConverter(new NamedConverter<>(name -> repositoryService.getRepositories().stream()//
+      .filter(r -> r.getName().equals(name)).findAny().get()));
     repository.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> {
       if (n != null) {
         repositoryService.setActiveRepository(n);

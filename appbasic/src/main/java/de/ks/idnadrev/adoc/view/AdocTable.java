@@ -21,7 +21,6 @@ import de.ks.standbein.BaseController;
 import de.ks.standbein.table.TableColumnBuilder;
 import de.ks.standbein.table.TableConfigurator;
 import javafx.fxml.FXML;
-import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
 import javax.inject.Inject;
@@ -31,12 +30,8 @@ import java.util.ResourceBundle;
 import java.util.function.Function;
 
 public class AdocTable extends BaseController<List<AdocFile>> {
-
   @FXML
   protected TableView<AdocFile> adocTable;
-  protected TableColumn<AdocFile, String> nameColumn;
-  protected TableColumn<AdocFile, String> repoColumn;
-
   @Inject
   TableConfigurator<AdocFile> tableConfigurator;
 

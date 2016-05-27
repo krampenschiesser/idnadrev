@@ -20,7 +20,6 @@ import de.ks.standbein.BaseController;
 import de.ks.standbein.table.TableColumnBuilder;
 import de.ks.standbein.table.TableConfigurator;
 import javafx.fxml.FXML;
-import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
 import javax.inject.Inject;
@@ -30,12 +29,8 @@ import java.util.ResourceBundle;
 import java.util.function.Function;
 
 public class ThoughtTable extends BaseController<List<Task>> {
-
   @FXML
   protected TableView<Task> thoughtTable;
-  protected TableColumn<Task, String> nameColumn;
-  protected TableColumn<Task, String> repoColumn;
-
   @Inject
   TableConfigurator<Task> tableConfigurator;
 

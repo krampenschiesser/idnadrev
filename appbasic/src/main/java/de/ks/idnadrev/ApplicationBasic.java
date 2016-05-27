@@ -70,9 +70,11 @@ public class ApplicationBasic {
     return new File(discoverParentDir(file), "version.info");
   }
 
+  @SuppressWarnings("StatementWithEmptyBody")
   private static File discoverParentDir(File file) {
-    File parent = null;
+    File parent;
     for (parent = file; !parent.isDirectory() || parent.getPath().contains("build"); parent = parent.getParentFile()) {
+      //ok
     }
     return parent;
   }

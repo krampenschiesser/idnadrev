@@ -21,7 +21,6 @@ import de.ks.standbein.BaseController;
 import de.ks.standbein.table.TableColumnBuilder;
 import de.ks.standbein.table.TableConfigurator;
 import javafx.fxml.FXML;
-import javafx.scene.control.TableColumn;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableView;
 
@@ -35,9 +34,6 @@ import java.util.stream.Collectors;
 public class TaskTable extends BaseController<List<Task>> {
   @FXML
   TreeTableView<Task> taskTable;
-  protected TableColumn<Task, String> nameColumn;
-  protected TableColumn<Task, String> repoColumn;
-
   @Inject
   TableConfigurator<Task> tableConfigurator;
 

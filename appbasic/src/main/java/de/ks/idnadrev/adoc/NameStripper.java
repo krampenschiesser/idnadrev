@@ -23,13 +23,11 @@ public class NameStripper {
   }
 
   public String stripName(String name) {
-    String parsed = (String) name.chars().map((c) -> {
-      return Character.isWhitespace((char) c) ? 95 : c;
-    }).filter((c) -> {
-      return Character.isLetterOrDigit((char) c) || c == 95;
-    }).mapToObj((c) -> {
-      return String.valueOf((char) c);
-    }).collect(Collectors.joining());
+    String parsed = name.chars()//
+      .map((c) -> Character.isWhitespace((char) c) ? 95 : c)//
+      .filter((c) -> Character.isLetterOrDigit((char) c) || c == 95)//
+      .mapToObj((c) -> String.valueOf((char) c))//
+      .collect(Collectors.joining());//
     return parsed;
   }
 }

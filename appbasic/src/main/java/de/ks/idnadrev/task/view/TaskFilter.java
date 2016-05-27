@@ -30,8 +30,6 @@ import org.reactfx.Change;
 import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
 import org.reactfx.util.Tuple5;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.net.URL;
@@ -41,7 +39,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class TaskFilter extends BaseController<Object> {
-  private static final Logger log = LoggerFactory.getLogger(TaskFilter.class);
   @FXML
   TextField title;
   @FXML

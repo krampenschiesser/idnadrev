@@ -16,8 +16,6 @@
 package de.ks.idnadrev.repository;
 
 import com.google.common.base.StandardSystemProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -29,13 +27,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class RepositoryLoader {
-  private static final Logger log = LoggerFactory.getLogger(RepositoryLoader.class);
   private final Path path;
 
   public RepositoryLoader() {
     this(Paths.get(discoverDataDir(), "repositories.path"));
   }
 
+  @SuppressWarnings("ConstantConditions")
   private static String discoverDataDir() {
     String workingDir = StandardSystemProperty.USER_DIR.value();
     Path dataDir = Paths.get(workingDir, "data");

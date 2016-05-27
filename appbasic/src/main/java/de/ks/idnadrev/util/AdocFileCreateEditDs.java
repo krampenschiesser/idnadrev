@@ -50,6 +50,7 @@ public abstract class AdocFileCreateEditDs<E extends AdocFile> implements DataSo
   protected E hint;
   private final Path tempFolder;
 
+  @SuppressWarnings("ConstantConditions")
   public AdocFileCreateEditDs(Class<E> clazz, String tempFolderName, String fileName, Function<Path, E> newInstance, @ActiveRepository Provider<Repository> activeRepositoryProvider, NameStripper nameStripper, Index index) {
     this.clazz = clazz;
     this.fileName = fileName;

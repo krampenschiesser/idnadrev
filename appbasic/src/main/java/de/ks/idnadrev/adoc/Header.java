@@ -44,7 +44,7 @@ public class Header {
   }
 
   public ImmutableSet<String> getTags() {
-    return ImmutableSet.<String>copyOf(tags);
+    return ImmutableSet.copyOf(tags);
   }
 
   public String getTagString() {

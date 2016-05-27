@@ -16,7 +16,6 @@
 package de.ks.idnadrev.util;
 
 import de.ks.standbein.activity.ActivityController;
-import de.ks.standbein.i18n.Localized;
 import de.ks.standbein.imagecache.Images;
 import de.ks.standbein.validation.ValidationRegistry;
 import javafx.scene.control.Button;
@@ -26,14 +25,12 @@ import javax.inject.Inject;
 
 public class ButtonHelper {
   private final Images images;
-  private final Localized localized;
   private final ActivityController activityController;
   private final ValidationRegistry validationRegistry;
 
   @Inject
-  public ButtonHelper(Images images, Localized localized, ActivityController activityController, ValidationRegistry validationRegistry) {
+  public ButtonHelper(Images images, ActivityController activityController, ValidationRegistry validationRegistry) {
     this.images = images;
-    this.localized = localized;
     this.activityController = activityController;
     this.validationRegistry = validationRegistry;
   }
