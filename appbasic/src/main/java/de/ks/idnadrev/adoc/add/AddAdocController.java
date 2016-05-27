@@ -77,7 +77,17 @@ public class AddAdocController extends BaseController<AdocFile> {
     title.textProperty().bindBidirectional(store.getBinding().getStringProperty(AdocFile.class, t -> t.getHeader().getTitle()));
 
     validationRegistry.registerValidator(title, new NotEmptyValidator(localized));
+
+    editor.setInputTransformer(this::transformInput);
   }
+
+  private String transformInput(String input) {
+    AdocFile model = store.getModel();
+    model.setTitle(title.getText());
+    model.setContent(input);
+    return model.writeBack();
+  }
+
 
   @Override
   public void onStart() {

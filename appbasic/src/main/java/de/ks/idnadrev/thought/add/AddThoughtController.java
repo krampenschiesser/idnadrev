@@ -72,10 +72,18 @@ public class AddThoughtController extends BaseController<Task> {
     });
     tagsController.setEditable(true);
 
+    editor.setInputTransformer(this::transformInput);
     editor.textProperty().bindBidirectional(store.getBinding().getStringProperty(Task.class, Task::getContent));
     title.textProperty().bindBidirectional(store.getBinding().getStringProperty(Task.class, t -> t.getHeader().getTitle()));
 
     validationRegistry.registerValidator(title, new NotEmptyValidator(localized));
+  }
+
+  private String transformInput(String input) {
+    Task model = store.getModel();
+    model.setTitle(title.getText());
+    model.setContent(input);
+    return model.writeBack();
   }
 
   @Override

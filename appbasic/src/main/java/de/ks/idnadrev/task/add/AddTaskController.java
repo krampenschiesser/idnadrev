@@ -110,6 +110,15 @@ public class AddTaskController extends BaseController<Task> {
 
     estimatedTime.textProperty().bindBidirectional(store.getBinding().getIntegerProperty(Task.class, Task::getEstimatedTimeInMinutes), new NumberStringConverter());
     validationRegistry.registerValidator(title, new NotEmptyValidator(localized));
+
+    editor.setInputTransformer(this::transformInput);
+  }
+
+  private String transformInput(String input) {
+    Task model = store.getModel();
+    model.setTitle(title.getText());
+    model.setContent(input);
+    return model.writeBack();
   }
 
   @Override

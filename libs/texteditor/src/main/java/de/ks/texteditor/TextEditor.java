@@ -61,6 +61,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
 
@@ -117,6 +118,8 @@ public class TextEditor implements Initializable {
   Path lastRenderingTarget;
 
   String lastSearchText;
+
+  Function<String, String> inputTransformer = s -> s;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -276,7 +279,7 @@ public class TextEditor implements Initializable {
 
   private CompletableFuture<Void> addPreviewChangeListener(CompletableFuture<RichTextChange<Collection<String>>> future) {
     return future.thenAcceptAsync(change -> {
-      preview.preload(sourcePath, targetPath, codeArea.getText());
+      preview.preload(sourcePath, targetPath, inputTransformer.apply(codeArea.getText()));
     }, executorService).thenRunAsync(() -> {
       preview.show(sourcePath);
     }, javaFXExecutorService);
@@ -344,5 +347,10 @@ public class TextEditor implements Initializable {
 
   public void setText(String text) {
     this.text.set(text == null ? "" : text);
+  }
+
+  public TextEditor setInputTransformer(Function<String, String> inputTransformer) {
+    this.inputTransformer = inputTransformer;
+    return this;
   }
 }
