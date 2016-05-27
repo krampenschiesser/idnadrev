@@ -33,6 +33,7 @@ import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.SplitPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.reactfx.EventStreams;
@@ -97,6 +98,8 @@ public class ViewThoughtsController extends BaseController<List<Task>> {
     EventStreams.eventsOf(thoughtTableController.getThoughtTable(), KeyEvent.KEY_RELEASED)//
       .filter(e -> e.getCode() == KeyCode.DELETE)//
       .subscribe(e -> delete(selectedItemProperty.get()));
+
+    EventStreams.eventsOf(thoughtTableController.getThoughtTable(), MouseEvent.MOUSE_CLICKED).filter(e -> e.getClickCount() > 1).filter(e -> selectedItemProperty.get() != null).subscribe(m -> edit(selectedItemProperty.get()));
   }
 
   private void toDocument(Task task) {

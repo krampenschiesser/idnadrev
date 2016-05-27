@@ -30,6 +30,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import org.reactfx.EventStreams;
 
@@ -77,6 +78,8 @@ public class ViewAdocController extends BaseController<List<AdocFile>> {
     EventStreams.eventsOf(adocTableController.getAdocTable(), KeyEvent.KEY_RELEASED)//
       .filter(e -> e.getCode() == KeyCode.DELETE)//
       .subscribe(e -> delete(selectedItemProperty.get()));
+
+    EventStreams.eventsOf(adocTableController.getAdocTable(), MouseEvent.MOUSE_CLICKED).filter(e -> e.getClickCount() > 1).filter(e -> selectedItemProperty.get() != null).subscribe(m -> edit(selectedItemProperty.get()));
   }
 
   private void delete(AdocFile task) {

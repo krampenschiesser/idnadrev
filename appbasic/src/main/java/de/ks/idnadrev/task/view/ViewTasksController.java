@@ -30,6 +30,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeItem;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import org.reactfx.EventStreams;
 
@@ -63,17 +64,17 @@ public class ViewTasksController extends BaseController<List<Task>> {
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     ReadOnlyObjectProperty<TreeItem<Task>> selectedTreeItem = taskTableController.getTaskTable().getSelectionModel().selectedItemProperty();
-    ReadOnlyObjectProperty<TreeItem<Task>> selectedItemProperty = selectedTreeItem;
-    BooleanBinding itemIsNull = Bindings.createBooleanBinding(() -> selectedItemProperty.getValue() == null, selectedItemProperty);
+    BooleanBinding itemIsNull = Bindings.createBooleanBinding(() -> selectedTreeItem.getValue() == null, selectedTreeItem);
 
     edit = buttonHelper.createImageButton(localized.get("edit"), "edit.png", 24);
     edit.disableProperty().bind(itemIsNull);
-    edit.setOnAction(e -> edit(selectedItemProperty.get().getValue()));
+    edit.setOnAction(e -> edit(selectedTreeItem.get().getValue()));
 
     crudController.getCenterButtonContainer().getChildren().add(edit);
     crudController.getDeleteButton().disableProperty().bind(itemIsNull);
 
-    EventStreams.nonNullValuesOf(selectedItemProperty).map(TreeItem::getValue).filter(Objects::nonNull).subscribe(previewController::setSelectedTask);
+    EventStreams.nonNullValuesOf(selectedTreeItem).map(TreeItem::getValue).filter(Objects::nonNull).subscribe(previewController::setSelectedTask);
+    EventStreams.eventsOf(taskTableController.getTaskTable(), MouseEvent.MOUSE_CLICKED).conditionOn(itemIsNull.not()).filter(e -> e.getClickCount() > 1).subscribe(m -> edit(selectedTreeItem.get().getValue()));
   }
 
   private void edit(Task task) {
