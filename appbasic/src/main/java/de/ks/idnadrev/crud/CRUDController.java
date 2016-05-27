@@ -79,12 +79,7 @@ public class CRUDController extends BaseController<Object> {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    back.setOnAction(e -> {
-      if (validationRegistry.isValid()) {
-        controller.save();
-      }
-      controller.stopCurrent();
-    });
+    back.setOnAction(e -> controller.stopCurrent());
     back.disableProperty().bind(backDisabled.or(backDisabledInternal));
     save.disableProperty().bind(validationRegistry.invalidProperty());
     menu.setOnAction(e -> globalMenu.show(menu));
