@@ -19,6 +19,7 @@ import com.google.common.base.StandardSystemProperty;
 import de.ks.idnadrev.repository.Repository;
 import org.apache.commons.lang3.StringUtils;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,6 +39,8 @@ public class AdocFile {
   protected Header header;
   protected List<String> lines = new ArrayList<>();
   protected String fileName;
+
+  protected Path parent;
 
   public AdocFile(Path path, Repository repository, Header header) {
     this.repository = repository;
@@ -110,6 +113,21 @@ public class AdocFile {
 
   public AdocFile setRepository(Repository repository) {
     this.repository = repository;
+    return this;
+  }
+
+  public Path getParent() {
+    return parent;
+  }
+
+  public AdocFile setParent(Path parent) {
+    if (parent == null) {
+      this.parent = null;
+    } else if (!Files.isDirectory(parent)) {
+      this.parent = parent.getParent();
+    } else {
+      this.parent = parent;
+    }
     return this;
   }
 

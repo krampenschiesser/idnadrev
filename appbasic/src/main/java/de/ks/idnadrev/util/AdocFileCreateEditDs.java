@@ -23,6 +23,7 @@ import de.ks.idnadrev.repository.ActiveRepository;
 import de.ks.idnadrev.repository.Repository;
 import de.ks.standbein.datasource.DataSource;
 import de.ks.util.DeleteDir;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +37,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.Collections;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class AdocFileCreateEditDs<E extends AdocFile> implements DataSource<E> {
@@ -101,23 +103,39 @@ public abstract class AdocFileCreateEditDs<E extends AdocFile> implements DataSo
       throw new RuntimeException(e);
     }
     String targetFolderName = nameStripper.stripName(model.getTitle());
-    Path targetFolder = activeRepository.getPath().resolve(targetFolderName);
+    Path targetFolder;
+    if (model.getParent() != null) {
+      targetFolder = model.getParent().resolve(targetFolderName);
+      model.setParent(null);
+    } else {
+      targetFolder = activeRepository.getPath().resolve(targetFolderName);
+    }
+    Path oldDir = model.getPath().getParent();
+    String oldFileName = model.getPath().getFileName().toString();
+    String newFileName = targetFolderName + ".adoc";
+    Path htmlFile = oldDir.resolve(StringUtils.replace(oldFileName, ".adoc", ".html"));
+    boolean renamed = !oldFileName.equals(newFileName);
     try {
       Files.createDirectories(targetFolder);
 
-      Stream<Path> list = Files.list(model.getPath().getParent());
+      Stream<Path> list = Files.list(oldDir);
       list.forEach(path -> {
         try {
-          if (path.equals(model.getPath())) {
-            Files.copy(path, targetFolder.resolve(targetFolder.resolve(targetFolderName + ".adoc")), StandardCopyOption.REPLACE_EXISTING);
+          if (path.equals(htmlFile) && renamed) {
+            Files.delete(htmlFile);
+          } else if (path.equals(model.getPath())) {
+            Files.move(path, targetFolder.resolve(targetFolder.resolve(newFileName)), StandardCopyOption.REPLACE_EXISTING);
           } else {
-            Files.copy(path, targetFolder.resolve(path.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+            Files.move(path, targetFolder.resolve(path.getFileName()), StandardCopyOption.REPLACE_EXISTING);
           }
         } catch (IOException e) {
           log.error("Could not store file {}", path, e);
         }
       });
-
+      boolean dirEmpty = Files.list(oldDir).collect(Collectors.toSet()).isEmpty();
+      if (dirEmpty) {
+        Files.delete(oldDir);
+      }
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

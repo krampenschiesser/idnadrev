@@ -92,6 +92,65 @@ public class AdocFileCreateEditDsTest {
     assertTrue(lines.contains("Bla blubb"));
   }
 
+  @Test
+  public void testRenaming() throws Exception {
+    AdocFile adocFile = datasource.loadModel(Object::toString);
+    assertNotNull(adocFile);
+    adocFile.setTitle("Hello World");
+    adocFile.setContent("Bla blubb");
+    datasource.saveModel(adocFile, Object::toString);
+
+    String htmlFileName = "hello_world.html";
+    Path htmlFile = adocFile.getPath().getParent().resolve(htmlFileName);
+    Files.write(htmlFile, Arrays.asList("line1", "line2"));
+
+    adocFile.setTitle("Hello Sauerland");
+    datasource.saveModel(adocFile, Object::toString);
+
+    Path targetFolder = myRepo.resolve(new NameStripper().stripName("Hello World"));
+    assertFalse(Files.exists(targetFolder));
+    assertFalse(Files.exists(adocFile.getPath().getParent().resolve(htmlFile)));
+  }
+
+  @Test
+  public void testStoreAsChild() throws Exception {
+    AdocFile parent = datasource.loadModel(Object::toString);
+    assertNotNull(parent);
+    parent.setTitle("Parent");
+    parent.setContent("I am the one");
+    datasource.saveModel(parent, Object::toString);
+
+    AdocFile child = datasource.loadModel(Object::toString);
+    assertNotNull(child);
+    child.setTitle("Child");
+    child.setContent("I am not the one");
+    child.setParent(parent.getPath());
+    datasource.saveModel(child, Object::toString);
+
+    Path path = child.getPath();
+    assertTrue(path.startsWith(parent.getPath().getParent()));
+  }
+
+  @Test
+  public void testMoveAsChild() throws Exception {
+    AdocFile parent = datasource.loadModel(Object::toString);
+    assertNotNull(parent);
+    parent.setTitle("Parent");
+    parent.setContent("I am the one");
+    datasource.saveModel(parent, Object::toString);
+
+    AdocFile child = datasource.loadModel(Object::toString);
+    assertNotNull(child);
+    child.setTitle("Child");
+    child.setContent("I am not the one");
+    datasource.saveModel(child, Object::toString);
+
+    child.setParent(parent.getPath());
+    datasource.saveModel(child, Object::toString);
+    Path path = child.getPath();
+    assertTrue(path.startsWith(parent.getPath().getParent()));
+  }
+
   static class TestDs extends AdocFileCreateEditDs<AdocFile> {
     public TestDs(Provider<Repository> repositoryService, NameStripper nameStripper, Index index) {
       super(AdocFile.class, AdocFileCreateEditDsTest.class.getSimpleName(), "test.adoc", p -> new AdocFile(p, null, new Header(null)), repositoryService, nameStripper, index);
