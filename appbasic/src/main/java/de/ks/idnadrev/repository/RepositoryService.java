@@ -15,6 +15,7 @@
  */
 package de.ks.idnadrev.repository;
 
+import de.ks.idnadrev.index.Index;
 import de.ks.standbein.launch.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,11 +33,13 @@ public class RepositoryService extends Service {
   final AtomicReference<Repository> activeRepository = new AtomicReference<>();
   final RepositoryLoader loader;
   private final Scanner scanner;
+  private final Index index;
 
   @Inject
-  public RepositoryService(RepositoryLoader loader, Scanner scanner) {
+  public RepositoryService(RepositoryLoader loader, Scanner scanner, Index index) {
     this.loader = loader;
     this.scanner = scanner;
+    this.index = index;
   }
 
   @Override
@@ -75,6 +78,8 @@ public class RepositoryService extends Service {
   public void reload() {
     repositories.clear();
     repositories.addAll(loader.loadRepositories());
+    index.reset();
+    repositories.forEach(r -> scanner.scan(r, (ProgressCallback) (count, max) -> log.info("Scanned {}/{} repositories", count, max)));
   }
 
   public RepositoryService setActiveRepository(Repository activeRepository) {

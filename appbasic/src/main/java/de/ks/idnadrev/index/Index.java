@@ -120,4 +120,10 @@ public class Index {
     return new ArrayList<>(adocFiles);
   }
 
+  public void reset() {
+    queryElements.clear();
+    tasks.clear();
+    adocFiles.clear();
+    adocPaths.clear();
+  }
 }

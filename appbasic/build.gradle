@@ -16,7 +16,7 @@
 
 apply plugin: 'application'
 
-mainClassName = "de.ks.idnadrev.Application"
+mainClassName = "de.ks.idnadrev.ApplicationBasic"
 //applicationDefaultJvmArgs = ["-Dcreate.dummydata=true"]
 
 dependencies {
