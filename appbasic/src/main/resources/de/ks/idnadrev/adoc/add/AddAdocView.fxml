@@ -33,9 +33,9 @@
                 <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="10.0"/>
                 <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0"/>
                 <ColumnConstraints halignment="LEFT" hgrow="NEVER" minWidth="10.0"/>
-                <ColumnConstraints halignment="LEFT" hgrow="NEVER" minWidth="10.0"/>
+                <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0"/>
                 <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="10.0"/>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+                <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
             </columnConstraints>
             <rowConstraints>
                 <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
@@ -46,18 +46,18 @@
                 <Label text="%title:"/>
                 <TextField fx:id="title" GridPane.columnIndex="1"/>
 
-                <Label text="%repository:" GridPane.columnIndex="2"/>
-                <StackPane GridPane.columnIndex="3">
+                <Label text="%tags:" GridPane.columnIndex="2"/>
+                <StackPane GridPane.columnIndex="3" GridPane.rowSpan="2">
                     <children>
-                        <fx:include fx:id="repository" source="../../repository/ui/ActiveRepositoryView.fxml"
-                                    StackPane.alignment="CENTER_LEFT"/>
+                        <fx:include fx:id="tags" source="../../adoc/ui/TagSelection.fxml"/>
                     </children>
                 </StackPane>
 
-                <Label text="%tags:" GridPane.columnIndex="4"/>
-                <StackPane GridPane.columnIndex="5" GridPane.rowSpan="2">
+                <Label text="%repository:" GridPane.columnIndex="4"/>
+                <StackPane GridPane.columnIndex="5">
                     <children>
-                        <fx:include fx:id="tags" source="../../adoc/ui/TagSelection.fxml"/>
+                        <fx:include fx:id="repository" source="../../repository/ui/ActiveRepositoryView.fxml"
+                                    StackPane.alignment="CENTER_LEFT"/>
                     </children>
                 </StackPane>
 

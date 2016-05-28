@@ -30,9 +30,9 @@
         <GridPane fx:id="editorGrid" hgap="5.0" vgap="5.0" VBox.vgrow="ALWAYS">
             <columnConstraints>
                 <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="10.0"/>
-                <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0"/>
+                <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" percentWidth="35.0"/>
                 <ColumnConstraints halignment="LEFT" hgrow="NEVER" minWidth="10.0"/>
-                <ColumnConstraints hgrow="NEVER" minWidth="10.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="25.0"/>
                 <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="10.0"/>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
             </columnConstraints>
@@ -47,27 +47,27 @@
                 <Label text="%title:"/>
                 <TextField fx:id="title" GridPane.columnIndex="1"/>
 
-                <Label text="%repository:" GridPane.columnIndex="2"/>
-                <StackPane maxWidth="1.7976931348623157E308" GridPane.columnIndex="3">
+                <Label text="%tags:" GridPane.columnIndex="2"/>
+                <StackPane GridPane.columnIndex="3" GridPane.rowSpan="2">
+                    <children>
+                        <fx:include fx:id="tags" source="../../adoc/ui/TagSelection.fxml"/>
+                    </children>
+                </StackPane>
+
+                <Label text="%repository:" GridPane.columnIndex="4"/>
+                <StackPane maxWidth="1.7976931348623157E308" GridPane.columnIndex="5">
                     <children>
                         <fx:include fx:id="repository" source="../../repository/ui/ActiveRepositoryView.fxml"
                                     StackPane.alignment="CENTER_LEFT"/>
                     </children>
                 </StackPane>
 
-                <Label text="%tags:" GridPane.columnIndex="4"/>
-                <StackPane GridPane.columnIndex="5" GridPane.rowSpan="2">
-                    <children>
-                        <fx:include fx:id="tags" source="../../adoc/ui/TagSelection.fxml"/>
-                    </children>
-                </StackPane>
-
                 <Label text="%context:" GridPane.rowIndex="1"/>
                 <StackPane fx:id="contextContainer" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
-                <Label text="%state:" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
-                <ComboBox fx:id="state" maxWidth="1.7976931348623157E308" GridPane.columnIndex="3"
-                          GridPane.rowIndex="1"/>
+                <Label text="%state:" GridPane.columnIndex="4" GridPane.rowIndex="2"/>
+                <ComboBox fx:id="state" maxWidth="1.7976931348623157E308" GridPane.columnIndex="5"
+                          GridPane.rowIndex="2"/>
 
                 <Label text="%parent:" GridPane.rowIndex="2"/>
                 <StackPane fx:id="parentContainer" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
@@ -85,7 +85,7 @@
                             <content>
                                 <StackPane>
                                     <children>
-                                        <fx:include source="AddTaskDetails.fxml" fx:id="details"/>
+                                        <fx:include fx:id="details" source="AddTaskDetails.fxml"/>
                                     </children>
                                 </StackPane>
                             </content>
