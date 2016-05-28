@@ -72,9 +72,15 @@ public class ViewTasksController extends BaseController<List<Task>> {
 
     crudController.getCenterButtonContainer().getChildren().add(edit);
     crudController.getDeleteButton().disableProperty().bind(itemIsNull);
+    crudController.getDeleteButton().setOnAction(e -> delete(selectedTreeItem.get().getValue()));
 
     EventStreams.nonNullValuesOf(selectedTreeItem).map(TreeItem::getValue).filter(Objects::nonNull).subscribe(previewController::setSelectedTask);
     EventStreams.eventsOf(taskTableController.getTaskTable(), MouseEvent.MOUSE_CLICKED).filter(e -> e.getClickCount() > 1).filter(e -> selectedTreeItem.get() != null && selectedTreeItem.get().getValue() != null).subscribe(m -> edit(selectedTreeItem.get().getValue()));
+  }
+
+  private void delete(Task task) {
+    adocAccessor.delete(task);
+    controller.reload();
   }
 
   private void edit(Task task) {
