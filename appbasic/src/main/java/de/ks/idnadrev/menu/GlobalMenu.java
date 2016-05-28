@@ -80,7 +80,7 @@ public class GlobalMenu {
     for (Map.Entry<String, List<MenuEntry>> entry : path2Items.entrySet()) {
       List<MenuEntry> entries = entry.getValue();
       String key = entry.getKey();
-      Image image = images.get(key.substring(key.lastIndexOf("/")) + ".png");
+      Image image = images.get(key.substring(key.lastIndexOf("/") + 1) + ".png");
       if (image != null) {
         ImageView imageView = new ImageView(image);
         gridPane.add(imageView, 0, row);
