@@ -15,6 +15,7 @@
  */
 package de.ks.idnadrev.task.add;
 
+import de.ks.idnadrev.adoc.AdocFile;
 import de.ks.idnadrev.adoc.ui.TagSelection;
 import de.ks.idnadrev.crud.CRUDController;
 import de.ks.idnadrev.index.Index;
@@ -75,7 +76,6 @@ public class AddTaskController extends BaseController<Task> {
   Index index;
   @Inject
   AdocTransformer transformer;
-
 
   private final List<String> projects = new ArrayList<>();
   private final List<String> contexts = new ArrayList<>();
@@ -151,6 +151,18 @@ public class AddTaskController extends BaseController<Task> {
     model.getHeader().setTags(tags);
     TaskState taskState = TaskState.valueOf(state.getValue());
     model.setState(taskState);
+
+    String item = parent.getItem();
+    if (item != null && !item.trim().isEmpty()) {
+      Set<Task> parents = index.query(AdocFile.class, StandardQueries.titleQuery(), title1 -> title1.equals(item)).stream()//
+        .filter(f -> f instanceof Task)//
+        .map(f -> (Task) f)//
+        .collect(Collectors.toSet());
+      if (parents.size() == 1) {
+        Task parent = parents.iterator().next();
+        model.setParent(parent.getPath().getParent());
+      }
+    }
   }
 
   private List<String> getContexts(String s) {
