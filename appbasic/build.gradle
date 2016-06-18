@@ -29,6 +29,7 @@ dependencies {
     compile "org.jfxtras:jfxtras-agenda:$fxextrasAgenda"
     compile "org.fxmisc.easybind:easybind:$easybind"
     compile "org.reactfx:reactfx:$reactfx"
+    compile "org.jfxtras:jfxtras-agenda:$fxextrasAgenda"
 
     runtime "com.sun.el:el-ri:1.0"
     runtime "ch.qos.logback:logback-core:$logback"

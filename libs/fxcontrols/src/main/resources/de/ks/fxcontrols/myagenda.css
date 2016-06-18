@@ -18,3 +18,10 @@
  -fx-font-family: "sans-serif";
  -fx-font-style: normal;
 }
+
+.HourLabel {
+	-fx-fill: red;
+	-fx-text-fill: red;
+	-fx-font-weight: bold;
+
+}

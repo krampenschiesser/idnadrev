@@ -41,6 +41,7 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -68,20 +69,29 @@ public class SampleApp extends Application {
       return new Agenda.AppointmentImplLocal().withStartLocalDateTime(localDateTimeRange.getStartLocalDateTime()).withEndLocalDateTime(localDateTimeRange.getEndLocalDateTime()).withAppointmentGroup(new Agenda.AppointmentGroupImpl().withStyleClass("group1")); // it is better to have a map of appointment groups to get from
     });
     EventHandler<DragEvent> handler = e -> {
+      log.info("Type = {}", e.getEventType());
       Dragboard dragboard = e.getDragboard();
       log.info("Dragboard: {}", dragboard);
       log.info("ContentTypes: {}", dragboard.getContentTypes());
       e.acceptTransferModes(TransferMode.ANY);
-      e.consume();
-
+//      e.consume();
+      LocalDateTime displayedLocalDateTime = agenda.getDisplayedLocalDateTime();
+      log.info("displayed={}", displayedLocalDateTime);
     };
-    agenda.setOnDragOver(handler);
-    agenda.setOnDragDone(handler);
-    agenda.setOnDragDropped(handler);
-    agenda.setOnDragEntered(handler);
-    agenda.setOnMouseDragged(e -> {
-      log.info("{}", e);
+    agenda.setOnDragDropped(e -> {
+      agenda.appointments().add(new Agenda.AppointmentImplLocal().withStartLocalDateTime(agenda.getDisplayedLocalDateTime()).withEndLocalDateTime(agenda.getDisplayedLocalDateTime().plusHours(1)).withSummary("Bla blubb"));
     });
+    agenda.setOnDragOver(e -> {
+      e.acceptTransferModes(TransferMode.ANY);
+    });
+//    agenda.setOnDragOver(handler);
+//    agenda.setOnDragDone(handler);
+//    agenda.setOnDragDropped(handler);
+//    agenda.setOnDragEntered(handler);
+//    agenda.setOnMouseDragged(e -> {
+//      log.info("{}", e);
+//    });
+
 
     Label button = new Label("Dragger");
     button.setOnDragDetected(e -> {
@@ -183,7 +193,7 @@ public class SampleApp extends Application {
   }
 
   public static void main(String[] args) throws Exception {
-//    Locale.setDefault(Locale.GERMAN);
+    Locale.setDefault(Locale.GERMAN);
     launch(args);
   }
 }
